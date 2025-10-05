@@ -1,3 +1,5 @@
+"use client";
+
 import * as React from "react";
 
 type SpinnerProps = {
@@ -8,7 +10,7 @@ type SpinnerProps = {
 const sizeClass: Record<NonNullable<SpinnerProps["size"]>, string> = {
   sm: "w-4 h-4 border-2", // 16px
   md: "w-6 h-6 border-2", // 24px
-  lg: "w-8 h-8 border-3", // 32px
+  lg: "w-8 h-8 border-4", // 32px
 };
 
 export function Spinner({ size = "md", className }: SpinnerProps) {
