@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { FilesetResolver, PoseLandmarker, DrawingUtils } from "@mediapipe/tasks-vision";
+import isTurtleNeck from "@/utils/isTurtleNeck";
 
 export default function PoseLocalOnly() {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -74,6 +75,37 @@ export default function PoseLocalOnly() {
         const utils = new DrawingUtils(ctx);
         const poses = result.landmarks ?? [];
         const conns = PoseLandmarker.POSE_CONNECTIONS;
+        // ...existing code...
+        for (const pose of poses) {
+          // 랜드마크 그리기
+          const utils = new DrawingUtils(ctx);
+          utils.drawConnectors(pose as any, conns, { lineWidth: 2 });
+          utils.drawLandmarks(pose as any, { radius: 3 });
+
+          // 7, 8, 11, 12번 랜드마크 좌표 출력
+          const now = Date.now();
+          if (now - lastLogTimeRef.current >= 60 * 1000) {
+            const lm7 = pose[7];
+            const lm8 = pose[8];
+            const lm11 = pose[11];
+            const lm12 = pose[12];
+            console.log("Landmark 7:", lm7);
+            console.log("Landmark 8:", lm8);
+            console.log("Landmark 11:", lm11);
+            console.log("Landmark 12:", lm12);
+            lastLogTimeRef.current = now;
+            const isturtle = isTurtleNeck(
+              { xl: lm7["x"], yl: lm7["y"], xr: lm8["x"], yr: lm8["y"], z1: lm7["z"], z2: lm8["z"] },
+              { xl: lm11["x"], yl: lm11["y"], xr: lm12["x"], yr: lm12["y"], z1: lm11["z"], z2: lm12["z"] }
+            );
+            console.log("거북목?", isturtle);
+          }
+
+          if (now - lastLogTimeRef.current >= 60 * 1000) {
+            console.log("Pose landmarks:", pose);
+            lastLogTimeRef.current = now;
+          }
+        }
 
         for (const pose of poses) {
           utils.drawConnectors(pose as any, conns, { lineWidth: 2 });
