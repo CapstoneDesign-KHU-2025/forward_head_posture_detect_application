@@ -84,7 +84,7 @@ export default function PoseLocalOnly() {
 
           // 7, 8, 11, 12번 랜드마크 좌표 출력
           const now = Date.now();
-          if (now - lastLogTimeRef.current >= 60 * 1000) {
+          if (now - lastLogTimeRef.current >= 60 * 100) {
             const lm7 = pose[7];
             const lm8 = pose[8];
             const lm11 = pose[11];
@@ -95,13 +95,16 @@ export default function PoseLocalOnly() {
             console.log("Landmark 12:", lm12);
             lastLogTimeRef.current = now;
             const isturtle = isTurtleNeck(
-              { xl: lm7["x"], yl: lm7["y"], xr: lm8["x"], yr: lm8["y"], z1: lm7["z"], z2: lm8["z"] },
-              { xl: lm11["x"], yl: lm11["y"], xr: lm12["x"], yr: lm12["y"], z1: lm11["z"], z2: lm12["z"] }
+              { x: lm7["x"], y: lm7["y"], z: lm7["z"] },
+              { x: lm8["x"], y: lm8["y"], z: lm8["z"] },
+              { x: lm11["x"], y: lm11["y"], z: lm11["z"] },
+              { x: lm12["x"], y: lm12["y"], z: lm12["z"] }
+
             );
             console.log("거북목?", isturtle);
           }
 
-          if (now - lastLogTimeRef.current >= 60 * 1000) {
+          if (now - lastLogTimeRef.current >= 60 * 100) {
             console.log("Pose landmarks:", pose);
             lastLogTimeRef.current = now;
           }
@@ -111,7 +114,7 @@ export default function PoseLocalOnly() {
           utils.drawConnectors(pose as any, conns, { lineWidth: 2 });
           utils.drawLandmarks(pose as any, { radius: 3 });
           const now = Date.now();
-          if (now - lastLogTimeRef.current >= 60 * 1000) {
+          if (now - lastLogTimeRef.current >= 60 * 100) {
             console.log("Pose landmarks:", pose);
             lastLogTimeRef.current = now;
           }
