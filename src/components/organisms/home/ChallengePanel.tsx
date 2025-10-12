@@ -1,5 +1,5 @@
 import * as React from "react";
-
+import ThreeDemModel from "@/components/molecules/3DModel";
 type ChallengePanelProps = {
   title?: React.ReactNode;
   description?: React.ReactNode;
@@ -17,7 +17,8 @@ export default function ChallengePanel({
       {/* 일러스트 자리 (중앙 정렬) */}
       <div className="flex items-center justify-center h-65 border border-dashed border-black/20 rounded-md mb-4">
         {/* 추후 3D 모델 / 이미지 삽입 */}
-        <span className="text-4xl">🧍</span>
+        <ThreeDemModel/>
+        
       </div>
 
       {/* 설명 */}
