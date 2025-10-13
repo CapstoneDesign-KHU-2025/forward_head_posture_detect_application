@@ -1,16 +1,13 @@
 "use client";
 
 import * as React from "react";
+import { cn } from "@/util/cn";
 
 type IconProps = {
   children: React.ReactElement<{ className?: string }>;
   size?: "sm" | "md" | "lg";
   className?: string;
 };
-
-function cn(...classes: Array<string | false | null | undefined>) {
-  return classes.filter(Boolean).join(" ");
-}
 
 const sizeClass: Record<NonNullable<IconProps["size"]>, string> = {
   sm: "w-4 h-4", // 16px

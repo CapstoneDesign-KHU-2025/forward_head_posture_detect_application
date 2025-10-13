@@ -1,7 +1,7 @@
 // 전역 레이아웃 컴포넌트 (서버 컴포넌트)
 import type { Metadata } from "next";
 import "./globals.css";
-import Header from "@/components/organisms/layout/Header"; // ✅ HeaderClient → Header
+import Header from "@/components/organisms/layout/Header";
 import Footer from "@/components/organisms/layout/Footer";
 
 export const metadata: Metadata = {

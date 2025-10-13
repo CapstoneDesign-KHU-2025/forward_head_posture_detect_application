@@ -5,12 +5,11 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import NavItem from "@/components/molecules/NavItem";
 import SearchBar from "@/components/molecules/SearchBar";
-import UserInfo from "@/components/molecules/UserInfo";
 import { Button } from "@/components/atoms/button/Button";
 import { Home, BarChart2, Play } from "lucide-react";
 
 type HeaderProps = {
-  user?: { name: string; avatarSrc?: string } | null;
+  user?: { name: string } | null;
   onLogin?: () => void;
   onLogout?: () => void;
   className?: string;
@@ -26,12 +25,7 @@ export default function Header({ user, onLogin, onLogout, className }: HeaderPro
   ];
 
   return (
-    <header
-      className={[
-        "w-full border-b border-black/10 bg-white",
-        className,
-      ].filter(Boolean).join(" ")}
-    >
+    <header className={["w-full border-b border-black/10 bg-white", className].filter(Boolean).join(" ")}>
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 gap-4">
         {/* Left: Logo */}
         <Link href="/" className="shrink-0 text-lg font-semibold">
@@ -59,18 +53,17 @@ export default function Header({ user, onLogin, onLogout, className }: HeaderPro
           </div>
 
           {user ? (
-            <UserInfo
-              name={user.name}
-              avatarSrc={user.avatarSrc ?? ""}
-              size="sm"
-              trailing={
-                onLogout ? (
-                  <Button variant="secondary" onClick={onLogout}>
-                    로그아웃
-                  </Button>
-                ) : null
-              }
-            />
+            <div className="flex items-center gap-2">
+              {/* 이름 배지 */}
+              <span className="inline-flex items-center rounded-full bg-black/5 px-3 py-1 text-sm">
+                {user.name}
+              </span>
+              {onLogout && (
+                <Button variant="secondary" onClick={onLogout}>
+                  로그아웃
+                </Button>
+              )}
+            </div>
           ) : (
             <Button onClick={onLogin}>로그인</Button>
           )}
