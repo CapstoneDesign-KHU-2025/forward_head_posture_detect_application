@@ -2,9 +2,9 @@
 
 import { useEffect, useRef } from "react";
 import { FilesetResolver, PoseLandmarker, DrawingUtils } from "@mediapipe/tasks-vision";
-import isTurtleNeck from "@/utils/isTurtleNeck";
+import analyzeTurtleNeck from "@/utils/isTurtleNeck";
 
-export default function PoseLocalOnly() {
+export default function Estimate() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const landmarkerRef = useRef<PoseLandmarker | null>(null);
@@ -53,7 +53,7 @@ export default function PoseLocalOnly() {
       });
       if (cancelled) return;
 
-      const loop = () => {
+      const loop = async () => {
         const v = videoRef.current!;
         const c = canvasRef.current!;
         const lm = landmarkerRef.current;
@@ -84,7 +84,7 @@ export default function PoseLocalOnly() {
 
           // 7, 8, 11, 12번 랜드마크 좌표 출력
           const now = Date.now();
-          if (now - lastLogTimeRef.current >= 60 * 100) {
+          if (now - lastLogTimeRef.current >= 2000) {
             const lm7 = pose[7];
             const lm8 = pose[8];
             const lm11 = pose[11];
@@ -94,32 +94,36 @@ export default function PoseLocalOnly() {
             console.log("Landmark 11:", lm11);
             console.log("Landmark 12:", lm12);
             lastLogTimeRef.current = now;
-            const isturtle = isTurtleNeck(
+            const turtleData = analyzeTurtleNeck(
               { x: lm7["x"], y: lm7["y"], z: lm7["z"] },
               { x: lm8["x"], y: lm8["y"], z: lm8["z"] },
               { x: lm11["x"], y: lm11["y"], z: lm11["z"] },
               { x: lm12["x"], y: lm12["y"], z: lm12["z"] }
-
             );
-            console.log("거북목?", isturtle);
-          }
+            console.log("각도: ", turtleData["angleDeg"], "°");
+            console.log("거북목?", turtleData["isTurtle"]);
 
-          if (now - lastLogTimeRef.current >= 60 * 100) {
-            console.log("Pose landmarks:", pose);
+            // Next.js API로 결과 전송
+            try {
+              await fetch("/api/save", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  user_id: "jun_huh",
+                  angle: turtleData["angleDeg"] ?? 0,
+                  is_turtle: turtleData["isTurtle"],
+                  landmarks: pose.slice(1, 13).map((p) => ({ x: p.x, y: p.y, z: p.z })),
+                }),
+              });
+            } catch (err) {
+              console.error("데이터 전송 실패:", err);
+            }
+            
             lastLogTimeRef.current = now;
           }
         }
-
-        for (const pose of poses) {
-          utils.drawConnectors(pose as any, conns, { lineWidth: 2 });
-          utils.drawLandmarks(pose as any, { radius: 3 });
-          const now = Date.now();
-          if (now - lastLogTimeRef.current >= 60 * 100) {
-            console.log("Pose landmarks:", pose);
-            lastLogTimeRef.current = now;
-          }
-        }
-
         rafRef.current = requestAnimationFrame(loop);
       };
 

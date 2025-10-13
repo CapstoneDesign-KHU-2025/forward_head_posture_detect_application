@@ -76,5 +76,5 @@ export default function isTurtleNeck(
 
   console.log("각도:", angleDeg.toFixed(2), "° →", isTurtle ? "거북목 ⚠️" : "정상 ✅");
 
-  return isTurtle;
+  return { angleDeg, isTurtle };
 }
