@@ -72,6 +72,61 @@ export default function PoseLocalOnly() {
         ctx.clearRect(0, 0, c.width, c.height);
         ctx.drawImage(v, 0, 0, c.width, c.height);
 
+        // 가이드라인
+        const centerX = c.width / 2;
+        const centerY = c.height / 2;
+        const offsetY = 30;
+        
+        ctx.save();
+        ctx.strokeStyle = 'rgba(255, 0, 0, 0.6)';
+        ctx.lineWidth = 3;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        
+        // 얼굴
+        ctx.beginPath();
+        ctx.ellipse(centerX, centerY - 80 + offsetY, 70, 90, 0, 0, Math.PI * 2);
+        ctx.stroke();
+        
+        // 목
+        ctx.beginPath();
+        ctx.moveTo(centerX - 30, centerY + 10 + offsetY);
+        ctx.lineTo(centerX - 25, centerY + 40 + offsetY);
+        ctx.moveTo(centerX + 30, centerY + 10 + offsetY);
+        ctx.lineTo(centerX + 25, centerY + 40 + offsetY);
+        ctx.stroke();
+        
+        // 어깨
+        ctx.beginPath();
+        ctx.moveTo(centerX - 15, centerY + 40 + offsetY);
+        ctx.lineTo(centerX - 150, centerY + 60 + offsetY);
+        ctx.moveTo(centerX + 15, centerY + 40 + offsetY);
+        ctx.lineTo(centerX + 150, centerY + 60 + offsetY);
+        ctx.stroke();
+        
+        // 상체
+        ctx.beginPath();
+        ctx.moveTo(centerX - 150, centerY + 60 + offsetY);
+        ctx.bezierCurveTo(
+          centerX - 160, centerY + 150 + offsetY,
+          centerX - 175, centerY + 220 + offsetY,
+          centerX - 185, centerY + 280 + offsetY
+        );
+        
+        ctx.moveTo(centerX + 150, centerY + 60 + offsetY);
+        ctx.bezierCurveTo(
+          centerX + 160, centerY + 150 + offsetY,
+          centerX + 175, centerY + 220 + offsetY,
+          centerX + 185, centerY + 280 + offsetY
+        );
+        
+        // 하단 연결
+        ctx.moveTo(centerX - 185, centerY + 280 + offsetY);
+        ctx.lineTo(centerX + 185, centerY + 280 + offsetY);
+        ctx.stroke();
+        
+        ctx.restore();
+
         const utils = new DrawingUtils(ctx);
         const poses = result.landmarks ?? [];
         const conns = PoseLandmarker.POSE_CONNECTIONS;
