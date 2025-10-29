@@ -38,8 +38,8 @@ export default function isTurtleNeck(
   };
 
   // 임의점 V (정면 방향 기준 보조점)
-  // M'과 y는 같고, x=0, z=1로 단순 설정
-  const V = { x: 0, y: Mprime.y, z: 1 };
+  // M'과 y는 같고, x=M.x, z=1로 단순 설정
+  const V = { x: M.x, y: Mprime.y, z: 1 };
 
   // 평면 P (S, V 포함)
   // 법선벡터 n = S × (V - M')
@@ -73,8 +73,6 @@ export default function isTurtleNeck(
 
   // 임계값 판단
   const isTurtle = angleDeg <= 51;
-
-  console.log("각도:", angleDeg.toFixed(2), "° →", isTurtle ? "거북목 ⚠️" : "정상 ✅");
 
   return { angleDeg, isTurtle };
 }

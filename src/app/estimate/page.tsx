@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import { FilesetResolver, PoseLandmarker, DrawingUtils } from "@mediapipe/tasks-vision";
 import analyzeTurtleNeck from "@/utils/isTurtleNeck";
+import turtleStabilizer from "@/utils/turtleStabilizer";
 
 export default function Estimate() {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -10,6 +11,7 @@ export default function Estimate() {
   const landmarkerRef = useRef<PoseLandmarker | null>(null);
   const rafRef = useRef<number | null>(null);
   const lastLogTimeRef = useRef<number>(0);
+  const lastSendTimeRef = useRef<number>(0);
 
   useEffect(() => {
     let cancelled = false;
@@ -75,7 +77,7 @@ export default function Estimate() {
         const utils = new DrawingUtils(ctx);
         const poses = result.landmarks ?? [];
         const conns = PoseLandmarker.POSE_CONNECTIONS;
-        // ...existing code...
+
         for (const pose of poses) {
           // 랜드마크 그리기
           const utils = new DrawingUtils(ctx);
@@ -84,15 +86,15 @@ export default function Estimate() {
 
           // 7, 8, 11, 12번 랜드마크 좌표 출력
           const now = Date.now();
-          if (now - lastLogTimeRef.current >= 2000) {
+          if (now - lastLogTimeRef.current >= 200) {
             const lm7 = pose[7];
             const lm8 = pose[8];
             const lm11 = pose[11];
             const lm12 = pose[12];
-            console.log("Landmark 7:", lm7);
-            console.log("Landmark 8:", lm8);
-            console.log("Landmark 11:", lm11);
-            console.log("Landmark 12:", lm12);
+            // console.log("Landmark 7:", lm7);
+            // console.log("Landmark 8:", lm8);
+            // console.log("Landmark 11:", lm11);
+            // console.log("Landmark 12:", lm12);
             lastLogTimeRef.current = now;
             const turtleData = analyzeTurtleNeck(
               { x: lm7["x"], y: lm7["y"], z: lm7["z"] },
@@ -100,27 +102,40 @@ export default function Estimate() {
               { x: lm11["x"], y: lm11["y"], z: lm11["z"] },
               { x: lm12["x"], y: lm12["y"], z: lm12["z"] }
             );
-            console.log("각도: ", turtleData["angleDeg"], "°");
-            console.log("거북목?", turtleData["isTurtle"]);
 
-            // Next.js API로 결과 전송
-            try {
-              await fetch("/api/save", {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                  user_id: "jun_huh",
-                  angle: turtleData["angleDeg"] ?? 0,
-                  is_turtle: turtleData["isTurtle"],
-                  landmarks: pose.slice(1, 13).map((p) => ({ x: p.x, y: p.y, z: p.z })),
-                }),
-              });
-            } catch (err) {
-              console.error("데이터 전송 실패:", err);
+            const result = turtleStabilizer(turtleData.angleDeg);
+
+            if (result !== null) {
+              const { avgAngle, isTurtle } = result;
+              console.log(
+                `1초 평균 각도: ${avgAngle.toFixed(2)}° → ${
+                  isTurtle ? "거북목" : "정상"
+                }`
+              );
             }
-            
+
+            const lastSend = lastSendTimeRef.current;
+
+            if (now - lastSend >= 2000) {
+              // 2초마다 Next.js API로 결과 전송
+              try {
+                await fetch("/api/save", {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({
+                    user_id: "jun_huh",
+                    angle: turtleData["angleDeg"] ?? 0,
+                    is_turtle: turtleData["isTurtle"],
+                    landmarks: pose.slice(1, 13).map((p) => ({ x: p.x, y: p.y, z: p.z })),
+                  }),
+                });
+                lastSendTimeRef.current = now;
+              } catch(err) {
+                console.error("데이터 전송 실패:", err);
+              }
+            }
             lastLogTimeRef.current = now;
           }
         }
