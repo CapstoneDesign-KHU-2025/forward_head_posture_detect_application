@@ -1,5 +1,3 @@
-import * as React from "react";
-
 type StatValueProps = React.HTMLAttributes<HTMLSpanElement> & {
   /** 보통 숫자(15, 10 등), 필요하면 아이콘/노드도 가능 */
   children: React.ReactNode;

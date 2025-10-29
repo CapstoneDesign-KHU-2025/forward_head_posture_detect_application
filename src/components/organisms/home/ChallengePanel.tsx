@@ -3,11 +3,13 @@ import * as React from "react";
 type ChallengePanelProps = {
   title?: React.ReactNode;
   description?: React.ReactNode;
+  illustration?: React.ReactNode; // 추후 3D 모델링 또는 이미지 삽입용
 };
 
 export default function ChallengePanel({
   title = "당신의 거북목 도전기",
   description = "3D 모델링으로 추후 삽입",
+  illustration,
 }: ChallengePanelProps) {
   return (
     <div className="rounded-lg border border-black/10 bg-white p-6">
