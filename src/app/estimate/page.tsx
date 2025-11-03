@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FilesetResolver, PoseLandmarker, DrawingUtils } from "@mediapipe/tasks-vision";
 import analyzeTurtleNeck from "@/utils/isTurtleNeck";
 import turtleStabilizer from "@/utils/turtleStabilizer";
@@ -12,6 +12,11 @@ export default function Estimate() {
   const rafRef = useRef<number | null>(null);
   const lastLogTimeRef = useRef<number>(0);
   const lastSendTimeRef = useRef<number>(0);
+  const lastStateRef = useRef<boolean | null>(null);
+  const lastBeepIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  
+  const [ isTurtle, setIsTurtle ] = useState(false);
+  const [ angle, setAngle ] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
@@ -74,23 +79,23 @@ export default function Estimate() {
         ctx.clearRect(0, 0, c.width, c.height);
         ctx.drawImage(v, 0, 0, c.width, c.height);
 
-        const utils = new DrawingUtils(ctx);
         const poses = result.landmarks ?? [];
+        const utils = new DrawingUtils(ctx);
         const conns = PoseLandmarker.POSE_CONNECTIONS;
 
         for (const pose of poses) {
-          // 랜드마크 그리기
-          const utils = new DrawingUtils(ctx);
-          utils.drawConnectors(pose as any, conns, { lineWidth: 2 });
-          utils.drawLandmarks(pose as any, { radius: 3 });
+        // 랜드마크 그리기
+        //   const utils = new DrawingUtils(ctx);
+        //   utils.drawConnectors(pose as any, conns, { lineWidth: 2 });
+        //   utils.drawLandmarks(pose as any, { radius: 3 });
 
-          // 7, 8, 11, 12번 랜드마크 좌표 출력
           const now = Date.now();
           if (now - lastLogTimeRef.current >= 200) {
             const lm7 = pose[7];
             const lm8 = pose[8];
             const lm11 = pose[11];
             const lm12 = pose[12];
+            // 7, 8, 11, 12번 랜드마크 좌표 출력
             // console.log("Landmark 7:", lm7);
             // console.log("Landmark 8:", lm8);
             // console.log("Landmark 11:", lm11);
@@ -105,14 +110,55 @@ export default function Estimate() {
 
             const result = turtleStabilizer(turtleData.angleDeg);
 
+            let turtleNow = lastStateRef.current ?? false;
+            let avgAngle = 0;
+
             if (result !== null) {
-              const { avgAngle, isTurtle } = result;
-              console.log(
-                `1초 평균 각도: ${avgAngle.toFixed(2)}° → ${
-                  isTurtle ? "거북목" : "정상"
-                }`
-              );
+              avgAngle = result.avgAngle;
+              turtleNow = result.isTurtle;
+
+              setAngle(avgAngle);
             }
+
+            if (turtleNow !== lastStateRef.current) {
+                setIsTurtle(turtleNow);
+                lastStateRef.current = turtleNow;
+
+                console.log(
+                    `평균각도: ${avgAngle.toFixed(2)}° → ${
+                    turtleNow ? " 거북목" : " 정상"
+                    }`
+                );
+
+                if (turtleNow) {
+                    console.log("거북목 상태 감지 - 경고 시작");
+
+                    const beepInterval = setInterval(() => {
+                        const audioCtx = new AudioContext();
+                        const osc = audioCtx.createOscillator();
+                        const gain = audioCtx.createGain();
+                        osc.connect(gain);
+                        gain.connect(audioCtx.destination);
+                        osc.type = "sine";
+                        osc.frequency.setValueAtTime(880, audioCtx.currentTime);
+                        gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                        osc.start();
+                        osc.stop(audioCtx.currentTime + 0.2);
+
+                        setTimeout(() => audioCtx.close(), 300);
+                    }, 1000);
+
+                    lastBeepIntervalRef.current = beepInterval;
+                } else {
+                    console.log("정상 상태 복귀 - 경고 중단");
+
+                    if (lastBeepIntervalRef.current) {
+                        clearInterval(lastBeepIntervalRef.current);
+                        lastBeepIntervalRef.current = null;
+                    }
+                }
+            }
+
 
             const lastSend = lastSendTimeRef.current;
 
@@ -155,9 +201,28 @@ export default function Estimate() {
   }, []);
 
   return (
-    <div>
+    <div style={{ position: "relative", display: "inline-block" }}>
       <video ref={videoRef} style={{ position: "absolute", left: -9999 }} />
       <canvas ref={canvasRef} />
+
+      {isTurtle && (
+        <div
+            style={{
+                position: "absolute",
+                top: 10,
+                left: "50%",
+                transform: "translateX(-50%)",
+                backgroundColor: "rgba(255,0,0,0.8)",
+                color: "white",
+                padding: "10px 20px",
+                borderRadius: "12px",
+                fontWeight: "bold",
+                fontSize: "18px",
+            }}
+        >
+            거북목 자세입니다! ({angle.toFixed(1)}°)
+        </div>
+      )}
     </div>
   );
 }
