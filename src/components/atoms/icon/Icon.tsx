@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { cn } from "@/util/cn";
+import { cn } from "@/utils/cn";
 
 type IconProps = {
   children: React.ReactElement<{ className?: string }>;

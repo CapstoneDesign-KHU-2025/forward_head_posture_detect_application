@@ -1,4 +1,5 @@
 import * as React from "react";
+import { cn } from "@/utils/cn";
 
 type BadgeProps = React.HTMLAttributes<HTMLSpanElement> & {
   /** 색상 계열 */
@@ -13,18 +14,11 @@ type BadgeProps = React.HTMLAttributes<HTMLSpanElement> & {
   deltaPosition?: "start" | "end";
 };
 
-function cn(...classes: Array<string | false | undefined | null>) {
-  return classes.filter(Boolean).join(" ");
-}
-
-const variantClass: Record<
-  NonNullable<BadgeProps["variant"]>,
-  { bg: string; text: string; border: string }
-> = {
+const variantClass: Record<NonNullable<BadgeProps["variant"]>, { bg: string; text: string; border: string }> = {
   neutral: { bg: "bg-black/5", text: "text-black", border: "border-black/10" },
   success: { bg: "bg-green-50", text: "text-green-700", border: "border-green-200" },
   warning: { bg: "bg-yellow-50", text: "text-yellow-800", border: "border-yellow-200" },
-  danger:  { bg: "bg-red-50", text: "text-red-700", border: "border-red-200" },
+  danger: { bg: "bg-red-50", text: "text-red-700", border: "border-red-200" },
 };
 
 const sizeClass: Record<NonNullable<BadgeProps["size"]>, string> = {

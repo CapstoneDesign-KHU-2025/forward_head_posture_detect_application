@@ -1,4 +1,5 @@
 import * as React from "react";
+import { cn } from "@/utils/cn";
 
 type TextInputProps = Omit<React.InputHTMLAttributes<HTMLInputElement>, "size"> & {
   /** 에러 메시지 */
@@ -10,10 +11,6 @@ type TextInputProps = Omit<React.InputHTMLAttributes<HTMLInputElement>, "size"> 
   /** 크기 */
   fieldSize?: "sm" | "md" | "lg";
 };
-
-function cn(...classes: Array<string | false | undefined>) {
-  return classes.filter(Boolean).join(" ");
-}
 
 const sizeClass: Record<NonNullable<TextInputProps["fieldSize"]>, string> = {
   sm: "h-9 text-sm",
@@ -40,11 +37,7 @@ export const TextInput = React.forwardRef<HTMLInputElement, TextInputProps>(
             "focus-within:ring-2 focus-within:ring-black focus-within:ring-offset-2"
           )}
         >
-          {leftIcon && (
-            <span className="pointer-events-none absolute left-3 inline-flex">
-              {leftIcon}
-            </span>
-          )}
+          {leftIcon && <span className="pointer-events-none absolute left-3 inline-flex">{leftIcon}</span>}
 
           <input
             ref={ref}
