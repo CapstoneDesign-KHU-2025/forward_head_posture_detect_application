@@ -113,6 +113,14 @@ export default function PoseLocalOnly() {
 
         let faceInside = true;
         let shoulderInside = true;
+        let isDistanceOk = true; // 거리도 적절한지 체크
+        let distanceRatio = 1; // 거리 비율 (기본값)
+        let distanceMessage = "";
+        let distanceColor = "";
+        
+        // 임계값 설정
+        const tooCloseThreshold = 1.05; // 105% 이상이면 너무 가까움
+        const tooFarThreshold = 0.7;   // 70% 이하면 너무 멀음
         
         if (poses.length > 0) {
           const pose = poses[0];
@@ -128,10 +136,43 @@ export default function PoseLocalOnly() {
           if (shoulderLandmarks.length > 0) {
             shoulderInside = shoulderLandmarks.every((lm: any) => isInsideUpperBodyGuideline(lm.x, lm.y));
           }
+          
+          // 거리 체크
+          const lm11 = pose[11]; // 왼쪽 어깨
+          const lm12 = pose[12]; // 오른쪽 어깨
+          
+          if (lm11 && lm12) {
+            // 어깨 너비 계산 (픽셀)
+            const shoulderWidth = Math.sqrt(
+              Math.pow((lm12.x - lm11.x) * c.width, 2) + 
+              Math.pow((lm12.y - lm11.y) * c.height, 2)
+            );
+            
+            // 기준 어깨 너비 (가이드라인 기준: 190 + 190 = 380px)
+            const referenceShoulderWidth = 380;
+            
+            // 거리 비율 계산 (실제 너비 / 기준 너비)
+            distanceRatio = shoulderWidth / referenceShoulderWidth;
+            
+            // 거리가 적절한 범위 안에 있는지 체크
+            isDistanceOk = distanceRatio >= tooFarThreshold && distanceRatio <= tooCloseThreshold;
+            
+            // 거리 메시지 설정
+            if (distanceRatio >= tooCloseThreshold) {
+              distanceMessage = "너무 가깝습니다. 뒤로 물러나세요.";
+              distanceColor = "rgba(255, 0, 0, 0.9)";
+            } else if (distanceRatio <= tooFarThreshold) {
+              distanceMessage = "너무 멉니다. 앞으로 이동하세요.";
+              distanceColor = "rgba(255, 165, 0, 0.9)";
+            } else {
+              distanceMessage = "적절한 거리입니다.";
+              distanceColor = "rgba(0, 255, 0, 0.9)";
+            }
+          }
         }
         
-        // 둘 다 통과해야 초록색, 하나라도 실패하면 빨간색
-        const allInside = faceInside && shoulderInside;
+        // 랜드마크가 안에 있고 거리도 적절해야 초록색, 하나라도 실패하면 빨간색
+        const allInside = faceInside && shoulderInside && isDistanceOk;
         const guidelineColor = allInside ? 'rgba(0, 255, 0, 0.6)' : 'rgba(255, 0, 0, 0.6)';
         
         ctx.save();
@@ -185,6 +226,17 @@ export default function PoseLocalOnly() {
         ctx.restore();
 
         const conns = PoseLandmarker.POSE_CONNECTIONS;
+
+        // 거리 알림 텍스트 표시
+        if (distanceMessage) {
+          ctx.save();
+          ctx.font = "bold 24px Arial";
+          ctx.fillStyle = distanceColor;
+          ctx.textAlign = "center";
+          ctx.textBaseline = "top";
+          ctx.fillText(distanceMessage, centerX, 20);
+          ctx.restore();
+        }
 
         for (const pose of poses) {
           // 랜드마크 그리기
