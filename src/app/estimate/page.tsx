@@ -76,61 +76,116 @@ export default function PoseLocalOnly() {
         const centerX = c.width / 2;
         const centerY = c.height / 2;
         const offsetY = 30;
+
+        const poses = result.landmarks ?? [];
+        
+        // 얼굴 가이드라인 영역 체크 함수 (타원 내부)
+        const isInsideFaceGuideline = (x: number, y: number) => {
+          const pixelX = x * c.width;
+          const pixelY = y * c.height;
+          
+          // 얼굴 타원: 중심 (centerX, centerY - 80 + offsetY), 반지름 90x110
+          const faceCenterX = centerX;
+          const faceCenterY = centerY - 80 + offsetY;
+          const radiusX = 90;
+          const radiusY = 110;
+          
+          // 타원 내부인지 체크: ((x-h)²/a²) + ((y-k)²/b²) <= 1
+          const dx = (pixelX - faceCenterX) / radiusX;
+          const dy = (pixelY - faceCenterY) / radiusY;
+          return dx * dx + dy * dy <= 1;
+        };
+        
+        // 어깨/상반신 가이드라인 영역 체크 함수 (어깨선부터 상체 아래까지, 목 제외)
+        const isInsideUpperBodyGuideline = (x: number, y: number) => {
+          const pixelX = x * c.width;
+          const pixelY = y * c.height;
+          
+          // 상반신 영역: 어깨선(centerY + 60 + offsetY)부터 상체 아래(centerY + 280 + offsetY)까지
+          const leftBound = centerX - 225;
+          const rightBound = centerX + 225;
+          const topBound = centerY + 60 + offsetY; // 어깨선
+          const bottomBound = centerY + 280 + offsetY; // 상체 아래
+          
+          return pixelX >= leftBound && pixelX <= rightBound && 
+                 pixelY >= topBound && pixelY <= bottomBound;
+        };
+
+        let faceInside = true;
+        let shoulderInside = true;
+        
+        if (poses.length > 0) {
+          const pose = poses[0];
+          
+          // 얼굴 랜드마크 체크 (0-10번)
+          const faceLandmarks = pose.slice(0, 11);
+          if (faceLandmarks.length > 0) {
+            faceInside = faceLandmarks.every((lm: any) => isInsideFaceGuideline(lm.x, lm.y));
+          }
+          
+          // 어깨 랜드마크 체크 (11-12번)
+          const shoulderLandmarks = pose.slice(11, 13);
+          if (shoulderLandmarks.length > 0) {
+            shoulderInside = shoulderLandmarks.every((lm: any) => isInsideUpperBodyGuideline(lm.x, lm.y));
+          }
+        }
+        
+        // 둘 다 통과해야 초록색, 하나라도 실패하면 빨간색
+        const allInside = faceInside && shoulderInside;
+        const guidelineColor = allInside ? 'rgba(0, 255, 0, 0.6)' : 'rgba(255, 0, 0, 0.6)';
         
         ctx.save();
-        ctx.strokeStyle = 'rgba(255, 0, 0, 0.6)';
+        ctx.strokeStyle = guidelineColor;
         ctx.lineWidth = 3;
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
         
         // 얼굴
         ctx.beginPath();
-        ctx.ellipse(centerX, centerY - 80 + offsetY, 70, 90, 0, 0, Math.PI * 2);
+        ctx.ellipse(centerX, centerY - 80 + offsetY, 90, 110, 0, 0, Math.PI * 2);
         ctx.stroke();
         
         // 목
         ctx.beginPath();
-        ctx.moveTo(centerX - 30, centerY + 10 + offsetY);
-        ctx.lineTo(centerX - 25, centerY + 40 + offsetY);
-        ctx.moveTo(centerX + 30, centerY + 10 + offsetY);
-        ctx.lineTo(centerX + 25, centerY + 40 + offsetY);
+        ctx.moveTo(centerX - 40, centerY + 10 + offsetY);
+        ctx.lineTo(centerX - 35, centerY + 40 + offsetY);
+        ctx.moveTo(centerX + 40, centerY + 10 + offsetY);
+        ctx.lineTo(centerX + 35, centerY + 40 + offsetY);
         ctx.stroke();
         
         // 어깨
         ctx.beginPath();
-        ctx.moveTo(centerX - 15, centerY + 40 + offsetY);
-        ctx.lineTo(centerX - 150, centerY + 60 + offsetY);
-        ctx.moveTo(centerX + 15, centerY + 40 + offsetY);
-        ctx.lineTo(centerX + 150, centerY + 60 + offsetY);
+        ctx.moveTo(centerX - 35, centerY + 40 + offsetY);
+        ctx.lineTo(centerX - 190, centerY + 60 + offsetY);
+        ctx.moveTo(centerX + 35, centerY + 40 + offsetY);
+        ctx.lineTo(centerX + 190, centerY + 60 + offsetY);
         ctx.stroke();
         
         // 상체
         ctx.beginPath();
-        ctx.moveTo(centerX - 150, centerY + 60 + offsetY);
+        ctx.moveTo(centerX - 190, centerY + 60 + offsetY);
         ctx.bezierCurveTo(
-          centerX - 160, centerY + 150 + offsetY,
-          centerX - 175, centerY + 220 + offsetY,
-          centerX - 185, centerY + 280 + offsetY
+          centerX - 200, centerY + 150 + offsetY,
+          centerX - 215, centerY + 220 + offsetY,
+          centerX - 225, centerY + 280 + offsetY
         );
         
-        ctx.moveTo(centerX + 150, centerY + 60 + offsetY);
+        ctx.moveTo(centerX + 190, centerY + 60 + offsetY);
         ctx.bezierCurveTo(
-          centerX + 160, centerY + 150 + offsetY,
-          centerX + 175, centerY + 220 + offsetY,
-          centerX + 185, centerY + 280 + offsetY
+          centerX + 200, centerY + 150 + offsetY,
+          centerX + 215, centerY + 220 + offsetY,
+          centerX + 225, centerY + 280 + offsetY
         );
         
         // 하단 연결
-        ctx.moveTo(centerX - 185, centerY + 280 + offsetY);
-        ctx.lineTo(centerX + 185, centerY + 280 + offsetY);
+        ctx.moveTo(centerX - 225, centerY + 280 + offsetY);
+        ctx.lineTo(centerX + 225, centerY + 280 + offsetY);
         ctx.stroke();
         
         ctx.restore();
 
-        const utils = new DrawingUtils(ctx);
-        const poses = result.landmarks ?? [];
         const conns = PoseLandmarker.POSE_CONNECTIONS;
-        // ...existing code...
+
         for (const pose of poses) {
           // 랜드마크 그리기
           const utils = new DrawingUtils(ctx);
@@ -148,30 +203,15 @@ export default function PoseLocalOnly() {
             console.log("Landmark 8:", lm8);
             console.log("Landmark 11:", lm11);
             console.log("Landmark 12:", lm12);
+            console.log("가이드라인 안에 있음:", allInside);
             lastLogTimeRef.current = now;
             const isturtle = isTurtleNeck(
               { x: lm7["x"], y: lm7["y"], z: lm7["z"] },
               { x: lm8["x"], y: lm8["y"], z: lm8["z"] },
               { x: lm11["x"], y: lm11["y"], z: lm11["z"] },
               { x: lm12["x"], y: lm12["y"], z: lm12["z"] }
-
             );
             console.log("거북목?", isturtle);
-          }
-
-          if (now - lastLogTimeRef.current >= 60 * 100) {
-            console.log("Pose landmarks:", pose);
-            lastLogTimeRef.current = now;
-          }
-        }
-
-        for (const pose of poses) {
-          utils.drawConnectors(pose as any, conns, { lineWidth: 2 });
-          utils.drawLandmarks(pose as any, { radius: 3 });
-          const now = Date.now();
-          if (now - lastLogTimeRef.current >= 60 * 100) {
-            console.log("Pose landmarks:", pose);
-            lastLogTimeRef.current = now;
           }
         }
 
