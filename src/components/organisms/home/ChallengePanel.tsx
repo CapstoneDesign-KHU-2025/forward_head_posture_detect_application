@@ -1,14 +1,23 @@
-import * as React from "react";
+// src/components/organisms/home/ChallengePanel.tsx
+'use client';
+
+import * as React from 'react';
+import dynamic from 'next/dynamic';
+
+// 3DModel은 클라이언트 전용이므로 ssr: false
+const ThreeDModel = dynamic(() => import('@/components/molecules/3DModel'), {
+  ssr: false,
+});
 
 type ChallengePanelProps = {
   title?: React.ReactNode;
   description?: React.ReactNode;
-  illustration?: React.ReactNode; // 추후 3D 모델링 또는 이미지 삽입용
+  illustration?: React.ReactNode; // 옵션
 };
 
 export default function ChallengePanel({
-  title = "당신의 거북목 도전기",
-  description = "3D 모델링으로 추후 삽입",
+  title = '당신의 거북목 도전기',
+  description = '3D 모델링으로 추후 삽입',
   illustration,
 }: ChallengePanelProps) {
   return (
@@ -16,14 +25,16 @@ export default function ChallengePanel({
       {/* 제목 */}
       <h3 className="text-lg font-semibold mb-4">{title}</h3>
 
-      {/* 일러스트 자리 (중앙 정렬) */}
-      <div className="flex items-center justify-center h-65 border border-dashed border-black/20 rounded-md mb-4">
-        {/* 추후 3D 모델 / 이미지 삽입 */}
-        <span className="text-4xl">🧍</span>
+      {/* 3D 모델 영역 */}
+      <div className="relative h-[420px] border border-dashed border-black/20 rounded-md mb-4 overflow-hidden">
+        <ThreeDModel />
       </div>
 
       {/* 설명 */}
       <p className="text-sm text-center text-black/60">{description}</p>
+
+      {/* (옵션) 추가 일러스트/컨텐츠 */}
+      {illustration}
     </div>
   );
 }
