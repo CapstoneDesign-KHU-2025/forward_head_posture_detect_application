@@ -26,10 +26,17 @@ async function getHomeData(): Promise<HomeData> {
   return {
     user: { name: "허준" },
     kpis: [
-      { label: "오늘 당신의 평균 목 각도는?", value: 3, unit: "°", delta: "up",   deltaText: "+1°", deltaVariant: "success" },
-      { label: "일일 거북목 경고!",            value: 15, unit: "회", delta: "down", deltaText: "-3",  deltaVariant: "danger"  },
-      { label: "측정 시간",                    value: 4, unit: "시간" },
-      { label: "개선 정도",                    value: 10, unit: "%", caption: "파이팅이야!" },
+      {
+        label: "오늘 당신의 평균 목 각도는?",
+        value: 3,
+        unit: "°",
+        delta: "up",
+        deltaText: "+1°",
+        deltaVariant: "success",
+      },
+      { label: "일일 거북목 경고!", value: 15, unit: "회", delta: "down", deltaText: "-3", deltaVariant: "danger" },
+      { label: "측정 시간", value: 4, unit: "시간" },
+      { label: "개선 정도", value: 10, unit: "%", caption: "파이팅이야!" },
     ],
     challenge: {
       title: "당신의 거북목 도전기",
@@ -43,11 +50,5 @@ async function getHomeData(): Promise<HomeData> {
 export default async function Page() {
   const { user, kpis, challenge } = await getHomeData();
 
-  return (
-    <HomeTemplate
-      user={user}
-      kpis={kpis}
-      challenge={challenge}
-    />
-  );
+  return <HomeTemplate user={user} kpis={kpis} challenge={challenge} />;
 }

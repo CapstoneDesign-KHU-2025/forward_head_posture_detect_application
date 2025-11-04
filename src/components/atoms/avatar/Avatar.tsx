@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-
+import { cn } from "@/utils/cn";
 type AvatarProps = {
   /** 이미지 주소 (없거나 로드 실패 시 fallback 표시) */
   src?: string;

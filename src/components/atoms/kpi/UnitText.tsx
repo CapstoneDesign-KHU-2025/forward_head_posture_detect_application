@@ -1,4 +1,5 @@
 import * as React from "react";
+import { cn } from "@/utils/cn";
 
 type UnitTextProps = React.HTMLAttributes<HTMLSpanElement> & {
   /** 단위 표기: °, %, h, 회 등 */
@@ -10,10 +11,6 @@ type UnitTextProps = React.HTMLAttributes<HTMLSpanElement> & {
   /** 흐릿하게 표시할지 */
   muted?: boolean;
 };
-
-function cn(...classes: Array<string | false | undefined | null>) {
-  return classes.filter(Boolean).join(" ");
-}
 
 const sizeClass: Record<NonNullable<UnitTextProps["size"]>, string> = {
   sm: "text-base md:text-lg",
