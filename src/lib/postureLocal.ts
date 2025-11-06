@@ -75,3 +75,15 @@ export async function markPostureRecordsUploaded(ids: number[]) {
   }
   await tx.done;
 }
+
+export async function getHourlyAverage(userId: string, date = new Date()) {
+  const db = await getDB();
+  const hourStart = new Date(date);
+  hourStart.setMinutes(0, 0, 0);
+  const hourStartTs = +hourStart;
+
+  const record = await db.transaction("hourly").store.get([userId, hourStartTs]);
+  if (!record || record.weight === 0) return null;
+
+  return record.sumWeighted / record.weight;
+}
