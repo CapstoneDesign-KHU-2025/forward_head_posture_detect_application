@@ -20,17 +20,38 @@ interface PostureDB extends DBSchema {
       byUploadedFlag: 0 | 1;
     };
   };
+
+  hourly: {
+    key: [string, number];
+    value: {
+      userId: string;
+      hourStartTs: number;
+      sumWeighted: number;
+      weight: number;
+      count: number;
+    };
+    indexes: {
+      byUser: string;
+      byUserHour: [string, number];
+    };
+  };
 }
 
 let _db: IDBPDatabase<PostureDB>;
 export async function getDB() {
   if (_db) return _db;
-  _db = await openDB<PostureDB>("posture-db", 1, {
-    upgrade(db) {
-      const store = db.createObjectStore("samples", { keyPath: "id", autoIncrement: true });
-      store.createIndex("byTs", "ts");
-      store.createIndex("byUserTs", ["userId", "ts"]);
-      store.createIndex("byUploadedFlag", "uploadedFlag");
+  _db = await openDB<PostureDB>("posture-db", 2, {
+    upgrade(db, oldVersion) {
+      if (oldVersion < 1) {
+        const store = db.createObjectStore("samples", { keyPath: "id", autoIncrement: true });
+        store.createIndex("byTs", "ts");
+        store.createIndex("byUserTs", ["userId", "ts"]);
+        store.createIndex("byUploadedFlag", "uploadedFlag");
+      }
+      if (oldVersion < 2) {
+        const store = db.createObjectStore("hourly", { keyPath: ["userId", "hourStartTs"] });
+        store.createIndex;
+      }
     },
   });
   return _db;

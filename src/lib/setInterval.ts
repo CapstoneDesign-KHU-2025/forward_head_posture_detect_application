@@ -1,27 +1,26 @@
-import { int } from "three/tsl";
-import { saveSample } from "./postureLocal";
+import { storeMeasurementAndAccumulate } from "@/lib/postureLocal";
 import isTurtleNeck, { isTurtleNeckProp } from "@/utils/isTurtleNeck";
 
 let intervalId: any = null;
 
-function startStoring(userId: string, turtleNeckProp: isTurtleNeckProp) {
+export function startPostureTracking(userId: string, turtleNeckProp: isTurtleNeckProp) {
   if (intervalId) return;
   intervalId = setInterval(async () => {
     const angle = isTurtleNeck(turtleNeckProp).angleDeg;
     const isTurtle = isTurtleNeck(turtleNeckProp).isTurtle;
 
-    await saveSample({
+    await storeMeasurementAndAccumulate({
       userId,
       ts: Date.now(),
       angleDeg: angle,
       isTurtle,
       hasPose: true,
-      sampleGapS: 1,
+      sampleGapS: 10,
     });
-  }, 10000);
+  }, 10_000);
 }
 
-function stopStoring() {
+export function stopStoring() {
   if (intervalId) {
     clearInterval(intervalId);
     intervalId = null;
