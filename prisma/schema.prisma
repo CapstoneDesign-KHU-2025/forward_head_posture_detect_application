@@ -7,15 +7,68 @@ generator client {
   provider = "prisma-client-js"
 }
 
+model User {
+  id             String    @id @default(cuid())        // 문자열 ID (cuid)
+  name           String?
+  email          String?   @unique
+  emailVerified  DateTime?
+  image          String?
+
+  accounts       Account[]
+  sessions       Session[]
+
+  postureSamples PostureSample[]
+}
+
+model Account {
+  // 복합 PK (provider + providerAccountId) — NextAuth 표준
+  provider            String
+  providerAccountId   String
+  type                String
+  userId              String
+  refresh_token       String?   @db.Text
+  access_token        String?   @db.Text
+  expires_at          Int?
+  token_type          String?
+  scope               String?
+  id_token            String?   @db.Text
+  session_state       String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([provider, providerAccountId])
+  @@index([userId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+\
 model PostureSample {
   id          BigInt   @id @default(autoincrement())
-  userId      String   @db.Text
+  userId      String   @db.Text               // User.id (String)와 타입 일치
   ts          DateTime @db.Timestamptz(6)
   angleDeg    Float
   isTurtle    Boolean
   hasPose     Boolean  @default(true)
   sessionId   BigInt?
   sampleGapS  Float?
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, ts])
 }
