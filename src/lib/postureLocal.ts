@@ -12,6 +12,11 @@ export type Sample = {
   uploadedFlag?: 0 | 1;
 };
 
+export async function saveSample(s: Omit<Sample, "id" | "uploadedFlag">) {
+  const db = await getDB();
+  await db.put("samples", { ...s, uploadedFlag: 0 });
+}
+
 export async function getPendingBatch(limit = 200) {
   const db = await getDB();
   const idx = db.transaction("samples").store.index("byUploadedFlag");

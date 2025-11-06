@@ -1,9 +1,13 @@
-export default function isTurtleNeck(
-  earLeft: { x: number; y: number; z: number },
-  earRight: { x: number; y: number; z: number },
-  shoulderLeft: { x: number; y: number; z: number },
-  shoulderRight: { x: number; y: number; z: number }
-) {
+export type Point3D = { x: number; y: number; z: number };
+
+export type isTurtleNeckProp = {
+  earLeft: Point3D;
+  earRight: Point3D;
+  shoulderLeft: Point3D;
+  shoulderRight: Point3D;
+};
+
+export default function isTurtleNeck({ earLeft, earRight, shoulderLeft, shoulderRight }: isTurtleNeckProp) {
   // 귀 중앙 M
   const M = {
     x: (earLeft.x + earRight.x) / 2,
