@@ -6,7 +6,7 @@ export type PostureMeasurement = {
   angleDeg: number;
   isTurtle: boolean;
   hasPose: boolean;
-  sessionId?: string | number;
+  sessionId?: string;
   sampleGapS?: number;
 };
 
@@ -28,7 +28,7 @@ export async function storeMeasurementAndAccumulate(data: PostureMeasurement) {
   };
 
   const tx = db.transaction(["samples", "hourly"], "readwrite");
-  await tx.objectStore("samples").add(record);
+  await tx.objectStore("samples").put(record);
 
   const key: [string, number] = [data.userId, hourStartTs];
   const hourly = tx.objectStore("hourly");
@@ -38,6 +38,7 @@ export async function storeMeasurementAndAccumulate(data: PostureMeasurement) {
     cur.sumWeighted += data.angleDeg * w;
     cur.weight += w;
     cur.count += 1;
+    cur.finalized = 0;
     await hourly.put(cur);
   } else {
     await hourly.put({
@@ -46,6 +47,8 @@ export async function storeMeasurementAndAccumulate(data: PostureMeasurement) {
       sumWeighted: data.angleDeg * w,
       weight: w,
       count: 1,
+      avgAngle: null,
+      finalized: 0,
     });
   }
   await tx.done;
@@ -84,6 +87,9 @@ export async function getHourlyAverage(userId: string, date = new Date()) {
 
   const record = await db.transaction("hourly").store.get([userId, hourStartTs]);
   if (!record || record.weight === 0) return null;
+  if (record.finalized === 1 && record.avgAngle != null) {
+    return record.avgAngle;
+  }
 
   return record.sumWeighted / record.weight;
 }
