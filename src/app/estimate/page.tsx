@@ -14,12 +14,31 @@ export default function Estimate() {
   const lastSendTimeRef = useRef<number>(0);
   const lastStateRef = useRef<boolean | null>(null);
   const lastBeepIntervalRef = useRef<NodeJS.Timeout | null>(null);
-  
+  const countdownStartRef = useRef<number | null>(null);
+  const measuringRef = useRef<boolean>(false);
+  const lastGuideMessageRef = useRef<string | null>(null);
+  const lastGuideColorRef = useRef<"green" | "red" | "orange">("red");
+
   const [ isTurtle, setIsTurtle ] = useState(false);
   const [ angle, setAngle ] = useState(0);
+  const [ guideMessage, setGuideMessage ] = useState<string | null>(null);
+  const [ guideColor, setGuideColor ] = useState<"green" | "red" | "orange">("red");
+  const [ countdownRemain, setCountdownRemain ] = useState<number | null>(null);
+  const [ measurementStarted, setMeasurementStarted ] = useState<boolean>(false);
+  const [ showMeasurementStartedToast, setShowMeasurementStartedToast ] = useState<boolean>(false);
 
-  useEffect(() => {
-    let cancelled = false;
+useEffect(() => {
+  if (!showMeasurementStartedToast) return;
+
+  const timer = setTimeout(() => {
+    setShowMeasurementStartedToast(false);
+  }, 1500);
+
+  return () => clearTimeout(timer);
+}, [showMeasurementStartedToast]);
+
+useEffect(() => {
+  let cancelled = false;
 
     (async () => {
       const video = videoRef.current!;
@@ -74,7 +93,8 @@ export default function Estimate() {
           c.height = v.videoHeight;
         }
 
-        const result = lm.detectForVideo(v, performance.now());
+        const nowPerformance = performance.now();
+        const result = lm.detectForVideo(v, nowPerformance);
         const ctx = c.getContext("2d")!;
         ctx.clearRect(0, 0, c.width, c.height);
         ctx.drawImage(v, 0, 0, c.width, c.height);
@@ -122,8 +142,6 @@ export default function Estimate() {
         let shoulderInside = true;
         let isDistanceOk = true; // 거리도 적절한지 체크
         let distanceRatio = 1; // 거리 비율 (기본값)
-        let distanceMessage = "";
-        let distanceColor = "";
         
         // 임계값 설정
         const tooCloseThreshold = 1.05; // 105% 이상이면 너무 가까움
@@ -165,85 +183,131 @@ export default function Estimate() {
             isDistanceOk = distanceRatio >= tooFarThreshold && distanceRatio <= tooCloseThreshold;
             
             // 거리 메시지 설정
-            if (distanceRatio >= tooCloseThreshold) {
-              distanceMessage = "너무 가깝습니다. 뒤로 물러나세요.";
-              distanceColor = "rgba(255, 0, 0, 0.9)";
-            } else if (distanceRatio <= tooFarThreshold) {
-              distanceMessage = "너무 멉니다. 앞으로 이동하세요.";
-              distanceColor = "rgba(255, 165, 0, 0.9)";
-            } else {
-              distanceMessage = "적절한 거리입니다.";
-              distanceColor = "rgba(0, 255, 0, 0.9)";
-            }
+            // 거리 메시지는 guideMessage에서 바로 출력하므로 별도 저장하지 않음
           }
         }
         
         // 랜드마크가 안에 있고 거리도 적절해야 초록색, 하나라도 실패하면 빨간색
         const allInside = faceInside && shoulderInside && isDistanceOk;
-        const guidelineColor = allInside ? 'rgba(0, 255, 0, 0.6)' : 'rgba(255, 0, 0, 0.6)';
-        
-        ctx.save();
-        ctx.strokeStyle = guidelineColor;
-        ctx.lineWidth = 3;
-        ctx.lineCap = 'round';
-        ctx.lineJoin = 'round';
-        
-        // 얼굴
-        ctx.beginPath();
-        ctx.ellipse(centerX, centerY - 80 + offsetY, 90, 110, 0, 0, Math.PI * 2);
-        ctx.stroke();
-        
-        // 목
-        ctx.beginPath();
-        ctx.moveTo(centerX - 40, centerY + 10 + offsetY);
-        ctx.lineTo(centerX - 35, centerY + 40 + offsetY);
-        ctx.moveTo(centerX + 40, centerY + 10 + offsetY);
-        ctx.lineTo(centerX + 35, centerY + 40 + offsetY);
-        ctx.stroke();
-        
-        // 어깨
-        ctx.beginPath();
-        ctx.moveTo(centerX - 35, centerY + 40 + offsetY);
-        ctx.lineTo(centerX - 190, centerY + 60 + offsetY);
-        ctx.moveTo(centerX + 35, centerY + 40 + offsetY);
-        ctx.lineTo(centerX + 190, centerY + 60 + offsetY);
-        ctx.stroke();
-        
-        // 상체
-        ctx.beginPath();
-        ctx.moveTo(centerX - 190, centerY + 60 + offsetY);
-        ctx.bezierCurveTo(
-          centerX - 200, centerY + 150 + offsetY,
-          centerX - 215, centerY + 220 + offsetY,
-          centerX - 225, centerY + 280 + offsetY
-        );
-        
-        ctx.moveTo(centerX + 190, centerY + 60 + offsetY);
-        ctx.bezierCurveTo(
-          centerX + 200, centerY + 150 + offsetY,
-          centerX + 215, centerY + 220 + offsetY,
-          centerX + 225, centerY + 280 + offsetY
-        );
-        
-        // 하단 연결
-        ctx.moveTo(centerX - 225, centerY + 280 + offsetY);
-        ctx.lineTo(centerX + 225, centerY + 280 + offsetY);
-        ctx.stroke();
-        
-        ctx.restore();
+        let nextGuideMessage: string | null = null;
+        let nextGuideColor: "green" | "red" | "orange" = lastGuideColorRef.current ?? "red";
+        let nextCountdownRemain: number | null = null;
 
-        const conns = PoseLandmarker.POSE_CONNECTIONS;
+        if (!measuringRef.current) {
+          nextGuideMessage = "가이드라인 안으로 들어오세요";
+          nextGuideColor = "red";
 
-        // 거리 알림 텍스트 표시
-        if (distanceMessage) {
+          if (!isDistanceOk) {
+            if (distanceRatio >= tooCloseThreshold) {
+              nextGuideMessage = "너무 가까워요";
+              nextGuideColor = "orange";
+            } else if (distanceRatio <= tooFarThreshold) {
+              nextGuideMessage = "너무 멀어요";
+              nextGuideColor = "orange";
+            }
+            countdownStartRef.current = null;
+          } else if (allInside) {
+            if (!countdownStartRef.current) {
+              countdownStartRef.current = nowPerformance;
+            }
+
+            const elapsed = nowPerformance - countdownStartRef.current;
+            const remain = Math.max(0, 3000 - elapsed);
+            nextCountdownRemain = Math.ceil(remain / 1000);
+
+            if (elapsed >= 3000) {
+              measuringRef.current = true;
+              setMeasurementStarted(true);
+              setShowMeasurementStartedToast(true);
+              nextGuideMessage = null;
+              nextGuideColor = "green";
+              nextCountdownRemain = null;
+              countdownStartRef.current = null;
+              lastGuideMessageRef.current = null;
+              setGuideMessage(null);
+            } else {
+              nextGuideMessage = `좋아요! ${nextCountdownRemain}초 유지하세요`;
+              nextGuideColor = "green";
+            }
+          } else {
+            countdownStartRef.current = null;
+          }
+        }
+
+        if (!measuringRef.current) {
+          if (lastGuideMessageRef.current !== nextGuideMessage) {
+            lastGuideMessageRef.current = nextGuideMessage;
+            setGuideMessage(nextGuideMessage);
+          }
+          if (lastGuideColorRef.current !== nextGuideColor) {
+            lastGuideColorRef.current = nextGuideColor;
+            setGuideColor(nextGuideColor);
+          }
+          setCountdownRemain(nextCountdownRemain);
+        } else {
+          if (lastGuideMessageRef.current !== null) {
+            lastGuideMessageRef.current = null;
+            setGuideMessage(null);
+          }
+          setCountdownRemain(null);
+        }
+        
+        // 가이드라인 그리기 (미측정 상태)
+        if (!measuringRef.current) {
+          const guidelineColor = allInside ? "rgba(0, 255, 0, 0.6)" : "rgba(255, 0, 0, 0.6)";
+
           ctx.save();
-          ctx.font = "bold 24px Arial";
-          ctx.fillStyle = distanceColor;
-          ctx.textAlign = "center";
-          ctx.textBaseline = "top";
-          ctx.fillText(distanceMessage, centerX, 20);
+          ctx.strokeStyle = guidelineColor;
+          ctx.lineWidth = 3;
+          ctx.lineCap = 'round';
+          ctx.lineJoin = 'round';
+          
+          // 얼굴
+          ctx.beginPath();
+          ctx.ellipse(centerX, centerY - 80 + offsetY, 90, 110, 0, 0, Math.PI * 2);
+          ctx.stroke();
+          
+          // 목
+          ctx.beginPath();
+          ctx.moveTo(centerX - 40, centerY + 10 + offsetY);
+          ctx.lineTo(centerX - 35, centerY + 40 + offsetY);
+          ctx.moveTo(centerX + 40, centerY + 10 + offsetY);
+          ctx.lineTo(centerX + 35, centerY + 40 + offsetY);
+          ctx.stroke();
+          
+          // 어깨
+          ctx.beginPath();
+          ctx.moveTo(centerX - 35, centerY + 40 + offsetY);
+          ctx.lineTo(centerX - 190, centerY + 60 + offsetY);
+          ctx.moveTo(centerX + 35, centerY + 40 + offsetY);
+          ctx.lineTo(centerX + 190, centerY + 60 + offsetY);
+          ctx.stroke();
+          
+          // 상체
+          ctx.beginPath();
+          ctx.moveTo(centerX - 190, centerY + 60 + offsetY);
+          ctx.bezierCurveTo(
+            centerX - 200, centerY + 150 + offsetY,
+            centerX - 215, centerY + 220 + offsetY,
+            centerX - 225, centerY + 280 + offsetY
+          );
+          
+          ctx.moveTo(centerX + 190, centerY + 60 + offsetY);
+          ctx.bezierCurveTo(
+            centerX + 200, centerY + 150 + offsetY,
+            centerX + 215, centerY + 220 + offsetY,
+            centerX + 225, centerY + 280 + offsetY
+          );
+          
+          // 하단 연결
+          ctx.moveTo(centerX - 225, centerY + 280 + offsetY);
+          ctx.lineTo(centerX + 225, centerY + 280 + offsetY);
+          ctx.stroke();
+          
           ctx.restore();
         }
+
+        const conns = PoseLandmarker.POSE_CONNECTIONS;
 
         for (const pose of poses) {
         // 랜드마크 그리기
@@ -252,6 +316,10 @@ export default function Estimate() {
         //   utils.drawLandmarks(pose as any, { radius: 3 });
 
           const now = Date.now();
+          if (!measuringRef.current) {
+            continue;
+          }
+
           if (now - lastLogTimeRef.current >= 200) {
             const lm7 = pose[7];
             const lm8 = pose[8];
@@ -368,22 +436,87 @@ export default function Estimate() {
       <video ref={videoRef} style={{ position: "absolute", left: -9999 }} />
       <canvas ref={canvasRef} />
 
-      {isTurtle && (
+      {showMeasurementStartedToast && (
         <div
-            style={{
-                position: "absolute",
-                top: 10,
-                left: "50%",
-                transform: "translateX(-50%)",
-                backgroundColor: "rgba(255,0,0,0.8)",
-                color: "white",
-                padding: "10px 20px",
-                borderRadius: "12px",
-                fontWeight: "bold",
-                fontSize: "18px",
-            }}
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            backgroundColor: "rgba(64, 64, 64, 0.85)",
+            color: "white",
+            padding: "16px 28px",
+            borderRadius: "9999px",
+            fontWeight: "bold",
+            fontSize: "20px",
+            textAlign: "center",
+            boxShadow: "0 10px 30px rgba(0, 0, 0, 0.35)",
+            pointerEvents: "none",
+          }}
         >
-            거북목 자세입니다! ({angle.toFixed(1)}°)
+          거북목 측정을 시작합니다
+        </div>
+      )}
+
+      {guideMessage && (
+        <div
+          style={{
+            position: "absolute",
+            top: 10,
+            left: "50%",
+            transform: "translateX(-50%)",
+            padding: "10px 20px",
+            borderRadius: "12px",
+            fontWeight: "bold",
+            fontSize: "18px",
+            backgroundColor:
+              guideColor === "green"
+                ? "rgba(0, 128, 0, 0.85)"
+                : guideColor === "orange"
+                ? "rgba(255, 165, 0, 0.85)"
+                : "rgba(255, 0, 0, 0.85)",
+            color: "white",
+          }}
+        >
+          {guideMessage}
+        </div>
+      )}
+
+      {countdownRemain !== null && !measurementStarted && (
+        <div
+          style={{
+            position: "absolute",
+            bottom: 20,
+            left: "50%",
+            transform: "translateX(-50%)",
+            backgroundColor: "rgba(0, 0, 0, 0.6)",
+            color: "white",
+            padding: "12px 24px",
+            borderRadius: "9999px",
+            fontSize: "32px",
+            fontWeight: "bold",
+          }}
+        >
+          {countdownRemain}
+        </div>
+      )}
+
+      {isTurtle && measurementStarted && (
+        <div
+          style={{
+            position: "absolute",
+            top: 10,
+            left: "50%",
+            transform: "translateX(-50%)",
+            backgroundColor: "rgba(255,0,0,0.8)",
+            color: "white",
+            padding: "10px 20px",
+            borderRadius: "12px",
+            fontWeight: "bold",
+            fontSize: "18px",
+          }}
+        >
+          거북목 자세입니다! ({angle.toFixed(1)}°)
         </div>
       )}
     </div>
