@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-
+import { cn } from "@/utils/cn";
 type SkeletonProps = {
   /** 모양: 텍스트 줄, 네모 박스, 원형 */
   variant?: "text" | "rect" | "circle";
@@ -11,9 +11,7 @@ type SkeletonProps = {
   className?: string;
 };
 
-function cn(...classes: Array<string | false | null | undefined>) {
-  return classes.filter(Boolean).join(" ");
-}
+
 
 export function Skeleton({
   variant = "rect",
