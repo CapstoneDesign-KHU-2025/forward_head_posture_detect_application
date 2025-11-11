@@ -61,11 +61,11 @@ export default function Estimate() {
       if (cancelled) return;
 
       const loop = async () => {
-        const v = videoRef.current!;
-        const c = canvasRef.current!;
+        const v = videoRef.current;
+        const c = canvasRef.current;
         const lm = landmarkerRef.current;
 
-        if (!lm || v.videoWidth === 0 || v.videoHeight === 0) {
+        if (!lm || !v || !c || v.videoWidth === 0 || v.videoHeight === 0) {
           rafRef.current = requestAnimationFrame(loop);
           return;
         }
