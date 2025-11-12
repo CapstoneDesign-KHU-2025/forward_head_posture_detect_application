@@ -1,7 +1,9 @@
 "use client";
-// 메인 페이지 (서버 컴포넌트)
+
 import HomeTemplate from "@/components/templates/HomeTemplate";
 import { useAppStore } from "./store/app";
+import { useState } from "react";
+import { getTodayHourly } from "@/lib/hourlyOps";
 
 type HomeData = {
   user: { name: string; avatarSrc?: string } | null;
@@ -25,12 +27,25 @@ type HomeData = {
 // TODO: 실제 API/DB로 교체
 async function getHomeData(): Promise<HomeData> {
   const turtleNeckNumberInADay = useAppStore((s) => s.turtleNeckNumberInADay);
+  const [weeklySum, setWeeklySum] = useState(null);
+  const [todaySum, setTodaySum] = useState(null);
+
+  const userID = "noah"; //추후 변경
+  try {
+    const rows = await getTodayHourly(userID);
+    setTodaySum(rows);
+    const res = await fetch(`/api/summaries/daily?userId=${userID}&days=7`);
+    const data = await res.json();
+    setWeeklySum(data);
+  } catch (e) {
+    console.error("Error fetching daily summaries:", e);
+  }
   return {
-    user: { name: "허준" },
+    user: { name: userID },
     kpis: [
       {
         label: "오늘 당신의 평균 목 각도는?",
-        value: 3,
+        value: todaySum.weighted,
         unit: "°",
         delta: "up",
         deltaText: "+1°",

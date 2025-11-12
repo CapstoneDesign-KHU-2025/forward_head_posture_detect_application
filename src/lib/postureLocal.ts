@@ -10,7 +10,7 @@ export type PostureMeasurement = {
   sampleGapS?: number;
 };
 
-export type StoredPostureRecord = PostureMeasurement & { id?: number; uploadFlag: 0 | 1 };
+export type StoredPostureRecord = PostureMeasurement & { id?: number; uploadedFlag: 0 | 1 };
 export type StoredPostureDTO = Omit<StoredPostureRecord, "id" | "uploadedFlag">;
 
 export async function storeMeasurementAndAccumulate(data: PostureMeasurement) {
@@ -24,7 +24,7 @@ export async function storeMeasurementAndAccumulate(data: PostureMeasurement) {
   const record: StoredPostureRecord = {
     ...data,
     sessionId: data.sessionId != null ? String(data.sessionId) : undefined,
-    uploadFlag: 0,
+    uploadedFlag: 0,
   };
 
   const tx = db.transaction(["samples", "hourly"], "readwrite");

@@ -18,6 +18,7 @@ model User {
   sessions       Session[]
 
   postureSamples PostureSample[]
+  dailyPostureSummaries DailyPostureSummary[]
 }
 
 model Account {
