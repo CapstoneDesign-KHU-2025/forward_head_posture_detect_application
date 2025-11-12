@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { Button } from "@/components/atoms/button/Button";
+import { useRouter } from "next/navigation";
 
 type WelcomeHeroProps = {
   userName?: string;
@@ -14,6 +15,15 @@ export default function WelcomeHero({
   onPrimaryAction,
   className,
 }: WelcomeHeroProps) {
+  const router = useRouter();
+  const handlePrimaryAction = React.useCallback(() => {
+    if (onPrimaryAction) {
+      onPrimaryAction();
+      return;
+    }
+    router.push("/estimate");
+  }, [onPrimaryAction, router]);
+
   return (
     <section
       className={[
@@ -29,7 +39,7 @@ export default function WelcomeHero({
         <p className="mt-3 text-black/60">거북거북!</p>
 
         <div className="mt-6 flex justify-center">
-          <Button onClick={onPrimaryAction}>측정하기</Button>
+          <Button onClick={handlePrimaryAction}>측정하기</Button>
         </div>
       </div>
     </section>
