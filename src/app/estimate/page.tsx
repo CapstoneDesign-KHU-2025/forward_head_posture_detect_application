@@ -10,6 +10,7 @@ export default function Estimate() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const landmarkerRef = useRef<PoseLandmarker | null>(null);
   const rafRef = useRef<number | null>(null);
+  const streamRef = useRef<MediaStream | null>(null);
   const lastLogTimeRef = useRef<number>(0);
   const lastSendTimeRef = useRef<number>(0);
   const lastStateRef = useRef<boolean | null>(null);
@@ -48,6 +49,7 @@ useEffect(() => {
         video: { width: { ideal: 640 }, height: { ideal: 480 } },
         audio: false,
       });
+      streamRef.current = stream;
       video.srcObject = stream;
 
       await new Promise<void>((res) => {
@@ -424,8 +426,24 @@ useEffect(() => {
 
     return () => {
       cancelled = true;
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current);
+        rafRef.current = null;
+      }
       landmarkerRef.current?.close?.();
+      landmarkerRef.current = null;
+
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach((t) => t.stop());
+        streamRef.current = null;
+        console.log("카메라 중단");
+      }
+
+      if (lastBeepIntervalRef.current) {
+        clearInterval(lastBeepIntervalRef.current);
+        lastBeepIntervalRef.current = null;
+        console.log("경고음 중단");
+      }
       const tracks = (videoRef.current?.srcObject as MediaStream | null)?.getTracks() || [];
       tracks.forEach((t) => t.stop());
     };
