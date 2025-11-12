@@ -4,11 +4,12 @@ import { useState } from "react";
 import { useTurtleNeckTracker } from "@/hooks/useTurtleNeckTracker";
 import { usePostureStorageManager } from "@/hooks/usePostureStorageManager";
 import { getTodayHourly, computeTodaySoFarAverage, finalizeUpToNow } from "@/lib/hourlyOps";
+import { useClearPostureDBOnLoad } from "@/hooks/useClearDBOnload";
 
 export default function Estimate() {
   const userId = "noah";
   const sessionId = "session-noah";
-
+  useClearPostureDBOnLoad({ oncePerTab: true });
   const { videoRef, canvasRef, isTurtle, angle, error } = useTurtleNeckTracker({ autoStart: true });
   usePostureStorageManager(userId, angle, isTurtle, sessionId);
 

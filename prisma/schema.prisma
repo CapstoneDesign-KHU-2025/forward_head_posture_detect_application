@@ -57,7 +57,25 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-\
+model DailyPostureSummary {
+  id            BigInt   @id @default(autoincrement())
+  userId        String   @db.Text
+
+  date          DateTime @db.Date
+  sumWeighted   Float
+  weightSeconds Float
+  count         Int
+  avgAngle      Float
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date])  
+  @@index([userId, date])
+}
+
 model PostureSample {
   id          BigInt   @id @default(autoincrement())
   userId      String   @db.Text               // User.id (String)와 타입 일치

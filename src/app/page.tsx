@@ -1,3 +1,4 @@
+"use client";
 // 메인 페이지 (서버 컴포넌트)
 import HomeTemplate from "@/components/templates/HomeTemplate";
 
@@ -22,7 +23,6 @@ type HomeData = {
 
 // TODO: 실제 API/DB로 교체
 async function getHomeData(): Promise<HomeData> {
-  // 서버 컴포넌트이므로 fetch/DB 접근 가능
   return {
     user: { name: "허준" },
     kpis: [

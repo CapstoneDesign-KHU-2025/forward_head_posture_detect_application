@@ -29,19 +29,19 @@ export function usePostureStorageManager(userId: string, currentAngle: number, i
         sampleGapS: SAMPLE_GAP_S,
       };
       await storeMeasurementAndAccumulate(sample);
-      console.log("✅ IndexedDB 저장 완료:", sample);
+      console.log("IndexedDB 저장 완료:", sample);
     }, SAMPLE_GAP_S * 1000);
 
     return () => clearInterval(interval);
   }, [userId, currentAngle, isTurtle, sessionId]);
 
-  // ⏰ 1시간마다 hourly finalize 실행
+  // 1시간마다 hourly finalize 실행
   useEffect(() => {
     if (!userId) return;
 
     const hourlyTimer = setInterval(async () => {
       await finalizeHourlyRecords(userId);
-      console.log("🕒 hourly finalize 완료");
+      console.log("hourly finalize 완료");
     }, 60 * 60 * 1000);
 
     // 앱 시작 시 한 번 실행

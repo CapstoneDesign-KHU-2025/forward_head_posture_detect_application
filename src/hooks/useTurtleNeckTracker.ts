@@ -53,11 +53,12 @@ export function useTurtleNeckTracker(opts: UseTurtleNeckTrackerOptions = {}) {
   const lastSendTimeRef = useRef<number>(0);
   const lastStateRef = useRef<boolean | null>(null);
   const beepIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-
+  const [isTurtleNumber, setIsTurtleNumber] = useState(0);
   const [isTurtle, setIsTurtle] = useState(false);
   const [angle, setAngle] = useState(0);
   const [error, setError] = useState<string | null>(null);
 
+  useEffect(() => {}, [isTurtle]);
   const startBeep = useCallback(() => {
     if (!enableBeep) return;
     if (beepIntervalRef.current) return;
@@ -305,8 +306,11 @@ export function useTurtleNeckTracker(opts: UseTurtleNeckTrackerOptions = {}) {
           if (turtleNow !== lastStateRef.current) {
             setIsTurtle(turtleNow);
             lastStateRef.current = turtleNow;
-            if (turtleNow) startBeep();
-            else stopBeep();
+            if (turtleNow) {
+              startBeep();
+              setIsTurtleNumber((prev) => prev + 1);
+              sessionStorage.setItem("turtleNeckCount", String(isTurtleNumber + 1));
+            } else stopBeep();
           }
 
           onResult?.({
@@ -369,5 +373,14 @@ export function useTurtleNeckTracker(opts: UseTurtleNeckTrackerOptions = {}) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [autoStart]);
 
-  return { videoRef, canvasRef, isTurtle, angle, error, start, stop };
+  return {
+    videoRef,
+    canvasRef,
+    isTurtle,
+    angle,
+    error,
+    start,
+    stop,
+    isTurtleNumber,
+  };
 }

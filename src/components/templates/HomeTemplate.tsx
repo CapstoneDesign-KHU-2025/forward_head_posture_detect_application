@@ -1,4 +1,3 @@
-// src/components/template/HomeTemplate.tsx
 import * as React from "react";
 import Link from "next/link";
 import WelcomeHero from "@/components/organisms/home/WelcomeHero";
@@ -28,18 +27,10 @@ type HomeTemplateProps = {
   className?: string;
 };
 
-export default function HomeTemplate({
-  user,
-  kpis,
-  challenge,
-  className,
-}: HomeTemplateProps) {
+export default function HomeTemplate({ user, kpis, challenge, className }: HomeTemplateProps) {
   return (
     <main className={["space-y-10 py-8", className].filter(Boolean).join(" ")}>
-      {/* 상단 히어로 (중앙 정렬) */}
-      <WelcomeHero
-        userName={user?.name ?? "사용자"}
-      />
+      <WelcomeHero userName={user?.name ?? "사용자"} />
 
       {/* 본문 2열 레이아웃: 좌(KPI), 우(도전기) */}
       <section className="mx-auto w-full max-w-6xl px-4">
@@ -59,7 +50,6 @@ export default function HomeTemplate({
               </div>
             </div>
 
-            {/* KPI 카드 2 x 2 */}
             {kpis && kpis.length > 0 ? (
               <div className="grid gap-4 sm:grid-cols-2 mt-12">
                 {kpis.slice(0, 4).map((it, idx) => (
@@ -68,14 +58,11 @@ export default function HomeTemplate({
               </div>
             ) : (
               <div className="rounded-lg border border-black/10 bg-white p-6 text-center">
-                <p className="text-sm text-black/60">
-                  아직 지표가 없어요. 먼저 측정을 시작해볼까요?
-                </p>
+                <p className="text-sm text-black/60">아직 지표가 없어요. 먼저 측정을 시작해볼까요?</p>
               </div>
             )}
           </div>
 
-          {/* RIGHT: 도전기 카드 */}
           <div>
             <ChallengePanel
               title={challenge?.title ?? "당신의 거북목 도전기"}

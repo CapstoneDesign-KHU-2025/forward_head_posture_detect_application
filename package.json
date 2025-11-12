@@ -21,7 +21,8 @@
     "prisma": "^6.18.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
-    "three": "^0.180.0"
+    "three": "^0.180.0",
+    "zustand": "^5.0.8"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
