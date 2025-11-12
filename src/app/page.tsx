@@ -1,6 +1,7 @@
 "use client";
 // 메인 페이지 (서버 컴포넌트)
 import HomeTemplate from "@/components/templates/HomeTemplate";
+import { useAppStore } from "./store/app";
 
 type HomeData = {
   user: { name: string; avatarSrc?: string } | null;
@@ -23,6 +24,7 @@ type HomeData = {
 
 // TODO: 실제 API/DB로 교체
 async function getHomeData(): Promise<HomeData> {
+  const turtleNeckNumberInADay = useAppStore((s) => s.turtleNeckNumberInADay);
   return {
     user: { name: "허준" },
     kpis: [
@@ -34,7 +36,14 @@ async function getHomeData(): Promise<HomeData> {
         deltaText: "+1°",
         deltaVariant: "success",
       },
-      { label: "일일 거북목 경고!", value: 15, unit: "회", delta: "down", deltaText: "-3", deltaVariant: "danger" },
+      {
+        label: "일일 거북목 경고!",
+        value: turtleNeckNumberInADay,
+        unit: "회",
+        delta: "down",
+        deltaText: "-3",
+        deltaVariant: "danger",
+      },
       { label: "측정 시간", value: 4, unit: "시간" },
       { label: "개선 정도", value: 10, unit: "%", caption: "파이팅이야!" },
     ],

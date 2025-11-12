@@ -18,6 +18,7 @@ export default function Estimate() {
   const [isHourlyVisible, setIsHourlyVisible] = useState(false);
   const [isTodayAvgVisible, setIsTodayAvgVisible] = useState(false);
 
+  
   async function toggleHourly() {
     if (isHourlyVisible) {
       setIsHourlyVisible(false);

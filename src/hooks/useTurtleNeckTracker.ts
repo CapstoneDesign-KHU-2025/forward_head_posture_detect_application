@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { FilesetResolver, PoseLandmarker } from "@mediapipe/tasks-vision";
 import analyzeTurtleNeck from "@/utils/isTurtleNeck";
 import turtleStabilizer from "@/utils/turtleStabilizer";
-
+import { useAppStore } from "@/app/store/app";
 export type UseTurtleNeckTrackerOptions = {
   autoStart?: boolean;
   wasmBaseUrl?: string;
@@ -53,7 +53,8 @@ export function useTurtleNeckTracker(opts: UseTurtleNeckTrackerOptions = {}) {
   const lastSendTimeRef = useRef<number>(0);
   const lastStateRef = useRef<boolean | null>(null);
   const beepIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const [isTurtleNumber, setIsTurtleNumber] = useState(0);
+
+  const setTurtleNeckNumberInADay = useAppStore((s) => s.setTurtleNeckNumberInADay);
   const [isTurtle, setIsTurtle] = useState(false);
   const [angle, setAngle] = useState(0);
   const [error, setError] = useState<string | null>(null);
@@ -308,8 +309,7 @@ export function useTurtleNeckTracker(opts: UseTurtleNeckTrackerOptions = {}) {
             lastStateRef.current = turtleNow;
             if (turtleNow) {
               startBeep();
-              setIsTurtleNumber((prev) => prev + 1);
-              sessionStorage.setItem("turtleNeckCount", String(isTurtleNumber + 1));
+              setTurtleNeckNumberInADay((prev) => prev + 1);
             } else stopBeep();
           }
 
@@ -373,14 +373,5 @@ export function useTurtleNeckTracker(opts: UseTurtleNeckTrackerOptions = {}) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [autoStart]);
 
-  return {
-    videoRef,
-    canvasRef,
-    isTurtle,
-    angle,
-    error,
-    start,
-    stop,
-    isTurtleNumber,
-  };
+  return { videoRef, canvasRef, isTurtle, angle, error, start, stop };
 }
