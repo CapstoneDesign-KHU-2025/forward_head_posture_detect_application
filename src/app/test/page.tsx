@@ -84,7 +84,7 @@ export default function TurtleNeckUploadPage() {
       landmarkerRef.current = await PoseLandmarker.createFromOptions(vision, {
         baseOptions: {
           modelAssetPath:
-            "https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_full/float16/1/pose_landmarker_full.task",
+            "https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task",
         },
         runningMode: "VIDEO",
         numPoses: 1,
@@ -221,14 +221,16 @@ export default function TurtleNeckUploadPage() {
         lm8 = p[8],
         lm11 = p[11],
         lm12 = p[12];
+
+        
       const turtle = isTurtleNeck(
         { x: lm7.x, y: lm7.y, z: lm7.z },
         { x: lm8.x, y: lm8.y, z: lm8.z },
         { x: lm11.x, y: lm11.y, z: lm11.z },
         { x: lm12.x, y: lm12.y, z: lm12.z }
-      );
+      ).isTurtle;
 
-      setStatus(turtle ? "turtle" : "good");
+      setStatus(turtle? "turtle" : "good");
       handleTurtleTimeline(turtle, v.currentTime);
 
       const row = [
