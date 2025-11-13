@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { storeMeasurementAndAccumulate } from "@/lib/postureLocal";
-import { finalizeHourlyRecords } from "@/lib/finalizeHourly";
+import { finalizeUpToNow } from "@/lib/hourlyOps";
 import { PostureMeasurement } from "@/lib/postureLocal";
 
 /**
@@ -40,12 +40,12 @@ export function usePostureStorageManager(userId: string, currentAngle: number, i
     if (!userId) return;
 
     const hourlyTimer = setInterval(async () => {
-      await finalizeHourlyRecords(userId);
+      await finalizeUpToNow(userId);
       console.log("hourly finalize 완료");
     }, 60 * 60 * 1000);
 
     // 앱 시작 시 한 번 실행
-    finalizeHourlyRecords(userId);
+    finalizeUpToNow(userId);
 
     return () => clearInterval(hourlyTimer);
   }, [userId]);
