@@ -63,17 +63,17 @@ npm run dev
 ---
 
 ## 프로젝트 구조
-추후 사진 첨부
+![](./project_structure.png)
 
 ---
 
 ## 팀 구성 및 역할
-- 김가은(학번): AI, Backend
-<br>[김가은 | yourname@example.com](mailto:yourname@example.com)
-- 남지민(학번): Frontend
-<br>[남지민 | yourname@example.com](mailto:yourname@example.com)
-- 박승현(학번): Frontend(Three.js)
-<br>[박승현 | yourname@example.com](mailto:yourname@example.com)
+- 김가은(2021105055): AI, Backend
+<br>[김가은 | kge0211114@gmail.com](mailto:kge0211114@gmail.com)
+- 남지민(2022110203): Frontend
+<br>[남지민 | dnpsel2737@gmail.com](mailto:dnpsel2737@gmail.com)
+- 박승현(2022103410): Frontend(Three.js)
+<br>[박승현 | seunghyuni00@khu.ac.kr](mailto:seunghyuni00@khu.ac.kr)
 - 허준(2019102242): AI
 <br>[허준 | heojun8500@naver.com](mailto:heojun8500@naver.com)
 
