@@ -23,6 +23,19 @@ type PoseMode = 'stand' | 'upper';
 let mixer: THREE.AnimationMixer | null = null;
 let idleAction: THREE.AnimationAction | null = null;
 
+<<<<<<< Updated upstream
+=======
+let mixerUpper: THREE.AnimationMixer | null = null;  // Idle.fbx용
+let mixerFull: THREE.AnimationMixer | null = null;   // Walking.fbx용
+let remUpper: THREE.Object3D | null = null;          // Idle.fbx 오브젝트
+let remFull: THREE.Object3D | null = null;           // Walking.fbx 오브젝트
+
+// ★ 여기 두 개 숫자만 수정
+const INITIAL_IDEAL_NECK_ANGLE_DEG = 52;  // 기준(거북목 기준) 각도
+const INITIAL_USER_NECK_ANGLE_DEG = 85;   // 사용자 실제 목 각도
+
+
+>>>>>>> Stashed changes
 declare global {
   interface Window {
     setIdealNeckAngle?: (deg: number) => void;
@@ -78,6 +91,14 @@ export default function ThreeDModel() {
     let IDEAL_NECK_ANGLE_DEG = 52; // 목표 목각
     const BOUNDS = { xMin: -5, xMax: 5, zMin: -5, zMax: 5 };
 
+    // ★ 카메라 프리셋/ upper body일 때 카메라 위치
+    const CAMERA_UPPER_POS    = new THREE.Vector3(1.3, 3.5, 0.1);
+    const CAMERA_UPPER_TARGET = new THREE.Vector3(0.1, 3.5, -0.2);
+
+    // full body일 때 카메라 위치 / 타겟
+    const CAMERA_FULL_POS     = new THREE.Vector3(3.3, 2.9, 0.0);
+    const CAMERA_FULL_TARGET  = new THREE.Vector3(0.0, 2.3, -0.2);
+
     /* ======================= *
      * Three.js 핵심 변수
      * ======================= */
@@ -98,15 +119,19 @@ export default function ThreeDModel() {
     /* ======================= *
      * 포즈 상태
      * ======================= */
-    let poseMode: PoseMode = 'stand';
+    let poseMode: PoseMode = 'upper';
     const pose: THREE.Vector3[] = new Array(33).fill(0).map(() => new THREE.Vector3());
     let useExternalPose = false;
     let externalPoseProvider: (() => THREE.Vector3[]) | null = null;
     let headProvider: (t: number) => THREE.Vector3[] = createDefaultHeadProvider();
 
     let angleSmoothed: number | null = null;
+<<<<<<< Updated upstream
     let earMidSmooth: THREE.Vector3 | null = null;
     let shoulderMidSmooth: THREE.Vector3 | null = null;
+=======
+    let neckLines: { yellow: THREE.Line; white: THREE.Line } | null = null;
+>>>>>>> Stashed changes
 
     const pressedKeys = new Set<string>();
 
@@ -184,7 +209,12 @@ export default function ThreeDModel() {
         0.05,
         200
       );
+<<<<<<< Updated upstream
       camera.position.set(3.0, 1.45, 0.01);
+=======
+      camera.position.copy(CAMERA_UPPER_POS);
+
+>>>>>>> Stashed changes
     }
     function initRenderer() {
       renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -229,7 +259,14 @@ export default function ThreeDModel() {
       controls.maxDistance = 20;
       (controls as any).zoomToCursor = true;
       controls.rotateSpeed = 0.9;
+<<<<<<< Updated upstream
       controls.target.set(0, 1.45, 0);
+=======
+      controls.target.copy(CAMERA_UPPER_TARGET);
+      // ★ 디버그용으로 카메라/컨트롤 전역에 달기
+      (window as any).__CAMERA = camera;
+      (window as any).__CONTROLS = controls;
+>>>>>>> Stashed changes
     }
     function initHelpers() {
       scene.add(new THREE.GridHelper(40, 40, 0x555566, 0x333344));
@@ -242,11 +279,83 @@ export default function ThreeDModel() {
       scene.add(mesh);
     }
 
-    // ★ 단일 FBX(캐릭터+애니메이션)만 로드
-    function loadIdleFBXOnly() {
-      new FBXLoader().load(
+    // ★ FBX 공통 세팅 함수 (Idle / Walking 둘 다 여기 사용)
+    function setupFBXCharacter(object: THREE.Object3D): THREE.AnimationMixer {
+      object.traverse((child: any) => {
+        if (child.isMesh) {
+          child.castShadow = true;
+          child.receiveShadow = true;
+          const mats = Array.isArray(child.material) ? child.material : [child.material];
+          for (const m of mats) {
+            if (m?.map) (m.map as any).colorSpace = THREE.SRGBColorSpace;
+            m.side = THREE.DoubleSide;
+            m.needsUpdate = true;
+          }
+        }
+      });
+
+      // 스케일/위치 마음에 안 들면 여기서 조정
+      object.scale.setScalar(0.01);
+      scene.add(object);
+
+      const rig: Record<string, THREE.Bone | undefined> = {};
+      rig.hips = findBoneByRegex(object, /(Hips|Pelvis)/i);
+      rig.spine = findBoneByRegex(object, /(Spine|Spine1|Spine01)/i);
+      rig.neck = findBoneByRegex(object, /(Neck)/i);
+      rig.head = findBoneByRegex(object, /(Head)/i);
+      rig.lShoulder = findBoneByRegex(object, /(LeftShoulder|Shoulder_L)/i);
+      rig.rShoulder = findBoneByRegex(object, /(RightShoulder|Shoulder_R)/i);
+      rig.lUpArm = findBoneByRegex(object, /(LeftArm|UpperArm_L|Arm_L)/i);
+      rig.rUpArm = findBoneByRegex(object, /(RightArm|UpperArm_R|Arm_R)/i);
+      object.userData.__rig = rig;
+
+      const bindDirs = new Map<THREE.Bone, THREE.Vector3>();
+      Object.values(rig).forEach((b) => {
+        if (b) bindDirs.set(b, childDirInBind(b));
+      });
+      object.userData.__bindDirs = bindDirs;
+
+      const bindWorldQ = new Map<THREE.Bone, THREE.Quaternion>();
+      const bindAimY = new Map<THREE.Bone, THREE.Vector3>();
+      const tmpQ = new THREE.Quaternion();
+      const tmpV = new THREE.Vector3(0, 1, 0);
+      Object.values(rig).forEach((b) => {
+        if (!b) return;
+        b.updateWorldMatrix(true, false);
+        b.getWorldQuaternion(tmpQ);
+        bindWorldQ.set(b, tmpQ.clone());
+        bindAimY.set(b, tmpV.clone().applyQuaternion(tmpQ));
+      });
+      object.userData.__bindWorldQ = bindWorldQ;
+      object.userData.__bindAimY = bindAimY;
+
+      const localMixer = new THREE.AnimationMixer(object);
+      const clips: THREE.AnimationClip[] = (object as any).animations || [];
+      if (clips.length > 0) {
+        const clip = clips[0];
+        const action = localMixer.clipAction(clip);
+        action.setLoop(THREE.LoopRepeat, Infinity);
+        action.enabled = true;
+        action.reset();
+        action.play();
+        localMixer.timeScale = 0.3;
+        idleAction = action; // 그냥 마지막으로 세팅된 액션 기억 (필요시용)
+      } else {
+        console.warn('FBX 내 애니메이션이 없습니다.');
+      }
+
+      return localMixer;
+    }
+
+    // ★ Idle.fbx(upper) + Walking.fbx(full) 둘 다 로드
+    function loadCharacters() {
+      const loader = new FBXLoader();
+
+      // upper 모드용 Idle.fbx
+      loader.load(
         '/models/Idle.fbx',
         (object) => {
+<<<<<<< Updated upstream
           object.traverse((child: any) => {
             if (child.isMesh) {
               child.castShadow = true;
@@ -291,27 +400,41 @@ export default function ThreeDModel() {
           });
           object.userData.__bindWorldQ = bindWorldQ;
           object.userData.__bindAimY = bindAimY;
+=======
+          const localMixer = setupFBXCharacter(object);
+          remUpper = object;
+          mixerUpper = localMixer;
+>>>>>>> Stashed changes
 
+          // 처음에는 upper 모드가 기본이니까 Active로 설정
           window.__REM = object;
-
-          mixer = new THREE.AnimationMixer(object);
-          const clips: THREE.AnimationClip[] = (object as any).animations || [];
-          if (clips.length > 0) {
-            const clip = clips[0];
-            idleAction = mixer.clipAction(clip);
-            idleAction.setLoop(THREE.LoopRepeat, Infinity);
-            idleAction.enabled = true;
-            idleAction.reset();
-            idleAction.play();
-            mixer.timeScale = 0.3;
-          } else {
-            console.warn('Idle.fbx 내 애니메이션이 없습니다.');
-          }
+          mixer = localMixer;
+          object.visible = true;
         },
         undefined,
         (e) => console.error('Idle.fbx load error:', e)
       );
+
+      // full body 모드용 Walking.fbx
+      loader.load(
+        '/models/Walking.fbx',
+        (object) => {
+          const localMixer = setupFBXCharacter(object);
+          remFull = object;
+          mixerFull = localMixer;
+
+          // 처음에는 upper만 보이게 하고 full body 캐릭터는 숨겨둠
+          object.visible = false;
+
+          // Walking 모델 위치/스케일 따로 조절하고 싶으면 여기서:
+          // object.position.set(0, 0, 0);
+          // object.scale.setScalar(0.01);
+        },
+        undefined,
+        (e) => console.error('Walking.fbx load error:', e)
+      );
     }
+
 
     function initPoseVisuals() {
       const sphereGeom = new THREE.SphereGeometry(0.026, 16, 16);
@@ -353,8 +476,18 @@ export default function ThreeDModel() {
       // 각도 패널(우상단)
       const anglePanel = document.createElement('div');
       Object.assign(anglePanel.style, {
+<<<<<<< Updated upstream
         position: 'absolute', top: '12px', right: '12px', zIndex: 3,
         background: 'rgba(20,22,32,0.9)', color: '#fff',
+=======
+        position: 'absolute',
+        //top: '12px',
+        bottom: '12px',
+        right: '12px',
+        zIndex: 3,
+        background: 'rgba(20,22,32,0.9)',
+        color: '#fff',
+>>>>>>> Stashed changes
         fontFamily: 'system-ui,-apple-system,Segoe UI,Roboto,Arial',
         padding: '10px 12px', border: '1px solid rgba(255,255,255,0.15)',
         borderRadius: '10px', backdropFilter: 'blur(6px)',
@@ -440,9 +573,9 @@ export default function ThreeDModel() {
         padding: '8px 10px', border: '1px solid rgba(255,255,255,0.15)',
         borderRadius: '10px', backdropFilter: 'blur(6px)',
       });
-      const btnFull = mkBtn('Full body');
       const btnUpper = mkBtn('Upper body');
-      modePanel.append(btnFull, btnUpper);
+      const btnFull  = mkBtn('Full body');
+      modePanel.append(btnUpper, btnFull);
       currentContainer.appendChild(modePanel);
 
       const setPoseModeUI = (mode: PoseMode) => {
@@ -451,12 +584,41 @@ export default function ThreeDModel() {
         setActive(btnUpper, mode === 'upper');
         applyVisibilityForMode(mode);
         rebuildLinesNow();
+
+        // ★ FBX / mixer / 카메라 동기화
+        if (mode === 'upper') {
+          // Idle.fbx 활성
+          if (remUpper) {
+            remUpper.visible = true;
+            window.__REM = remUpper;
+          }
+          if (remFull) remFull.visible = false;
+
+          mixer = mixerUpper ?? null;
+
+          // upper 카메라 프리셋 적용
+          camera.position.copy(CAMERA_UPPER_POS);
+          controls.target.copy(CAMERA_UPPER_TARGET);
+        } else {
+          // Walking.fbx 활성
+          if (remUpper) remUpper.visible = false;
+          if (remFull) {
+            remFull.visible = true;
+            window.__REM = remFull;
+          }
+
+          mixer = mixerFull ?? null;
+
+          // full body 카메라 프리셋 적용
+          camera.position.copy(CAMERA_FULL_POS);
+          controls.target.copy(CAMERA_FULL_TARGET);
+        }
       };
       btnFull.onclick = () => setPoseModeUI('stand');
       btnUpper.onclick = () => setPoseModeUI('upper');
 
       // 초기 상태
-      setPoseModeUI('stand');
+      setPoseModeUI('upper');
       applyLandmarkSource(true);
     }
 
@@ -872,15 +1034,27 @@ export default function ThreeDModel() {
             neckPos.clone().add(idealVec.clone().multiplyScalar(1)), //흰색 선 길이
           ]);
 
+<<<<<<< Updated upstream
           // 기존 라인 제거 후 갱신
           if ((rem as any).__neckLines) {
             scene.remove((rem as any).__neckLines.yellow);
             scene.remove((rem as any).__neckLines.white);
+=======
+          // 이전에 만들어둔 목 기준선(모드/FBX 상관없이 전부) 제거
+          if (neckLines) {
+            scene.remove(neckLines.yellow);
+            scene.remove(neckLines.white);
+>>>>>>> Stashed changes
           }
+
+          // 현재 활성 FBX 기준으로 새 선 2개 생성
           const yellowLine = new THREE.Line(yellowGeo, yellowMaterial);
           const whiteLine = new THREE.Line(whiteGeo, whiteMaterial);
           scene.add(yellowLine, whiteLine);
-          (rem as any).__neckLines = { yellow: yellowLine, white: whiteLine };
+
+          // 전역 상태에 저장
+          neckLines = { yellow: yellowLine, white: whiteLine };
+
         }
       }
 
@@ -947,7 +1121,11 @@ export default function ThreeDModel() {
     initHelpers();
     initPoseVisuals();
     initAngleGuides();
+<<<<<<< Updated upstream
     loadIdleFBXOnly();              // ← 단일 FBX만 로드
+=======
+    loadCharacters(); // ← Idle + Walking 둘 다 로드
+>>>>>>> Stashed changes
     initUI();
     const cleanupEvents = initEventListeners();
     setupGlobalAPI();
@@ -977,6 +1155,13 @@ export default function ThreeDModel() {
           else o.material.dispose();
         }
       });
+
+      // 목 기준선도 같이 정리
+      if (neckLines) {
+        scene.remove(neckLines.yellow);
+        scene.remove(neckLines.white);
+        neckLines = null;
+      }
     };
   }, []);
 
