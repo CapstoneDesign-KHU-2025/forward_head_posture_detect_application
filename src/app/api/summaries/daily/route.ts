@@ -35,8 +35,11 @@ export async function POST(req: Request) {
         avgAngle,
       },
     });
-
-    return NextResponse.json(row, { status: 200 });
+    const safeRow = {
+      ...row,
+      id: Number(row.id), // BigInt → number
+    };
+    return NextResponse.json(safeRow, { status: 200 });
   } catch (e: any) {
     console.error("[POST /api/summaries/daily] error:", e);
     return NextResponse.json({ error: e.message }, { status: 500 });
@@ -62,20 +65,26 @@ export async function GET(req: Request) {
         where: { userId, date: { gte: since, lte: today0 } },
         orderBy: { date: "asc" },
       });
-
-      const sum = rows.reduce((a, r) => a + r.avgAngle * r.weightSeconds, 0);
-      const w = rows.reduce((a, r) => a + r.weightSeconds, 0);
+      const safeRows = rows.map((r) => ({
+        ...r,
+        id: Number(r.id),
+      }));
+      const sum = safeRows.reduce((a, r) => a + r.avgAngle * r.weightSeconds, 0);
+      const w = safeRows.reduce((a, r) => a + r.weightSeconds, 0);
       const weightedAvg = w > 0 ? sum / w : null;
 
-      return NextResponse.json({ mode: "weekly", days, weightedAvg, rows }, { status: 200 });
+      return NextResponse.json({ mode: "weekly", days, weightedAvg, safeRows }, { status: 200 });
     }
 
     // ✅ days 없으면 daily 모드
     const row = await prisma.dailyPostureSummary.findUnique({
       where: { userId_date: { userId, date: today0 } },
     });
-
-    return NextResponse.json({ mode: "today", todayAvg: row?.avgAngle ?? null, row }, { status: 200 });
+    const safeRow = {
+      ...row,
+      id: Number(row?.id), // BigInt → number
+    };
+    return NextResponse.json({ mode: "today", todayAvg: safeRow?.avgAngle ?? null, safeRow }, { status: 200 });
   } catch (e: any) {
     console.error("[GET /api/summaries/daily]", e);
     return NextResponse.json({ error: e.message }, { status: 500 });

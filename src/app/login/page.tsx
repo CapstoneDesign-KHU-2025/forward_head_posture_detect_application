@@ -1,34 +1,40 @@
-"use client";
+// app/login/page.tsx
 import React from "react";
-const LoginPage = () => {
-  // const handlebuttonClick = async () => {
-  //   try {
-  //     const response = await fetch("/api/postures", {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify({
-  //         userId: "user_123",
-  //         ts: "2025-10-29T11:55:00Z",
-  //         angleDeg: 42.5,
-  //         isTurtle: true,
-  //         hasPose: true,
-  //         sessionId: 1,
-  //         sampleGapS: 0.8,
-  //       }),
-  //     });
-  //     const data = await response.json();
-  //     console.log("Created posture sample:", data);
-  //   } catch (error) {
-  //     console.error("Error creating posture sample:", error);
-  //   }
-  // };
+import { signIn } from "@/auth";
 
+export default function LoginPage() {
   return (
-    <div>
-      <button>Post</button>
-    </div>
+    <main className="flex min-h-screen items-center justify-center">
+      <div className="flex flex-col gap-4 border rounded-xl p-6">
+        <h1 className="text-xl font-bold">로그인</h1>
+
+        {/* GitHub 로그인 */}
+        <form
+          action={async () => {
+            "use server";
+            // provider id = "github"
+            await signIn("github");
+          }}
+        >
+          <button type="submit" className="w-full rounded-md border px-4 py-2 text-sm">
+            GitHub로 로그인
+          </button>
+        </form>
+
+        {/* Google 로그인 */}
+        <form
+          action={async () => {
+            "use server";
+            await signIn("google");
+          }}
+        >
+          <button type="submit" className="w-full rounded-md border px-4 py-2 text-sm">
+            Google로 로그인
+          </button>
+        </form>
+
+        <p className="text-xs text-gray-500 mt-2">첫 로그인 시 자동으로 계정이 생성됩니다.</p>
+      </div>
+    </main>
   );
-};
-export default LoginPage;
+}

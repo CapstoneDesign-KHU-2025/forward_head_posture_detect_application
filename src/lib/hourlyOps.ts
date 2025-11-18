@@ -22,7 +22,8 @@ export async function getTodayHourly(userId: string, now = new Date()) {
 }
 
 /** “오늘 지금까지” 가중 평균 계산 (finalized/미확정 모두 포함) */
-export async function computeTodaySoFarAverage(userId: string, now = new Date()) {
+export async function computeTodaySoFarAverage(userId: string | undefined, now = new Date()) {
+  if (!userId) return null;
   const rows = await getTodayHourly(userId, now);
   let totalSum = 0;
   let totalWeight = 0;

@@ -29,7 +29,6 @@ export function usePostureStorageManager(userId: string, currentAngle: number, i
         sampleGapS: SAMPLE_GAP_S,
       };
       await storeMeasurementAndAccumulate(sample);
-      console.log("IndexedDB 저장 완료:", sample);
     }, SAMPLE_GAP_S * 1000);
 
     return () => clearInterval(interval);
@@ -41,7 +40,6 @@ export function usePostureStorageManager(userId: string, currentAngle: number, i
 
     const hourlyTimer = setInterval(async () => {
       await finalizeUpToNow(userId);
-      console.log("hourly finalize 완료");
     }, 60 * 60 * 1000);
 
     // 앱 시작 시 한 번 실행

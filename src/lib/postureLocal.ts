@@ -33,11 +33,14 @@ export async function storeMeasurementAndAccumulate(data: PostureMeasurement) {
   const key: [string, number] = [data.userId, hourStartTs];
   const hourly = tx.objectStore("hourly");
   const cur = await hourly.get(key);
-
   if (cur) {
     cur.sumWeighted += data.angleDeg * w;
     cur.weight += w;
-    cur.count += 1;
+
+    if (data.isTurtle) {
+      cur.count += 1;
+    }
+
     cur.finalized = 0;
     await hourly.put(cur);
   } else {
@@ -46,13 +49,16 @@ export async function storeMeasurementAndAccumulate(data: PostureMeasurement) {
       hourStartTs,
       sumWeighted: data.angleDeg * w,
       weight: w,
-      count: 1,
+
+      count: data.isTurtle ? 1 : 0,
       avgAngle: null,
       finalized: 0,
     });
   }
+
   await tx.done;
 }
+
 export async function getPendingPostureRecords(limit = 200): Promise<StoredPostureRecord[]> {
   const db = await getDB();
   const idx = db.transaction("samples").store.index("byUploadedFlag");
@@ -92,4 +98,55 @@ export async function getHourlyAverage(userId: string, date = new Date()) {
   }
 
   return record.sumWeighted / record.weight;
+}
+
+export async function getTodayCount(userId: string | undefined): Promise<number> {
+  if (!userId) return 0;
+
+  const db = await getDB();
+  const tx = db.transaction("hourly");
+  const store = tx.objectStore("hourly");
+  const index = store.index("byUserHour");
+
+  // 오늘 00:00 ~ 내일 00:00 - 1ms 범위
+  const start = new Date();
+  start.setHours(0, 0, 0, 0);
+  const startTs = +start;
+  const endTs = startTs + 24 * 60 * 60 * 1000;
+
+  const range = IDBKeyRange.bound([userId, startTs], [userId, endTs - 1]);
+
+  let total = 0;
+
+  for await (const cursor of index.iterate(range)) {
+    total += cursor.value.count ?? 0;
+  }
+
+  return total;
+}
+
+export async function getTodayMeasuredSeconds(userId: string | undefined): Promise<number> {
+  if (!userId) return 0;
+
+  const db = await getDB();
+  const tx = db.transaction("hourly");
+  const store = tx.objectStore("hourly");
+  const index = store.index("byUserHour");
+
+  // 오늘 00:00 ~ 내일 00:00 - 1ms 범위
+  const start = new Date();
+  start.setHours(0, 0, 0, 0);
+  const startTs = +start;
+  const endTs = startTs + 24 * 60 * 60 * 1000;
+
+  const range = IDBKeyRange.bound([userId, startTs], [userId, endTs - 1]);
+
+  let totalSeconds = 0;
+
+  for await (const cursor of index.iterate(range)) {
+    const row = cursor.value;
+    totalSeconds += row.weight ?? 0; // weight = 초 단위 측정 시간
+  }
+
+  return totalSeconds;
 }
