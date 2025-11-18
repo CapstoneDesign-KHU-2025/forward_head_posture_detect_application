@@ -18,7 +18,7 @@ type KPIItem = {
 };
 
 type HomeTemplateProps = {
-  user: { name: string; avatarSrc?: string } | null;
+  user: { name: string; avgAng: number; avatarSrc?: string } | null;
   kpis: KPIItem[];
   challenge?: {
     title?: React.ReactNode;
@@ -65,6 +65,7 @@ export default function HomeTemplate({ user, kpis, challenge, className }: HomeT
 
           <div>
             <ChallengePanel
+              userAng={user?.avgAng}
               title={challenge?.title ?? "당신의 거북목 도전기"}
               description={challenge?.description ?? "3D 모델링으로 추후 삽입"}
             />
