@@ -7,7 +7,8 @@ import NavItem from "@/components/molecules/NavItem";
 
 import { Button } from "@/components/atoms/button/Button";
 import { Home, Play } from "lucide-react";
-import { useSession, signIn, signOut } from "next-auth/react";
+import { useSession, signIn } from "next-auth/react";
+import UserMenuDropdown from "@/components/molecules/UserMenuDropdown";
 type HeaderProps = {
   user?: { name: string; avatarSrc?: string } | null;
   className?: string;
@@ -15,6 +16,8 @@ type HeaderProps = {
 export default function Header({ user: initialUser, className }: HeaderProps) {
   const pathname = usePathname();
   const { data: session, status } = useSession();
+  const [isUserMenuOpen, setIsUserMenuOpen] = React.useState(false);
+  const userMenuAnchorRef = React.useRef<HTMLDivElement>(null);
 
   const navItems = [
     { label: "Home", href: "/", icon: <Home size={18} /> },
@@ -27,8 +30,18 @@ export default function Header({ user: initialUser, className }: HeaderProps) {
     <header className={["w-full border-b border-black/10 bg-white", className].filter(Boolean).join(" ")}>
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 gap-4">
         {/* Left: Logo */}
-        <Link href="/" className="shrink-0 text-lg font-semibold">
-          거북목 거북거북!
+        <Link href="/" className="shrink-0 flex items-center gap-2 text-lg font-semibold">
+          <div
+            className="w-8 h-8 rounded flex items-center justify-center"
+            style={{ backgroundColor: "#EAFBE8" }}
+          >
+            <img
+              src="/icons/turtle.png"
+              alt="거북이"
+              className="w-6 h-6 object-contain"
+            />
+          </div>
+          <span>거북목 거북거북!</span>
         </Link>
 
         <nav className="hidden md:flex items-center gap-1">
@@ -43,13 +56,21 @@ export default function Header({ user: initialUser, className }: HeaderProps) {
           {isLoading ? (
             <span className="text-sm text-black/40">...</span>
           ) : user ? (
-            <div className="flex items-center gap-2">
-              <span className="inline-flex items-center rounded-full bg-black/5 px-3 py-1 text-sm">
+            <div className="relative" ref={userMenuAnchorRef}>
+              <button
+                onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                className="inline-flex items-center rounded-full bg-black/5 px-3 py-1 text-sm hover:bg-black/10 transition-colors"
+              >
                 {user.name ?? "사용자"}
-              </span>
-              <Button variant="secondary" onClick={() => signOut()}>
-                로그아웃
-              </Button>
+              </button>
+              <UserMenuDropdown
+                userName={user.name ?? "사용자"}
+                userEmail={(user as any)?.email}
+                userImage={user.avatarSrc}
+                isOpen={isUserMenuOpen}
+                onClose={() => setIsUserMenuOpen(false)}
+                anchorRef={userMenuAnchorRef}
+              />
             </div>
           ) : (
             <Button onClick={() => signIn()}>로그인</Button>

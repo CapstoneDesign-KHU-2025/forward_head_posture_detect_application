@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { FilesetResolver, PoseLandmarker } from "@mediapipe/tasks-vision";
 import analyzeTurtleNeck from "@/utils/isTurtleNeck";
 import turtleStabilizer from "@/utils/turtleStabilizer";
+// 민감도 설정을 읽어오려면: import { getSensitivity } from "@/utils/sensitivity";
 
 import { usePostureStorageManager } from "@/hooks/usePostureStorageManager";
 import { getTodayHourly, computeTodaySoFarAverage, finalizeUpToNow } from "@/lib/hourlyOps";
