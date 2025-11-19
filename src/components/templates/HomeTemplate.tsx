@@ -2,6 +2,8 @@ import * as React from "react";
 import WelcomeHero from "@/components/organisms/home/WelcomeHero";
 import StatCard from "@/components/molecules/StatCard";
 import ChallengePanel from "@/components/organisms/home/ChallengePanel";
+import StatusMessageCard from "@/components/molecules/StatusMessageCard";
+import TitleCard from "@/components/molecules/TitleCard";
 
 type KPIItem = {
   label: React.ReactNode;
@@ -22,10 +24,19 @@ type HomeTemplateProps = {
     title?: React.ReactNode;
     description?: React.ReactNode;
   };
+  /** 오늘의 경고 횟수 (상태 카드용, null이면 데이터 없음) */
+  warningCount?: number | null;
+  /** 신규 사용자 여부 (true: 완전 신규, false: 기존 사용자) */
+  isNewUser?: boolean;
+  /** 누적 좋은 날 수 (칭호 카드용) */
+  goodDays?: number;
   className?: string;
 };
 
-export default function HomeTemplate({ user, kpis, challenge, className }: HomeTemplateProps) {
+export default function HomeTemplate({ user, kpis, challenge, warningCount = null, isNewUser, goodDays = 0, className }: HomeTemplateProps) {
+  // 측정 시간 KPI 찾기
+  const measureTimeKpi = kpis?.find((kpi) => kpi.label === "측정 시간" || (typeof kpi.label === "string" && kpi.label.includes("측정 시간")));
+
   return (
     <main className={["bg-[#F8FBF8] min-h-screen", className].filter(Boolean).join(" ")}>
       <div className="max-w-[1400px] mx-auto px-8 py-8">
@@ -38,17 +49,31 @@ export default function HomeTemplate({ user, kpis, challenge, className }: HomeT
             {/* 섹션 타이틀 */}
             <h2 className="text-[1.5rem] font-bold text-[#2D5F2E] mb-2">오늘의 거북목</h2>
 
-            {kpis && kpis.length > 0 ? (
-              <div className="grid grid-cols-2 gap-4">
-                {kpis.slice(0, 4).map((it, idx) => (
-                  <StatCard key={idx} {...it} />
-                ))}
-              </div>
-            ) : (
-              <div className="rounded-xl bg-white p-6 text-center border-l-4 border-[#7BC67E] shadow-[0_2px_10px_rgba(0,0,0,0.05)]">
-                <p className="text-sm text-[#4F4F4F]">아직 지표가 없어요. 먼저 측정을 시작해볼까요?</p>
-              </div>
-            )}
+            {/* 상태 카드 - 메인 */}
+            <StatusMessageCard warningCount={warningCount} isNewUser={isNewUser} />
+
+            {/* 서브 정보 카드 */}
+            <div className="grid grid-cols-2 gap-4">
+              {/* 측정 시간 카드 */}
+              {measureTimeKpi ? (
+                <StatCard
+                  label={measureTimeKpi.label}
+                  value={measureTimeKpi.value}
+                  unit={measureTimeKpi.unit}
+                  size="md"
+                />
+              ) : (
+                <StatCard
+                  label="측정 시간"
+                  value="측정을 시작해보세요!"
+                  size="md"
+                  valueClassName="text-base font-bold"
+                />
+              )}
+
+              {/* 칭호 카드 */}
+              <TitleCard goodDays={goodDays} />
+            </div>
           </div>
 
           {/* RIGHT: 측정 섹션 */}

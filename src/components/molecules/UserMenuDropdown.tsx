@@ -85,9 +85,9 @@ export default function UserMenuDropdown({
               setIsSensitivityModalOpen(true);
               onClose();
             }}
-            className="w-full flex items-center gap-4 px-6 py-4 text-base font-medium text-[#1A1A1A] transition-all duration-200 hover:bg-[#F8FBF8] hover:pl-7 cursor-pointer"
+            className="w-full flex items-center gap-4 px-6 py-4 text-base font-medium text-black transition-all duration-200 hover:bg-[#F8FBF8] hover:pl-7 cursor-pointer"
           >
-            <span className="text-xl" style={{ color: "#4A9D4D" }}>⚙️</span>
+            <Settings size={20} className="text-black" />
             <span>민감도 설정</span>
           </button>
 
@@ -96,10 +96,9 @@ export default function UserMenuDropdown({
               signOut();
               onClose();
             }}
-            className="w-full flex items-center gap-4 px-6 py-4 text-base font-medium border-t-2 border-[#F0F9F0] transition-all duration-200 hover:bg-[#FFEBEE] hover:pl-7 cursor-pointer"
-            style={{ color: "#EF5350" }}
+            className="w-full flex items-center gap-4 px-6 py-4 text-base font-medium text-black border-t-2 border-[#F0F9F0] transition-all duration-200 hover:bg-[#F8FBF8] hover:pl-7 cursor-pointer"
           >
-            <span className="text-xl" style={{ color: "#EF5350" }}>🚪</span>
+            <LogOut size={20} className="text-black" />
             <span>로그아웃</span>
           </button>
         </div>

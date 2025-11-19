@@ -28,6 +28,8 @@ type StatCardProps = {
 
   /** 컨테이너 클래스 */
   className?: string;
+  /** 값(value) 부분에 적용할 추가 클래스 */
+  valueClassName?: string;
 };
 
 /** StatCard: 라벨 + (값+단위) + 변화 배지 + 보조설명 */
@@ -43,6 +45,7 @@ export default function StatCard({
   caption,
   align = "left",
   className,
+  valueClassName,
 }: StatCardProps) {
   const alignClass = align === "center" ? "items-center text-center" : "items-start text-left";
 
@@ -78,7 +81,7 @@ export default function StatCard({
 
       {/* 본문: 값 + 단위 */}
       <div className="flex items-baseline gap-1">
-        <StatValue size={size}>{value}</StatValue>
+        <StatValue size={size} className={valueClassName}>{value}</StatValue>
         {unit ? <UnitText size={size === "xl" ? "md" : "sm"}>{unit}</UnitText> : null}
       </div>
 
