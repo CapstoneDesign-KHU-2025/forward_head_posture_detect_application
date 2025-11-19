@@ -1,4 +1,7 @@
+"use client";
+
 import * as React from "react";
+import { usePathname } from "next/navigation";
 import { FooterLink } from "@/components/atoms/link/FooterLink";
 
 type FooterProps = {
@@ -7,6 +10,13 @@ type FooterProps = {
 };
 
 export default function Footer({ links, className }: FooterProps) {
+  const pathname = usePathname();
+  const isLoginPage = pathname === "/login";
+  const isCharacterPage = pathname === "/character";
+  
+  // 로그인 페이지와 캐릭터 선택 페이지에서는 Footer 숨김
+  if (isLoginPage || isCharacterPage) return null;
+  
   return (
     <footer
       className={[

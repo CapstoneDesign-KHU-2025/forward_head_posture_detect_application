@@ -11,7 +11,7 @@ type UserMenuDropdownProps = {
   userImage?: string;
   isOpen: boolean;
   onClose: () => void;
-  anchorRef: React.RefObject<HTMLDivElement>;
+  anchorRef: React.RefObject<HTMLDivElement | null>;
 };
 
 export default function UserMenuDropdown({
@@ -44,49 +44,50 @@ export default function UserMenuDropdown({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isOpen, onClose, anchorRef]);
 
-  if (!isOpen) return null;
-
   return (
     <>
       <div
         ref={dropdownRef}
-        className="absolute right-0 top-full mt-2 w-64 bg-white rounded-lg shadow-lg border border-black/10 z-50"
+        className={`absolute right-0 top-[calc(100%+0.8rem)] min-w-[280px] bg-white rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.12)] border-2 border-[#E8F5E9] z-50 transition-all duration-300 ease-in-out ${
+          isOpen 
+            ? "opacity-100 visible translate-y-0" 
+            : "opacity-0 invisible -translate-y-2.5"
+        }`}
       >
-        {/* 사용자 정보 섹션 */}
-        <div className="px-4 py-3 border-b border-black/10">
-          <div className="flex items-center gap-3">
-            {userImage ? (
-              <img
-                src={userImage}
-                alt={userName}
-                className="w-10 h-10 rounded-full"
-              />
-            ) : (
-              <div className="w-10 h-10 rounded-full bg-black/10 flex items-center justify-center">
-                <span className="text-lg font-semibold text-black">
-                  {userName.charAt(0).toUpperCase()}
-                </span>
-              </div>
-            )}
-            <div className="flex-1 min-w-0">
-              <p className="font-semibold text-sm text-black truncate">{userName}</p>
-              {userEmail && (
-                <p className="text-xs text-black/60 truncate">{userEmail}</p>
-              )}
+        {/* 프로필 헤더 */}
+        <div className="px-6 py-6 border-b-2 border-[#F0F9F0] flex items-center gap-4">
+          {userImage ? (
+            <img
+              src={userImage}
+              alt={userName}
+              className="w-[50px] h-[50px] rounded-full"
+            />
+          ) : (
+            <div 
+              className="w-[50px] h-[50px] rounded-full flex items-center justify-center text-2xl font-bold text-white"
+              style={{ background: "linear-gradient(135deg, #7BC67E 0%, #4A9D4D 100%)" }}
+            >
+              {userName.charAt(0).toUpperCase()}
             </div>
+          )}
+          <div className="flex-1 min-w-0">
+            <div className="text-lg font-bold text-[#2D5F2E] mb-1 truncate">{userName}</div>
+            {userEmail && (
+              <div className="text-sm text-[#4F4F4F] truncate">{userEmail}</div>
+            )}
           </div>
         </div>
 
         {/* 메뉴 항목들 */}
-        <div className="py-1">
+        <div className="py-2">
           <button
             onClick={() => {
               setIsSensitivityModalOpen(true);
               onClose();
             }}
-            className="w-full px-4 py-2 text-left text-sm text-black hover:bg-black/5 flex items-center gap-3 transition-colors"
+            className="w-full flex items-center gap-4 px-6 py-4 text-base font-medium text-[#1A1A1A] transition-all duration-200 hover:bg-[#F8FBF8] hover:pl-7 cursor-pointer"
           >
-            <Settings size={18} className="text-black/60" />
+            <span className="text-xl" style={{ color: "#4A9D4D" }}>⚙️</span>
             <span>민감도 설정</span>
           </button>
 
@@ -95,9 +96,10 @@ export default function UserMenuDropdown({
               signOut();
               onClose();
             }}
-            className="w-full px-4 py-2 text-left text-sm text-black hover:bg-black/5 flex items-center gap-3 transition-colors"
+            className="w-full flex items-center gap-4 px-6 py-4 text-base font-medium border-t-2 border-[#F0F9F0] transition-all duration-200 hover:bg-[#FFEBEE] hover:pl-7 cursor-pointer"
+            style={{ color: "#EF5350" }}
           >
-            <LogOut size={18} className="text-black/60" />
+            <span className="text-xl" style={{ color: "#EF5350" }}>🚪</span>
             <span>로그아웃</span>
           </button>
         </div>

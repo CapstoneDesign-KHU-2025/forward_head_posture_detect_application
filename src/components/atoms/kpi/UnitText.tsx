@@ -13,8 +13,8 @@ type UnitTextProps = React.HTMLAttributes<HTMLSpanElement> & {
 };
 
 const sizeClass: Record<NonNullable<UnitTextProps["size"]>, string> = {
-  sm: "text-base md:text-lg",
-  md: "text-lg md:text-xl",
+  sm: "text-[1.2rem]",
+  md: "text-[1.2rem]",
 };
 
 export function UnitText({
@@ -30,7 +30,7 @@ export function UnitText({
       className={cn(
         sizeClass[size],
         alignBaseline && "align-baseline",
-        muted ? "text-black/60" : "text-black",
+        muted ? "text-[#4F4F4F]" : "text-black",
         "font-medium",
         className
       )}

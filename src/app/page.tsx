@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import HomeTemplate from "@/components/templates/HomeTemplate";
 import { useAppStore } from "./store/app";
 import { computeTodaySoFarAverage } from "@/lib/hourlyOps";
@@ -40,6 +41,7 @@ type WeeklySummaryResponse = {
 
 export default function Page() {
   const { data: session, status } = useSession();
+  const router = useRouter();
 
   const [todayAvg, setTodayAvg] = useState<number | null>(null);
   const [weeklyAvg, setWeeklyAvg] = useState<number | null>(null);
@@ -102,8 +104,16 @@ export default function Page() {
     };
   }, [userId, status]);
 
+  useEffect(() => {
+    if (status !== "loading" && (!session || !userId)) {
+      router.push("/landing");
+    }
+  }, [status, session, userId, router]);
+
   if (status === "loading") return <div> 로딩중 ...</div>;
-  if (!session || !userId) return <div> 로그인이 필요해요 </div>;
+  if (!session || !userId) {
+    return <div>리다이렉트 중...</div>;
+  }
 
   const isEmptyState = loading || error;
 

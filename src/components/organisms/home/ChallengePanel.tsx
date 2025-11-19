@@ -21,17 +21,21 @@ export default function ChallengePanel({
   illustration,
 }: ChallengePanelProps) {
   return (
-    <div className="rounded-lg border border-black/10 bg-white p-6">
+    <div className="rounded-[20px] bg-white p-8 shadow-[0_2px_20px_rgba(0,0,0,0.08)]">
       {/* 제목 */}
-      <h3 className="text-lg font-semibold mb-4">{title}</h3>
+      <div className="flex justify-between items-center mb-6 pb-4 border-b-2 border-[#E8F5E9]">
+        <h2 className="text-[1.5rem] font-bold text-[#2D5F2E]">{title}</h2>
+      </div>
 
-      {/* 3D 모델 영역 */}
-      <div className="relative h-[420px] border border-dashed border-black/20 rounded-md mb-4 overflow-hidden">
-        <ThreeDModel />
+      {/* 3D 모델 영역 - 기존 ThreeDModel 사용 */}
+      <div className="bg-[#2C3E50] rounded-xl p-8 min-h-[500px] flex flex-col justify-between relative mb-4">
+        <div className="absolute inset-0 rounded-xl overflow-hidden">
+          <ThreeDModel />
+        </div>
       </div>
 
       {/* 설명 */}
-      <p className="text-sm text-center text-black/60">{description}</p>
+      <p className="text-center mt-6 pt-6 border-t border-[#E8F5E9] text-[0.9rem] text-[#4F4F4F]">{description}</p>
 
       {/* (옵션) 추가 일러스트/컨텐츠 */}
       {illustration}

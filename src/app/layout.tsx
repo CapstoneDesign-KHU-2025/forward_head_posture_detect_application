@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Header from "@/components/organisms/layout/Header";
 import Footer from "@/components/organisms/layout/Footer";
+import PageContainer from "@/components/organisms/layout/PageContainer";
 import { auth } from "@/auth";
 
 import Providers from "./providers";
@@ -26,7 +27,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <Header user={user} />
 
           {/* 본문 */}
-          <div className="mx-auto w-full max-w-6xl px-4 py-6">{children}</div>
+          <PageContainer>{children}</PageContainer>
 
           {/* 공통 푸터 */}
           <Footer

@@ -11,8 +11,8 @@ import { cn } from "@/utils/cn";
 const sizeClass: Record<NonNullable<StatValueProps["size"]>, string> = {
   sm: "text-xl md:text-2xl",
   md: "text-2xl md:text-3xl",
-  lg: "text-3xl md:text-4xl",
-  xl: "text-4xl md:text-5xl",
+  lg: "text-[2.5rem]",
+  xl: "text-[2.5rem]",
 };
 
 export function StatValue({ className, children, size = "lg", strong = true, ...props }: StatValueProps) {
@@ -21,7 +21,7 @@ export function StatValue({ className, children, size = "lg", strong = true, ...
       className={cn(
         sizeClass[size],
         strong ? "font-extrabold" : "font-semibold",
-        "tracking-tight text-black",
+        "tracking-tight text-[#2D5F2E]",
         className
       )}
       {...props}
