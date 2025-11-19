@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Button } from "@/components/atoms/button/Button";
+import { Button } from "@/components/atoms/Button";
 import { signIn } from "next-auth/react";
 
 export default function LandingTemplate() {

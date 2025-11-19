@@ -3,7 +3,7 @@
 import * as React from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { Button } from "@/components/atoms/button/Button";
+import { Button } from "@/components/atoms/Button";
 import { Home, Play } from "lucide-react";
 import { useSession, signIn } from "next-auth/react";
 import UserMenuDropdown from "@/components/molecules/UserMenuDropdown";

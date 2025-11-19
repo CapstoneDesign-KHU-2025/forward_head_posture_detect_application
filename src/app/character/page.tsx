@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/atoms/button/Button";
+import { Button } from "@/components/atoms/Button";
 
 export default function CharacterSelectionPage() {
   const [selectedCharacter, setSelectedCharacter] = useState<string | null>(null);

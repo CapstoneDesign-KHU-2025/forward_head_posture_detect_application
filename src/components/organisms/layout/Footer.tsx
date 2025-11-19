@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { usePathname } from "next/navigation";
-import { FooterLink } from "@/components/atoms/link/FooterLink";
+import { FooterLink } from "@/components/atoms/FooterLink";
 
 type FooterProps = {
   links: { label: string; href: string; underline?: boolean }[];

@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Button } from "@/components/atoms/button/Button";
+import { Button } from "@/components/atoms/Button";
 import { getSensitivity, setSensitivity, getSensitivityLabel, type Sensitivity } from "@/utils/sensitivity";
 
 type SensitivitySettingsModalProps = {
