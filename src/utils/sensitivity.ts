@@ -26,13 +26,13 @@ export function setSensitivity(sensitivity: Sensitivity): void {
   
   try {
     localStorage.setItem(SENSITIVITY_STORAGE_KEY, sensitivity);
+    const thresholds = getSensitivityThresholds(sensitivity);
   } catch (e) {
     console.error("Failed to save sensitivity to localStorage:", e);
   }
 }
 
 // 민감도 값을 한국어로 변환
-
 export function getSensitivityLabel(sensitivity: Sensitivity): string {
   switch (sensitivity) {
     case "low":
@@ -43,6 +43,19 @@ export function getSensitivityLabel(sensitivity: Sensitivity): string {
       return "높음";
     default:
       return "보통";
+  }
+}
+
+// 민감도에 따른 임계값 가져오기 (turtleStabilizer용)
+export function getSensitivityThresholds(sensitivity: Sensitivity): { enter: number; exit: number } {
+  switch (sensitivity) {
+    case "low":
+      return { enter: 45, exit: 48 };
+    case "high":
+      return { enter: 50, exit: 53 };
+    case "normal":
+    default:
+      return { enter: 48, exit: 51 };
   }
 }
 

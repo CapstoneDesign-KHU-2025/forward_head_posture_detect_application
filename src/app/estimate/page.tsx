@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { FilesetResolver, PoseLandmarker } from "@mediapipe/tasks-vision";
 import analyzeTurtleNeck from "@/utils/isTurtleNeck";
 import turtleStabilizer from "@/utils/turtleStabilizer";
-// 민감도 설정을 읽어오려면: import { getSensitivity } from "@/utils/sensitivity";
+import { getSensitivity } from "@/utils/sensitivity";
 
 import { usePostureStorageManager } from "@/hooks/usePostureStorageManager";
 import { getTodayHourly, computeTodaySoFarAverage, finalizeUpToNow } from "@/lib/hourlyOps";
@@ -352,14 +352,18 @@ export default function Estimate() {
 
               lastLogTimeRef.current = now;
 
+              // 민감도 설정 가져오기
+              const sensitivity = getSensitivity();
+
               const turtleData = analyzeTurtleNeck({
                 earLeft: { x: lm7["x"], y: lm7["y"], z: lm7["z"] },
                 earRight: { x: lm8["x"], y: lm8["y"], z: lm8["z"] },
                 shoulderLeft: { x: lm11["x"], y: lm11["y"], z: lm11["z"] },
                 shoulderRight: { x: lm12["x"], y: lm12["y"], z: lm12["z"] },
+                sensitivity,
               });
 
-              const result = turtleStabilizer(turtleData.angleDeg);
+              const result = turtleStabilizer(turtleData.angleDeg, sensitivity);
 
               let turtleNow = lastStateRef.current ?? false;
               let avgAngle = 0;

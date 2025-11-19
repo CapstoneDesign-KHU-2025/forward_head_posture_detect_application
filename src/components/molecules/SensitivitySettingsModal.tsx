@@ -21,6 +21,7 @@ export default function SensitivitySettingsModal({ isOpen, onClose }: Sensitivit
   }, [isOpen]);
 
   const handleSave = (sensitivity: Sensitivity) => {
+    const previousSensitivity = currentSensitivity;
     setSensitivity(sensitivity);
     setCurrentSensitivity(sensitivity);
     setShowSuccess(true);
