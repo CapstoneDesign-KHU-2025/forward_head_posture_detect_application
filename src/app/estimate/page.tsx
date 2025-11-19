@@ -12,6 +12,7 @@ import { useClearPostureDBOnLoad } from "@/hooks/useClearDBOnload";
 import { useAppStore } from "../store/app";
 import { useSession } from "next-auth/react";
 import { getTodayCount } from "@/lib/postureLocal";
+import { clear } from "console";
 
 export default function Estimate() {
   const { data: session, status } = useSession();
@@ -141,11 +142,30 @@ export default function Estimate() {
           ctx.clearRect(0, 0, c.width, c.height);
           ctx.drawImage(v, 0, 0, c.width, c.height);
 
+          const poses = result.landmarks ?? [];
+
+          if (stopEstimating) {
+            measuringRef.current = false;
+            countdownStartRef.current = null;
+            lastGuideMessageRef.current = null;
+            setGuideMessage(null);
+            setCountdownRemain(null);
+            setIsTurtle(false);
+            lastStateRef.current = null;
+            setAngle(0);
+
+            if (lastBeepIntervalRef.current) {
+              clearInterval(lastBeepIntervalRef.current);
+              lastBeepIntervalRef.current = null;
+            }
+
+            rafRef.current = requestAnimationFrame(loop);
+            return;
+          }
+
           const centerX = c.width / 2;
           const centerY = c.height / 2;
           const offsetY = 30;
-
-          const poses = result.landmarks ?? [];
 
           // --- 가이드라인 내부 체크 함수들 ---
           const isInsideFaceGuideline = (x: number, y: number) => {
@@ -435,7 +455,7 @@ export default function Estimate() {
       const tracks = (videoRef.current?.srcObject as MediaStream | null)?.getTracks() || [];
       tracks.forEach((t) => t.stop());
     };
-  }, []);
+  }, [stopEstimating]);
 
   // 🔹 "오늘의 측정 중단하기" 버튼: IndexedDB -> DailyPostureSummary POST
   const handleStopEstimating = async () => {
@@ -463,6 +483,16 @@ export default function Estimate() {
             count: count,
           }),
         });
+      } else {
+        // 측정 시작: 모든 기존 측정 상태 리셋
+        measuringRef.current = false;
+        countdownStartRef.current = null;
+        lastGuideMessageRef.current = null;
+        setGuideMessage("가이드라인 안으로 들어오세요");
+        setGuideColor("red");
+        setMeasurementStarted(false);
+        setCountdownRemain(null);
+        setIsTurtle(false);
       }
     } catch (err) {
       console.error("[handleStopEstimating] error:", err);
@@ -497,6 +527,7 @@ export default function Estimate() {
 
   // 상태 배너 타입 결정
   const getStatusBannerType = (): "success" | "warning" | "info" => {
+    if (stopEstimating) return "info";
     if (isTurtle && measurementStarted) return "warning";
     if (guideColor === "green" && guideMessage) return "success";
     if (guideColor === "orange" && guideMessage) return "info";
@@ -505,7 +536,8 @@ export default function Estimate() {
   };
 
   const statusBannerMessage = () => {
-    if (isTurtle && measurementStarted) return `거북목 자세입니다! (${angle.toFixed(1)}°)`;
+    if (stopEstimating) return "측정이 중단되었습니다";
+    if (isTurtle && measurementStarted) return `거북목 자세입니다!`;
     if (guideMessage) return guideMessage;
     return "바른 자세입니다!";
   };
