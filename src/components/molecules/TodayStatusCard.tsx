@@ -4,7 +4,7 @@ import * as React from "react";
 
 type StatusType = "excellent" | "normal" | "bad" | "empty";
 
-type StatusMessageCardProps = {
+type TodayStatusCardProps = {
   warningCount?: number | null; // null이면 데이터 없음
   isNewUser?: boolean; // true: 완전 신규, false: 오늘 첫 방문 (기존 사용자)
 };
@@ -63,7 +63,7 @@ function getStatusInfo(warningCount: number | null | undefined, isNewUser: boole
   }
 }
 
-export default function StatusMessageCard({ warningCount, isNewUser }: StatusMessageCardProps) {
+export default function TodayStatusCard({ warningCount, isNewUser }: TodayStatusCardProps) {
   const statusInfo = getStatusInfo(warningCount, isNewUser);
 
   const statusStyles: Record<StatusType, { borderColor: string; background: string }> = {
@@ -133,6 +133,7 @@ export default function StatusMessageCard({ warningCount, isNewUser }: StatusMes
       <div
         style={{
           fontSize: statusInfo.statusClass === "empty" ? "1rem" : "1.1rem",
+          fontWeight: "normal",
           color: statusInfo.statusClass === "empty" ? "#6B7280" : "#4F4F4F",
           lineHeight: "1.6",
           whiteSpace: "pre-line",
@@ -143,3 +144,4 @@ export default function StatusMessageCard({ warningCount, isNewUser }: StatusMes
     </div>
   );
 }
+

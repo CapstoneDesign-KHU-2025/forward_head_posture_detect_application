@@ -70,11 +70,11 @@ export default function TitleCard({ goodDays }: TitleCardProps) {
         }
       `}</style>
       <div className="badge-icon">{badgeInfo.icon}</div>
-      <div className="flex-1 flex flex-col gap-2">
-        <div className="text-[0.9rem] text-[#4F4F4F]">
+      <div className="flex-1 flex flex-col gap-1">
+        <div className="text-[0.9rem] font-medium text-[#2D5F2E]">
           나의 칭호 {goodDays > 0 && `(누적 좋은 날 ${goodDays}일)`}
         </div>
-        <div className="text-base font-bold text-[#2D5F2E]">
+        <div className="text-xl font-extrabold text-[#2D5F2E]">
           {badgeInfo.title}
         </div>
       </div>

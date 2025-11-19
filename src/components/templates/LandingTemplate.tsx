@@ -9,6 +9,58 @@ export default function LandingTemplate() {
     <div className="min-h-screen bg-[#F8FBF8] w-screen pt-16">
       {/* 히어로 섹션 */}
       <section className="min-h-screen bg-gradient-to-br from-[#E8F5E9] to-[#F8FBF8] flex items-center py-16 px-4">
+        <style jsx>{`
+          @keyframes fadeInUp {
+            from {
+              opacity: 0;
+              transform: translateY(30px);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
+          @keyframes fadeInRight {
+            from {
+              opacity: 0;
+              transform: translateX(30px);
+            }
+            to {
+              opacity: 1;
+              transform: translateX(0);
+            }
+          }
+          @keyframes float {
+            0%, 100% {
+              transform: translateY(0px);
+            }
+            50% {
+              transform: translateY(-10px);
+            }
+          }
+          @keyframes pulse {
+            0%, 100% {
+              opacity: 0.2;
+              transform: scale(1);
+            }
+            50% {
+              opacity: 0.4;
+              transform: scale(1.1);
+            }
+          }
+          .hero-content {
+            animation: fadeInUp 0.8s ease-out;
+          }
+          .hero-image {
+            animation: fadeInRight 0.8s ease-out 0.2s both;
+          }
+          .turtle-float {
+            animation: float 3s ease-in-out infinite;
+          }
+          .check-pulse {
+            animation: pulse 2s ease-in-out infinite;
+          }
+        `}</style>
         <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-16 items-center">
           <div className="hero-content">
             <h1 className="text-5xl md:text-6xl font-bold text-[#2D5F2E] mb-6 leading-tight">
@@ -31,7 +83,7 @@ export default function LandingTemplate() {
             </div>
           </div>
           <div className="hero-image bg-white rounded-3xl p-8 shadow-xl text-center">
-            <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg" className="w-full max-w-md mx-auto">
+            <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg" className="w-full max-w-md mx-auto turtle-float">
               {/* 거북이 등껍질 */}
               <ellipse cx="200" cy="180" rx="100" ry="80" fill="#4A9D4D" />
               <ellipse cx="200" cy="180" rx="85" ry="65" fill="#66BB6A" />
@@ -67,8 +119,10 @@ export default function LandingTemplate() {
               <ellipse cx="280" cy="190" rx="15" ry="12" fill="#7BC67E" />
               
               {/* 체크 아이콘 (건강함) */}
-              <circle cx="320" cy="100" r="35" fill="#4A9D4D" opacity="0.2" />
-              <path d="M 305 100 L 315 110 L 335 85" stroke="#4A9D4D" strokeWidth="6" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+              <g className="check-pulse">
+                <circle cx="320" cy="100" r="35" fill="#4A9D4D" opacity="0.2" />
+                <path d="M 305 100 L 315 110 L 335 85" stroke="#4A9D4D" strokeWidth="6" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+              </g>
             </svg>
           </div>
         </div>

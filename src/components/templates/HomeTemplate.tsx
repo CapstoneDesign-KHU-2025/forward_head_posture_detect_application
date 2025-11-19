@@ -2,7 +2,7 @@ import * as React from "react";
 import WelcomeHero from "@/components/organisms/home/WelcomeHero";
 import StatCard from "@/components/molecules/StatCard";
 import ChallengePanel from "@/components/organisms/home/ChallengePanel";
-import StatusMessageCard from "@/components/molecules/StatusMessageCard";
+import TodayStatusCard from "@/components/molecules/TodayStatusCard";
 import TitleCard from "@/components/molecules/TitleCard";
 
 type KPIItem = {
@@ -50,7 +50,7 @@ export default function HomeTemplate({ user, kpis, challenge, warningCount = nul
             <h2 className="text-[1.5rem] font-bold text-[#2D5F2E] mb-2">오늘의 거북목</h2>
 
             {/* 상태 카드 - 메인 */}
-            <StatusMessageCard warningCount={warningCount} isNewUser={isNewUser} />
+            <TodayStatusCard warningCount={warningCount} isNewUser={isNewUser} />
 
             {/* 서브 정보 카드 */}
             <div className="grid grid-cols-2 gap-4">
@@ -60,14 +60,11 @@ export default function HomeTemplate({ user, kpis, challenge, warningCount = nul
                   label={measureTimeKpi.label}
                   value={measureTimeKpi.value}
                   unit={measureTimeKpi.unit}
-                  size="md"
                 />
               ) : (
                 <StatCard
                   label="측정 시간"
                   value="측정을 시작해보세요!"
-                  size="md"
-                  valueClassName="text-base font-bold"
                 />
               )}
 
