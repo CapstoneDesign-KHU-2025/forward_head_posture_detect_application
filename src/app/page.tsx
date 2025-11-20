@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import HomeTemplate from "@/components/templates/HomeTemplate";
 import { useAppStore } from "./store/app";
 import { computeTodaySoFarAverage } from "@/lib/hourlyOps";
@@ -40,6 +41,7 @@ type WeeklySummaryResponse = {
 
 export default function Page() {
   const { data: session, status } = useSession();
+  const router = useRouter();
 
   const [todayAvg, setTodayAvg] = useState<number | null>(null);
   const [weeklyAvg, setWeeklyAvg] = useState<number | null>(null);
@@ -102,8 +104,16 @@ export default function Page() {
     };
   }, [userId, status]);
 
+  useEffect(() => {
+    if (status !== "loading" && (!session || !userId)) {
+      router.push("/landing");
+    }
+  }, [status, session, userId, router]);
+
   if (status === "loading") return <div> 로딩중 ...</div>;
-  if (!session || !userId) return <div> 로그인이 필요해요 </div>;
+  if (!session || !userId) {
+    return <div>리다이렉트 중...</div>;
+  }
 
   const isEmptyState = loading || error;
 
@@ -187,5 +197,40 @@ export default function Page() {
     );
   }
 
-  return <HomeTemplate user={homeData.user} kpis={homeData.kpis} challenge={homeData.challenge} />;
+  // 경고 횟수 (오늘 거북목 경고 횟수)
+  // null이면 오늘 데이터 없음, 숫자면 경고 횟수
+  // todayCount가 0이고 todayHour도 0이면 실제로 측정 기록이 없는 것이므로 null로 처리
+  const warningCount = 
+    (todayCount === 0 && todayHour === 0) || todayCount === null || todayCount === undefined
+      ? null
+      : todayCount;
+  
+  // 신규 사용자 여부 판단 (localStorage 기반, 동기적으로 초기화)
+  const [isNewUser, setIsNewUser] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false;
+    const hasEverMeasured = localStorage.getItem("hasEverMeasured");
+    return !hasEverMeasured; // 없으면 신규 사용자
+  });
+  
+  // 측정 기록이 있으면 localStorage에 저장하고 신규 사용자 상태 업데이트
+  useEffect(() => {
+    if (typeof window !== "undefined" && (todayCount !== null && todayCount > 0) || (todayHour !== null && todayHour > 0)) {
+      localStorage.setItem("hasEverMeasured", "true");
+      setIsNewUser(false);
+    }
+  }, [todayCount, todayHour]);
+
+  // 누적 좋은 날 계산 (경고 10회 이하인 날) - 임시로 0으로 설정, 추후 백엔드에서 계산 필요
+  const goodDays = 0; // TODO: 백엔드에서 누적 좋은 날 데이터 가져오기
+
+  return (
+    <HomeTemplate
+      user={homeData.user}
+      kpis={homeData.kpis}
+      challenge={homeData.challenge}
+      warningCount={warningCount}
+      isNewUser={isNewUser}
+      goodDays={goodDays}
+    />
+  );
 }
