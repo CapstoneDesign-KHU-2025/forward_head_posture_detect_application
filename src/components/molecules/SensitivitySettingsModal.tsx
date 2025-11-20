@@ -11,25 +11,26 @@ type SensitivitySettingsModalProps = {
 
 export default function SensitivitySettingsModal({ isOpen, onClose }: SensitivitySettingsModalProps) {
   const [currentSensitivity, setCurrentSensitivity] = React.useState<Sensitivity>("normal");
-  const [showSuccess, setShowSuccess] = React.useState(false);
+  const [selectedSensitivity, setSelectedSensitivity] = React.useState<Sensitivity>("normal"); // 임시 선택
 
   React.useEffect(() => {
     if (isOpen) {
-      setCurrentSensitivity(getSensitivity());
-      setShowSuccess(false);
+      const saved = getSensitivity();
+      setCurrentSensitivity(saved);
+      setSelectedSensitivity(saved); // 모달 열 때 현재 민감도로 초기화
     }
   }, [isOpen]);
 
-  const handleSave = (sensitivity: Sensitivity) => {
-    const previousSensitivity = currentSensitivity;
-    setSensitivity(sensitivity);
-    setCurrentSensitivity(sensitivity);
-    setShowSuccess(true);
-    
-    // 2초 후 성공 메시지 숨기기
-    setTimeout(() => {
-      setShowSuccess(false);
-    }, 2000);
+  // 민감도 선택 (임시로만 선택, 아직 저장 안 함)
+  const handleSelect = (sensitivity: Sensitivity) => {
+    setSelectedSensitivity(sensitivity);
+  };
+
+  // 확인 버튼 클릭 시 실제로 저장하고 모달 닫기
+  const handleConfirm = () => {
+    setSensitivity(selectedSensitivity);
+    setCurrentSensitivity(selectedSensitivity);
+    onClose(); // 모달 닫기
   };
 
   if (!isOpen) return null;
@@ -58,22 +59,22 @@ export default function SensitivitySettingsModal({ isOpen, onClose }: Sensitivit
           <p className="text-sm text-black/60 mb-2">민감도 설정하기</p>
           <div className="flex flex-col gap-2">
             <Button
-              variant={currentSensitivity === "low" ? "primary" : "secondary"}
-              onClick={() => handleSave("low")}
+              variant={selectedSensitivity === "low" ? "primary" : "secondary"}
+              onClick={() => handleSelect("low")}
               className="w-full"
             >
               낮음
             </Button>
             <Button
-              variant={currentSensitivity === "normal" ? "primary" : "secondary"}
-              onClick={() => handleSave("normal")}
+              variant={selectedSensitivity === "normal" ? "primary" : "secondary"}
+              onClick={() => handleSelect("normal")}
               className="w-full"
             >
               보통
             </Button>
             <Button
-              variant={currentSensitivity === "high" ? "primary" : "secondary"}
-              onClick={() => handleSave("high")}
+              variant={selectedSensitivity === "high" ? "primary" : "secondary"}
+              onClick={() => handleSelect("high")}
               className="w-full"
             >
               높음
@@ -81,19 +82,15 @@ export default function SensitivitySettingsModal({ isOpen, onClose }: Sensitivit
           </div>
         </div>
 
-        {/* 성공 메시지 */}
-        {showSuccess && (
-          <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-md">
-            <p className="text-green-700 text-sm font-medium">
-              ✓ 민감도가 {getSensitivityLabel(currentSensitivity)}(으)로 설정되었습니다.
-            </p>
-          </div>
-        )}
-
-        {/* 닫기 버튼 */}
-        <Button variant="secondary" onClick={onClose} className="w-full">
-          닫기
-        </Button>
+        {/* 버튼 영역 */}
+        <div className="flex gap-3">
+          <Button variant="secondary" onClick={onClose} className="flex-1">
+            닫기
+          </Button>
+          <Button variant="primary" onClick={handleConfirm} className="flex-1">
+            확인
+          </Button>
+        </div>
       </div>
     </div>
   );

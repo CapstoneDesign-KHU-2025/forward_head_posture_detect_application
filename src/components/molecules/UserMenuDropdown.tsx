@@ -1,9 +1,10 @@
 "use client";
 
 import * as React from "react";
-import { Settings, LogOut } from "lucide-react";
+import { Settings, LogOut, UserCircle } from "lucide-react";
 import { signOut } from "next-auth/react";
 import SensitivitySettingsModal from "./SensitivitySettingsModal";
+import CharacterSelectionModal from "./CharacterSelectionModal";
 
 type UserMenuDropdownProps = {
   userName: string;
@@ -23,6 +24,7 @@ export default function UserMenuDropdown({
   anchorRef,
 }: UserMenuDropdownProps) {
   const [isSensitivityModalOpen, setIsSensitivityModalOpen] = React.useState(false);
+  const [isCharacterModalOpen, setIsCharacterModalOpen] = React.useState(false);
   const dropdownRef = React.useRef<HTMLDivElement>(null);
 
   // 외부 클릭 시 닫기
@@ -93,6 +95,17 @@ export default function UserMenuDropdown({
 
           <button
             onClick={() => {
+              setIsCharacterModalOpen(true);
+              onClose();
+            }}
+            className="w-full flex items-center gap-4 px-6 py-4 text-base font-medium text-black border-t-2 border-[#F0F9F0] transition-all duration-200 hover:bg-[#F8FBF8] hover:pl-7 cursor-pointer"
+          >
+            <UserCircle size={20} className="text-black" />
+            <span>캐릭터 변경</span>
+          </button>
+
+          <button
+            onClick={() => {
               signOut();
               onClose();
             }}
@@ -107,6 +120,10 @@ export default function UserMenuDropdown({
       <SensitivitySettingsModal
         isOpen={isSensitivityModalOpen}
         onClose={() => setIsSensitivityModalOpen(false)}
+      />
+      <CharacterSelectionModal
+        isOpen={isCharacterModalOpen}
+        onClose={() => setIsCharacterModalOpen(false)}
       />
     </>
   );

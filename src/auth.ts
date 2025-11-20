@@ -31,11 +31,11 @@ export const {
     },
     async redirect({ url, baseUrl }) {
       // 로그인 성공 후 리다이렉트 처리
-      // 홈페이지로 이동
+      // 캐릭터 선택 페이지로 이동
       if (url.startsWith("/")) return `${baseUrl}${url}`;
       if (new URL(url).origin === baseUrl) return url;
-      // 기본값: 홈페이지
-      return `${baseUrl}/`;
+      // 기본값: 캐릭터 선택 페이지
+      return `${baseUrl}/character`;
     },
   },
   pages: {
