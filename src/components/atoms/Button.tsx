@@ -6,12 +6,12 @@ type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
 };
 
 const base =
-  "inline-flex items-center justify-center rounded-md font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed";
+  "inline-flex items-center justify-center rounded-md font-bold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed";
 
 // 색상 스타일 (variant)
 const variantClass: Record<NonNullable<ButtonProps["variant"]>, string> = {
-  primary: "bg-black text-white hover:bg-black/90 focus-visible:ring-black ring-offset-white",
-  secondary: "bg-white text-black border border-black/10 hover:bg-black/5 focus-visible:ring-black ring-offset-white",
+  primary: "bg-[#2D5F2E] text-white hover:bg-[#4A9D4D] focus-visible:ring-[#2D5F2E] ring-offset-white",
+  secondary: "bg-white text-[#2D5F2E] border border-[#4A9D4D] hover:bg-[#F8FBF8] focus-visible:ring-[#4A9D4D] ring-offset-white",
 };
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
@@ -21,7 +21,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         className={cn(
           base,
-          "w-[240px] h-[48px]", // 고정 크기
+          "px-6 py-3 min-h-[48px]", // 패딩 기반 크기, 최소 높이만 설정
           variantClass[variant],
           className
         )}

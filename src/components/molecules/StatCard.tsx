@@ -1,85 +1,52 @@
 import * as React from "react";
-import { StatValue } from "@/components/atoms/kpi/StatValue";
-import { UnitText } from "@/components/atoms/kpi/UnitText";
-import { Badge } from "@/components/atoms/badge/Badge";
 
 type StatCardProps = {
-  /** 상단 라벨 (예: '평균 목 각도') */
+  /** 상단 라벨 (예: '측정 시간') */
   label: React.ReactNode;
   /** 핵심 값 (숫자/문자) */
   value: React.ReactNode;
   /** 단위 (예: '°', '%', '시간', '회') */
   unit?: React.ReactNode;
 
-  /** 값 크기 */
-  size?: "sm" | "md" | "lg" | "xl";
-
-  /** 변화 배지 */
-  delta?: "up" | "down";
-  deltaText?: React.ReactNode;              // 예: '+1°', '-3%'
-  deltaVariant?: "neutral" | "success" | "warning" | "danger";
-  deltaPosition?: "start" | "end";
-
-  /** 하단 보조 설명 (예: '오늘 기준', '어제와 비교') */
-  caption?: React.ReactNode;
-
-  /** 정렬 */
-  align?: "left" | "center";
-
   /** 컨테이너 클래스 */
   className?: string;
+  /** 값(value) 부분에 적용할 추가 클래스 (기본값: text-base font-bold) */
+  valueClassName?: string;
 };
 
-/** StatCard: 라벨 + (값+단위) + 변화 배지 + 보조설명 */
+/** StatCard: 라벨 + (값+단위) */
 export default function StatCard({
   label,
   value,
   unit,
-  size = "lg",
-  delta,
-  deltaText,
-  deltaVariant = "neutral",
-  deltaPosition = "start",
-  caption,
-  align = "left",
   className,
+  valueClassName = "text-xl font-bold",
 }: StatCardProps) {
-  const alignClass = align === "center" ? "items-center text-center" : "items-start text-left";
-
   return (
     <div
       className={[
-        "rounded-lg border border-black/10 bg-white p-4",
-        "flex flex-col gap-2",
-        alignClass,
+        "rounded-xl bg-white p-6",
+        "flex flex-col gap-1.5",
+        "border-l-4 border-[#7BC67E]",
+        "shadow-[0_2px_10px_rgba(0,0,0,0.05)]",
+        "transition-all duration-300",
+        "hover:shadow-[0_4px_20px_rgba(45,95,46,0.15)] hover:translate-x-1",
+        "items-start text-left",
         className,
       ]
         .filter(Boolean)
         .join(" ")}
     >
-      {/* 헤더: 라벨 + (선택) 변화 배지 */}
-      <div className="flex items-center gap-2">
-        <span className="text-sm font-medium text-black/70">{label}</span>
-        {delta && deltaText ? (
-          <Badge
-            variant={deltaVariant}
-            size="sm"
-            delta={delta}
-            deltaPosition={deltaPosition}
-          >
-            {deltaText}
-          </Badge>
-        ) : null}
+      {/* 헤더: 라벨 */}
+      <div>
+        <span className="text-[0.9rem] font-medium text-[#4F4F4F]">{label}</span>
       </div>
 
       {/* 본문: 값 + 단위 */}
-      <div className="flex items-baseline gap-2">
-        <StatValue size={size}>{value}</StatValue>
-        {unit ? <UnitText size={size === "xl" ? "md" : "sm"}>{unit}</UnitText> : null}
+      <div className="flex items-baseline gap-1">
+        <span className={valueClassName}>{value}</span>
+        {unit ? <span className="text-sm text-[#4F4F4F]">{unit}</span> : null}
       </div>
-
-      {/* 푸터: 보조 설명 */}
-      {caption ? <div className="text-xs text-black/50">{caption}</div> : null}
     </div>
   );
 }

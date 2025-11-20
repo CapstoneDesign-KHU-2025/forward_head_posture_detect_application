@@ -25,10 +25,17 @@ export const {
     async session({ session, user }) {
       if (session.user) {
         // 여기서 DB User.id를 세션에 강제로 주입
-
         session.user.id = user.id;
       }
       return session;
+    },
+    async redirect({ url, baseUrl }) {
+      // 로그인 성공 후 리다이렉트 처리
+      // 홈페이지로 이동
+      if (url.startsWith("/")) return `${baseUrl}${url}`;
+      if (new URL(url).origin === baseUrl) return url;
+      // 기본값: 홈페이지
+      return `${baseUrl}/`;
     },
   },
   pages: {
