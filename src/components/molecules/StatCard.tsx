@@ -4,7 +4,7 @@ type StatCardProps = {
   /** 상단 라벨 (예: '측정 시간') */
   label: React.ReactNode;
   /** 핵심 값 (숫자/문자) */
-  value: React.ReactNode;
+  value: string;
   /** 단위 (예: '°', '%', '시간', '회') */
   unit?: React.ReactNode;
 
@@ -22,6 +22,7 @@ export default function StatCard({
   className,
   valueClassName = "text-xl font-bold",
 }: StatCardProps) {
+  console.log(value);
   return (
     <div
       className={[

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import HomeTemplate from "@/components/templates/HomeTemplate";
-import { useAppStore } from "./store/app";
+
 import { computeTodaySoFarAverage } from "@/lib/hourlyOps";
 import { useSession } from "next-auth/react";
 import { getTodayCount, getTodayMeasuredSeconds } from "@/lib/postureLocal";
@@ -169,7 +169,7 @@ export default function Page() {
           },
           {
             label: "측정 시간",
-            value: todayHour ? formatMeasuredTime(todayHour) : "측정을 시작해보세요!",
+            value: todayHour ? todayHour : "측정을 시작해보세요!",
             unit: "",
           },
           {
@@ -203,21 +203,22 @@ export default function Page() {
   // 경고 횟수 (오늘 거북목 경고 횟수)
   // null이면 오늘 데이터 없음, 숫자면 경고 횟수
   // todayCount가 0이고 todayHour도 0이면 실제로 측정 기록이 없는 것이므로 null로 처리
-  const warningCount = 
-    (todayCount === 0 && todayHour === 0) || todayCount === null || todayCount === undefined
-      ? null
-      : todayCount;
-  
+  const warningCount =
+    (todayCount === 0 && todayHour === 0) || todayCount === null || todayCount === undefined ? null : todayCount;
+
   // 신규 사용자 여부 판단 (localStorage 기반, 동기적으로 초기화)
   const [isNewUser, setIsNewUser] = useState<boolean>(() => {
     if (typeof window === "undefined") return false;
     const hasEverMeasured = localStorage.getItem("hasEverMeasured");
     return !hasEverMeasured; // 없으면 신규 사용자
   });
-  
+
   // 측정 기록이 있으면 localStorage에 저장하고 신규 사용자 상태 업데이트
   useEffect(() => {
-    if (typeof window !== "undefined" && (todayCount !== null && todayCount > 0) || (todayHour !== null && todayHour > 0)) {
+    if (
+      (typeof window !== "undefined" && todayCount !== null && todayCount > 0) ||
+      (todayHour !== null && todayHour > 0)
+    ) {
       localStorage.setItem("hasEverMeasured", "true");
       setIsNewUser(false);
     }
