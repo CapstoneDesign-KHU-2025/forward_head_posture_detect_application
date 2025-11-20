@@ -70,8 +70,9 @@ type PoseMode = "stand" | "upper";
 
 // ★ 캐릭터별 FBX 경로를 바꾸기 위해 추가한 props 타입
 type ThreeDModelProps = {
-  upperFbx?: string; // 상반신(Idle)용 FBX 경로
-  fullFbx?: string;  // 전신(Walking)용 FBX 경로
+  characterId?: string; // 선택한 캐릭터 ID (remy, schrodinger, jessica)
+  idealAng?: number; // 기준 목 각도
+  userAng?: number; // 사용자 목 각도
 };
 
 // 공통 mixer (현재 모드에 따라 mixerUpper / mixerFull 중 하나를 가리킴)
@@ -105,10 +106,11 @@ declare global {
   }
 }
 
-// ★ fbx 경로 수정
+// ★ 캐릭터 ID를 받아서 해당 캐릭터의 프리셋 사용
 export default function ThreeDModel({
-  upperFbx = '/models/WomanIdle.fbx',
-  fullFbx = '/models/WomanWalking.fbx',
+  characterId = "remy",
+  idealAng = 52,
+  userAng = 52,
 }: ThreeDModelProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
 
@@ -116,9 +118,16 @@ export default function ThreeDModel({
     if (!containerRef.current) return;
     const currentContainer = containerRef.current;
 
-    // 쓸 캐릭터 고름
-    const preset = CHARACTER_PRESETS['Remy']; 
-    // 'Mouse' | 'Remy' | 'Woman' 중에서 선택
+    // 캐릭터 ID 매핑 (선택 페이지 ID → 프리셋 ID)
+    const characterIdMap: Record<string, CharacterId> = {
+      remy: 'Remy',
+      schrodinger: 'Mouse',
+      jessica: 'Woman',
+    };
+
+    // 선택한 캐릭터의 프리셋 가져오기 (기본값: Remy)
+    const presetId = characterIdMap[characterId] || 'Remy';
+    const preset = CHARACTER_PRESETS[presetId];
 
     /* ======================= *
      * 인덱스/연결 정의
@@ -455,10 +464,31 @@ export default function ThreeDModel({
       return localMixer;
     }
 
+    // ★ 기존 캐릭터 모델 제거
+    function cleanupCharacters() {
+      if (remUpper) {
+        scene.remove(remUpper);
+        if (mixerUpper) mixerUpper.stopAllAction();
+        remUpper = null;
+        mixerUpper = null;
+      }
+      if (remFull) {
+        scene.remove(remFull);
+        if (mixerFull) mixerFull.stopAllAction();
+        remFull = null;
+        mixerFull = null;
+      }
+      mixer = null;
+      idleAction = null;
+      window.__REM = undefined;
+    }
+
     // ★ Idle(upper) + Walking(full) FBX 경로를 매개변수로 받도록 변경
     function loadCharacters(upperPath: string, fullPath: string) {
+      // 기존 모델 제거
+      cleanupCharacters();
+
       const loader = new FBXLoader();
-      const files = getCharacterFiles(characterId);
 
       // upper 모드용 Idle.fbx
       loader.load(
@@ -1292,7 +1322,7 @@ export default function ThreeDModel({
 
       cleanupCharacters();
     };
-  }, [upperFbx, fullFbx]); // ★ 캐릭터 경로가 바뀌면 전체를 다시 세팅
+  }, [characterId]); // ★ 캐릭터 ID가 바뀌면 전체를 다시 세팅
 
   return <div ref={containerRef} style={{ position: "relative", width: "100%", height: "100%", overflow: "hidden" }} />;
 }

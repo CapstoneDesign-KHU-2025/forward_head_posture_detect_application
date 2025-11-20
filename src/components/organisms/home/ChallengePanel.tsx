@@ -44,16 +44,23 @@ export default function ChallengePanel({
       }
     };
 
+    // 커스텀 이벤트 감지 (같은 탭에서 캐릭터 변경된 경우)
+    const handleCustomStorage = () => {
+      setCharacterId(getSelectedCharacter());
+    };
+
     // 페이지 포커스 시 다시 확인 (같은 탭에서 캐릭터 변경 후 돌아온 경우)
     const handleFocus = () => {
       setCharacterId(getSelectedCharacter());
     };
 
     window.addEventListener("storage", handleStorageChange);
+    window.addEventListener("storage", handleCustomStorage); // 커스텀 이벤트도 감지
     window.addEventListener("focus", handleFocus);
 
     return () => {
       window.removeEventListener("storage", handleStorageChange);
+      window.removeEventListener("storage", handleCustomStorage);
       window.removeEventListener("focus", handleFocus);
     };
   }, []);
@@ -68,7 +75,7 @@ export default function ChallengePanel({
       {/* 3D 모델 영역 - 기존 ThreeDModel 사용 */}
       <div className="bg-[#2C3E50] rounded-xl p-8 min-h-[500px] flex flex-col justify-between relative mb-4">
         <div className="absolute inset-0 rounded-xl overflow-hidden">
-          <ThreeDModel idealAng={idealAng} userAng={userAng!} />
+          <ThreeDModel characterId={characterId} idealAng={idealAng} userAng={userAng ?? idealAng} />
         </div>
       </div>
 

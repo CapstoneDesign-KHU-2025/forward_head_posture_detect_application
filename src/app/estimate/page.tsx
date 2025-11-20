@@ -477,6 +477,8 @@ export default function Estimate() {
       setIsHourlyVisible(false);
       return;
     }
+    // 다른 토글 비활성화
+    setIsTodayAvgVisible(false);
     if (userId) {
       const rows = await getTodayHourly(userId);
       setHourlyList(rows);
@@ -489,6 +491,8 @@ export default function Estimate() {
       setIsTodayAvgVisible(false);
       return;
     }
+    // 다른 토글 비활성화
+    setIsHourlyVisible(false);
     const avg = await computeTodaySoFarAverage(userId);
     setTodayAvg(avg);
     if (userId) await finalizeUpToNow(userId, true);
