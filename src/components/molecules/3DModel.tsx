@@ -1145,8 +1145,8 @@ export default function ThreeDModel({ idealAng, userAng }: { idealAng: number; u
       }
 
       // 3) 패널/텍스트 갱신: 사용자 각도 vs 기준각
-      const absNeckDeg = USER_NECK_ANGLE_DEG;
-      const deltaWorldInstant = USER_NECK_ANGLE_DEG - IDEAL_NECK_ANGLE_DEG;
+      const absNeckDeg = USER_NECK_ANGLE_DEG ?? IDEAL_NECK_ANGLE_DEG;
+      const deltaWorldInstant = (USER_NECK_ANGLE_DEG ?? IDEAL_NECK_ANGLE_DEG) - IDEAL_NECK_ANGLE_DEG;
       const deltaAbs = Math.abs(deltaWorldInstant);
 
       angleSmoothed =
