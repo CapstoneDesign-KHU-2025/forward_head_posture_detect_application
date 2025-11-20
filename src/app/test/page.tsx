@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type { PoseLandmarker } from "@mediapipe/tasks-vision";
 import { FilesetResolver } from "@mediapipe/tasks-vision";
 import isTurtleNeck from "@/utils/isTurtleNeck";
-import { Button } from "@/components/atoms/button/Button";
+import { Button } from "@/components/atoms/Button";
 
 type TurtleStatus = "idle" | "good" | "turtle" | "no-pose";
 

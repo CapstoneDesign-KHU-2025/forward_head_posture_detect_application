@@ -1,9 +1,16 @@
-export default function isTurtleNeck(
-  earLeft: { x: number; y: number; z: number },
-  earRight: { x: number; y: number; z: number },
-  shoulderLeft: { x: number; y: number; z: number },
-  shoulderRight: { x: number; y: number; z: number }
-) {
+import type { Sensitivity } from "./sensitivity";
+
+export type Point3D = { x: number; y: number; z: number };
+
+export type isTurtleNeckProp = {
+  earLeft: Point3D;
+  earRight: Point3D;
+  shoulderLeft: Point3D;
+  shoulderRight: Point3D;
+  sensitivity?: Sensitivity;
+};
+
+export default function isTurtleNeck({ earLeft, earRight, shoulderLeft, shoulderRight, sensitivity = "normal" }: isTurtleNeckProp) {
   // 귀 중앙 M
   const M = {
     x: (earLeft.x + earRight.x) / 2,
@@ -71,8 +78,23 @@ export default function isTurtleNeck(
   const angleRad = Math.PI / 2 - Math.acos(Math.abs(dot) / (lenMMp * lenn));
   const angleDeg = angleRad * (180 / Math.PI);
 
+  // 민감도에 따른 임계값 설정
+  let threshold: number;
+  switch (sensitivity) {
+    case "low":
+      threshold = 45; // 더 관대하게 (45도 이하만 거북목)
+      break;
+    case "high":
+      threshold = 53; // 더 엄격하게 (53도 이하만 거북목)
+      break;
+    case "normal":
+    default:
+      threshold = 51; // 기본값 (51도 이하만 거북목)
+      break;
+  }
+
   // 임계값 판단
-  const isTurtle = angleDeg <= 51;
+  const isTurtle = angleDeg <= threshold;
 
   return { angleDeg, isTurtle };
 }
