@@ -17,12 +17,47 @@ type ChallengePanelProps = {
 };
 
 const idealAng = 52;
+
+// localStorage에서 선택한 캐릭터 가져오기
+function getSelectedCharacter(): string {
+  if (typeof window === "undefined") return "remy";
+  const selected = localStorage.getItem("selectedCharacter");
+  return selected || "remy"; // 기본값: remy
+}
+
 export default function ChallengePanel({
   userAng,
   title = "당신의 거북목 도전기",
   description = "3D 모델링으로 추후 삽입",
   illustration,
 }: ChallengePanelProps) {
+  const [characterId, setCharacterId] = React.useState<string>("remy");
+
+  // 컴포넌트 마운트 시 선택한 캐릭터 읽기
+  React.useEffect(() => {
+    setCharacterId(getSelectedCharacter());
+
+    // localStorage 변경 감지 (다른 탭이나 페이지에서 변경된 경우)
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === "selectedCharacter" && e.newValue) {
+        setCharacterId(e.newValue);
+      }
+    };
+
+    // 페이지 포커스 시 다시 확인 (같은 탭에서 캐릭터 변경 후 돌아온 경우)
+    const handleFocus = () => {
+      setCharacterId(getSelectedCharacter());
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    window.addEventListener("focus", handleFocus);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+      window.removeEventListener("focus", handleFocus);
+    };
+  }, []);
+
   return (
     <div className="rounded-[20px] bg-white p-8 shadow-[0_2px_20px_rgba(0,0,0,0.08)]">
       {/* 제목 */}

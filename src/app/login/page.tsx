@@ -10,7 +10,7 @@ export default function LoginPage() {
   const handleSignIn = async (provider: "github" | "google") => {
     try {
       const result = await signIn(provider, {
-        callbackUrl: "/",
+        callbackUrl: "/character",
         redirect: true,
       });
     } catch (error) {

@@ -51,7 +51,15 @@ declare global {
   }
 }
 
-export default function ThreeDModel({ idealAng, userAng }: { idealAng: number; userAng: number }) {
+export default function ThreeDModel({ 
+  idealAng, 
+  userAng,
+  characterId = "remy" 
+}: { 
+  idealAng: number; 
+  userAng: number;
+  characterId?: string;
+}) {
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -399,13 +407,54 @@ export default function ThreeDModel({ idealAng, userAng }: { idealAng: number; u
       return localMixer;
     }
 
-    // ★ Idle.fbx(upper) + Walking.fbx(full) 둘 다 로드
+    // ★ 캐릭터별 FBX 파일 경로 매핑
+    const getCharacterFiles = (charId: string) => {
+      // 캐릭터 ID에 따라 파일명 결정
+      // 나중에 실제 FBX 파일명에 맞게 수정 필요
+      const fileMap: Record<string, { idle: string; walking: string }> = {
+        remy: { idle: "/models/remy_idle.fbx", walking: "/models/remy_walking.fbx" },
+        schrodinger: { idle: "/models/cat_idle.fbx", walking: "/models/cat_walking.fbx" },
+        jessica: { idle: "/models/girl_idle.fbx", walking: "/models/girl_walking.fbx" },
+      };
+
+      // 임시: 실제 파일이 없으므로 모든 캐릭터에 기본값 사용
+      // 나중에 실제 FBX 파일이 추가되면 아래 주석을 해제하고 위의 기본값 fallback을 사용
+      // return fileMap[charId] || { idle: "/models/Idle.fbx", walking: "/models/Walking.fbx" };
+      
+      // 현재는 모든 캐릭터에 기본 파일 사용
+      return { idle: "/models/Idle.fbx", walking: "/models/Walking.fbx" };
+    };
+
+    // ★ 기존 캐릭터 모델 제거
+    function cleanupCharacters() {
+      if (remUpper) {
+        scene.remove(remUpper);
+        if (mixerUpper) mixerUpper.stopAllAction();
+        remUpper = null;
+        mixerUpper = null;
+      }
+      if (remFull) {
+        scene.remove(remFull);
+        if (mixerFull) mixerFull.stopAllAction();
+        remFull = null;
+        mixerFull = null;
+      }
+      mixer = null;
+      idleAction = null;
+      window.__REM = undefined;
+    }
+
+    // ★ 캐릭터별 Idle.fbx(upper) + Walking.fbx(full) 로드
     function loadCharacters() {
+      // 기존 모델 제거
+      cleanupCharacters();
+
       const loader = new FBXLoader();
+      const files = getCharacterFiles(characterId);
 
       // upper 모드용 Idle.fbx
       loader.load(
-        "/models/Idle.fbx",
+        files.idle,
         (object) => {
           const localMixer = setupFBXCharacter(object);
           remUpper = object;
@@ -415,27 +464,38 @@ export default function ThreeDModel({ idealAng, userAng }: { idealAng: number; u
           window.__REM = object;
           mixer = localMixer;
           object.visible = true;
+          
+          // 현재 모드에 따라 visibility 설정
+          if (poseMode === "upper") {
+            object.visible = true;
+          } else {
+            object.visible = false;
+          }
         },
         undefined,
-        (e) => console.error("Idle.fbx load error:", e)
+        (e) => console.error(`${files.idle} load error:`, e)
       );
 
       // full body 모드용 Walking.fbx
       loader.load(
-        "/models/Walking.fbx",
+        files.walking,
         (object) => {
           const localMixer = setupFBXCharacter(object);
           remFull = object;
           mixerFull = localMixer;
 
-          // 시작 때는 숨겨둠
-          object.visible = false;
+          // 현재 모드에 따라 visibility 설정
+          if (poseMode === "stand") {
+            object.visible = true;
+          } else {
+            object.visible = false;
+          }
 
           // 위치/스케일 더 손보고 싶으면 여기서
           // object.position.set(0, 0, 0);
         },
         undefined,
-        (e) => console.error("Walking.fbx load error:", e)
+        (e) => console.error(`${files.walking} load error:`, e)
       );
     }
 
@@ -1227,8 +1287,10 @@ export default function ThreeDModel({ idealAng, userAng }: { idealAng: number; u
         scene.remove(neckLines.white);
         neckLines = null;
       }
+
+      cleanupCharacters();
     };
-  }, []);
+  }, [characterId]);
 
   return <div ref={containerRef} style={{ position: "relative", width: "100%", height: "100%", overflow: "hidden" }} />;
 }

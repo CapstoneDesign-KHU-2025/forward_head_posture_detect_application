@@ -1,8 +1,9 @@
 "use client";
 
 import * as React from "react";
-import { Settings, LogOut } from "lucide-react";
+import { Settings, LogOut, UserCircle } from "lucide-react";
 import { signOut } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import SensitivitySettingsModal from "./SensitivitySettingsModal";
 
 type UserMenuDropdownProps = {
@@ -24,6 +25,7 @@ export default function UserMenuDropdown({
 }: UserMenuDropdownProps) {
   const [isSensitivityModalOpen, setIsSensitivityModalOpen] = React.useState(false);
   const dropdownRef = React.useRef<HTMLDivElement>(null);
+  const router = useRouter();
 
   // 외부 클릭 시 닫기
   React.useEffect(() => {
@@ -89,6 +91,17 @@ export default function UserMenuDropdown({
           >
             <Settings size={20} className="text-black" />
             <span>민감도 설정</span>
+          </button>
+
+          <button
+            onClick={() => {
+              router.push("/character");
+              onClose();
+            }}
+            className="w-full flex items-center gap-4 px-6 py-4 text-base font-medium text-black border-t-2 border-[#F0F9F0] transition-all duration-200 hover:bg-[#F8FBF8] hover:pl-7 cursor-pointer"
+          >
+            <UserCircle size={20} className="text-black" />
+            <span>캐릭터 변경</span>
           </button>
 
           <button
