@@ -68,7 +68,7 @@ export default function ChallengePanel({
       {/* 3D 모델 영역 - 기존 ThreeDModel 사용 */}
       <div className="bg-[#2C3E50] rounded-xl p-8 min-h-[500px] flex flex-col justify-between relative mb-4">
         <div className="absolute inset-0 rounded-xl overflow-hidden">
-          <ThreeDModel idealAng={idealAng} userAng={userAng ?? idealAng} />
+          <ThreeDModel idealAng={idealAng} userAng={userAng!} />
         </div>
       </div>
 

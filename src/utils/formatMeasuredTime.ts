@@ -1,10 +1,17 @@
-/**
- * 총 측정 시간(초 단위)을 "X분" 또는 "X시간 Y분" 형태로 변환
- */
 export function formatMeasuredTime(totalSeconds: number): string {
-  if (!totalSeconds || totalSeconds <= 0) return "0분";
+  if (totalSeconds == null || Number.isNaN(totalSeconds)) return "0초";
 
-  const totalMinutes = Math.floor(totalSeconds / 60);
+  // 혹시 소수 들어와도 방지
+  const sec = Math.floor(totalSeconds);
+
+  if (sec <= 0) return "0초";
+
+  // 1분 미만이면 초로 보여주기
+  if (sec < 60) {
+    return `${sec}초`;
+  }
+
+  const totalMinutes = Math.floor(sec / 60);
   const hours = Math.floor(totalMinutes / 60);
   const minutes = totalMinutes % 60;
 

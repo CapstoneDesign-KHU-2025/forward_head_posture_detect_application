@@ -5,6 +5,54 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { FBXLoader } from "three/examples/jsm/loaders/FBXLoader.js";
 
 /* ========= TypeScript 타입 ========= */
+type CharacterId = 'Mouse' | 'Remy' | 'Woman';
+
+type CharacterPreset = {
+  upperFbx: string;
+  fullFbx: string;
+  camera: {
+    upperPos: THREE.Vector3;
+    upperTarget: THREE.Vector3;
+    fullPos: THREE.Vector3;
+    fullTarget: THREE.Vector3;
+  };
+};
+
+const CHARACTER_PRESETS: Record<CharacterId, CharacterPreset> = {
+  Mouse: {
+    upperFbx: '/models/MouseIdle.fbx',
+    fullFbx: '/models/MouseWalking.fbx',
+    camera: {
+      upperPos: new THREE.Vector3(1.1, 1.1, 0.0),
+      upperTarget: new THREE.Vector3(0.05, 1.1, -0.0),
+      fullPos: new THREE.Vector3(2.0, 2.0, -0.5),
+      fullTarget: new THREE.Vector3(0, 1.2, -0.4),
+    },
+  },
+
+  Remy: {
+    upperFbx: '/models/RemyIdle.fbx',
+    fullFbx: '/models/RemyWalking.fbx',
+    camera: {
+      upperPos: new THREE.Vector3(1.3, 3.5, 0.1),
+      upperTarget: new THREE.Vector3(0.1, 3.5, -0.2),
+      fullPos: new THREE.Vector3(3.2, 3.2, -0.3),
+      fullTarget: new THREE.Vector3(0.1, 2.4, -0.5),
+    },
+  },
+
+  Woman: {
+    upperFbx: '/models/WomanIdle.fbx',
+    fullFbx: '/models/WomanWalking.fbx',
+    camera: {
+      upperPos: new THREE.Vector3(1.04, 1.5, -0.1),
+      upperTarget: new THREE.Vector3(0.2, 1.6, -0.06),
+      fullPos: new THREE.Vector3(2.1, 1.4, -0.1),
+      fullTarget: new THREE.Vector3(0.3, 1.1, -0.1),
+    },
+  },
+};
+
 type Landmark = { x: number; y: number; z: number; visibility?: number; presence?: number };
 type PoseResult = { landmarks?: Landmark[]; worldLandmarks?: Landmark[] };
 type BodyOpts = {
@@ -19,6 +67,12 @@ type BodyOpts = {
   groundPadding?: number;
 };
 type PoseMode = "stand" | "upper";
+
+// ★ 캐릭터별 FBX 경로를 바꾸기 위해 추가한 props 타입
+type ThreeDModelProps = {
+  upperFbx?: string; // 상반신(Idle)용 FBX 경로
+  fullFbx?: string;  // 전신(Walking)용 FBX 경로
+};
 
 // 공통 mixer (현재 모드에 따라 mixerUpper / mixerFull 중 하나를 가리킴)
 let mixer: THREE.AnimationMixer | null = null;
@@ -51,20 +105,20 @@ declare global {
   }
 }
 
-export default function ThreeDModel({ 
-  idealAng, 
-  userAng,
-  characterId = "remy" 
-}: { 
-  idealAng: number; 
-  userAng: number;
-  characterId?: string;
-}) {
+// ★ fbx 경로 수정
+export default function ThreeDModel({
+  upperFbx = '/models/WomanIdle.fbx',
+  fullFbx = '/models/WomanWalking.fbx',
+}: ThreeDModelProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (!containerRef.current) return;
     const currentContainer = containerRef.current;
+
+    // 쓸 캐릭터 고름
+    const preset = CHARACTER_PRESETS['Remy']; 
+    // 'Mouse' | 'Remy' | 'Woman' 중에서 선택
 
     /* ======================= *
      * 인덱스/연결 정의
@@ -152,15 +206,11 @@ export default function ThreeDModel({
     let USER_NECK_ANGLE_DEG = userAng;
     const BOUNDS = { xMin: -5, xMax: 5, zMin: -5, zMax: 5 };
 
-    // ★ 카메라 프리셋 (원하는 값으로 계속 수정 가능)
-    // upper body (상반신) 뷰
-    const CAMERA_UPPER_POS = new THREE.Vector3(1.3, 3.5, 0.1);
-    const CAMERA_UPPER_TARGET = new THREE.Vector3(0.1, 3.5, -0.2);
-
-    // full body (전신) 뷰 – 지금 스샷 비슷하게 옆에서 보는 느낌
-    const CAMERA_FULL_POS = new THREE.Vector3(3.2, 3.2, -0.3);
-    const CAMERA_FULL_TARGET = new THREE.Vector3(0.1, 2.4, -0.5);
-
+    // ✅ 선택된 캐릭터 preset에서 카메라 값 가져오기
+    const CAMERA_UPPER_POS    = preset.camera.upperPos.clone();
+    const CAMERA_UPPER_TARGET = preset.camera.upperTarget.clone();
+    const CAMERA_FULL_POS     = preset.camera.fullPos.clone();
+    const CAMERA_FULL_TARGET  = preset.camera.fullTarget.clone();
     /* ======================= *
      * Three.js 핵심 변수
      * ======================= */
@@ -323,8 +373,6 @@ export default function ThreeDModel({
     function initHelpers() {
       scene.add(new THREE.GridHelper(40, 40, 0x555566, 0x333344));
       const w = BOUNDS.xMax - BOUNDS.xMin;
-      const d = BOUNDS.zMax - BOUNDS.zMax + (BOUNDS.zMax - BOUNDS.zMin);
-      // 위 줄은 z 크기 계산을 두 번 한 건데, 간단히 다시 계산
       const depth = BOUNDS.zMax - BOUNDS.zMin;
 
       const geo = new THREE.BoxGeometry(w, 0.001, depth);
@@ -407,54 +455,14 @@ export default function ThreeDModel({
       return localMixer;
     }
 
-    // ★ 캐릭터별 FBX 파일 경로 매핑
-    const getCharacterFiles = (charId: string) => {
-      // 캐릭터 ID에 따라 파일명 결정
-      // 나중에 실제 FBX 파일명에 맞게 수정 필요
-      const fileMap: Record<string, { idle: string; walking: string }> = {
-        remy: { idle: "/models/remy_idle.fbx", walking: "/models/remy_walking.fbx" },
-        schrodinger: { idle: "/models/cat_idle.fbx", walking: "/models/cat_walking.fbx" },
-        jessica: { idle: "/models/girl_idle.fbx", walking: "/models/girl_walking.fbx" },
-      };
-
-      // 임시: 실제 파일이 없으므로 모든 캐릭터에 기본값 사용
-      // 나중에 실제 FBX 파일이 추가되면 아래 주석을 해제하고 위의 기본값 fallback을 사용
-      // return fileMap[charId] || { idle: "/models/Idle.fbx", walking: "/models/Walking.fbx" };
-      
-      // 현재는 모든 캐릭터에 기본 파일 사용
-      return { idle: "/models/Idle.fbx", walking: "/models/Walking.fbx" };
-    };
-
-    // ★ 기존 캐릭터 모델 제거
-    function cleanupCharacters() {
-      if (remUpper) {
-        scene.remove(remUpper);
-        if (mixerUpper) mixerUpper.stopAllAction();
-        remUpper = null;
-        mixerUpper = null;
-      }
-      if (remFull) {
-        scene.remove(remFull);
-        if (mixerFull) mixerFull.stopAllAction();
-        remFull = null;
-        mixerFull = null;
-      }
-      mixer = null;
-      idleAction = null;
-      window.__REM = undefined;
-    }
-
-    // ★ 캐릭터별 Idle.fbx(upper) + Walking.fbx(full) 로드
-    function loadCharacters() {
-      // 기존 모델 제거
-      cleanupCharacters();
-
+    // ★ Idle(upper) + Walking(full) FBX 경로를 매개변수로 받도록 변경
+    function loadCharacters(upperPath: string, fullPath: string) {
       const loader = new FBXLoader();
       const files = getCharacterFiles(characterId);
 
       // upper 모드용 Idle.fbx
       loader.load(
-        files.idle,
+        upperPath,
         (object) => {
           const localMixer = setupFBXCharacter(object);
           remUpper = object;
@@ -473,29 +481,22 @@ export default function ThreeDModel({
           }
         },
         undefined,
-        (e) => console.error(`${files.idle} load error:`, e)
+        (e) => console.error('Idle/Upper FBX load error:', e)
       );
 
       // full body 모드용 Walking.fbx
       loader.load(
-        files.walking,
+        fullPath,
         (object) => {
           const localMixer = setupFBXCharacter(object);
           remFull = object;
           mixerFull = localMixer;
 
-          // 현재 모드에 따라 visibility 설정
-          if (poseMode === "stand") {
-            object.visible = true;
-          } else {
-            object.visible = false;
-          }
-
-          // 위치/스케일 더 손보고 싶으면 여기서
-          // object.position.set(0, 0, 0);
+          // 시작 때는 숨겨둠
+          object.visible = false;
         },
         undefined,
-        (e) => console.error(`${files.walking} load error:`, e)
+        (e) => console.error('Walking/Full FBX load error:', e)
       );
     }
 
@@ -1251,7 +1252,8 @@ export default function ThreeDModel({
     initHelpers();
     initPoseVisuals();
     initAngleGuides();
-    loadCharacters(); // Idle + Walking 모두 로드
+    // ★ 여기에서 props로 받은 경로 사용
+    loadCharacters(preset.upperFbx, preset.fullFbx);
     initUI();
     const cleanupEvents = initEventListeners();
     setupGlobalAPI();
@@ -1290,7 +1292,7 @@ export default function ThreeDModel({
 
       cleanupCharacters();
     };
-  }, [characterId]);
+  }, [upperFbx, fullFbx]); // ★ 캐릭터 경로가 바뀌면 전체를 다시 세팅
 
   return <div ref={containerRef} style={{ position: "relative", width: "100%", height: "100%", overflow: "hidden" }} />;
 }
