@@ -4,6 +4,7 @@ import StatCard from "@/components/molecules/StatCard";
 import ChallengePanel from "@/components/organisms/home/ChallengePanel";
 import TodayStatusCard from "@/components/molecules/TodayStatusCard";
 import TitleCard from "@/components/molecules/TitleCard";
+import { formatMeasuredTime } from "@/utils/formatMeasuredTime";
 
 type KPIItem = {
   label: React.ReactNode;
@@ -33,9 +34,19 @@ type HomeTemplateProps = {
   className?: string;
 };
 
-export default function HomeTemplate({ user, kpis, challenge, warningCount = null, isNewUser, goodDays = 0, className }: HomeTemplateProps) {
+export default function HomeTemplate({
+  user,
+  kpis,
+  challenge,
+  warningCount = null,
+  isNewUser,
+  goodDays = 0,
+  className,
+}: HomeTemplateProps) {
   // 측정 시간 KPI 찾기
-  const measureTimeKpi = kpis?.find((kpi) => kpi.label === "측정 시간" || (typeof kpi.label === "string" && kpi.label.includes("측정 시간")));
+  const measureTimeKpi = kpis?.find(
+    (kpi) => kpi.label === "측정 시간" || (typeof kpi.label === "string" && kpi.label.includes("측정 시간"))
+  );
 
   return (
     <main className={["bg-[#F8FBF8] min-h-screen", className].filter(Boolean).join(" ")}>
@@ -58,14 +69,11 @@ export default function HomeTemplate({ user, kpis, challenge, warningCount = nul
               {measureTimeKpi ? (
                 <StatCard
                   label={measureTimeKpi.label}
-                  value={measureTimeKpi.value}
+                  value={formatMeasuredTime(measureTimeKpi.value as number)}
                   unit={measureTimeKpi.unit}
                 />
               ) : (
-                <StatCard
-                  label="측정 시간"
-                  value="측정을 시작해보세요!"
-                />
+                <StatCard label="측정 시간" value="측정을 시작해보세요!" />
               )}
 
               {/* 칭호 카드 */}
@@ -78,7 +86,9 @@ export default function HomeTemplate({ user, kpis, challenge, warningCount = nul
             <ChallengePanel
               userAng={user?.avgAng}
               title={challenge?.title ?? "당신의 거북목 도전기"}
-              description={challenge?.description ?? "측정을 시작하면 오늘의 평균 목 각도와 도전! 현황이 여기에 표시됩니다."}
+              description={
+                challenge?.description ?? "측정을 시작하면 오늘의 평균 목 각도와 도전! 현황이 여기에 표시됩니다."
+              }
             />
           </div>
         </div>
