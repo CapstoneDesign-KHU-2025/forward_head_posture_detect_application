@@ -1,23 +1,26 @@
 // src/components/organisms/home/ChallengePanel.tsx
-'use client';
+"use client";
 
-import * as React from 'react';
-import dynamic from 'next/dynamic';
+import * as React from "react";
+import dynamic from "next/dynamic";
 
 // 3DModel은 클라이언트 전용이므로 ssr: false
-const ThreeDModel = dynamic(() => import('@/components/molecules/3DModel'), {
+const ThreeDModel = dynamic(() => import("@/components/molecules/3DModel"), {
   ssr: false,
 });
 
 type ChallengePanelProps = {
+  userAng: number | undefined;
   title?: React.ReactNode;
   description?: React.ReactNode;
   illustration?: React.ReactNode; // 옵션
 };
 
+const idealAng = 52;
 export default function ChallengePanel({
-  title = '당신의 거북목 도전기',
-  description = '3D 모델링으로 추후 삽입',
+  userAng,
+  title = "당신의 거북목 도전기",
+  description = "3D 모델링으로 추후 삽입",
   illustration,
 }: ChallengePanelProps) {
   return (

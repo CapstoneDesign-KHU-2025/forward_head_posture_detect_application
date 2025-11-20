@@ -1,8 +1,8 @@
-'use client';
-import { useEffect, useRef } from 'react';
-import * as THREE from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
+"use client";
+import { useEffect, useRef } from "react";
+import * as THREE from "three";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import { FBXLoader } from "three/examples/jsm/loaders/FBXLoader.js";
 
 /* ========= TypeScript 타입 ========= */
 type Landmark = { x: number; y: number; z: number; visibility?: number; presence?: number };
@@ -18,21 +18,17 @@ type BodyOpts = {
   groundY?: number;
   groundPadding?: number;
 };
-type PoseMode = 'stand' | 'upper';
+type PoseMode = "stand" | "upper";
 
 // 공통 mixer (현재 모드에 따라 mixerUpper / mixerFull 중 하나를 가리킴)
 let mixer: THREE.AnimationMixer | null = null;
 let idleAction: THREE.AnimationAction | null = null;
 
 // Idle / Walking 따로
-let mixerUpper: THREE.AnimationMixer | null = null;  // Idle.fbx용
-let mixerFull: THREE.AnimationMixer | null = null;   // Walking.fbx용
-let remUpper: THREE.Object3D | null = null;          // Idle.fbx 오브젝트
-let remFull: THREE.Object3D | null = null;           // Walking.fbx 오브젝트
-
-// ★ 여기 두 개 숫자만 수정
-const INITIAL_IDEAL_NECK_ANGLE_DEG = 52;  // 기준(거북목 기준) 각도
-const INITIAL_USER_NECK_ANGLE_DEG = 85;   // 사용자 실제 목 각도
+let mixerUpper: THREE.AnimationMixer | null = null; // Idle.fbx용
+let mixerFull: THREE.AnimationMixer | null = null; // Walking.fbx용
+let remUpper: THREE.Object3D | null = null; // Idle.fbx 오브젝트
+let remFull: THREE.Object3D | null = null; // Walking.fbx 오브젝트
 
 declare global {
   interface Window {
@@ -55,7 +51,7 @@ declare global {
   }
 }
 
-export default function ThreeDModel() {
+export default function ThreeDModel({ idealAng, userAng }: { idealAng: number; userAng: number }) {
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -66,22 +62,73 @@ export default function ThreeDModel() {
      * 인덱스/연결 정의
      * ======================= */
     const BODY_CONNECTIONS: Array<[number, number]> = [
-      [11, 13], [13, 15], [12, 14], [14, 16], [11, 12], [11, 23], [12, 24], [23, 24],
-      [23, 25], [25, 27], [27, 29], [29, 31], [24, 26], [26, 28], [28, 30], [30, 32],
+      [11, 13],
+      [13, 15],
+      [12, 14],
+      [14, 16],
+      [11, 12],
+      [11, 23],
+      [12, 24],
+      [23, 24],
+      [23, 25],
+      [25, 27],
+      [27, 29],
+      [29, 31],
+      [24, 26],
+      [26, 28],
+      [28, 30],
+      [30, 32],
     ];
     const HEAD_CONNECTIONS: Array<[number, number]> = [
-      [1, 2], [2, 3], [4, 5], [5, 6], [1, 0], [0, 4], [7, 1], [8, 4], [9, 0],
-      [10, 0], [11, 0], [12, 0],
+      [1, 2],
+      [2, 3],
+      [4, 5],
+      [5, 6],
+      [1, 0],
+      [0, 4],
+      [7, 1],
+      [8, 4],
+      [9, 0],
+      [10, 0],
+      [11, 0],
+      [12, 0],
     ];
     const POSE_CONNECTIONS = [...BODY_CONNECTIONS, ...HEAD_CONNECTIONS];
 
     const IDX = {
-      NOSE: 0, L_EYE_IN: 1, L_EYE: 2, L_EYE_OUT: 3, R_EYE_IN: 4, R_EYE: 5, R_EYE_OUT: 6,
-      L_EAR: 7, R_EAR: 8, MOUTH_L: 9, MOUTH_R: 10, L_SHOULDER: 11, R_SHOULDER: 12,
-      L_ELBOW: 13, R_ELBOW: 14, L_WRIST: 15, R_WRIST: 16, L_PINKY: 17, R_PINKY: 18,
-      L_INDEX: 19, R_INDEX: 20, L_THUMB: 21, R_THUMB: 22, L_HIP: 23, R_HIP: 24,
-      L_KNEE: 25, R_KNEE: 26, L_ANKLE: 27, R_ANKLE: 28, L_HEEL: 29, R_HEEL: 30,
-      L_FOOT: 31, R_FOOT: 32,
+      NOSE: 0,
+      L_EYE_IN: 1,
+      L_EYE: 2,
+      L_EYE_OUT: 3,
+      R_EYE_IN: 4,
+      R_EYE: 5,
+      R_EYE_OUT: 6,
+      L_EAR: 7,
+      R_EAR: 8,
+      MOUTH_L: 9,
+      MOUTH_R: 10,
+      L_SHOULDER: 11,
+      R_SHOULDER: 12,
+      L_ELBOW: 13,
+      R_ELBOW: 14,
+      L_WRIST: 15,
+      R_WRIST: 16,
+      L_PINKY: 17,
+      R_PINKY: 18,
+      L_INDEX: 19,
+      R_INDEX: 20,
+      L_THUMB: 21,
+      R_THUMB: 22,
+      L_HIP: 23,
+      R_HIP: 24,
+      L_KNEE: 25,
+      R_KNEE: 26,
+      L_ANKLE: 27,
+      R_ANKLE: 28,
+      L_HEEL: 29,
+      R_HEEL: 30,
+      L_FOOT: 31,
+      R_FOOT: 32,
     } as const;
 
     const LOWER_SET = new Set<number>([23, 24, 25, 26, 27, 28, 29, 30, 31, 32]);
@@ -93,18 +140,18 @@ export default function ThreeDModel() {
     const HEAD_POINT_SCALE = 1.1;
     const BODY_POINT_SCALE = 0.95;
     const ANGLE_SMOOTH_ALPHA = 0.2;
-    let IDEAL_NECK_ANGLE_DEG = INITIAL_IDEAL_NECK_ANGLE_DEG;
-    let USER_NECK_ANGLE_DEG = INITIAL_USER_NECK_ANGLE_DEG;
+    let IDEAL_NECK_ANGLE_DEG = idealAng;
+    let USER_NECK_ANGLE_DEG = userAng;
     const BOUNDS = { xMin: -5, xMax: 5, zMin: -5, zMax: 5 };
 
     // ★ 카메라 프리셋 (원하는 값으로 계속 수정 가능)
     // upper body (상반신) 뷰
-    const CAMERA_UPPER_POS    = new THREE.Vector3(1.3, 3.5, 0.1);
+    const CAMERA_UPPER_POS = new THREE.Vector3(1.3, 3.5, 0.1);
     const CAMERA_UPPER_TARGET = new THREE.Vector3(0.1, 3.5, -0.2);
 
     // full body (전신) 뷰 – 지금 스샷 비슷하게 옆에서 보는 느낌
-    const CAMERA_FULL_POS     = new THREE.Vector3(3.2, 3.2, -0.3);
-    const CAMERA_FULL_TARGET  = new THREE.Vector3(0.1, 2.4, -0.5);
+    const CAMERA_FULL_POS = new THREE.Vector3(3.2, 3.2, -0.3);
+    const CAMERA_FULL_TARGET = new THREE.Vector3(0.1, 2.4, -0.5);
 
     /* ======================= *
      * Three.js 핵심 변수
@@ -126,7 +173,7 @@ export default function ThreeDModel() {
     /* ======================= *
      * 포즈 상태
      * ======================= */
-    let poseMode: PoseMode = 'upper';
+    let poseMode: PoseMode = "upper";
     const pose: THREE.Vector3[] = new Array(33).fill(0).map(() => new THREE.Vector3());
     let useExternalPose = false;
     let externalPoseProvider: (() => THREE.Vector3[]) | null = null;
@@ -142,10 +189,10 @@ export default function ThreeDModel() {
      * 유틸
      * ======================= */
     function makeTextSprite(text: string): THREE.Sprite {
-      const canvas = document.createElement('canvas');
+      const canvas = document.createElement("canvas");
       canvas.width = 512;
       canvas.height = 256;
-      const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
+      const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
       const tex = new THREE.CanvasTexture(canvas);
       tex.minFilter = THREE.LinearFilter;
       const mat = new THREE.SpriteMaterial({ map: tex, transparent: true });
@@ -160,13 +207,13 @@ export default function ThreeDModel() {
       const { canvas, context, texture } = sprite.userData as any;
       const ctx = context as CanvasRenderingContext2D;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.font = 'bold 64px Arial';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      const [line1, line2] = text.split('\n');
-      ctx.strokeStyle = 'rgba(0,0,0,0.6)';
+      ctx.font = "bold 64px Arial";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      const [line1, line2] = text.split("\n");
+      ctx.strokeStyle = "rgba(0,0,0,0.6)";
       ctx.lineWidth = 8;
-      ctx.fillStyle = 'rgba(255,255,255,0.97)';
+      ctx.fillStyle = "rgba(255,255,255,0.97)";
       ctx.strokeText(line1, canvas.width / 2, canvas.height / 2 - 40);
       ctx.fillText(line1, canvas.width / 2, canvas.height / 2 - 40);
       if (line2) {
@@ -246,9 +293,9 @@ export default function ThreeDModel() {
       scene.add(floor);
     }
     function initControls() {
-      renderer.domElement.style.position = 'absolute';
-      renderer.domElement.style.inset = '0';
-      renderer.domElement.style.touchAction = 'none';
+      renderer.domElement.style.position = "absolute";
+      renderer.domElement.style.inset = "0";
+      renderer.domElement.style.touchAction = "none";
       renderer.domElement.oncontextmenu = (e) => e.preventDefault();
 
       controls = new OrbitControls(camera, renderer.domElement);
@@ -346,7 +393,7 @@ export default function ThreeDModel() {
         localMixer.timeScale = 0.3;
         idleAction = action;
       } else {
-        console.warn('FBX 내 애니메이션이 없습니다.');
+        console.warn("FBX 내 애니메이션이 없습니다.");
       }
 
       return localMixer;
@@ -358,7 +405,7 @@ export default function ThreeDModel() {
 
       // upper 모드용 Idle.fbx
       loader.load(
-        '/models/Idle.fbx',
+        "/models/Idle.fbx",
         (object) => {
           const localMixer = setupFBXCharacter(object);
           remUpper = object;
@@ -370,12 +417,12 @@ export default function ThreeDModel() {
           object.visible = true;
         },
         undefined,
-        (e) => console.error('Idle.fbx load error:', e)
+        (e) => console.error("Idle.fbx load error:", e)
       );
 
       // full body 모드용 Walking.fbx
       loader.load(
-        '/models/Walking.fbx',
+        "/models/Walking.fbx",
         (object) => {
           const localMixer = setupFBXCharacter(object);
           remFull = object;
@@ -388,7 +435,7 @@ export default function ThreeDModel() {
           // object.position.set(0, 0, 0);
         },
         undefined,
-        (e) => console.error('Walking.fbx load error:', e)
+        (e) => console.error("Walking.fbx load error:", e)
       );
     }
 
@@ -444,31 +491,31 @@ export default function ThreeDModel() {
 
     function initUI() {
       // 각도 패널(우하단)
-      const anglePanel = document.createElement('div');
+      const anglePanel = document.createElement("div");
       Object.assign(anglePanel.style, {
-        position: 'absolute',
-        bottom: '12px',
-        right: '12px',
+        position: "absolute",
+        bottom: "12px",
+        right: "12px",
         zIndex: 3,
-        background: 'rgba(20,22,32,0.9)',
-        color: '#fff',
-        fontFamily: 'system-ui,-apple-system,Segoe UI,Roboto,Arial',
-        padding: '10px 12px',
-        border: '1px solid rgba(255,255,255,0.15)',
-        borderRadius: '10px',
-        backdropFilter: 'blur(6px)',
-        boxShadow: '0 6px 16px rgba(0,0,0,0.25)',
-        minWidth: '180px',
+        background: "rgba(20,22,32,0.9)",
+        color: "#fff",
+        fontFamily: "system-ui,-apple-system,Segoe UI,Roboto,Arial",
+        padding: "10px 12px",
+        border: "1px solid rgba(255,255,255,0.15)",
+        borderRadius: "10px",
+        backdropFilter: "blur(6px)",
+        boxShadow: "0 6px 16px rgba(0,0,0,0.25)",
+        minWidth: "180px",
       });
-      const title = document.createElement('div');
-      title.textContent = 'Neck Angle';
-      Object.assign(title.style, { fontWeight: '700', marginBottom: '6px', opacity: 0.9 });
-      const absLine = document.createElement('div');
-      const deltaLine = document.createElement('div');
-      const idealLine = document.createElement('div');
-      Object.assign(absLine.style, { fontSize: '14px', marginTop: '2px' });
-      Object.assign(deltaLine.style, { fontSize: '14px', marginTop: '2px' });
-      Object.assign(idealLine.style, { fontSize: '12px', marginTop: '6px', opacity: 0.8 });
+      const title = document.createElement("div");
+      title.textContent = "Neck Angle";
+      Object.assign(title.style, { fontWeight: "700", marginBottom: "6px", opacity: 0.9 });
+      const absLine = document.createElement("div");
+      const deltaLine = document.createElement("div");
+      const idealLine = document.createElement("div");
+      Object.assign(absLine.style, { fontSize: "14px", marginTop: "2px" });
+      Object.assign(deltaLine.style, { fontSize: "14px", marginTop: "2px" });
+      Object.assign(idealLine.style, { fontSize: "12px", marginTop: "6px", opacity: 0.8 });
       anglePanel.append(title, absLine, deltaLine, idealLine);
       currentContainer.appendChild(anglePanel);
       window.__anglePanel = {
@@ -478,58 +525,55 @@ export default function ThreeDModel() {
           idealLine.textContent = `Ideal: ${idealDeg.toFixed(1)}°`;
           (deltaLine.style as any).color =
             Math.abs(deltaDeg) >= 15
-              ? 'rgba(255,120,120,0.9)'
+              ? "rgba(255,120,120,0.9)"
               : Math.abs(deltaDeg) >= 8
-              ? 'rgba(255,200,120,0.9)'
-              : 'rgba(255,255,255,0.95)';
+              ? "rgba(255,200,120,0.9)"
+              : "rgba(255,255,255,0.95)";
         },
       };
 
       // world/landmarks 토글(지금은 숨김)
-      const srcPanel = document.createElement('div');
+      const srcPanel = document.createElement("div");
       Object.assign(srcPanel.style, {
-        position: 'absolute',
-        top: '12px',
-        left: '12px',
+        position: "absolute",
+        top: "12px",
+        left: "12px",
         zIndex: 3,
-        background: 'rgba(20,22,32,0.9)',
-        color: '#fff',
-        padding: '8px 10px',
-        border: '1px solid rgba(255,255,255,0.15)',
-        borderRadius: '10px',
-        backdropFilter: 'blur(6px)',
+        background: "rgba(20,22,32,0.9)",
+        color: "#fff",
+        padding: "8px 10px",
+        border: "1px solid rgba(255,255,255,0.15)",
+        borderRadius: "10px",
+        backdropFilter: "blur(6px)",
       });
       const mkBtn = (t: string) => {
-        const b = document.createElement('button');
+        const b = document.createElement("button");
         b.textContent = t;
         Object.assign(b.style, {
-          marginRight: '6px',
-          padding: '6px 10px',
-          borderRadius: '8px',
-          border: '1px solid rgba(255,255,255,0.18)',
-          background: 'rgba(255,255,255,0.08)',
-          color: '#fff',
-          cursor: 'pointer',
+          marginRight: "6px",
+          padding: "6px 10px",
+          borderRadius: "8px",
+          border: "1px solid rgba(255,255,255,0.18)",
+          background: "rgba(255,255,255,0.08)",
+          color: "#fff",
+          cursor: "pointer",
           fontWeight: 600,
         });
-        b.onmouseenter = () => (b.style.background = 'rgba(255,255,255,0.14)');
+        b.onmouseenter = () => (b.style.background = "rgba(255,255,255,0.14)");
         b.onmouseleave = () =>
-          (b.style.background =
-            (b as any).dataset.active === '1'
-              ? 'rgba(0,255,226,0.25)'
-              : 'rgba(255,255,255,0.08)');
+          (b.style.background = (b as any).dataset.active === "1" ? "rgba(0,255,226,0.25)" : "rgba(255,255,255,0.08)");
         return b;
       };
       const setActive = (btn: HTMLButtonElement, on: boolean) => {
-        (btn as any).dataset.active = on ? '1' : '0';
-        btn.style.background = on ? 'rgba(0,255,226,0.25)' : 'rgba(255,255,255,0.08)';
-        btn.style.borderColor = on ? 'rgba(0,255,226,0.55)' : 'rgba(255,255,255,0.18)';
+        (btn as any).dataset.active = on ? "1" : "0";
+        btn.style.background = on ? "rgba(0,255,226,0.25)" : "rgba(255,255,255,0.08)";
+        btn.style.borderColor = on ? "rgba(0,255,226,0.55)" : "rgba(255,255,255,0.18)";
       };
-      const btnWorld = mkBtn('worldLandmarks');
-      const btnImg = mkBtn('landmarks');
+      const btnWorld = mkBtn("worldLandmarks");
+      const btnImg = mkBtn("landmarks");
       srcPanel.append(btnWorld, btnImg);
       currentContainer.appendChild(srcPanel);
-      srcPanel.style.display = 'none';
+      srcPanel.style.display = "none";
 
       const applyLandmarkSource = (useWorld: boolean) => {
         const src = window.LAST_MP_RESULT || window.SAMPLE_MP;
@@ -558,33 +602,33 @@ export default function ThreeDModel() {
       btnImg.onclick = () => applyLandmarkSource(false);
 
       // full/upper 토글 (좌하단) – Upper body 버튼을 앞으로
-      const modePanel = document.createElement('div');
+      const modePanel = document.createElement("div");
       Object.assign(modePanel.style, {
-        position: 'absolute',
-        bottom: '12px',
-        left: '12px',
+        position: "absolute",
+        bottom: "12px",
+        left: "12px",
         zIndex: 3,
-        background: 'rgba(20,22,32,0.9)',
-        color: '#fff',
-        padding: '8px 10px',
-        border: '1px solid rgba(255,255,255,0.15)',
-        borderRadius: '10px',
-        backdropFilter: 'blur(6px)',
+        background: "rgba(20,22,32,0.9)",
+        color: "#fff",
+        padding: "8px 10px",
+        border: "1px solid rgba(255,255,255,0.15)",
+        borderRadius: "10px",
+        backdropFilter: "blur(6px)",
       });
-      const btnUpper = mkBtn('Upper body');
-      const btnFull = mkBtn('Full body');
+      const btnUpper = mkBtn("Upper body");
+      const btnFull = mkBtn("Full body");
       modePanel.append(btnUpper, btnFull); // ← Upper 먼저
       currentContainer.appendChild(modePanel);
 
       const setPoseModeUI = (mode: PoseMode) => {
         poseMode = mode;
-        setActive(btnFull, mode === 'stand');
-        setActive(btnUpper, mode === 'upper');
+        setActive(btnFull, mode === "stand");
+        setActive(btnUpper, mode === "upper");
         applyVisibilityForMode(mode);
         rebuildLinesNow();
 
         // 모드에 따라 FBX / mixer / 카메라 동기화
-        if (mode === 'upper') {
+        if (mode === "upper") {
           // Idle.fbx 활성
           if (remUpper) {
             remUpper.visible = true;
@@ -612,48 +656,37 @@ export default function ThreeDModel() {
           controls.target.copy(CAMERA_FULL_TARGET);
         }
       };
-      btnFull.onclick = () => setPoseModeUI('stand');
-      btnUpper.onclick = () => setPoseModeUI('upper');
+      btnFull.onclick = () => setPoseModeUI("stand");
+      btnUpper.onclick = () => setPoseModeUI("upper");
 
       // 초기 상태
-      setPoseModeUI('upper');
+      setPoseModeUI("upper");
       applyLandmarkSource(true);
     }
 
     function initEventListeners() {
       const onResize = () => {
-        camera.aspect =
-          (currentContainer.clientWidth || 1) / (currentContainer.clientHeight || 1);
+        camera.aspect = (currentContainer.clientWidth || 1) / (currentContainer.clientHeight || 1);
         camera.updateProjectionMatrix();
-        renderer.setSize(
-          currentContainer.clientWidth,
-          currentContainer.clientHeight
-        );
+        renderer.setSize(currentContainer.clientWidth, currentContainer.clientHeight);
       };
       const onKeydown = (e: KeyboardEvent) => {
-        if (
-          ['INPUT', 'TEXTAREA', 'SELECT'].includes(
-            (document.activeElement as HTMLElement | null)?.tagName ?? ''
-          )
-        )
+        if (["INPUT", "TEXTAREA", "SELECT"].includes((document.activeElement as HTMLElement | null)?.tagName ?? ""))
           return;
         pressedKeys.add(e.code);
-        if (
-          ['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code)
-        )
-          e.preventDefault();
+        if (["Space", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.code)) e.preventDefault();
       };
       const onKeyup = (e: KeyboardEvent) => {
         pressedKeys.delete(e.code);
       };
 
-      window.addEventListener('resize', onResize);
-      window.addEventListener('keydown', onKeydown);
-      window.addEventListener('keyup', onKeyup);
+      window.addEventListener("resize", onResize);
+      window.addEventListener("keydown", onKeydown);
+      window.addEventListener("keyup", onKeyup);
       return () => {
-        window.removeEventListener('resize', onResize);
-        window.removeEventListener('keydown', onKeydown);
-        window.removeEventListener('keyup', onKeyup);
+        window.removeEventListener("resize", onResize);
+        window.removeEventListener("keydown", onKeydown);
+        window.removeEventListener("keyup", onKeyup);
       };
     }
 
@@ -661,7 +694,7 @@ export default function ThreeDModel() {
      * 외부 API
      * ======================= */
     function applyVisibilityForMode(mode: PoseMode): void {
-      const hideLower = mode === 'upper';
+      const hideLower = mode === "upper";
       for (let i = 0; i <= 32; i++) {
         const isLower = LOWER_SET.has(i);
         const wantVisible = !HIDE_INDICES.has(i) && (!hideLower || !isLower);
@@ -669,10 +702,10 @@ export default function ThreeDModel() {
         if (!wantVisible) jointSpheres[i].position.set(0, -9999, 0);
       }
     }
-    function applyBasePose(mode: PoseMode = 'stand'): void {
+    function applyBasePose(mode: PoseMode = "stand"): void {
       const shoulderHalf = 0.22,
         hipHalf = 0.14;
-      if (mode === 'stand') {
+      if (mode === "stand") {
         const shoulderY = 1.45,
           hipY = 1.0,
           kneeY = 0.55,
@@ -739,10 +772,8 @@ export default function ThreeDModel() {
     function rebuildLinesNow() {
       const pts: THREE.Vector3[] = [];
       const active =
-        poseMode === 'upper'
-          ? POSE_CONNECTIONS.filter(
-              ([a, b]) => !LOWER_SET.has(a) && !LOWER_SET.has(b)
-            )
+        poseMode === "upper"
+          ? POSE_CONNECTIONS.filter(([a, b]) => !LOWER_SET.has(a) && !LOWER_SET.has(b))
           : POSE_CONNECTIONS;
       for (const [a, b] of active) {
         if (!jointSpheres[a].visible || !jointSpheres[b].visible) continue;
@@ -760,16 +791,15 @@ export default function ThreeDModel() {
       const up = new THREE.Vector3(0, 1, 0);
       const right = new THREE.Vector3().crossVectors(fwd, up).normalize();
       const move = new THREE.Vector3();
-      if (pressedKeys.has('KeyW')) move.add(fwd);
-      if (pressedKeys.has('KeyS')) move.sub(fwd);
-      if (pressedKeys.has('KeyD')) move.add(right);
-      if (pressedKeys.has('KeyA')) move.sub(right);
-      if (pressedKeys.has('KeyE')) move.add(up);
-      if (pressedKeys.has('KeyQ')) move.sub(up);
+      if (pressedKeys.has("KeyW")) move.add(fwd);
+      if (pressedKeys.has("KeyS")) move.sub(fwd);
+      if (pressedKeys.has("KeyD")) move.add(right);
+      if (pressedKeys.has("KeyA")) move.sub(right);
+      if (pressedKeys.has("KeyE")) move.add(up);
+      if (pressedKeys.has("KeyQ")) move.sub(up);
       if (move.lengthSq() === 0) return;
       move.normalize();
-      const speed =
-        1.5 * (pressedKeys.has('ShiftLeft') || pressedKeys.has('ShiftRight') ? 2.5 : 1);
+      const speed = 1.5 * (pressedKeys.has("ShiftLeft") || pressedKeys.has("ShiftRight") ? 2.5 : 1);
       camera.position.addScaledVector(move, speed * dt);
       controls.target.addScaledVector(move, speed * dt);
     }
@@ -799,11 +829,9 @@ export default function ThreeDModel() {
 
         let lm: Landmark[] | null = null;
         if (Array.isArray(landmarksOrResult)) lm = landmarksOrResult;
-        else if (landmarksOrResult && typeof landmarksOrResult === 'object') {
-          if (useWorld && Array.isArray(landmarksOrResult.worldLandmarks))
-            lm = landmarksOrResult.worldLandmarks!;
-          else if (Array.isArray(landmarksOrResult.landmarks))
-            lm = landmarksOrResult.landmarks!;
+        else if (landmarksOrResult && typeof landmarksOrResult === "object") {
+          if (useWorld && Array.isArray(landmarksOrResult.worldLandmarks)) lm = landmarksOrResult.worldLandmarks!;
+          else if (Array.isArray(landmarksOrResult.landmarks)) lm = landmarksOrResult.landmarks!;
         }
         if (!lm || lm.length < 33) return;
 
@@ -841,14 +869,7 @@ export default function ThreeDModel() {
         }
 
         if (snapToGround) {
-          const footIdx = [
-            IDX.L_ANKLE,
-            IDX.R_ANKLE,
-            IDX.L_HEEL,
-            IDX.R_HEEL,
-            IDX.L_FOOT,
-            IDX.R_FOOT,
-          ];
+          const footIdx = [IDX.L_ANKLE, IDX.R_ANKLE, IDX.L_HEEL, IDX.R_HEEL, IDX.L_FOOT, IDX.R_FOOT];
           let minY = Infinity;
           for (const idx of footIdx) {
             const v = arr[idx];
@@ -857,8 +878,7 @@ export default function ThreeDModel() {
           if (isFinite(minY)) {
             const target = groundY + groundPadding;
             const dy = minY - target;
-            if (Math.abs(dy) > 1e-9)
-              for (let i = 0; i < 33; i++) arr[i].y -= dy;
+            if (Math.abs(dy) > 1e-9) for (let i = 0; i < 33; i++) arr[i].y -= dy;
           }
         }
 
@@ -886,11 +906,9 @@ export default function ThreeDModel() {
         const { useWorld = true, zFlip = true, scale = 1 } = opts;
         let lm: Landmark[] | null = null;
         if (Array.isArray(landmarksOrResult)) lm = landmarksOrResult;
-        else if (landmarksOrResult && typeof landmarksOrResult === 'object') {
-          if (useWorld && Array.isArray(landmarksOrResult.worldLandmarks))
-            lm = landmarksOrResult.worldLandmarks!;
-          else if (Array.isArray(landmarksOrResult.landmarks))
-            lm = landmarksOrResult.landmarks!;
+        else if (landmarksOrResult && typeof landmarksOrResult === "object") {
+          if (useWorld && Array.isArray(landmarksOrResult.worldLandmarks)) lm = landmarksOrResult.worldLandmarks!;
+          else if (Array.isArray(landmarksOrResult.landmarks)) lm = landmarksOrResult.landmarks!;
         }
         if (!lm || lm.length < 33) return;
         const lSh = lm[IDX.L_SHOULDER];
@@ -1002,7 +1020,7 @@ export default function ThreeDModel() {
       const HEAD_SCALE = 1.35;
 
       // 1) 포즈 점 업데이트 (필요 시)
-      if (useExternalPose && typeof externalPoseProvider === 'function') {
+      if (useExternalPose && typeof externalPoseProvider === "function") {
         const ext = externalPoseProvider();
         if (Array.isArray(ext) && ext.length >= 33) {
           for (let i = 0; i < 33; i++) jointSpheres[i].position.copy(ext[i]);
@@ -1052,17 +1070,9 @@ export default function ThreeDModel() {
 
         // 사용자 각도와 기준 각도의 차이로 목/머리 굽힘 정도 결정
         const deltaDeg = USER_NECK_ANGLE_DEG - IDEAL_NECK_ANGLE_DEG;
-        const bendRad = THREE.MathUtils.degToRad(
-          THREE.MathUtils.clamp(deltaDeg, -45, 45)
-        );
-        const qNeck = new THREE.Quaternion().setFromAxisAngle(
-          shoulderAxis,
-          bendRad * 0.7
-        );
-        const qHead = new THREE.Quaternion().setFromAxisAngle(
-          shoulderAxis,
-          bendRad * 0.3
-        );
+        const bendRad = THREE.MathUtils.degToRad(THREE.MathUtils.clamp(deltaDeg, -45, 45));
+        const qNeck = new THREE.Quaternion().setFromAxisAngle(shoulderAxis, bendRad * 0.7);
+        const qHead = new THREE.Quaternion().setFromAxisAngle(shoulderAxis, bendRad * 0.3);
 
         const applyExtraWorldRotationFromBind = (
           bone: THREE.Bone | undefined,
@@ -1103,9 +1113,7 @@ export default function ThreeDModel() {
               .addScaledVector(worldFwd, Math.cos(rad)) // 0° = 앞
               .addScaledVector(worldUp, Math.sin(rad)); // 90° = 위
             // 어깨축 방향 성분 제거해서 어깨 평면 위로 투영
-            return v
-              .sub(shoulderAxis.clone().multiplyScalar(v.dot(shoulderAxis)))
-              .normalize();
+            return v.sub(shoulderAxis.clone().multiplyScalar(v.dot(shoulderAxis))).normalize();
           };
 
           const idealDir = makeDirFromAngle(IDEAL_NECK_ANGLE_DEG);
@@ -1142,15 +1150,11 @@ export default function ThreeDModel() {
       const deltaAbs = Math.abs(deltaWorldInstant);
 
       angleSmoothed =
-        angleSmoothed == null
-          ? deltaAbs
-          : THREE.MathUtils.lerp(angleSmoothed, deltaAbs, ANGLE_SMOOTH_ALPHA);
+        angleSmoothed == null ? deltaAbs : THREE.MathUtils.lerp(angleSmoothed, deltaAbs, ANGLE_SMOOTH_ALPHA);
 
       updateSpriteText(
         angleSprite,
-        `${absNeckDeg.toFixed(1)}° (ideal ${IDEAL_NECK_ANGLE_DEG.toFixed(
-          0
-        )}°)\nΔ ${angleSmoothed!.toFixed(1)}°`
+        `${absNeckDeg.toFixed(1)}° (ideal ${IDEAL_NECK_ANGLE_DEG.toFixed(0)}°)\nΔ ${angleSmoothed!.toFixed(1)}°`
       );
       window.__anglePanel?.set?.(absNeckDeg, deltaWorldInstant, IDEAL_NECK_ANGLE_DEG);
 
@@ -1226,10 +1230,5 @@ export default function ThreeDModel() {
     };
   }, []);
 
-  return (
-    <div
-      ref={containerRef}
-      style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden' }}
-    />
-  );
+  return <div ref={containerRef} style={{ position: "relative", width: "100%", height: "100%", overflow: "hidden" }} />;
 }

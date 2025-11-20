@@ -10,7 +10,7 @@ import { getTodayCount, getTodayMeasuredSeconds } from "@/lib/postureLocal";
 import { formatMeasuredTime } from "@/utils/formatMeasuredTime";
 import { computeImprovementPercent } from "@/utils/computeImprovementPercent";
 type HomeData = {
-  user: { name: string; avatarSrc?: string } | null;
+  user: { name: string; avgAng: number; avatarSrc?: string } | null;
   kpis: Array<{
     label: string;
     value: number | string;
@@ -83,13 +83,12 @@ export default function Page() {
           throw new Error(`Failed to fetch weekly summary: ${res.status}`);
         }
         const data: WeeklySummaryResponse = await res.json();
-        console.log(data);
+
         if (!cancelled) {
           setWeeklyAvg(data.weightedAvg ?? null);
         }
       } catch (e: any) {
         if (!cancelled) {
-          console.error("Error loading home data:", e);
           setError(e.message ?? "알 수 없는 에러");
         }
       } finally {
@@ -129,7 +128,11 @@ export default function Page() {
   const improvementValue = improvement == null ? 0 : Math.max(-100, Math.min(100, improvement));
 
   const homeData: HomeData = {
-    user: { name: session.user?.name || "사용자", avatarSrc: session.user?.image || undefined },
+    user: {
+      name: session.user?.name || "사용자",
+      avgAng: todayAvg ? todayAvg : 52,
+      avatarSrc: session.user?.image || undefined,
+    },
     kpis: isEmptyState
       ? [
           {
@@ -184,7 +187,7 @@ export default function Page() {
       ctaText: "도전 계속하기",
     },
   };
-  console.log(homeData);
+
   // 에러 표시(필요하면 따로 UI로 빼도 됨)
   if (error) {
     return (
