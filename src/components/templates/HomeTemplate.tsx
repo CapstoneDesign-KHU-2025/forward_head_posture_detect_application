@@ -7,15 +7,13 @@ import TitleCard from "@/components/molecules/TitleCard";
 import { formatMeasuredTime } from "@/utils/formatMeasuredTime";
 
 type KPIItem = {
-  label: React.ReactNode;
-  value: React.ReactNode;
-  unit?: React.ReactNode;
-  size?: "sm" | "md" | "lg" | "xl";
+  label: string;
+  value: number | string;
+  unit?: string;
   delta?: "up" | "down";
-  deltaText?: React.ReactNode;
+  deltaText?: string;
   deltaVariant?: "neutral" | "success" | "warning" | "danger";
-  deltaPosition?: "start" | "end";
-  caption?: React.ReactNode;
+  caption?: string;
 };
 
 type HomeTemplateProps = {
