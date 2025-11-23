@@ -141,8 +141,12 @@ export default function Estimate() {
           const nowPerformance = performance.now();
           const result = lm.detectForVideo(v, nowPerformance);
           const ctx = c.getContext("2d")!;
+
           ctx.clearRect(0, 0, c.width, c.height);
-          ctx.drawImage(v, 0, 0, c.width, c.height);
+          ctx.save();
+          ctx.scale(-1, 1);
+          ctx.drawImage(v, -c.width, 0, c.width, c.height);
+          ctx.restore();
 
           const poses = result.landmarks ?? [];
 
