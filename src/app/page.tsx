@@ -169,7 +169,7 @@ export default function Page() {
           },
           {
             label: "측정 시간",
-            value: todayHour ? todayHour : "측정을 시작해보세요!",
+            value: (todayHour != null && todayHour > 0) ? todayHour : "측정을 시작해보세요!",
             unit: "",
           },
           {
@@ -207,6 +207,7 @@ export default function Page() {
     (todayCount === 0 && todayHour === 0) || todayCount === null || todayCount === undefined ? null : todayCount;
 
   // 신규 사용자 여부 판단 (localStorage 기반, 동기적으로 초기화)
+  // 경고 횟수가 null이고 (측정 기록이 없고), localStorage에 hasEverMeasured가 없으면 신규 사용자
   const [isNewUser, setIsNewUser] = useState<boolean>(() => {
     if (typeof window === "undefined") return false;
     const hasEverMeasured = localStorage.getItem("hasEverMeasured");

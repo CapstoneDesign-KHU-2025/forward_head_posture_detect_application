@@ -10,16 +10,22 @@ export default function CharacterSelectionPage() {
 
   const characters = [
     {
-      id: "turtle",
-      icon: "🐢",
-      name: "거북이",
-      description: "느리지만 꾸준한\n클래식 캐릭터",
+      id: "remy",
+      icon: "/icons/remy.png",
+      name: "래미",
+      description: "부드럽고 따뜻한\n친근한 캐릭터",
     },
     {
-      id: "giraffe",
-      icon: "🦒",
-      name: "기린",
-      description: "우아하고 긴 목\n세련된 스타일",
+      id: "jerry",
+      icon: "/icons/cat.png",
+      name: "제리",
+      description: "활발하고 귀여운\n사랑스러운 캐릭터",
+    },
+    {
+      id: "jessica",
+      icon: "/icons/girl.png",
+      name: "제시카",
+      description: "우아하고 세련된\n멋진 캐릭터",
     },
   ];
 
@@ -43,7 +49,7 @@ export default function CharacterSelectionPage() {
   const handleSkip = () => {
     // 기본 캐릭터 설정
     if (typeof window !== "undefined") {
-      localStorage.setItem("selectedCharacter", "turtle");
+      localStorage.setItem("selectedCharacter", "remy");
       // 홈페이지로 이동
       window.location.href = "/";
     } else {
@@ -76,7 +82,7 @@ export default function CharacterSelectionPage() {
         </div>
 
         {/* 캐릭터 그리드 */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-12 max-w-[600px] mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12 max-w-[900px] mx-auto">
           {characters.map((character) => (
             <div
               key={character.id}
@@ -97,7 +103,9 @@ export default function CharacterSelectionPage() {
                   ✓
                 </div>
               )}
-              <span className="text-[5rem] block mb-4">{character.icon}</span>
+              <div className="w-24 h-24 mx-auto mb-4">
+                <img src={character.icon} alt={character.name} className="w-full h-full object-contain" />
+              </div>
               <div className="text-[1.2rem] font-bold text-[#2D5F2E] mb-2">{character.name}</div>
               <div className="text-[0.9rem] text-[#4F4F4F] leading-[1.4] whitespace-pre-line">
                 {character.description}

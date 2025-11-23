@@ -64,10 +64,10 @@ export default function HomeTemplate({
             {/* 서브 정보 카드 */}
             <div className="grid grid-cols-2 gap-4">
               {/* 측정 시간 카드 */}
-              {measureTimeKpi ? (
+              {measureTimeKpi && typeof measureTimeKpi.value === "number" && measureTimeKpi.value > 0 ? (
                 <StatCard
                   label={measureTimeKpi.label}
-                  value={formatMeasuredTime(measureTimeKpi.value as number)}
+                  value={formatMeasuredTime(measureTimeKpi.value)}
                   unit={measureTimeKpi.unit}
                 />
               ) : (
