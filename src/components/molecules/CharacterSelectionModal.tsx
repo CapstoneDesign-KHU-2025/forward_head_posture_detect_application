@@ -16,9 +16,9 @@ const characters = [
     description: "부드럽고 따뜻한\n친근한 캐릭터",
   },
   {
-    id: "schrodinger",
+    id: "jerry",
     icon: "/icons/cat.png",
-    name: "슈뢰딩거",
+    name: "제리",
     description: "활발하고 귀여운\n사랑스러운 캐릭터",
   },
   {

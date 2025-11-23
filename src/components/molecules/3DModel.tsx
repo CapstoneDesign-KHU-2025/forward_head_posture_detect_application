@@ -70,7 +70,7 @@ type PoseMode = "stand" | "upper";
 
 // ★ 캐릭터별 FBX 경로를 바꾸기 위해 추가한 props 타입
 type ThreeDModelProps = {
-  characterId?: string; // 선택한 캐릭터 ID (remy, schrodinger, jessica)
+  characterId?: string; // 선택한 캐릭터 ID (remy, jerry, jessica)
   idealAng?: number; // 기준 목 각도
   userAng?: number; // 사용자 목 각도
 };
@@ -121,7 +121,7 @@ export default function ThreeDModel({
     // 캐릭터 ID 매핑 (선택 페이지 ID → 프리셋 ID)
     const characterIdMap: Record<string, CharacterId> = {
       remy: 'Remy',
-      schrodinger: 'Mouse',
+      jerry: 'Mouse',
       jessica: 'Woman',
     };
 
