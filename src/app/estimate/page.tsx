@@ -13,6 +13,7 @@ import { useAppStore } from "../store/app";
 import { useSession } from "next-auth/react";
 import { getTodayCount } from "@/lib/postureLocal";
 import { clear } from "console";
+import { Bug } from "lucide-react";
 
 export default function Estimate() {
   const { data: session, status } = useSession();
@@ -24,9 +25,10 @@ export default function Estimate() {
   const rafRef = useRef<number | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
 
-  const lastLogTimeRef = useRef<number>(0);
   const lastStateRef = useRef<boolean | null>(null);
   const lastBeepIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const poseBufferRef = useRef<any[]>([]);
+  const lastBufferTimeRef = useRef<number>(performance.now());
 
   const countdownStartRef = useRef<number | null>(null);
   const measuringRef = useRef<boolean>(false);
@@ -204,6 +206,12 @@ export default function Estimate() {
 
           if (poses.length > 0) {
             const pose = poses[0];
+            poseBufferRef.current.push({
+              earLeft: { x: pose[7].x, y: pose[7].y, z: pose[7].z },
+              earRight: { x: pose[8].x, y: pose[8].y, z: pose[8].z },
+              shoulderLeft: { x: pose[11].x, y: pose[11].y, z: pose[11].z },
+              shoulderRight: { x: pose[12].x, y: pose[12].y, z: pose[12].z },
+            });
 
             const faceLandmarks = pose.slice(0, 11);
             if (faceLandmarks.length > 0) {
@@ -359,18 +367,31 @@ export default function Estimate() {
 
           // --- 측정 시작 후: 거북목 계산 + 경고음 ---
           for (const pose of poses) {
-            const now = Date.now();
+            const now = performance.now();
             if (!measuringRef.current) {
+              lastBufferTimeRef.current = now;
+              poseBufferRef.current = [];
               continue;
             }
 
-            if (now - lastLogTimeRef.current >= 200) {
-              const lm7 = pose[7];
-              const lm8 = pose[8];
-              const lm11 = pose[11];
-              const lm12 = pose[12];
+            if (now - lastBufferTimeRef.current >= 200) {
+              lastBufferTimeRef.current = now;
 
-              lastLogTimeRef.current = now;
+              const buf = poseBufferRef.current;
+              poseBufferRef.current = [];
+
+              const avg = (key: "earLeft" | "earRight" | "shoulderLeft" | "shoulderRight") => {
+                return {
+                  x: buf.reduce((a,b)=>a+b[key].x, 0) / buf.length,
+                  y: buf.reduce((a,b)=>a+b[key].y, 0) / buf.length,
+                  z: buf.reduce((a,b)=>a+b[key].z, 0) / buf.length,
+                };
+              };
+
+              const lm7 = avg("earLeft");
+              const lm8 = avg("earRight");
+              const lm11 = avg("shoulderLeft");
+              const lm12 = avg("shoulderRight");
 
               // 민감도 설정 가져오기
               const sensitivity = getSensitivity();
