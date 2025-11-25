@@ -386,9 +386,9 @@ export default function Estimate() {
 
               const avg = (key: "earLeft" | "earRight" | "shoulderLeft" | "shoulderRight") => {
                 return {
-                  x: buf.reduce((a,b)=>a+b[key].x, 0) / buf.length,
-                  y: buf.reduce((a,b)=>a+b[key].y, 0) / buf.length,
-                  z: buf.reduce((a,b)=>a+b[key].z, 0) / buf.length,
+                  x: buf.reduce((a, b) => a + b[key].x, 0) / buf.length,
+                  y: buf.reduce((a, b) => a + b[key].y, 0) / buf.length,
+                  z: buf.reduce((a, b) => a + b[key].z, 0) / buf.length,
                 };
               };
 
@@ -616,7 +616,10 @@ export default function Estimate() {
             </div>
 
             {/* 카메라 컨테이너 */}
-            <div className="relative w-full m-0 rounded-none overflow-hidden bg-[#2C3E50]" style={{ aspectRatio: '4/3' }}>
+            <div
+              className="relative w-full m-0 rounded-none overflow-hidden bg-[#2C3E50]"
+              style={{ aspectRatio: "4/3" }}
+            >
               {/* 비디오는 숨기고, 캔버스만 화면에 표시 */}
               <video ref={videoRef} className="absolute -left-[9999px]" />
               <canvas ref={canvasRef} className="w-full h-full block bg-[#2C3E50]" />
@@ -705,7 +708,7 @@ export default function Estimate() {
                     {formatTimeRange(r.hourStartTs)}
                   </div>
                   <div className="text-[0.9rem] text-[#4F4F4F] mb-1">
-                    count: {r.count}, weight: {r.weight.toFixed(0)}s
+                    거북목 경고 횟수: {r.count}, 측정 시간: {r.weight.toFixed(0)}s
                   </div>
                   <div className="text-[1.5rem] font-bold text-[#2D5F2E]">
                     avg:{" "}

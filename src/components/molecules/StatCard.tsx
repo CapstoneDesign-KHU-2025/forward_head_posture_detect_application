@@ -22,7 +22,6 @@ export default function StatCard({
   className,
   valueClassName = "text-xl font-bold",
 }: StatCardProps) {
-  console.log(value);
   return (
     <div
       className={[
@@ -33,6 +32,7 @@ export default function StatCard({
         "transition-all duration-300",
         "hover:shadow-[0_4px_20px_rgba(45,95,46,0.15)] hover:translate-x-1",
         "items-start text-left",
+
         className,
       ]
         .filter(Boolean)

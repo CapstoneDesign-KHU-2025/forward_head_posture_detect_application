@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 
+const GOOD_DAY_MAX_WARNINGS = 10;
 // POST /api/summaries/daily
 // { userId, dateISO("YYYY-MM-DD"), sumWeighted, weightSeconds, count }
 export async function POST(req: Request) {
@@ -17,7 +18,15 @@ export async function POST(req: Request) {
     const avgAngle = sumWeighted / weightSeconds;
     // Prisma @db.Date 이므로 자정으로만 저장되어도 OK
     const date = new Date(dateISO); // "YYYY-MM-DD"
+    const numericCount = Number(count ?? 0);
+    const isGoodToday = weightSeconds > 0 && numericCount <= GOOD_DAY_MAX_WARNINGS;
+    const prev = await prisma.dailyPostureSummary.findFirst({
+      where: { userId, date: { lt: date } },
+      orderBy: { date: "desc" },
+      select: { goodDay: true },
+    });
 
+    const newGoodDay = isGoodToday ? prevGoodDay + 1 : prevGoodDay;
     const row = await prisma.dailyPostureSummary.upsert({
       where: { userId_date: { userId, date } },
       create: {
@@ -27,12 +36,14 @@ export async function POST(req: Request) {
         weightSeconds,
         count: Number(count ?? 0),
         avgAngle,
+        goodDay: newGoodDay,
       },
       update: {
         sumWeighted,
         weightSeconds,
         count: Number(count ?? 0),
         avgAngle,
+        goodDay: newGoodDay,
       },
     });
     const safeRow = {
@@ -72,8 +83,9 @@ export async function GET(req: Request) {
       const sum = safeRows.reduce((a, r) => a + r.avgAngle * r.weightSeconds, 0);
       const w = safeRows.reduce((a, r) => a + r.weightSeconds, 0);
       const weightedAvg = w > 0 ? sum / w : null;
+      const goodDays = safeRows.length > 0 ? safeRows[safeRows.length - 1].goodDay : 0;
 
-      return NextResponse.json({ mode: "weekly", days, weightedAvg, safeRows }, { status: 200 });
+      return NextResponse.json({ mode: "weekly", days, weightedAvg, safeRows, goodDays }, { status: 200 });
     }
 
     // ✅ days 없으면 daily 모드
@@ -84,7 +96,10 @@ export async function GET(req: Request) {
       ...row,
       id: Number(row?.id), // BigInt → number
     };
-    return NextResponse.json({ mode: "today", todayAvg: safeRow?.avgAngle ?? null, safeRow }, { status: 200 });
+    return NextResponse.json(
+      { mode: "today", todayAvg: safeRow?.avgAngle ?? null, safeRow, goodDays: safeRow?.goodDay ?? 0 },
+      { status: 200 }
+    );
   } catch (e: any) {
     console.error("[GET /api/summaries/daily]", e);
     return NextResponse.json({ error: e.message }, { status: 500 });
