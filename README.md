@@ -24,7 +24,7 @@
 - Google MediaPipe의 Pose Landmarker 모델을 사용해 실시간으로 신체 랜드마크를 추출  
 - 프론트엔드(Next.js)에서 이를 분석하여 거북목 자세를 자동 판별  
 - Three.js를 활용해 사용자의 평균 자세를 3D 모델로 시각화
-- PostgreSQL + AWS EC2 기반 서버에서 측정 데이터를 저장 및 관리  
+- PostgreSQL + NeonDB 기반으로 측정 데이터를 저장 및 관리  
 
 ---
 
