@@ -9,7 +9,7 @@ import { useSession } from "next-auth/react";
 import { getTodayCount, getTodayMeasuredSeconds } from "@/lib/postureLocal";
 
 import { computeImprovementPercent } from "@/utils/computeImprovementPercent";
-import { formatMeasuredTime } from "@/utils/formatMeasuredTime";
+
 type HomeData = {
   user: { name: string; avgAng: number; avatarSrc?: string } | null;
   kpis: Array<{
@@ -38,6 +38,7 @@ type WeeklySummaryResponse = {
     avgAngle: number;
     weightSeconds: number;
   }>;
+  goodDays: number;
 };
 
 export default function Page() {
@@ -51,7 +52,7 @@ export default function Page() {
   const [error, setError] = useState<string | null>(null);
   const [todayCount, setTodayCount] = useState<number | null>(0);
   const userId = (session?.user as any)?.id as string | undefined;
-
+  const [goodDays, setGoodDays] = useState(0);
   useEffect(() => {
     let cancelled = false;
     if (status === "loading") return;
@@ -72,6 +73,7 @@ export default function Page() {
         const todayAverage = await computeTodaySoFarAverage(userId);
         const todayCount = await getTodayCount(userId);
         const todayHours = await getTodayMeasuredSeconds(userId);
+
         if (!cancelled) {
           setTodayAvg(todayAverage);
           setTodayCount(todayCount);
@@ -84,7 +86,7 @@ export default function Page() {
           throw new Error(`Failed to fetch weekly summary: ${res.status}`);
         }
         const data: WeeklySummaryResponse = await res.json();
-
+        setGoodDays(data.goodDays);
         if (!cancelled) {
           setWeeklyAvg(data.weightedAvg ?? null);
         }
@@ -227,7 +229,6 @@ export default function Page() {
   }, [todayCount, todayHour]);
 
   // 누적 좋은 날 계산 (경고 10회 이하인 날) - 임시로 0으로 설정, 추후 백엔드에서 계산 필요
-  const goodDays = 0; // TODO: 백엔드에서 누적 좋은 날 데이터 가져오기
 
   return (
     <HomeTemplate
