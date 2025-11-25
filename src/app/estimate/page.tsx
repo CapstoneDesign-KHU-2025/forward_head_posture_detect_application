@@ -64,7 +64,7 @@ export default function Estimate() {
 
   if (!userId || !sessionId) return <div>loading</div>;
 
-  usePostureStorageManager(userId, angle, isTurtle, sessionId);
+  usePostureStorageManager(userId,angle, isTurtle, sessionId, measuringRef.current);
 
   // 🔹 "거북목 측정을 시작합니다" 토스트 자동 숨김
   useEffect(() => {
