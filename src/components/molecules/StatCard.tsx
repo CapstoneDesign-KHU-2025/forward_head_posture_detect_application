@@ -22,7 +22,6 @@ export default function StatCard({
   className,
   valueClassName = "text-xl font-bold",
 }: StatCardProps) {
-  console.log(value);
   return (
     <div
       className={[
