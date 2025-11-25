@@ -19,14 +19,16 @@ export async function POST(req: Request) {
     // Prisma @db.Date 이므로 자정으로만 저장되어도 OK
     const date = new Date(dateISO); // "YYYY-MM-DD"
     const numericCount = Number(count ?? 0);
-    const isGoodToday = weightSeconds > 0 && numericCount <= GOOD_DAY_MAX_WARNINGS;
+
     const prev = await prisma.dailyPostureSummary.findFirst({
       where: { userId, date: { lt: date } },
       orderBy: { date: "desc" },
       select: { goodDay: true },
     });
 
-    const newGoodDay = isGoodToday ? prevGoodDay + 1 : prevGoodDay;
+    const prevGood = prev?.goodDay ?? 0;
+    const isGoodToday = weightSeconds > 0 && numericCount <= GOOD_DAY_MAX_WARNINGS;
+    const newGoodDay = isGoodToday ? prevGood + 1 : prevGood;
     const row = await prisma.dailyPostureSummary.upsert({
       where: { userId_date: { userId, date } },
       create: {
@@ -83,7 +85,6 @@ export async function GET(req: Request) {
       const sum = safeRows.reduce((a, r) => a + r.avgAngle * r.weightSeconds, 0);
       const w = safeRows.reduce((a, r) => a + r.weightSeconds, 0);
       const weightedAvg = w > 0 ? sum / w : null;
-      const goodDays = safeRows.length > 0 ? safeRows[safeRows.length - 1].goodDay : 0;
 
       return NextResponse.json({ mode: "weekly", days, weightedAvg, safeRows, goodDays }, { status: 200 });
     }
