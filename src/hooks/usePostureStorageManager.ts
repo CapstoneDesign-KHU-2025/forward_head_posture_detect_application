@@ -12,12 +12,20 @@ import { PostureMeasurement } from "@/lib/postureLocal";
  * @param isTurtle - 현재 거북목 여부
  * @param sessionId - 세션 식별자
  */
-export function usePostureStorageManager(userId: string, currentAngle: number, isTurtle: boolean, sessionId: string) {
+export function usePostureStorageManager(
+  userId: string,
+  currentAngle: number,
+  isTurtle: boolean,
+  sessionId: string,
+  measuring: boolean
+) {
   useEffect(() => {
     if (!userId) return;
     const SAMPLE_GAP_S = 10;
 
     const interval = setInterval(async () => {
+      if (!measuring) return;
+      
       const now = Date.now();
       const sample: PostureMeasurement = {
         userId,
