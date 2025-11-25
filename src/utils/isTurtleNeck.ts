@@ -85,11 +85,11 @@ export default function isTurtleNeck({ earLeft, earRight, shoulderLeft, shoulder
       threshold = 45; // 더 관대하게 (45도 이하만 거북목)
       break;
     case "high":
-      threshold = 53; // 더 엄격하게 (53도 이하만 거북목)
+      threshold = 50; // 더 엄격하게 (50도 이하만 거북목)
       break;
     case "normal":
     default:
-      threshold = 51; // 기본값 (51도 이하만 거북목)
+      threshold = 48; // 기본값 (48도 이하만 거북목)
       break;
   }
 
