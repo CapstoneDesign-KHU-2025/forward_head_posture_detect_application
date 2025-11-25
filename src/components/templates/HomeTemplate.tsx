@@ -62,20 +62,23 @@ export default function HomeTemplate({
             <TodayStatusCard warningCount={warningCount} isNewUser={isNewUser} />
 
             {/* 서브 정보 카드 */}
-            <div className="grid grid-cols-2 gap-4">
-              {/* 측정 시간 카드 */}
-              {measureTimeKpi && typeof measureTimeKpi.value === "number" && measureTimeKpi.value > 0 ? (
-                <StatCard
-                  label={measureTimeKpi.label}
-                  value={formatMeasuredTime(measureTimeKpi.value)}
-                  unit={measureTimeKpi.unit}
-                />
-              ) : (
-                <StatCard label="측정 시간" value="측정을 시작해보세요!" />
-              )}
-
-              {/* 칭호 카드 */}
-              <TitleCard goodDays={goodDays} />
+            <div className="flex gap-4">
+              <div className="flex-[0.7]">
+                {/* 측정 시간 카드 */}
+                {measureTimeKpi && typeof measureTimeKpi.value === "number" && measureTimeKpi.value > 0 ? (
+                  <StatCard
+                    label={measureTimeKpi.label}
+                    value={formatMeasuredTime(measureTimeKpi.value)}
+                    unit={measureTimeKpi.unit}
+                  />
+                ) : (
+                  <StatCard label="측정 시간" value="측정을 시작해보세요!" />
+                )}
+              </div>
+              <div className="flex-[1.3]">
+                {/* 칭호 카드 */}
+                <TitleCard goodDays={goodDays} />
+              </div>
             </div>
           </div>
 
@@ -85,7 +88,13 @@ export default function HomeTemplate({
               userAng={user?.avgAng}
               title={challenge?.title ?? "당신의 거북목 도전기"}
               description={
-                challenge?.description ?? "측정을 시작하면 오늘의 평균 목 각도와 도전! 현황이 여기에 표시됩니다."
+                challenge?.description ?? (
+                  <>
+                    측정을 시작하면 오늘의 평균 목 각도와
+                    <br />
+                    도전 현황이 여기에 표시됩니다.
+                  </>
+                )
               }
             />
           </div>

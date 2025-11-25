@@ -51,6 +51,7 @@ export default function TitleCard({ goodDays }: TitleCardProps) {
         "transition-all duration-300",
         "shadow-[0_2px_10px_rgba(0,0,0,0.05)]",
         "hover:shadow-[0_4px_20px_rgba(45,95,46,0.15)] hover:translate-x-1",
+       
       ].join(" ")}
       style={{
         background: badgeInfo.bgGradient,
@@ -60,9 +61,16 @@ export default function TitleCard({ goodDays }: TitleCardProps) {
     >
       <style jsx>{`
         @keyframes rotate {
-          0%, 100% { transform: rotate(0deg); }
-          25% { transform: rotate(-10deg); }
-          75% { transform: rotate(10deg); }
+          0%,
+          100% {
+            transform: rotate(0deg);
+          }
+          25% {
+            transform: rotate(-10deg);
+          }
+          75% {
+            transform: rotate(10deg);
+          }
         }
         .badge-icon {
           font-size: 2.5rem;
@@ -74,11 +82,8 @@ export default function TitleCard({ goodDays }: TitleCardProps) {
         <div className="text-[0.9rem] font-medium text-[#2D5F2E]">
           나의 칭호 {goodDays > 0 && `(누적 좋은 날 ${goodDays}일)`}
         </div>
-        <div className="text-xl font-extrabold text-[#2D5F2E]">
-          {badgeInfo.title}
-        </div>
+        <div className="text-xl font-extrabold text-[#2D5F2E]">{badgeInfo.title}</div>
       </div>
     </div>
   );
 }
-
