@@ -319,7 +319,7 @@ export default function ThreeDModel({
      * ======================= */
     function initSceneAndCamera() {
       scene = new THREE.Scene();
-      scene.background = new THREE.Color(0x202230);
+      scene.background = new THREE.Color("#7bc67e"); //캐릭터 배경색
 
       camera = new THREE.PerspectiveCamera(
         70,
@@ -353,7 +353,7 @@ export default function ThreeDModel({
     function initFloor() {
       const floor = new THREE.Mesh(
         new THREE.PlaneGeometry(40, 40),
-        new THREE.MeshStandardMaterial({ color: 0x1a1e2a, metalness: 0, roughness: 1 })
+        new THREE.MeshStandardMaterial({ color: "#FAFAFA", metalness: 0, roughness: 1 }) //캐릭터 바닥색
       );
       floor.rotation.x = -Math.PI / 2;
       floor.receiveShadow = true;
@@ -1279,7 +1279,7 @@ export default function ThreeDModel({
     initLighting();
     initFloor();
     initControls();
-    initHelpers();
+    //initHelpers();
     initPoseVisuals();
     initAngleGuides();
     // ★ 여기에서 props로 받은 경로 사용
