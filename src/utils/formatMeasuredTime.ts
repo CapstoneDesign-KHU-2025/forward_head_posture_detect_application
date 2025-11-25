@@ -1,5 +1,5 @@
 export function formatMeasuredTime(totalSeconds: number): string {
-  if (totalSeconds == null || Number.isNaN(totalSeconds)) return "0초";
+  if (totalSeconds == null) return "0초";
 
   // 혹시 소수 들어와도 방지
   const sec = Math.floor(totalSeconds);

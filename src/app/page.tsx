@@ -7,8 +7,9 @@ import HomeTemplate from "@/components/templates/HomeTemplate";
 import { computeTodaySoFarAverage } from "@/lib/hourlyOps";
 import { useSession } from "next-auth/react";
 import { getTodayCount, getTodayMeasuredSeconds } from "@/lib/postureLocal";
-import { formatMeasuredTime } from "@/utils/formatMeasuredTime";
+
 import { computeImprovementPercent } from "@/utils/computeImprovementPercent";
+import { formatMeasuredTime } from "@/utils/formatMeasuredTime";
 type HomeData = {
   user: { name: string; avgAng: number; avatarSrc?: string } | null;
   kpis: Array<{
@@ -169,7 +170,7 @@ export default function Page() {
           },
           {
             label: "측정 시간",
-            value: (todayHour != null && todayHour > 0) ? todayHour : "측정을 시작해보세요!",
+            value: todayHour != null && todayHour > 0 ? todayHour : "측정을 시작해보세요!",
             unit: "",
           },
           {
