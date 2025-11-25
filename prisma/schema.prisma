@@ -67,6 +67,7 @@ model DailyPostureSummary {
   weightSeconds Float
   count         Int
   avgAngle      Float
+  goodDay       Int      @default(0)
 
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt

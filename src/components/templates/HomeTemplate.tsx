@@ -49,9 +49,9 @@ export default function HomeTemplate({
   return (
     <main className={["bg-[#F8FBF8] min-h-screen", className].filter(Boolean).join(" ")}>
       <div className="max-w-[1400px] mx-auto px-8 py-8">
-        <WelcomeHero userName={user?.name ?? "사용자"} />
+      <WelcomeHero userName={user?.name ?? "사용자"} />
 
-        {/* 본문 2열 레이아웃: 좌(KPI), 우(도전기) */}
+      {/* 본문 2열 레이아웃: 좌(KPI), 우(도전기) */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
           {/* LEFT: 오늘의 거북목 섹션 */}
           <div className="flex flex-col gap-6">
@@ -62,20 +62,23 @@ export default function HomeTemplate({
             <TodayStatusCard warningCount={warningCount} isNewUser={isNewUser} />
 
             {/* 서브 정보 카드 */}
-            <div className="grid grid-cols-2 gap-4">
-              {/* 측정 시간 카드 */}
-              {measureTimeKpi && typeof measureTimeKpi.value === "number" && measureTimeKpi.value > 0 ? (
-                <StatCard
-                  label={measureTimeKpi.label}
-                  value={formatMeasuredTime(measureTimeKpi.value)}
-                  unit={measureTimeKpi.unit}
-                />
-              ) : (
-                <StatCard label="측정 시간" value="측정을 시작해보세요!" />
-              )}
-
-              {/* 칭호 카드 */}
-              <TitleCard goodDays={goodDays} />
+            <div className="flex gap-4">
+              <div className="flex-[0.7]">
+                {/* 측정 시간 카드 */}
+                {measureTimeKpi && typeof measureTimeKpi.value === "number" && measureTimeKpi.value > 0 ? (
+                  <StatCard
+                    label={measureTimeKpi.label}
+                    value={formatMeasuredTime(measureTimeKpi.value)}
+                    unit={measureTimeKpi.unit}
+                  />
+                ) : (
+                  <StatCard label="측정 시간" value="측정을 시작해보세요!" />
+                )}
+              </div>
+              <div className="flex-[1.3]">
+                {/* 칭호 카드 */}
+                <TitleCard goodDays={goodDays} />
+              </div>
             </div>
           </div>
 
@@ -85,7 +88,13 @@ export default function HomeTemplate({
               userAng={user?.avgAng}
               title={challenge?.title ?? "당신의 거북목 도전기"}
               description={
-                challenge?.description ?? "측정을 시작하면 오늘의 평균 목 각도와 도전! 현황이 여기에 표시됩니다."
+                challenge?.description ?? (
+                  <>
+                    측정을 시작하면 오늘의 평균 목 각도와
+                    <br />
+                    도전 현황이 여기에 표시됩니다.
+                  </>
+                )
               }
             />
           </div>

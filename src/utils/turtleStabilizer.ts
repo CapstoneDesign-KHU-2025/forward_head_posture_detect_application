@@ -15,11 +15,11 @@ export default function turtleStabilizer(angleDeg: number, sensitivity: Sensitiv
   switch (sensitivity) {
     case "low":
       ENTER_THRESHOLD = 45;  // 낮음 (45도 이하에서 거북목 진입)
-      EXIT_THRESHOLD = 48;   // 낮음 (48도 이상에서 정상 복귀)
+      EXIT_THRESHOLD = 51;   // 낮음 (51도 이상에서 정상 복귀)
       break;
     case "high":
       ENTER_THRESHOLD = 50;  // 높음 (50도 이하에서 거북목 진입)
-      EXIT_THRESHOLD = 53;   // 높음 (53도 이상에서 정상 복귀)
+      EXIT_THRESHOLD = 51;   // 높음 (51도 이상에서 정상 복귀)
       break;
     case "normal":
     default:

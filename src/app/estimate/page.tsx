@@ -22,13 +22,14 @@ export default function Estimate() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const landmarkerRef = useRef<PoseLandmarker | null>(null);
-  const rafRef = useRef<number | null>(null);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
 
   const lastStateRef = useRef<boolean | null>(null);
   const lastBeepIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const poseBufferRef = useRef<any[]>([]);
   const lastBufferTimeRef = useRef<number>(performance.now());
+  const visibilityChangeHandlerRef = useRef<(() => void) | null>(null);
 
   const countdownStartRef = useRef<number | null>(null);
   const measuringRef = useRef<boolean>(false);
@@ -64,7 +65,7 @@ export default function Estimate() {
 
   if (!userId || !sessionId) return <div>loading</div>;
 
-  usePostureStorageManager(userId, angle, isTurtle, sessionId);
+  usePostureStorageManager(userId,angle, isTurtle, sessionId, measuringRef.current);
 
   // 🔹 "거북목 측정을 시작합니다" 토스트 자동 숨김
   useEffect(() => {
@@ -123,13 +124,16 @@ export default function Estimate() {
 
         if (cancelled) return;
 
+        // 페이지 visibility에 따라 프레임 레이트 조절
+        const getFPS = () => (document.hidden ? 10 : 30); // 백그라운드: 10fps, 포그라운드: 30fps
+        const getInterval = () => 1000 / getFPS();
+
         const loop = async () => {
           const v = videoRef.current;
           const c = canvasRef.current;
           const lm = landmarkerRef.current;
 
           if (!lm || !v || !c || v.videoWidth === 0 || v.videoHeight === 0) {
-            rafRef.current = requestAnimationFrame(loop);
             return;
           }
 
@@ -165,7 +169,6 @@ export default function Estimate() {
               lastBeepIntervalRef.current = null;
             }
 
-            rafRef.current = requestAnimationFrame(loop);
             return;
           }
 
@@ -386,9 +389,9 @@ export default function Estimate() {
 
               const avg = (key: "earLeft" | "earRight" | "shoulderLeft" | "shoulderRight") => {
                 return {
-                  x: buf.reduce((a,b)=>a+b[key].x, 0) / buf.length,
-                  y: buf.reduce((a,b)=>a+b[key].y, 0) / buf.length,
-                  z: buf.reduce((a,b)=>a+b[key].z, 0) / buf.length,
+                  x: buf.reduce((a, b) => a + b[key].x, 0) / buf.length,
+                  y: buf.reduce((a, b) => a + b[key].y, 0) / buf.length,
+                  z: buf.reduce((a, b) => a + b[key].z, 0) / buf.length,
                 };
               };
 
@@ -447,11 +450,20 @@ export default function Estimate() {
               }
             }
           }
-
-          rafRef.current = requestAnimationFrame(loop);
         };
 
-        loop();
+        // visibility 변경 시 프레임 레이트 조절
+        const handleVisibilityChange = () => {
+          if (intervalRef.current) {
+            clearInterval(intervalRef.current);
+            intervalRef.current = setInterval(loop, getInterval());
+          }
+        };
+        visibilityChangeHandlerRef.current = handleVisibilityChange;
+        document.addEventListener("visibilitychange", handleVisibilityChange);
+
+        // 초기 루프 시작
+        intervalRef.current = setInterval(loop, getInterval());
       } catch (e: any) {
         console.error("Camera / Mediapipe init error:", e);
         setError(e?.message ?? "카메라 초기화 중 오류가 발생했습니다.");
@@ -460,9 +472,13 @@ export default function Estimate() {
 
     return () => {
       cancelled = true;
-      if (rafRef.current) {
-        cancelAnimationFrame(rafRef.current);
-        rafRef.current = null;
+      if (visibilityChangeHandlerRef.current) {
+        document.removeEventListener("visibilitychange", visibilityChangeHandlerRef.current);
+        visibilityChangeHandlerRef.current = null;
+      }
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
       }
       landmarkerRef.current?.close?.();
       landmarkerRef.current = null;
@@ -616,7 +632,10 @@ export default function Estimate() {
             </div>
 
             {/* 카메라 컨테이너 */}
-            <div className="relative w-full m-0 rounded-none overflow-hidden bg-[#2C3E50]" style={{ aspectRatio: '4/3' }}>
+            <div
+              className="relative w-full m-0 rounded-none overflow-hidden bg-[#2C3E50]"
+              style={{ aspectRatio: "4/3" }}
+            >
               {/* 비디오는 숨기고, 캔버스만 화면에 표시 */}
               <video ref={videoRef} className="absolute -left-[9999px]" />
               <canvas ref={canvasRef} className="w-full h-full block bg-[#2C3E50]" />
@@ -705,7 +724,7 @@ export default function Estimate() {
                     {formatTimeRange(r.hourStartTs)}
                   </div>
                   <div className="text-[0.9rem] text-[#4F4F4F] mb-1">
-                    count: {r.count}, weight: {r.weight.toFixed(0)}s
+                    거북목 경고 횟수: {r.count}, 측정 시간: {r.weight.toFixed(0)}s
                   </div>
                   <div className="text-[1.5rem] font-bold text-[#2D5F2E]">
                     avg:{" "}

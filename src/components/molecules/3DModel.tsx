@@ -1,11 +1,11 @@
 "use client";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { FBXLoader } from "three/examples/jsm/loaders/FBXLoader.js";
 
 /* ========= TypeScript 타입 ========= */
-type CharacterId = 'Mouse' | 'Remy' | 'Woman';
+type CharacterId = "Mouse" | "Remy" | "Woman";
 
 type CharacterPreset = {
   upperFbx: string;
@@ -20,8 +20,8 @@ type CharacterPreset = {
 
 const CHARACTER_PRESETS: Record<CharacterId, CharacterPreset> = {
   Mouse: {
-    upperFbx: '/models/MouseIdle.fbx',
-    fullFbx: '/models/MouseWalking.fbx',
+    upperFbx: "/models/MouseIdle.fbx",
+    fullFbx: "/models/MouseWalking.fbx",
     camera: {
       upperPos: new THREE.Vector3(1.1, 1.1, 0.0),
       upperTarget: new THREE.Vector3(0.05, 1.1, -0.0),
@@ -31,8 +31,8 @@ const CHARACTER_PRESETS: Record<CharacterId, CharacterPreset> = {
   },
 
   Remy: {
-    upperFbx: '/models/RemyIdle.fbx',
-    fullFbx: '/models/RemyWalking.fbx',
+    upperFbx: "/models/RemyIdle.fbx",
+    fullFbx: "/models/RemyWalking.fbx",
     camera: {
       upperPos: new THREE.Vector3(1.3, 3.5, 0.1),
       upperTarget: new THREE.Vector3(0.1, 3.5, -0.2),
@@ -42,8 +42,8 @@ const CHARACTER_PRESETS: Record<CharacterId, CharacterPreset> = {
   },
 
   Woman: {
-    upperFbx: '/models/WomanIdle.fbx',
-    fullFbx: '/models/WomanWalking.fbx',
+    upperFbx: "/models/WomanIdle.fbx",
+    fullFbx: "/models/WomanWalking.fbx",
     camera: {
       upperPos: new THREE.Vector3(1.04, 1.5, -0.1),
       upperTarget: new THREE.Vector3(0.2, 1.6, -0.06),
@@ -107,11 +107,7 @@ declare global {
 }
 
 // ★ 캐릭터 ID를 받아서 해당 캐릭터의 프리셋 사용
-export default function ThreeDModel({
-  characterId = "remy",
-  idealAng = 52,
-  userAng = 52,
-}: ThreeDModelProps) {
+export default function ThreeDModel({ characterId = "remy", idealAng = 52, userAng = 52 }: ThreeDModelProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -120,13 +116,13 @@ export default function ThreeDModel({
 
     // 캐릭터 ID 매핑 (선택 페이지 ID → 프리셋 ID)
     const characterIdMap: Record<string, CharacterId> = {
-      remy: 'Remy',
-      jerry: 'Mouse',
-      jessica: 'Woman',
+      remy: "Remy",
+      jerry: "Mouse",
+      jessica: "Woman",
     };
 
     // 선택한 캐릭터의 프리셋 가져오기 (기본값: Remy)
-    const presetId = characterIdMap[characterId] || 'Remy';
+    const presetId = characterIdMap[characterId] || "Remy";
     const preset = CHARACTER_PRESETS[presetId];
 
     /* ======================= *
@@ -216,10 +212,10 @@ export default function ThreeDModel({
     const BOUNDS = { xMin: -5, xMax: 5, zMin: -5, zMax: 5 };
 
     // ✅ 선택된 캐릭터 preset에서 카메라 값 가져오기
-    const CAMERA_UPPER_POS    = preset.camera.upperPos.clone();
+    const CAMERA_UPPER_POS = preset.camera.upperPos.clone();
     const CAMERA_UPPER_TARGET = preset.camera.upperTarget.clone();
-    const CAMERA_FULL_POS     = preset.camera.fullPos.clone();
-    const CAMERA_FULL_TARGET  = preset.camera.fullTarget.clone();
+    const CAMERA_FULL_POS = preset.camera.fullPos.clone();
+    const CAMERA_FULL_TARGET = preset.camera.fullTarget.clone();
     /* ======================= *
      * Three.js 핵심 변수
      * ======================= */
@@ -502,7 +498,7 @@ export default function ThreeDModel({
           window.__REM = object;
           mixer = localMixer;
           object.visible = true;
-          
+
           // 현재 모드에 따라 visibility 설정
           if (poseMode === "upper") {
             object.visible = true;
@@ -511,7 +507,7 @@ export default function ThreeDModel({
           }
         },
         undefined,
-        (e) => console.error('Idle/Upper FBX load error:', e)
+        (e) => console.error("Idle/Upper FBX load error:", e)
       );
 
       // full body 모드용 Walking.fbx
@@ -526,7 +522,7 @@ export default function ThreeDModel({
           object.visible = false;
         },
         undefined,
-        (e) => console.error('Walking/Full FBX load error:', e)
+        (e) => console.error("Walking/Full FBX load error:", e)
       );
     }
 
@@ -1322,7 +1318,7 @@ export default function ThreeDModel({
 
       cleanupCharacters();
     };
-  }, [characterId]); // ★ 캐릭터 ID가 바뀌면 전체를 다시 세팅
+  }, [characterId, userAng]); // ★ 캐릭터 ID가 바뀌면 전체를 다시 세팅
 
   return <div ref={containerRef} style={{ position: "relative", width: "100%", height: "100%", overflow: "hidden" }} />;
 }

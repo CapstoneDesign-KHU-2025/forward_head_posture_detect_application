@@ -28,7 +28,7 @@ function getSelectedCharacter(): string {
 export default function ChallengePanel({
   userAng,
   title = "당신의 거북목 도전기",
-  description = "3D 모델링으로 추후 삽입",
+  description = "3D 모델",
   illustration,
 }: ChallengePanelProps) {
   const [characterId, setCharacterId] = React.useState<string>("remy");
@@ -80,7 +80,7 @@ export default function ChallengePanel({
       </div>
 
       {/* 설명 */}
-      <p className="text-center mt-6 pt-6 border-t border-[#E8F5E9] text-[0.9rem] text-[#4F4F4F]">{description}</p>
+      <p className="text-center mt-6 pt-6 border-t border-[#E8F5E9] text-[0.7rem] text-[#4F4F4F]">{description}</p>
 
       {/* (옵션) 추가 일러스트/컨텐츠 */}
       {illustration}
