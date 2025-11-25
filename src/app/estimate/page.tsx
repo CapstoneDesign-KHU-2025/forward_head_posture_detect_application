@@ -45,6 +45,10 @@ export default function Estimate() {
   const [measurementStarted, setMeasurementStarted] = useState<boolean>(false);
   const [showMeasurementStartedToast, setShowMeasurementStartedToast] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  
+  // 초기 각도 베이스라인용 상태
+  const baselineAngleRef = useRef<number | null>(null);
+  const targetBaseline = 55; // 가이드라인 시점의 정상 각도를 55로 설정 -> 이후 베이스라인(기준점)이 됨
 
   // 🔹 통계/서버 관련 상태 (두 번째 파일 로직)
   const [hourlyList, setHourlyList] = useState<any[]>([]);
@@ -372,6 +376,23 @@ export default function Estimate() {
             ctx.restore();
           }
 
+          // 베이스라인 설정
+          if (!measuringRef.current && countdownRemain === 1) {
+            const pose = poses[0];
+            if (pose) {
+              const t = analyzeTurtleNeck({
+                earLeft: { x: pose[7].x, y: pose[7].y, z: pose[7].z },
+                earRight: { x: pose[7].x, y: pose[7].y, z: pose[7].z },
+                shoulderLeft: { x: pose[7].x, y: pose[7].y, z: pose[7].z },
+                shoulderRight: { x: pose[7].x, y: pose[7].y, z: pose[7].z },
+                sensitivity: getSensitivity(),
+              });
+
+              baselineAngleRef.current = t.angleDeg;
+              console.log("베이스라인 각도 저장됨: ", baselineAngleRef.current);
+            }
+          }
+
           // --- 측정 시작 후: 거북목 계산 + 경고음 ---
           for (const pose of poses) {
             const now = performance.now();
@@ -411,7 +432,12 @@ export default function Estimate() {
                 sensitivity,
               });
 
-              const result = turtleStabilizer(turtleData.angleDeg, sensitivity);
+              let corrected = turtleData.angleDeg;
+              if (baselineAngleRef.current) {
+                corrected = (corrected / baselineAngleRef.current) * targetBaseline;
+              }
+
+              const result = turtleStabilizer(corrected, sensitivity);
 
               let turtleNow = lastStateRef.current ?? false;
               let avgAngle = 0;
