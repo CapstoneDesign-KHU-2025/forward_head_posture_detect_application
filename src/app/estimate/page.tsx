@@ -22,13 +22,14 @@ export default function Estimate() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const landmarkerRef = useRef<PoseLandmarker | null>(null);
-  const rafRef = useRef<number | null>(null);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
 
   const lastStateRef = useRef<boolean | null>(null);
   const lastBeepIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const poseBufferRef = useRef<any[]>([]);
   const lastBufferTimeRef = useRef<number>(performance.now());
+  const visibilityChangeHandlerRef = useRef<(() => void) | null>(null);
 
   const countdownStartRef = useRef<number | null>(null);
   const measuringRef = useRef<boolean>(false);
@@ -123,13 +124,16 @@ export default function Estimate() {
 
         if (cancelled) return;
 
+        // 페이지 visibility에 따라 프레임 레이트 조절
+        const getFPS = () => (document.hidden ? 10 : 30); // 백그라운드: 10fps, 포그라운드: 30fps
+        const getInterval = () => 1000 / getFPS();
+
         const loop = async () => {
           const v = videoRef.current;
           const c = canvasRef.current;
           const lm = landmarkerRef.current;
 
           if (!lm || !v || !c || v.videoWidth === 0 || v.videoHeight === 0) {
-            rafRef.current = requestAnimationFrame(loop);
             return;
           }
 
@@ -165,7 +169,6 @@ export default function Estimate() {
               lastBeepIntervalRef.current = null;
             }
 
-            rafRef.current = requestAnimationFrame(loop);
             return;
           }
 
@@ -447,11 +450,20 @@ export default function Estimate() {
               }
             }
           }
-
-          rafRef.current = requestAnimationFrame(loop);
         };
 
-        loop();
+        // visibility 변경 시 프레임 레이트 조절
+        const handleVisibilityChange = () => {
+          if (intervalRef.current) {
+            clearInterval(intervalRef.current);
+            intervalRef.current = setInterval(loop, getInterval());
+          }
+        };
+        visibilityChangeHandlerRef.current = handleVisibilityChange;
+        document.addEventListener("visibilitychange", handleVisibilityChange);
+
+        // 초기 루프 시작
+        intervalRef.current = setInterval(loop, getInterval());
       } catch (e: any) {
         console.error("Camera / Mediapipe init error:", e);
         setError(e?.message ?? "카메라 초기화 중 오류가 발생했습니다.");
@@ -460,9 +472,13 @@ export default function Estimate() {
 
     return () => {
       cancelled = true;
-      if (rafRef.current) {
-        cancelAnimationFrame(rafRef.current);
-        rafRef.current = null;
+      if (visibilityChangeHandlerRef.current) {
+        document.removeEventListener("visibilitychange", visibilityChangeHandlerRef.current);
+        visibilityChangeHandlerRef.current = null;
+      }
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
       }
       landmarkerRef.current?.close?.();
       landmarkerRef.current = null;

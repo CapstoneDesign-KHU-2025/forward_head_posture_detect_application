@@ -81,7 +81,7 @@ export default function Header({ user: initialUser, className }: HeaderProps) {
         ) : (
           // 일반 페이지: 3열 그리드 레이아웃
           <div className="grid grid-cols-[1fr_auto_1fr] items-center">
-            {/* Left: Logo */}
+        {/* Left: Logo */}
             <div className="flex items-center justify-start">
               <Link href="/" className="flex items-center gap-2 text-xl font-bold" style={{ color: "#2D5F2E", textDecoration: "none" }}>
                 <div
@@ -95,7 +95,7 @@ export default function Header({ user: initialUser, className }: HeaderProps) {
                   />
                 </div>
                 <span>거북목 거북거북!</span>
-              </Link>
+        </Link>
             </div>
 
             {/* Center: 네비게이션 */}
@@ -118,19 +118,19 @@ export default function Header({ user: initialUser, className }: HeaderProps) {
                   </Link>
                 );
               })}
-            </nav>
+        </nav>
 
             {/* Right: 프로필 */}
             <div className="flex items-center justify-end">
-              {isLoading ? (
-                <span className="text-sm text-black/40">...</span>
-              ) : user ? (
+          {isLoading ? (
+            <span className="text-sm text-black/40">...</span>
+          ) : user ? (
                 <div className="relative" ref={userMenuAnchorRef}>
                   <button
                     onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
                     className="bg-[#E8F5E9] text-[#2D5F2E] border-2 border-[#7BC67E] px-5 py-2 rounded-[25px] font-semibold cursor-pointer transition-all duration-300 text-base hover:bg-[#7BC67E] hover:text-white hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(123,198,126,0.3)]"
                   >
-                    {user.name ?? "사용자"}
+                {user.name ?? "사용자"}
                   </button>
                   <UserMenuDropdown
                     userName={user.name ?? "사용자"}
@@ -140,11 +140,11 @@ export default function Header({ user: initialUser, className }: HeaderProps) {
                     onClose={() => setIsUserMenuOpen(false)}
                     anchorRef={userMenuAnchorRef}
                   />
-                </div>
-              ) : (
-                <Button onClick={() => signIn()}>로그인</Button>
-              )}
             </div>
+          ) : (
+            <Button onClick={() => signIn()}>로그인</Button>
+          )}
+        </div>
           </div>
         )}
       </div>

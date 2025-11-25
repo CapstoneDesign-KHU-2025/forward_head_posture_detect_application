@@ -49,9 +49,9 @@ export default function HomeTemplate({
   return (
     <main className={["bg-[#F8FBF8] min-h-screen", className].filter(Boolean).join(" ")}>
       <div className="max-w-[1400px] mx-auto px-8 py-8">
-        <WelcomeHero userName={user?.name ?? "사용자"} />
+      <WelcomeHero userName={user?.name ?? "사용자"} />
 
-        {/* 본문 2열 레이아웃: 좌(KPI), 우(도전기) */}
+      {/* 본문 2열 레이아웃: 좌(KPI), 우(도전기) */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
           {/* LEFT: 오늘의 거북목 섹션 */}
           <div className="flex flex-col gap-6">
