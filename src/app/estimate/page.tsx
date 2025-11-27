@@ -45,6 +45,11 @@ export default function Estimate() {
   const [measurementStarted, setMeasurementStarted] = useState<boolean>(false);
   const [showMeasurementStartedToast, setShowMeasurementStartedToast] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  
+  // 초기 각도 베이스라인용 상태
+  const baselineAngleRef = useRef<number | null>(null);
+  const targetBaseline = 55; // 가이드라인 시점의 정상 각도를 55로 설정 -> 이후 베이스라인(기준점)이 됨
+  const baselineBufferRef = useRef<any[]>([]);
 
   // 🔹 통계/서버 관련 상태 (두 번째 파일 로직)
   const [hourlyList, setHourlyList] = useState<any[]>([]);
@@ -267,12 +272,27 @@ export default function Estimate() {
             } else if (allInside) {
               if (!countdownStartRef.current) {
                 countdownStartRef.current = nowPerformance;
+                baselineBufferRef.current = [];
               }
 
               const elapsed = nowPerformance - countdownStartRef.current;
               const remain = Math.max(0, 3000 - elapsed);
               nextCountdownRemain = Math.ceil(remain / 1000);
 
+              // 베이스라인 좌표 저장(0.2초간)
+              if (elapsed >= 2800 && elapsed < 3000) {
+                if (poses.length > 0) {
+                  const p = poses[0];
+                  baselineBufferRef.current.push({
+                    earLeft:  { x:p[7].x,  y:p[7].y,  z:p[7].z },
+                    earRight: { x:p[8].x,  y:p[8].y,  z:p[8].z },
+                    shoulderLeft: { x:p[11].x, y:p[11].y, z:p[11].z },
+                    shoulderRight:{ x:p[12].x, y:p[12].y, z:p[12].z },
+                  });
+                }
+              }
+
+              // 베이스라인 계산
               if (elapsed >= 3000) {
                 measuringRef.current = true;
                 setMeasurementStarted(true);
@@ -284,12 +304,40 @@ export default function Estimate() {
                 countdownStartRef.current = null;
                 lastGuideMessageRef.current = null;
                 setGuideMessage(null);
+
+                const buf = baselineBufferRef.current;
+                if (buf.length > 0) {
+                  const avg = (key:"earLeft"|"earRight"|"shoulderLeft"|"shoulderRight") => ({
+                    x: buf.reduce((s,a)=>s+a[key].x,0)/buf.length,
+                    y: buf.reduce((s,a)=>s+a[key].y,0)/buf.length,
+                    z: buf.reduce((s,a)=>s+a[key].z,0)/buf.length,
+                  });
+
+                  const lm7 = avg("earLeft");
+                  const lm8 = avg("earRight");
+                  const lm11 = avg("shoulderLeft");
+                  const lm12 = avg("shoulderRight");
+                  
+                  const t = analyzeTurtleNeck({
+                    earLeft:lm7,
+                    earRight:lm8,
+                    shoulderLeft:lm11,
+                    shoulderRight:lm12,
+                    sensitivity:getSensitivity()
+                  });
+
+                  baselineAngleRef.current = t.angleDeg;
+                  console.log("베이스라인 저장됨: ", baselineAngleRef.current);
+
+                  baselineBufferRef.current = [];
+                }
               } else {
                 nextGuideMessage = `좋아요! ${nextCountdownRemain}초 유지하세요`;
                 nextGuideColor = "green";
               }
             } else {
               countdownStartRef.current = null;
+              baselineBufferRef.current = [];
             }
           }
 
@@ -411,7 +459,12 @@ export default function Estimate() {
                 sensitivity,
               });
 
-              const result = turtleStabilizer(turtleData.angleDeg, sensitivity);
+              let corrected = turtleData.angleDeg;
+              if (baselineAngleRef.current) {
+                corrected = (corrected / baselineAngleRef.current) * targetBaseline;
+              }
+
+              const result = turtleStabilizer(corrected, sensitivity);
 
               let turtleNow = lastStateRef.current ?? false;
               let avgAngle = 0;
