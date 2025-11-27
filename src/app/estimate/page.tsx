@@ -11,9 +11,10 @@ import { getTodayHourly, computeTodaySoFarAverage, finalizeUpToNow } from "@/lib
 import { useClearPostureDBOnLoad } from "@/hooks/useClearDBOnload";
 import { useAppStore } from "../store/app";
 import { useSession } from "next-auth/react";
-import { getTodayCount } from "@/lib/postureLocal";
+import { getTodayCount, getTodayMeasuredSeconds } from "@/lib/postureLocal";
 import { clear } from "console";
 import { Bug } from "lucide-react";
+import { exportLocalPostureData } from "@/lib/exportLocalPostureData";
 
 export default function Estimate() {
   const { data: session, status } = useSession();
@@ -62,9 +63,7 @@ export default function Estimate() {
   }
   const sessionId = sessionIdRef.current;
 
-  if (!userId || !sessionId) return <div>loading</div>;
-
-  usePostureStorageManager(userId, angle, isTurtle, sessionId);
+  usePostureStorageManager(userId, angle, isTurtle, sessionId, measuringRef);
 
   // 🔹 "거북목 측정을 시작합니다" 토스트 자동 숨김
   useEffect(() => {
@@ -486,17 +485,27 @@ export default function Estimate() {
   const handleStopEstimating = async () => {
     try {
       if (!stopEstimating) {
-        const rows = await getTodayHourly(userId);
+        // const rows = await getTodayHourly(userId);
 
-        const dailySumWeighted = rows?.reduce((acc: number, r: any) => acc + (r?.sumWeighted ?? 0), 0) ?? 0;
-        const dailyWeightSeconds = rows?.reduce((acc: number, r: any) => acc + (r?.weight ?? 0), 0) ?? 0;
-        const count = await getTodayCount(userId);
+        // const dailySumWeighted = rows?.reduce((acc: number, r: any) => acc + (r?.sumWeighted ?? 0), 0) ?? 0;
+        // const dailyWeightSeconds = rows?.reduce((acc: number, r: any) => acc + (r?.weight ?? 0), 0) ?? 0;
+        // const count = await getTodayCount(userId);
         const now = new Date();
         const yyyy = now.getFullYear();
         const mm = String(now.getMonth() + 1).padStart(2, "0");
         const dd = String(now.getDate()).padStart(2, "0");
         const dateISO = `${yyyy}-${mm}-${dd}`;
 
+        const data = await exportLocalPostureData();
+        if (!data.hourly || data.hourly.length === 0) {
+          console.warn("[handleStopEstimating] hourly data is empty");
+          return;
+        }
+
+        const last = data.hourly[data.hourly.length - 1];
+
+        const dailySumWeighted = last.sumWeighted;
+        const weightSeconds = await getTodayMeasuredSeconds(userId);
         await fetch("/api/summaries/daily", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -504,8 +513,8 @@ export default function Estimate() {
             userId,
             dateISO,
             sumWeighted: dailySumWeighted,
-            weightSeconds: dailyWeightSeconds,
-            count: count,
+            weightSeconds: weightSeconds,
+            count: data.hourly[data.hourly.length - 1].count,
           }),
         });
       } else {

@@ -16,17 +16,20 @@ export async function POST(req: Request) {
     }
 
     const avgAngle = sumWeighted / weightSeconds;
-    // Prisma @db.Date 이므로 자정으로만 저장되어도 OK
     const date = new Date(dateISO); // "YYYY-MM-DD"
+
     const numericCount = Number(count ?? 0);
     const isGoodToday = weightSeconds > 0 && numericCount <= GOOD_DAY_MAX_WARNINGS;
+
     const prev = await prisma.dailyPostureSummary.findFirst({
       where: { userId, date: { lt: date } },
       orderBy: { date: "desc" },
       select: { goodDay: true },
     });
 
+    const prevGoodDay = prev?.goodDay ?? 0;
     const newGoodDay = isGoodToday ? prevGoodDay + 1 : prevGoodDay;
+
     const row = await prisma.dailyPostureSummary.upsert({
       where: { userId_date: { userId, date } },
       create: {
@@ -34,18 +37,19 @@ export async function POST(req: Request) {
         date,
         sumWeighted,
         weightSeconds,
-        count: Number(count ?? 0),
+        count: numericCount,
         avgAngle,
         goodDay: newGoodDay,
       },
       update: {
         sumWeighted,
         weightSeconds,
-        count: Number(count ?? 0),
+        count: numericCount,
         avgAngle,
         goodDay: newGoodDay,
       },
     });
+
     const safeRow = {
       ...row,
       id: Number(row.id), // BigInt → number
@@ -56,6 +60,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: e.message }, { status: 500 });
   }
 }
+
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);

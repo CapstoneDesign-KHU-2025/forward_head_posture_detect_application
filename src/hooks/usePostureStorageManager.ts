@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { RefObject, useEffect } from "react";
 import { storeMeasurementAndAccumulate } from "@/lib/postureLocal";
 import { finalizeUpToNow } from "@/lib/hourlyOps";
 import { PostureMeasurement } from "@/lib/postureLocal";
@@ -12,12 +12,20 @@ import { PostureMeasurement } from "@/lib/postureLocal";
  * @param isTurtle - 현재 거북목 여부
  * @param sessionId - 세션 식별자
  */
-export function usePostureStorageManager(userId: string, currentAngle: number, isTurtle: boolean, sessionId: string) {
+export function usePostureStorageManager(
+  userId: string | undefined,
+  currentAngle: number,
+  isTurtle: boolean,
+  sessionId: string | undefined,
+  measuringRef: RefObject<boolean>
+) {
   useEffect(() => {
-    if (!userId) return;
+    if (!userId || !sessionId) return;
     const SAMPLE_GAP_S = 10;
 
     const interval = setInterval(async () => {
+      if (!measuringRef.current) return;
+
       const now = Date.now();
       const sample: PostureMeasurement = {
         userId,
@@ -32,18 +40,18 @@ export function usePostureStorageManager(userId: string, currentAngle: number, i
     }, SAMPLE_GAP_S * 1000);
 
     return () => clearInterval(interval);
-  }, [userId, currentAngle, isTurtle, sessionId]);
+  }, [userId, currentAngle, isTurtle, sessionId, measuringRef]);
 
   // 1시간마다 hourly finalize 실행
   useEffect(() => {
     if (!userId) return;
 
     const hourlyTimer = setInterval(async () => {
-      await finalizeUpToNow(userId);
+      await finalizeUpToNow(userId, true);
     }, 60 * 60 * 1000);
 
     // 앱 시작 시 한 번 실행
-    finalizeUpToNow(userId);
+    finalizeUpToNow(userId, true);
 
     return () => clearInterval(hourlyTimer);
   }, [userId]);

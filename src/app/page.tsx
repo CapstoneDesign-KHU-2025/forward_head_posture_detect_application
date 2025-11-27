@@ -33,7 +33,7 @@ type WeeklySummaryResponse = {
   mode: "weekly";
   days: number;
   weightedAvg: number | null;
-  rows: Array<{
+  safeRows: Array<{
     date: string;
     avgAngle: number;
     weightSeconds: number;
@@ -51,8 +51,18 @@ export default function Page() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [todayCount, setTodayCount] = useState<number | null>(0);
-  const userId = (session?.user as any)?.id as string | undefined;
   const [goodDays, setGoodDays] = useState(0);
+
+  const userId = (session?.user as any)?.id as string | undefined;
+
+  // 🔹 신규 유저 여부 (localStorage 기반) – hook을 위로 올리기
+  const [isNewUser, setIsNewUser] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false;
+    const hasEverMeasured = localStorage.getItem("hasEverMeasured");
+    return !hasEverMeasured;
+  });
+
+  // 🔹 오늘/주간 데이터 로딩
   useEffect(() => {
     let cancelled = false;
     if (status === "loading") return;
@@ -69,24 +79,27 @@ export default function Page() {
         setLoading(true);
         setError(null);
 
-        // 1) 오늘 지금까지의 시간대별 데이터를 IndexedDB에서 읽어서 평균 계산
         const todayAverage = await computeTodaySoFarAverage(userId);
-        const todayCount = await getTodayCount(userId);
-        const todayHours = await getTodayMeasuredSeconds(userId);
+        const todayCountVal = await getTodayCount(userId);
 
         if (!cancelled) {
           setTodayAvg(todayAverage);
-          setTodayCount(todayCount);
-          setTodayHour(todayHours);
+          setTodayCount(todayCountVal);
         }
 
-        // 2) 서버에서 최근 7일 요약 가져오기
         const res = await fetch(`/api/summaries/daily?userId=${userId}&days=7`);
         if (!res.ok) {
           throw new Error(`Failed to fetch weekly summary: ${res.status}`);
         }
+
         const data: WeeklySummaryResponse = await res.json();
         setGoodDays(data.goodDays);
+
+        const todayISO = new Date().toISOString().slice(0, 10);
+        const todayRow = data.safeRows.find((r) => r.date.slice(0, 10) === todayISO);
+        const todayWeightSeconds = todayRow?.weightSeconds ?? 0;
+        setTodayHour(todayWeightSeconds);
+
         if (!cancelled) {
           setWeeklyAvg(data.weightedAvg ?? null);
         }
@@ -106,34 +119,59 @@ export default function Page() {
     };
   }, [userId, status]);
 
+  // 🔹 인증 안 되어 있으면 landing으로
   useEffect(() => {
     if (status !== "loading" && (!session || !userId)) {
       router.push("/landing");
     }
   }, [status, session, userId, router]);
 
-  if (status === "loading") return <div> 로딩중 ...</div>;
+  // 🔹 측정 기록이 생기면 localStorage에 표시
+  useEffect(() => {
+    if (
+      typeof window !== "undefined" &&
+      ((todayCount !== null && todayCount > 0) || (todayHour !== null && todayHour > 0))
+    ) {
+      localStorage.setItem("hasEverMeasured", "true");
+      setIsNewUser(false);
+    }
+  }, [todayCount, todayHour]);
+
+  // 🔹 여기서부터는 조건부 return 가능 (hook 없음)
+
+  if (status === "loading") return <div>로딩중 ...</div>;
   if (!session || !userId) {
     return <div>리다이렉트 중...</div>;
+  }
+
+  if (error) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="rounded-lg bg-red-50 px-6 py-4 text-red-700 shadow">
+          <p className="font-semibold">홈 데이터를 불러오지 못했어요 😥</p>
+          <p className="text-sm mt-1">{error}</p>
+        </div>
+      </div>
+    );
   }
 
   const isEmptyState = loading || error;
 
   const improvement = computeImprovementPercent(weeklyAvg, todayAvg);
-
   const improvementText =
     improvement == null
       ? "데이터 부족"
       : improvement >= 0
       ? `${improvement.toFixed(1)}% 개선`
       : `${Math.abs(improvement).toFixed(1)}% 악화`;
-
   const improvementValue = improvement == null ? 0 : Math.max(-100, Math.min(100, improvement));
+
+  const warningCount = (todayCount === 0 && todayHour === 0) || todayCount == null ? null : todayCount;
 
   const homeData: HomeData = {
     user: {
       name: session.user?.name || "사용자",
-      avgAng: todayAvg ? todayAvg : 52,
+      avgAng: todayAvg ?? 52,
       avatarSrc: session.user?.image || undefined,
     },
     kpis: isEmptyState
@@ -148,12 +186,7 @@ export default function Page() {
       : [
           {
             label: "오늘 당신의 평균 목 각도는?",
-            value:
-              todayAvg != null
-                ? todayAvg.toFixed(1) // 소수 1자리
-                : loading
-                ? "로딩 중..."
-                : "-",
+            value: todayAvg != null ? todayAvg.toFixed(1) : loading ? "로딩 중..." : "-",
             unit: "°",
             delta: "up",
             deltaText: weeklyAvg != null && todayAvg != null ? `${(todayAvg - weeklyAvg).toFixed(1)}°` : "",
@@ -178,7 +211,6 @@ export default function Page() {
           {
             label: "개선 정도",
             value: improvementValue.toFixed(2),
-
             unit: "%",
             caption: improvementText,
           },
@@ -190,45 +222,6 @@ export default function Page() {
       ctaText: "도전 계속하기",
     },
   };
-
-  // 에러 표시(필요하면 따로 UI로 빼도 됨)
-  if (error) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="rounded-lg bg-red-50 px-6 py-4 text-red-700 shadow">
-          <p className="font-semibold">홈 데이터를 불러오지 못했어요 😥</p>
-          <p className="text-sm mt-1">{error}</p>
-        </div>
-      </div>
-    );
-  }
-
-  // 경고 횟수 (오늘 거북목 경고 횟수)
-  // null이면 오늘 데이터 없음, 숫자면 경고 횟수
-  // todayCount가 0이고 todayHour도 0이면 실제로 측정 기록이 없는 것이므로 null로 처리
-  const warningCount =
-    (todayCount === 0 && todayHour === 0) || todayCount === null || todayCount === undefined ? null : todayCount;
-
-  // 신규 사용자 여부 판단 (localStorage 기반, 동기적으로 초기화)
-  // 경고 횟수가 null이고 (측정 기록이 없고), localStorage에 hasEverMeasured가 없으면 신규 사용자
-  const [isNewUser, setIsNewUser] = useState<boolean>(() => {
-    if (typeof window === "undefined") return false;
-    const hasEverMeasured = localStorage.getItem("hasEverMeasured");
-    return !hasEverMeasured; // 없으면 신규 사용자
-  });
-
-  // 측정 기록이 있으면 localStorage에 저장하고 신규 사용자 상태 업데이트
-  useEffect(() => {
-    if (
-      (typeof window !== "undefined" && todayCount !== null && todayCount > 0) ||
-      (todayHour !== null && todayHour > 0)
-    ) {
-      localStorage.setItem("hasEverMeasured", "true");
-      setIsNewUser(false);
-    }
-  }, [todayCount, todayHour]);
-
-  // 누적 좋은 날 계산 (경고 10회 이하인 날) - 임시로 0으로 설정, 추후 백엔드에서 계산 필요
 
   return (
     <HomeTemplate
