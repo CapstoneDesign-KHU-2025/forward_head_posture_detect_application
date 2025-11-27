@@ -50,9 +50,9 @@ export function getSensitivityLabel(sensitivity: Sensitivity): string {
 export function getSensitivityThresholds(sensitivity: Sensitivity): { enter: number; exit: number } {
   switch (sensitivity) {
     case "low":
-      return { enter: 45, exit: 48 };
+      return { enter: 45, exit: 51 };
     case "high":
-      return { enter: 50, exit: 53 };
+      return { enter: 50, exit: 51 };
     case "normal":
     default:
       return { enter: 48, exit: 51 };

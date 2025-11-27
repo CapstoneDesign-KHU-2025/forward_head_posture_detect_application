@@ -33,11 +33,7 @@ type WeeklySummaryResponse = {
   mode: "weekly";
   days: number;
   weightedAvg: number | null;
-  safeRows: Array<{
-    date: string;
-    avgAngle: number;
-    weightSeconds: number;
-  }>;
+  rows: Array<{ date: string; avgAngle: number; weightSeconds: number }>;
   goodDays: number;
 };
 
@@ -96,9 +92,11 @@ export default function Page() {
         setGoodDays(data.goodDays);
 
         const todayISO = new Date().toISOString().slice(0, 10);
-        const todayRow = data.safeRows.find((r) => r.date.slice(0, 10) === todayISO);
+        const todayRow = data.rows.find((r) => r.date.slice(0, 10) === todayISO);
         const todayWeightSeconds = todayRow?.weightSeconds ?? 0;
         setTodayHour(todayWeightSeconds);
+        const avgAngle = todayRow?.avgAngle ?? 52;
+        setTodayAvg(avgAngle);
 
         if (!cancelled) {
           setWeeklyAvg(data.weightedAvg ?? null);

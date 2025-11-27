@@ -17,14 +17,15 @@ export function usePostureStorageManager(
   currentAngle: number,
   isTurtle: boolean,
   sessionId: string | undefined,
-  measuringRef: RefObject<boolean>
+  measuring: boolean
 ) {
   useEffect(() => {
     if (!userId || !sessionId) return;
-    const SAMPLE_GAP_S = 10;
+    console.log("useposture");
+    const SAMPLE_GAP_S = 5;
 
     const interval = setInterval(async () => {
-      if (!measuringRef.current) return;
+      if (!measuring) return;
 
       const now = Date.now();
       const sample: PostureMeasurement = {
@@ -40,7 +41,7 @@ export function usePostureStorageManager(
     }, SAMPLE_GAP_S * 1000);
 
     return () => clearInterval(interval);
-  }, [userId, currentAngle, isTurtle, sessionId, measuringRef]);
+  }, [userId, currentAngle, isTurtle, sessionId, measuring]);
 
   // 1시간마다 hourly finalize 실행
   useEffect(() => {

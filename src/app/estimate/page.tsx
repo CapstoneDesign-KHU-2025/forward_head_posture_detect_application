@@ -1,4 +1,5 @@
 "use client";
+import { getTodayMeasuredSeconds } from "@/lib/postureLocal";
 
 import { useEffect, useRef, useState } from "react";
 import { FilesetResolver, PoseLandmarker } from "@mediapipe/tasks-vision";
@@ -8,33 +9,33 @@ import { getSensitivity } from "@/utils/sensitivity";
 
 import { usePostureStorageManager } from "@/hooks/usePostureStorageManager";
 import { getTodayHourly, computeTodaySoFarAverage, finalizeUpToNow } from "@/lib/hourlyOps";
-import { useClearPostureDBOnLoad } from "@/hooks/useClearDBOnload";
 import { useAppStore } from "../store/app";
 import { useSession } from "next-auth/react";
-import { getTodayCount, getTodayMeasuredSeconds } from "@/lib/postureLocal";
-import { clear } from "console";
-import { Bug } from "lucide-react";
 import { exportLocalPostureData } from "@/lib/exportLocalPostureData";
 
 export default function Estimate() {
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
 
-  // 🔹 카메라 / 포즈 관련 ref들 (첫 번째 파일 로직)
+  // 🔹 카메라 / 포즈 관련 ref들
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const landmarkerRef = useRef<PoseLandmarker | null>(null);
-  const rafRef = useRef<number | null>(null);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
 
   const lastStateRef = useRef<boolean | null>(null);
   const lastBeepIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const poseBufferRef = useRef<any[]>([]);
   const lastBufferTimeRef = useRef<number>(performance.now());
-
+  const visibilityChangeHandlerRef = useRef<(() => void) | null>(null);
+  const [todaySeconds, setTodaySeconds] = useState<number | null>(null);
   const countdownStartRef = useRef<number | null>(null);
   const measuringRef = useRef<boolean>(false);
   const lastGuideMessageRef = useRef<string | null>(null);
   const lastGuideColorRef = useRef<"green" | "red" | "orange">("red");
+
+  // 🔹 이번 세션 측정 시간용 ref (초 단위)
+  const measurementStartRef = useRef<number | null>(null);
 
   // 🔹 상태값들 (UI + 측정)
   const [isTurtle, setIsTurtle] = useState(false);
@@ -46,7 +47,7 @@ export default function Estimate() {
   const [showMeasurementStartedToast, setShowMeasurementStartedToast] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  // 🔹 통계/서버 관련 상태 (두 번째 파일 로직)
+  // 🔹 통계/서버 관련 상태
   const [hourlyList, setHourlyList] = useState<any[]>([]);
   const [todayAvg, setTodayAvg] = useState<number | null>(null);
   const [isHourlyVisible, setIsHourlyVisible] = useState(false);
@@ -63,7 +64,10 @@ export default function Estimate() {
   }
   const sessionId = sessionIdRef.current;
 
-  usePostureStorageManager(userId, angle, isTurtle, sessionId, measuringRef);
+  // ❗ 여기서 hooks를 conditionally 호출하면 안 되기 때문에
+  //    userId/sessionId가 없어도 훅은 항상 호출하고,
+  //    훅 내부에서 early return 처리하도록 유지
+  usePostureStorageManager(userId, angle, isTurtle, sessionId, measuringRef.current);
 
   // 🔹 "거북목 측정을 시작합니다" 토스트 자동 숨김
   useEffect(() => {
@@ -122,13 +126,16 @@ export default function Estimate() {
 
         if (cancelled) return;
 
+        // 페이지 visibility에 따라 프레임 레이트 조절
+        const getFPS = () => (document.hidden ? 10 : 30); // 백그라운드: 10fps, 포그라운드: 30fps
+        const getInterval = () => 1000 / getFPS();
+
         const loop = async () => {
           const v = videoRef.current;
           const c = canvasRef.current;
           const lm = landmarkerRef.current;
 
           if (!lm || !v || !c || v.videoWidth === 0 || v.videoHeight === 0) {
-            rafRef.current = requestAnimationFrame(loop);
             return;
           }
 
@@ -158,13 +165,14 @@ export default function Estimate() {
             setIsTurtle(false);
             lastStateRef.current = null;
             setAngle(0);
+            // 타이머도 리셋
+            measurementStartRef.current = null;
 
             if (lastBeepIntervalRef.current) {
               clearInterval(lastBeepIntervalRef.current);
               lastBeepIntervalRef.current = null;
             }
 
-            rafRef.current = requestAnimationFrame(loop);
             return;
           }
 
@@ -196,7 +204,7 @@ export default function Estimate() {
             const topBound = centerY + 60 + offsetY;
             const bottomBound = centerY + 280 + offsetY;
 
-            return pixelX >= leftBound && pixelX <= rightBound && pixelY >= topBound && pixelY <= bottomBound;
+            return pixelX >= leftBound && pixelX <= rightBound && pixelX >= leftBound && pixelY <= bottomBound;
           };
 
           let faceInside = true;
@@ -273,6 +281,11 @@ export default function Estimate() {
                 measuringRef.current = true;
                 setMeasurementStarted(true);
                 setShowMeasurementStartedToast(true);
+
+                // ✅ 실제 측정 시작 시점 기록
+                if (measurementStartRef.current === null) {
+                  measurementStartRef.current = Date.now();
+                }
 
                 nextGuideMessage = null;
                 nextGuideColor = "green";
@@ -446,11 +459,20 @@ export default function Estimate() {
               }
             }
           }
-
-          rafRef.current = requestAnimationFrame(loop);
         };
 
-        loop();
+        // visibility 변경 시 프레임 레이트 조절
+        const handleVisibilityChange = () => {
+          if (intervalRef.current) {
+            clearInterval(intervalRef.current);
+            intervalRef.current = setInterval(loop, getInterval());
+          }
+        };
+        visibilityChangeHandlerRef.current = handleVisibilityChange;
+        document.addEventListener("visibilitychange", handleVisibilityChange);
+
+        // 초기 루프 시작
+        intervalRef.current = setInterval(loop, getInterval());
       } catch (e: any) {
         console.error("Camera / Mediapipe init error:", e);
         setError(e?.message ?? "카메라 초기화 중 오류가 발생했습니다.");
@@ -459,9 +481,13 @@ export default function Estimate() {
 
     return () => {
       cancelled = true;
-      if (rafRef.current) {
-        cancelAnimationFrame(rafRef.current);
-        rafRef.current = null;
+      if (visibilityChangeHandlerRef.current) {
+        document.removeEventListener("visibilitychange", visibilityChangeHandlerRef.current);
+        visibilityChangeHandlerRef.current = null;
+      }
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
       }
       landmarkerRef.current?.close?.();
       landmarkerRef.current = null;
@@ -478,18 +504,33 @@ export default function Estimate() {
 
       const tracks = (videoRef.current?.srcObject as MediaStream | null)?.getTracks() || [];
       tracks.forEach((t) => t.stop());
+
+      // cleanup 시 타이머도 초기화
+      measurementStartRef.current = null;
     };
   }, [stopEstimating]);
 
   // 🔹 "오늘의 측정 중단하기" 버튼: IndexedDB -> DailyPostureSummary POST
   const handleStopEstimating = async () => {
     try {
-      if (!stopEstimating) {
-        // const rows = await getTodayHourly(userId);
+      if (!userId) {
+        console.warn("[handleStopEstimating] no userId");
+        return;
+      }
 
-        // const dailySumWeighted = rows?.reduce((acc: number, r: any) => acc + (r?.sumWeighted ?? 0), 0) ?? 0;
-        // const dailyWeightSeconds = rows?.reduce((acc: number, r: any) => acc + (r?.weight ?? 0), 0) ?? 0;
-        // const count = await getTodayCount(userId);
+      if (!stopEstimating) {
+        // 측정 종료 시점: 측정 시간 계산
+        let weightSeconds = 0;
+        if (measurementStartRef.current !== null) {
+          const now = Date.now();
+          weightSeconds = Math.floor((now - measurementStartRef.current) / 1000);
+        }
+
+        if (weightSeconds <= 0) {
+          console.warn("[handleStopEstimating] measurement duration is 0. skip POST");
+          return;
+        }
+
         const now = new Date();
         const yyyy = now.getFullYear();
         const mm = String(now.getMonth() + 1).padStart(2, "0");
@@ -505,7 +546,7 @@ export default function Estimate() {
         const last = data.hourly[data.hourly.length - 1];
 
         const dailySumWeighted = last.sumWeighted;
-        const weightSeconds = await getTodayMeasuredSeconds(userId);
+
         await fetch("/api/summaries/daily", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -513,10 +554,13 @@ export default function Estimate() {
             userId,
             dateISO,
             sumWeighted: dailySumWeighted,
-            weightSeconds: weightSeconds,
-            count: data.hourly[data.hourly.length - 1].count,
+            weightSeconds, // ✅ 측정 시작 ~ stop 사이 초 단위
+            count: last.count,
           }),
         });
+
+        // 한 번 서버로 보냈으면 다시 측정할 땐 새로 시작하게 초기화
+        measurementStartRef.current = null;
       } else {
         // 측정 시작: 모든 기존 측정 상태 리셋
         measuringRef.current = false;
@@ -527,6 +571,9 @@ export default function Estimate() {
         setMeasurementStarted(false);
         setCountdownRemain(null);
         setIsTurtle(false);
+
+        // 타이머도 초기화
+        measurementStartRef.current = null;
       }
     } catch (err) {
       console.error("[handleStopEstimating] error:", err);
@@ -541,7 +588,6 @@ export default function Estimate() {
       setIsHourlyVisible(false);
       return;
     }
-    // 다른 토글 비활성화
     setIsTodayAvgVisible(false);
     if (userId) {
       const rows = await getTodayHourly(userId);
@@ -549,17 +595,28 @@ export default function Estimate() {
       setIsHourlyVisible(true);
     }
   }
-  // 🔹 오늘 지금까지 평균 토글
+
   async function toggleAvg() {
     if (isTodayAvgVisible) {
       setIsTodayAvgVisible(false);
       return;
     }
-    // 다른 토글 비활성화
+
     setIsHourlyVisible(false);
+
+    // 평균 먼저 계산
     const avg = await computeTodaySoFarAverage(userId);
     setTodayAvg(avg);
-    if (userId) await finalizeUpToNow(userId, true);
+
+    if (userId) {
+      // hourlies finalize (지금까지 데이터 확정)
+      await finalizeUpToNow(userId, true);
+
+      // ✅ 지금 시점 기준 “오늘 측정 시간(초)” 가져오기
+      const seconds = await getTodayMeasuredSeconds(userId);
+      setTodaySeconds(seconds);
+    }
+
     setIsTodayAvgVisible(true);
   }
 
@@ -629,7 +686,6 @@ export default function Estimate() {
               className="relative w-full m-0 rounded-none overflow-hidden bg-[#2C3E50]"
               style={{ aspectRatio: "4/3" }}
             >
-              {/* 비디오는 숨기고, 캔버스만 화면에 표시 */}
               <video ref={videoRef} className="absolute -left-[9999px]" />
               <canvas ref={canvasRef} className="w-full h-full block bg-[#2C3E50]" />
 
@@ -680,7 +736,7 @@ export default function Estimate() {
           </div>
         </section>
 
-        {/* 토글 버튼 (웹캠 박스 밖) */}
+        {/* 토글 버튼 */}
         <div className="flex justify-center gap-4 my-6">
           <button
             onClick={toggleHourly}
@@ -717,8 +773,12 @@ export default function Estimate() {
                     {formatTimeRange(r.hourStartTs)}
                   </div>
                   <div className="text-[0.9rem] text-[#4F4F4F] mb-1">
-                    거북목 경고 횟수: {r.count}, 측정 시간: {r.weight.toFixed(0)}s
+                    거북목 경고 횟수: {r.count}, 측정 시간:{" "}
+                    {todaySeconds && todaySeconds > 0
+                      ? `${Math.floor(todaySeconds / 60)}분 ${todaySeconds % 60}초`
+                      : "측정시간이 저장되지 않았어요!"}
                   </div>
+
                   <div className="text-[1.5rem] font-bold text-[#2D5F2E]">
                     avg:{" "}
                     {r.finalized === 1 && r.avgAngle != null
