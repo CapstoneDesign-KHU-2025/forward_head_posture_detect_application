@@ -20,15 +20,6 @@ export async function POST(req: Request) {
     const date = new Date(dateISO); // "YYYY-MM-DD"
     const numericCount = Number(count ?? 0);
 
-    const prev = await prisma.dailyPostureSummary.findFirst({
-      where: { userId, date: { lt: date } },
-      orderBy: { date: "desc" },
-      select: { goodDay: true },
-    });
-
-    const prevGood = prev?.goodDay ?? 0;
-    const isGoodToday = weightSeconds > 0 && numericCount <= GOOD_DAY_MAX_WARNINGS;
-    const newGoodDay = isGoodToday ? prevGood + 1 : prevGood;
     const row = await prisma.dailyPostureSummary.upsert({
       where: { userId_date: { userId, date } },
       create: {
@@ -36,16 +27,14 @@ export async function POST(req: Request) {
         date,
         sumWeighted,
         weightSeconds,
-        count: Number(count ?? 0),
+        count: numericCount,
         avgAngle,
-        goodDay: newGoodDay,
       },
       update: {
         sumWeighted,
         weightSeconds,
-        count: Number(count ?? 0),
+        count: numericCount,
         avgAngle,
-        goodDay: newGoodDay,
       },
     });
     const safeRow = {
@@ -86,7 +75,10 @@ export async function GET(req: Request) {
       const w = safeRows.reduce((a, r) => a + r.weightSeconds, 0);
       const weightedAvg = w > 0 ? sum / w : null;
 
-      const goodDays = safeRows.length > 0 ? safeRows[safeRows.length - 1].goodDay : 0;
+      // good day 기준: 측정 시간이 있고, 경고 횟수가 임계값 이하인 날
+      const goodDays = safeRows.filter(
+        (r) => r.weightSeconds > 0 && r.count <= GOOD_DAY_MAX_WARNINGS
+      ).length;
       return NextResponse.json({ mode: "weekly", days, weightedAvg, safeRows, goodDays }, { status: 200 });
     }
 
@@ -98,8 +90,18 @@ export async function GET(req: Request) {
       ...row,
       id: Number(row?.id), // BigInt → number
     };
+
+    // 전체 기간 기준 good day 개수 재계산
+    const goodDays = await prisma.dailyPostureSummary.count({
+      where: {
+        userId,
+        weightSeconds: { gt: 0 },
+        count: { lte: GOOD_DAY_MAX_WARNINGS },
+      },
+    });
+
     return NextResponse.json(
-      { mode: "today", todayAvg: safeRow?.avgAngle ?? null, safeRow, goodDays: safeRow?.goodDay ?? 0 },
+      { mode: "today", todayAvg: safeRow?.avgAngle ?? null, safeRow, goodDays },
       { status: 200 }
     );
   } catch (e: any) {
