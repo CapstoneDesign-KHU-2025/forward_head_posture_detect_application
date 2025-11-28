@@ -9,6 +9,7 @@ import { usePostureStorageManager } from "@/hooks/usePostureStorageManager";
 import { getStatusBannerMessageCore, getStatusBannerTypeCore } from "@/utils/getStatusBanner";
 import { checkGuidelinesAndDistance, Pose } from "@/utils/checkGuidelinesAndDistance";
 import { drawGuidelines } from "@/utils/drawGuidelines";
+import { startBeep, stopBeep } from "@/utils/manageBeep";
 type GuideColor = "green" | "red" | "orange";
 type StatusBannerType = "success" | "warning" | "info";
 
@@ -169,7 +170,7 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating }: UseTurtleNe
           const centerY = c.height / 2;
           const offsetY = 30;
 
-          const { faceInside, shoulderInside, isDistanceOk, distanceRatio, allInside } = checkGuidelinesAndDistance(
+          const { isDistanceOk, distanceRatio, allInside } = checkGuidelinesAndDistance(
             poses as Pose[],
             c,
             centerX,
@@ -317,25 +318,9 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating }: UseTurtleNe
                 lastStateRef.current = turtleNow;
 
                 if (turtleNow) {
-                  const beepInterval = setInterval(() => {
-                    const audioCtx = new AudioContext();
-                    const osc = audioCtx.createOscillator();
-                    const gain = audioCtx.createGain();
-                    osc.connect(gain);
-                    gain.connect(audioCtx.destination);
-                    osc.type = "sine";
-                    osc.frequency.setValueAtTime(880, audioCtx.currentTime);
-                    gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-                    osc.start();
-                    osc.stop(audioCtx.currentTime + 0.2);
-                    setTimeout(() => audioCtx.close(), 300);
-                  }, 1000);
-                  lastBeepIntervalRef.current = beepInterval;
+                  startBeep(lastBeepIntervalRef);
                 } else {
-                  if (lastBeepIntervalRef.current) {
-                    clearInterval(lastBeepIntervalRef.current);
-                    lastBeepIntervalRef.current = null;
-                  }
+                  stopBeep(lastBeepIntervalRef);
                 }
               }
             }
