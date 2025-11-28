@@ -6,6 +6,7 @@ import analyzeTurtleNeck from "@/utils/isTurtleNeck";
 import turtleStabilizer from "@/utils/turtleStabilizer";
 import { getSensitivity } from "@/utils/sensitivity";
 import { usePostureStorageManager } from "@/hooks/usePostureStorageManager";
+import { getStatusBannerMessageCore, getStatusBannerTypeCore } from "@/utils/getStatusBanner";
 
 type GuideColor = "green" | "red" | "orange";
 type StatusBannerType = "success" | "warning" | "info";
@@ -503,21 +504,9 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating }: UseTurtleNe
   };
 
   // === 상태 배너 계산 ===
-  const getStatusBannerType = (): StatusBannerType => {
-    if (stopEstimating) return "info";
-    if (isTurtle && measurementStarted) return "warning";
-    if (guideColor === "green" && guideMessage) return "success";
-    if (guideColor === "orange" && guideMessage) return "info";
-    if (guideColor === "red" && guideMessage) return "info";
-    return "success";
-  };
+  const bannerType = getStatusBannerTypeCore(stopEstimating, isTurtle, measurementStarted, guideColor, guideMessage);
 
-  const statusBannerMessage = () => {
-    if (stopEstimating) return "측정이 중단되었습니다";
-    if (isTurtle && measurementStarted) return `거북목 자세입니다!`;
-    if (guideMessage) return guideMessage;
-    return "바른 자세입니다!";
-  };
+  const bannerMessage = getStatusBannerMessageCore(stopEstimating, isTurtle, measurementStarted, guideMessage);
 
   return {
     // DOM refs
@@ -535,8 +524,8 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating }: UseTurtleNe
     error,
 
     // UI helper
-    getStatusBannerType,
-    statusBannerMessage,
+    getStatusBannerType: () => bannerType,
+    statusBannerMessage: () => bannerMessage,
 
     // 외부에서 사용할 메서드
     resetForNewMeasurement,
