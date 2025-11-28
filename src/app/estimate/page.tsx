@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useSession } from "next-auth/react";
 import { useAppStore } from "../store/app";
 import { getTodayHourly, computeTodaySoFarAverage, finalizeUpToNow } from "@/lib/hourlyOps";
-import { getTodayCount } from "@/lib/postureLocal";
+import { getTodayCount, storeMeasurementAndAccumulate } from "@/lib/postureLocal";
 import { useTurtleNeckMeasurement } from "@/hooks/useTurtleNeckMeasurement";
 import { formatTime } from "@/utils/formatTime";
 import { createISO } from "@/utils/createISO";
@@ -24,6 +24,8 @@ export default function Estimate() {
     error,
     getStatusBannerType,
     statusBannerMessage,
+    isTurtle,
+    angle,
   } = useTurtleNeckMeasurement({ userId, stopEstimating });
 
   // 🔹 통계/서버 관련 상태
@@ -46,14 +48,24 @@ export default function Estimate() {
   const handleStopEstimating = async () => {
     try {
       if (!stopEstimating) {
+        await storeMeasurementAndAccumulate({
+          userId,
+          ts: Date.now(),
+          angleDeg: angle,
+          isTurtle,
+          hasPose: true,
+          sessionId: session?.user?.id,
+          sampleGapS: 10,
+        });
         // 측정 중 → 중단으로 변경: 요약 데이터 전송
         const rows = await getTodayHourly(userId);
-
+        console.log("[handleStopEstimating] hourly rows:", rows);
         const dailySumWeighted = rows?.reduce((acc: number, r: any) => acc + (r?.sumWeighted ?? 0), 0) ?? 0;
         const dailyWeightSeconds = rows?.reduce((acc: number, r: any) => acc + (r?.weight ?? 0), 0) ?? 0;
         const count = await getTodayCount(userId);
-        const dateISO = createISO;
-
+        const dateISO = createISO();
+        console.log("[handleStopEstimating] sumWeighted:", dailySumWeighted);
+        console.log("[handleStopEstimating] weightSeconds:", dailyWeightSeconds);
         await fetch("/api/summaries/daily", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -101,12 +113,12 @@ export default function Estimate() {
     // 다른 토글 비활성화
     setIsHourlyVisible(false);
     const avg = await computeTodaySoFarAverage(userId);
+    console.log(avg);
     setTodayAvg(avg);
     if (userId) await finalizeUpToNow(userId, true);
     setIsTodayAvgVisible(true);
   }
 
-  // 시간 포맷팅 함수
   const formatTimeRange = (hourStartTs: number) => {
     const start = new Date(hourStartTs);
     const end = new Date(hourStartTs + 3600000);
@@ -114,7 +126,6 @@ export default function Estimate() {
     return `${formatTime(start)} ~ ${formatTime(end)}`;
   };
 
-  // 🔹 UI
   return (
     <div className="min-h-screen bg-[#F8FBF8]">
       <div className="max-w-[1200px] mx-auto px-70 py-8">

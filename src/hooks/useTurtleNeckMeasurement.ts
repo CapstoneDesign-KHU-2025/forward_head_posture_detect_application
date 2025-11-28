@@ -117,6 +117,7 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating }: UseTurtleNe
 
     if (result !== null) {
       avgAngle = result.avgAngle;
+      console.log("Avg", avgAngle);
       turtleNow = result.isTurtle;
       setAngle(avgAngle);
     }

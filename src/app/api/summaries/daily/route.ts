@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { createISO } from "@/utils/createISO";
 
 const GOOD_DAY_MAX_WARNINGS = 10;
 // POST /api/summaries/daily
@@ -65,8 +66,8 @@ export async function GET(req: Request) {
     const daysParam = searchParams.get("days");
     if (!userId) return NextResponse.json({ error: "userId required" }, { status: 400 });
 
-    const today0 = new Date();
-    today0.setHours(0, 0, 0, 0);
+    const dateISO = createISO();
+    const today0 = new Date(dateISO);
 
     // ✅ days가 있으면 weekly 모드
     if (daysParam) {
@@ -93,10 +94,12 @@ export async function GET(req: Request) {
     const row = await prisma.dailyPostureSummary.findUnique({
       where: { userId_date: { userId, date: today0 } },
     });
-    const safeRow = {
-      ...row,
-      id: Number(row?.id), // BigInt → number
-    };
+    const safeRow = row
+      ? {
+          ...row,
+          id: Number(row.id),
+        }
+      : null;
     return NextResponse.json(
       { mode: "today", todayAvg: safeRow?.avgAngle ?? null, safeRow, goodDays: safeRow?.goodDay ?? 0 },
       { status: 200 }

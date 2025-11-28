@@ -20,6 +20,13 @@ export function usePostureStorageManager(
   measuring: boolean
 ) {
   useEffect(() => {
+    console.log("[usePostureStorageManager] effect", {
+      userId,
+      sessionId,
+      measuring,
+
+      isTurtle,
+    });
     if (!userId) return;
     const SAMPLE_GAP_S = 10;
 
@@ -36,6 +43,12 @@ export function usePostureStorageManager(
         sessionId,
         sampleGapS: SAMPLE_GAP_S,
       };
+      console.log("[storeMeasurement] saving", {
+        userId,
+        sample,
+        isTurtle,
+        ts: now,
+      });
       await storeMeasurementAndAccumulate(sample);
     }, SAMPLE_GAP_S * 1000);
 
