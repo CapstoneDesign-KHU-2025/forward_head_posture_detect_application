@@ -1,11 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useSession } from "next-auth/react";
 import { useAppStore } from "../store/app";
 import { getTodayHourly, computeTodaySoFarAverage, finalizeUpToNow } from "@/lib/hourlyOps";
 import { getTodayCount } from "@/lib/postureLocal";
 import { useTurtleNeckMeasurement } from "@/hooks/useTurtleNeckMeasurement";
+import { formatTime } from "@/utils/formatTime";
+import { createISO } from "@/utils/createISO";
 
 export default function Estimate() {
   const { data: session, status } = useSession();
@@ -50,11 +52,7 @@ export default function Estimate() {
         const dailySumWeighted = rows?.reduce((acc: number, r: any) => acc + (r?.sumWeighted ?? 0), 0) ?? 0;
         const dailyWeightSeconds = rows?.reduce((acc: number, r: any) => acc + (r?.weight ?? 0), 0) ?? 0;
         const count = await getTodayCount(userId);
-        const now = new Date();
-        const yyyy = now.getFullYear();
-        const mm = String(now.getMonth() + 1).padStart(2, "0");
-        const dd = String(now.getDate()).padStart(2, "0");
-        const dateISO = `${yyyy}-${mm}-${dd}`;
+        const dateISO = createISO;
 
         await fetch("/api/summaries/daily", {
           method: "POST",
@@ -112,13 +110,7 @@ export default function Estimate() {
   const formatTimeRange = (hourStartTs: number) => {
     const start = new Date(hourStartTs);
     const end = new Date(hourStartTs + 3600000);
-    const formatTime = (date: Date) => {
-      const hours = date.getHours();
-      const minutes = date.getMinutes();
-      const period = hours >= 12 ? "오후" : "오전";
-      const hour12 = hours > 12 ? hours - 12 : hours === 0 ? 12 : hours;
-      return `${period} ${String(hour12).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
-    };
+
     return `${formatTime(start)} ~ ${formatTime(end)}`;
   };
 
