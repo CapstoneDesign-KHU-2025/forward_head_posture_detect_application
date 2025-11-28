@@ -58,6 +58,80 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating }: UseTurtleNe
 
   // === IndexedDB 저장 훅 (각도/거북목 상태를 10초 단위로 저장) ===
   usePostureStorageManager(userId, angle, isTurtle, sessionId, measuringRef.current);
+  function processPoseBufferAndUpdateState(options: {
+    poseBufferRef: React.RefObject<any[]>;
+    lastBufferTimeRef: React.RefObject<number>;
+    measuringRef: React.RefObject<boolean>;
+    lastStateRef: React.RefObject<boolean | null>;
+    lastBeepIntervalRef: React.RefObject<NodeJS.Timeout | null>;
+    setAngle: (angle: number) => void;
+    setIsTurtle: (val: boolean) => void;
+  }) {
+    const { poseBufferRef, lastBufferTimeRef, measuringRef, lastStateRef, lastBeepIntervalRef, setAngle, setIsTurtle } =
+      options;
+
+    const now = performance.now();
+    if (!measuringRef.current) {
+      lastBufferTimeRef.current = now;
+      poseBufferRef.current = [];
+      return;
+    }
+
+    if (now - lastBufferTimeRef.current < 200) {
+      return;
+    }
+
+    lastBufferTimeRef.current = now;
+
+    const buf = poseBufferRef.current;
+    if (buf.length === 0) return;
+    poseBufferRef.current = [];
+
+    const avg = (key: "earLeft" | "earRight" | "shoulderLeft" | "shoulderRight") => {
+      return {
+        x: buf.reduce((a, b) => a + b[key].x, 0) / buf.length,
+        y: buf.reduce((a, b) => a + b[key].y, 0) / buf.length,
+        z: buf.reduce((a, b) => a + b[key].z, 0) / buf.length,
+      };
+    };
+
+    const lm7 = avg("earLeft");
+    const lm8 = avg("earRight");
+    const lm11 = avg("shoulderLeft");
+    const lm12 = avg("shoulderRight");
+
+    const sensitivity = getSensitivity();
+
+    const turtleData = analyzeTurtleNeck({
+      earLeft: lm7,
+      earRight: lm8,
+      shoulderLeft: lm11,
+      shoulderRight: lm12,
+      sensitivity,
+    });
+
+    const result = turtleStabilizer(turtleData.angleDeg, sensitivity);
+
+    let turtleNow = lastStateRef.current ?? false;
+    let avgAngle = 0;
+
+    if (result !== null) {
+      avgAngle = result.avgAngle;
+      turtleNow = result.isTurtle;
+      setAngle(avgAngle);
+    }
+
+    if (turtleNow !== lastStateRef.current) {
+      setIsTurtle(turtleNow);
+      lastStateRef.current = turtleNow;
+
+      if (turtleNow) {
+        startBeep(lastBeepIntervalRef);
+      } else {
+        stopBeep(lastBeepIntervalRef);
+      }
+    }
+  }
 
   // === "거북목 측정을 시작합니다" 토스트 자동 숨김 ===
   useEffect(() => {
@@ -265,68 +339,17 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating }: UseTurtleNe
 
           // --- 측정 시작 후: 거북목 계산 + 경고음 ---
           for (const pose of poses) {
-            const now = performance.now();
-            if (!measuringRef.current) {
-              lastBufferTimeRef.current = now;
-              poseBufferRef.current = [];
-              continue;
-            }
-
-            if (now - lastBufferTimeRef.current >= 200) {
-              lastBufferTimeRef.current = now;
-
-              const buf = poseBufferRef.current;
-              poseBufferRef.current = [];
-
-              const avg = (key: "earLeft" | "earRight" | "shoulderLeft" | "shoulderRight") => {
-                return {
-                  x: buf.reduce((a, b) => a + b[key].x, 0) / buf.length,
-                  y: buf.reduce((a, b) => a + b[key].y, 0) / buf.length,
-                  z: buf.reduce((a, b) => a + b[key].z, 0) / buf.length,
-                };
-              };
-
-              const lm7 = avg("earLeft");
-              const lm8 = avg("earRight");
-              const lm11 = avg("shoulderLeft");
-              const lm12 = avg("shoulderRight");
-
-              // 민감도 설정 가져오기
-              const sensitivity = getSensitivity();
-
-              const turtleData = analyzeTurtleNeck({
-                earLeft: { x: lm7["x"], y: lm7["y"], z: lm7["z"] },
-                earRight: { x: lm8["x"], y: lm8["y"], z: lm8["z"] },
-                shoulderLeft: { x: lm11["x"], y: lm11["y"], z: lm11["z"] },
-                shoulderRight: { x: lm12["x"], y: lm12["y"], z: lm12["z"] },
-                sensitivity,
-              });
-
-              const result = turtleStabilizer(turtleData.angleDeg, sensitivity);
-
-              let turtleNow = lastStateRef.current ?? false;
-              let avgAngle = 0;
-
-              if (result !== null) {
-                avgAngle = result.avgAngle;
-                turtleNow = result.isTurtle;
-                setAngle(avgAngle);
-              }
-
-              if (turtleNow !== lastStateRef.current) {
-                setIsTurtle(turtleNow);
-                lastStateRef.current = turtleNow;
-
-                if (turtleNow) {
-                  startBeep(lastBeepIntervalRef);
-                } else {
-                  stopBeep(lastBeepIntervalRef);
-                }
-              }
-            }
+            processPoseBufferAndUpdateState({
+              poseBufferRef,
+              lastBufferTimeRef,
+              measuringRef,
+              lastStateRef,
+              lastBeepIntervalRef,
+              setAngle,
+              setIsTurtle,
+            });
           }
         };
-
         // visibility 변경 시 프레임 레이트 조절
         const handleVisibilityChange = () => {
           if (intervalRef.current) {
