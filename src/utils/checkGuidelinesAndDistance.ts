@@ -1,5 +1,5 @@
 type PosePoint = { x: number; y: number; z: number };
-type Pose = PosePoint[];
+export type Pose = PosePoint[];
 
 interface GuidelineCheckResult {
   faceInside: boolean;
@@ -9,7 +9,7 @@ interface GuidelineCheckResult {
   allInside: boolean;
 }
 
-function checkGuidelinesAndDistance(
+export function checkGuidelinesAndDistance(
   poses: Pose[],
   canvas: HTMLCanvasElement,
   centerX: number,

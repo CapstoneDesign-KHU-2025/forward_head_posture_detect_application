@@ -7,7 +7,7 @@ import turtleStabilizer from "@/utils/turtleStabilizer";
 import { getSensitivity } from "@/utils/sensitivity";
 import { usePostureStorageManager } from "@/hooks/usePostureStorageManager";
 import { getStatusBannerMessageCore, getStatusBannerTypeCore } from "@/utils/getStatusBanner";
-
+import { checkGuidelinesAndDistance, Pose } from "@/utils/checkGuidelinesAndDistance";
 type GuideColor = "green" | "red" | "orange";
 type StatusBannerType = "success" | "warning" | "info";
 
@@ -138,7 +138,10 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating }: UseTurtleNe
           const ctx = c.getContext("2d")!;
 
           ctx.clearRect(0, 0, c.width, c.height);
-          ctx.drawImage(v, 0, 0, c.width, c.height);
+          ctx.save();
+          ctx.scale(-1, 1);
+          ctx.drawImage(v, -c.width, 0, c.width, c.height);
+          ctx.restore();
 
           const poses = result.landmarks ?? [];
 
@@ -165,37 +168,44 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating }: UseTurtleNe
           const centerY = c.height / 2;
           const offsetY = 30;
 
+          const { faceInside, shoulderInside, isDistanceOk, distanceRatio, allInside } = checkGuidelinesAndDistance(
+            poses as Pose[],
+            c,
+            centerX,
+            centerY,
+            offsetY
+          );
           // --- 가이드라인 내부 체크 함수들 ---
-          const isInsideFaceGuideline = (x: number, y: number) => {
-            const pixelX = x * c.width;
-            const pixelY = y * c.height;
+          //   const isInsideFaceGuideline = (x: number, y: number) => {
+          //     const pixelX = x * c.width;
+          //     const pixelY = y * c.height;
 
-            const faceCenterX = centerX;
-            const faceCenterY = centerY - 80 + offsetY;
-            const radiusX = 90;
-            const radiusY = 110;
+          //     const faceCenterX = centerX;
+          //     const faceCenterY = centerY - 80 + offsetY;
+          //     const radiusX = 90;
+          //     const radiusY = 110;
 
-            const dx = (pixelX - faceCenterX) / radiusX;
-            const dy = (pixelY - faceCenterY) / radiusY;
-            return dx * dx + dy * dy <= 1;
-          };
+          //     const dx = (pixelX - faceCenterX) / radiusX;
+          //     const dy = (pixelY - faceCenterY) / radiusY;
+          //     return dx * dx + dy * dy <= 1;
+          //   };
 
-          const isInsideUpperBodyGuideline = (x: number, y: number) => {
-            const pixelX = x * c.width;
-            const pixelY = y * c.height;
+          //   const isInsideUpperBodyGuideline = (x: number, y: number) => {
+          //     const pixelX = x * c.width;
+          //     const pixelY = y * c.height;
 
-            const leftBound = centerX - 225;
-            const rightBound = centerX + 225;
-            const topBound = centerY + 60 + offsetY;
-            const bottomBound = centerY + 280 + offsetY;
+          //     const leftBound = centerX - 225;
+          //     const rightBound = centerX + 225;
+          //     const topBound = centerY + 60 + offsetY;
+          //     const bottomBound = centerY + 280 + offsetY;
 
-            return pixelX >= leftBound && pixelX <= rightBound && pixelY >= topBound && pixelY <= bottomBound;
-          };
+          //     return pixelX >= leftBound && pixelX <= rightBound && pixelY >= topBound && pixelY <= bottomBound;
+          //   };
 
-          let faceInside = true;
-          let shoulderInside = true;
-          let isDistanceOk = true;
-          let distanceRatio = 1;
+          //   let faceInside = true;
+          //   let shoulderInside = true;
+          //   let isDistanceOk = true;
+          //   let distanceRatio = 1;
 
           const tooCloseThreshold = 1.05;
           const tooFarThreshold = 0.7;
@@ -209,32 +219,32 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating }: UseTurtleNe
               shoulderRight: { x: pose[12].x, y: pose[12].y, z: pose[12].z },
             });
 
-            const faceLandmarks = pose.slice(0, 11);
-            if (faceLandmarks.length > 0) {
-              faceInside = faceLandmarks.every((lm: any) => isInsideFaceGuideline(lm.x, lm.y));
-            }
+            // //     const faceLandmarks = pose.slice(0, 11);
+            // //     if (faceLandmarks.length > 0) {
+            // //       faceInside = faceLandmarks.every((lm: any) => isInsideFaceGuideline(lm.x, lm.y));
+            // //     }
 
-            const shoulderLandmarks = pose.slice(11, 13);
-            if (shoulderLandmarks.length > 0) {
-              shoulderInside = shoulderLandmarks.every((lm: any) => isInsideUpperBodyGuideline(lm.x, lm.y));
-            }
+            // //     const shoulderLandmarks = pose.slice(11, 13);
+            // //     if (shoulderLandmarks.length > 0) {
+            // //       shoulderInside = shoulderLandmarks.every((lm: any) => isInsideUpperBodyGuideline(lm.x, lm.y));
+            // //     }
 
-            const lm11 = pose[11];
-            const lm12 = pose[12];
+            // //     const lm11 = pose[11];
+            // //     const lm12 = pose[12];
 
-            if (lm11 && lm12) {
-              const shoulderWidth = Math.sqrt(
-                Math.pow((lm12.x - lm11.x) * c.width, 2) + Math.pow((lm12.y - lm11.y) * c.height, 2)
-              );
+            // //     if (lm11 && lm12) {
+            // //       const shoulderWidth = Math.sqrt(
+            // //         Math.pow((lm12.x - lm11.x) * c.width, 2) + Math.pow((lm12.y - lm11.y) * c.height, 2)
+            // //       );
 
-              const referenceShoulderWidth = 380;
-              distanceRatio = shoulderWidth / referenceShoulderWidth;
+            // //       const referenceShoulderWidth = 380;
+            // //       distanceRatio = shoulderWidth / referenceShoulderWidth;
 
-              isDistanceOk = distanceRatio >= tooFarThreshold && distanceRatio <= tooCloseThreshold;
-            }
+            // //       isDistanceOk = distanceRatio >= tooFarThreshold && distanceRatio <= tooCloseThreshold;
+            // //     }
           }
 
-          const allInside = faceInside && shoulderInside && isDistanceOk;
+          //onst allInside = faceInside && shoulderInside && isDistanceOk;
           let nextGuideMessage: string | null = null;
           let nextGuideColor: GuideColor = lastGuideColorRef.current ?? "red";
           let nextCountdownRemain: number | null = null;
