@@ -137,12 +137,8 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating }: UseTurtleNe
           const result = lm.detectForVideo(v, nowPerformance);
           const ctx = c.getContext("2d")!;
 
-          // 좌우 반전 + 화면 그리기
           ctx.clearRect(0, 0, c.width, c.height);
-          ctx.save();
-          ctx.scale(-1, 1);
-          ctx.drawImage(v, -c.width, 0, c.width, c.height);
-          ctx.restore();
+          ctx.drawImage(v, 0, 0, c.width, c.height);
 
           const poses = result.landmarks ?? [];
 
