@@ -13,7 +13,7 @@ import { PostureMeasurement } from "@/lib/postureLocal";
  * @param sessionId - 세션 식별자
  */
 export function usePostureStorageManager(
-  userId: string,
+  userId: string | undefined,
   currentAngle: number,
   isTurtle: boolean,
   sessionId: string,
@@ -25,7 +25,7 @@ export function usePostureStorageManager(
 
     const interval = setInterval(async () => {
       if (!measuring) return;
-      
+
       const now = Date.now();
       const sample: PostureMeasurement = {
         userId,
