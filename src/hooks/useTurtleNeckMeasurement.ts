@@ -175,37 +175,6 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating }: UseTurtleNe
             centerY,
             offsetY
           );
-          // --- 가이드라인 내부 체크 함수들 ---
-          //   const isInsideFaceGuideline = (x: number, y: number) => {
-          //     const pixelX = x * c.width;
-          //     const pixelY = y * c.height;
-
-          //     const faceCenterX = centerX;
-          //     const faceCenterY = centerY - 80 + offsetY;
-          //     const radiusX = 90;
-          //     const radiusY = 110;
-
-          //     const dx = (pixelX - faceCenterX) / radiusX;
-          //     const dy = (pixelY - faceCenterY) / radiusY;
-          //     return dx * dx + dy * dy <= 1;
-          //   };
-
-          //   const isInsideUpperBodyGuideline = (x: number, y: number) => {
-          //     const pixelX = x * c.width;
-          //     const pixelY = y * c.height;
-
-          //     const leftBound = centerX - 225;
-          //     const rightBound = centerX + 225;
-          //     const topBound = centerY + 60 + offsetY;
-          //     const bottomBound = centerY + 280 + offsetY;
-
-          //     return pixelX >= leftBound && pixelX <= rightBound && pixelY >= topBound && pixelY <= bottomBound;
-          //   };
-
-          //   let faceInside = true;
-          //   let shoulderInside = true;
-          //   let isDistanceOk = true;
-          //   let distanceRatio = 1;
 
           const tooCloseThreshold = 1.05;
           const tooFarThreshold = 0.7;
@@ -218,30 +187,6 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating }: UseTurtleNe
               shoulderLeft: { x: pose[11].x, y: pose[11].y, z: pose[11].z },
               shoulderRight: { x: pose[12].x, y: pose[12].y, z: pose[12].z },
             });
-
-            // //     const faceLandmarks = pose.slice(0, 11);
-            // //     if (faceLandmarks.length > 0) {
-            // //       faceInside = faceLandmarks.every((lm: any) => isInsideFaceGuideline(lm.x, lm.y));
-            // //     }
-
-            // //     const shoulderLandmarks = pose.slice(11, 13);
-            // //     if (shoulderLandmarks.length > 0) {
-            // //       shoulderInside = shoulderLandmarks.every((lm: any) => isInsideUpperBodyGuideline(lm.x, lm.y));
-            // //     }
-
-            // //     const lm11 = pose[11];
-            // //     const lm12 = pose[12];
-
-            // //     if (lm11 && lm12) {
-            // //       const shoulderWidth = Math.sqrt(
-            // //         Math.pow((lm12.x - lm11.x) * c.width, 2) + Math.pow((lm12.y - lm11.y) * c.height, 2)
-            // //       );
-
-            // //       const referenceShoulderWidth = 380;
-            // //       distanceRatio = shoulderWidth / referenceShoulderWidth;
-
-            // //       isDistanceOk = distanceRatio >= tooFarThreshold && distanceRatio <= tooCloseThreshold;
-            // //     }
           }
 
           //onst allInside = faceInside && shoulderInside && isDistanceOk;
