@@ -13,7 +13,7 @@ export default function Estimate() {
   const { data: session, status } = useSession();
   const userId = (session?.user as any)?.id as string | undefined;
 
-  const [stopEstimating, setStopEstimating] = useState(false);
+  const [stopEstimating, setStopEstimating] = useState(true);
 
   const {
     videoRef,
