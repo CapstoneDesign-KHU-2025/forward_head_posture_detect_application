@@ -34,7 +34,7 @@
 | **Frontend** | Next.js, React, TypeScript, TailwindCSS |
 | **AI / Pose Estimation** | MediaPipe Pose Landmarker |
 | **3D Visualization** | Three.js |
-| **Backend / DB** | PostgreSQL, AWS EC2 |
+| **Backend / DB** | PostgreSQL |
 | **Tools** | GitHub, Figma, VS Code |
 
 ---
@@ -42,7 +42,7 @@
 ## 주요 구현 내용
 - 프론트엔드 전체 구조 및 화면 컴포넌트 설계  
 - 거북목 자세 판별 알고리즘 구현  
-- EC2 인스턴스 환경 구성 및 PostgreSQL 연동    
+- PostgreSQL 연동    
 - 실시간 측정 중 시청각적 피드백 추가  
 
 ---
