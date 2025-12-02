@@ -5,11 +5,14 @@ import Header from "@/components/organisms/layout/Header";
 import Footer from "@/components/organisms/layout/Footer";
 import PageContainer from "@/components/organisms/layout/PageContainer";
 import { auth } from "@/auth";
-
 import Providers from "./providers";
+
 export const metadata: Metadata = {
   title: "거북목 거북거북!",
   description: "자세 측정/지표로 거북목 개선하기",
+  icons: {
+    icon: "/icons/turtle.png",
+  },
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
