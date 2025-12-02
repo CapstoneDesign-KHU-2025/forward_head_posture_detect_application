@@ -14,26 +14,50 @@ export type StoredPostureRecord = PostureMeasurement & { id?: number; uploadedFl
 export type StoredPostureDTO = Omit<StoredPostureRecord, "id" | "uploadedFlag">;
 
 export async function storeMeasurementAndAccumulate(data: PostureMeasurement) {
+  console.log("[storeMeasurementAndAccumulate] called with:", data);
   const db = await getDB();
+
+  // 이 샘플이 대표하는 시간 간격(초) — 기본 10초
   const w = data.sampleGapS ?? 10;
 
+  // 이 샘플이 속한 "시" 단위 구간 시작 시각 (예: 13:27 → 13:00:00.000)
   const hourStart = new Date(data.ts);
   hourStart.setMinutes(0, 0, 0);
   const hourStartTs = +hourStart;
 
+  // samples 스토어에 넣을 레코드
   const record: StoredPostureRecord = {
     ...data,
+    // sessionId가 숫자/기타 타입이어도 문자열로 강제
     sessionId: data.sessionId != null ? String(data.sessionId) : undefined,
     uploadedFlag: 0,
   };
 
+  // samples + hourly 두 스토어를 한 트랜잭션에서 처리
   const tx = db.transaction(["samples", "hourly"], "readwrite");
+
+  // 1) samples 스토어에 개별 샘플 저장
   await tx.objectStore("samples").put(record);
 
+  // 2) hourly 스토어에 가중 평균용 누적
+  const hourlyStore = tx.objectStore("hourly");
   const key: [string, number] = [data.userId, hourStartTs];
-  const hourly = tx.objectStore("hourly");
-  const cur = await hourly.get(key);
+
+  // hourly 레코드 타입 (IndexedDB에 실제로 저장되는 구조)
+  type HourlyRecord = {
+    userId: string;
+    hourStartTs: number;
+    sumWeighted: number; // 각도 * 시간 의 합
+    weight: number; // 시간(초) 누적
+    count: number; // 거북목 감지 횟수
+    avgAngle: number | null;
+    finalized: 0 | 1;
+  };
+
+  const cur = (await hourlyStore.get(key)) as HourlyRecord | undefined;
+
   if (cur) {
+    // 이미 이 시간대(hourStartTs)에 레코드가 있으면 누적
     cur.sumWeighted += data.angleDeg * w;
     cur.weight += w;
 
@@ -41,19 +65,20 @@ export async function storeMeasurementAndAccumulate(data: PostureMeasurement) {
       cur.count += 1;
     }
 
-    cur.finalized = 0;
-    await hourly.put(cur);
+    cur.finalized = 0; // 새 데이터 들어왔으니 다시 미확정 상태
+    await hourlyStore.put(cur);
   } else {
-    await hourly.put({
+    // 이 시간대 첫 레코드면 새로 생성
+    const newRow: HourlyRecord = {
       userId: record.userId,
       hourStartTs,
       sumWeighted: data.angleDeg * w,
       weight: w,
-
       count: data.isTurtle ? 1 : 0,
       avgAngle: null,
       finalized: 0,
-    });
+    };
+    await hourlyStore.put(newRow);
   }
 
   await tx.done;

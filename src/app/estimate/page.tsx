@@ -1,571 +1,80 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { FilesetResolver, PoseLandmarker } from "@mediapipe/tasks-vision";
-import analyzeTurtleNeck from "@/utils/isTurtleNeck";
-import turtleStabilizer from "@/utils/turtleStabilizer";
-import { getSensitivity } from "@/utils/sensitivity";
-
-import { usePostureStorageManager } from "@/hooks/usePostureStorageManager";
-import { getTodayHourly, computeTodaySoFarAverage, finalizeUpToNow } from "@/lib/hourlyOps";
-import { useClearPostureDBOnLoad } from "@/hooks/useClearDBOnload";
-import { useAppStore } from "../store/app";
+import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import { getTodayCount } from "@/lib/postureLocal";
-import { clear } from "console";
-import { Bug } from "lucide-react";
+import { useAppStore } from "../store/app";
+import { getTodayHourly, computeTodaySoFarAverage, finalizeUpToNow } from "@/lib/hourlyOps";
+import { getTodayCount, storeMeasurementAndAccumulate } from "@/lib/postureLocal";
+import { useTurtleNeckMeasurement } from "@/hooks/useTurtleNeckMeasurement";
+import { formatTime } from "@/utils/formatTime";
+import { createISO } from "@/utils/createISO";
 
 export default function Estimate() {
   const { data: session, status } = useSession();
+  const userId = (session?.user as any)?.id as string | undefined;
 
-  // 🔹 카메라 / 포즈 관련 ref들 (첫 번째 파일 로직)
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const landmarkerRef = useRef<PoseLandmarker | null>(null);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
-  const streamRef = useRef<MediaStream | null>(null);
+  const [stopEstimating, setStopEstimating] = useState(true);
 
-  const lastStateRef = useRef<boolean | null>(null);
-  const lastBeepIntervalRef = useRef<NodeJS.Timeout | null>(null);
-  const poseBufferRef = useRef<any[]>([]);
-  const lastBufferTimeRef = useRef<number>(performance.now());
-  const visibilityChangeHandlerRef = useRef<(() => void) | null>(null);
+  const {
+    videoRef,
+    canvasRef,
+    countdownRemain,
+    measurementStarted,
+    showMeasurementStartedToast,
+    error,
+    getStatusBannerType,
+    statusBannerMessage,
+    isTurtle,
+    angle,
+  } = useTurtleNeckMeasurement({ userId, stopEstimating });
 
-  const countdownStartRef = useRef<number | null>(null);
-  const measuringRef = useRef<boolean>(false);
-  const lastGuideMessageRef = useRef<string | null>(null);
-  const lastGuideColorRef = useRef<"green" | "red" | "orange">("red");
-
-  // 🔹 상태값들 (UI + 측정)
-  const [isTurtle, setIsTurtle] = useState(false);
-  const [angle, setAngle] = useState(0);
-  const [guideMessage, setGuideMessage] = useState<string | null>(null);
-  const [guideColor, setGuideColor] = useState<"green" | "red" | "orange">("red");
-  const [countdownRemain, setCountdownRemain] = useState<number | null>(null);
-  const [measurementStarted, setMeasurementStarted] = useState<boolean>(false);
-  const [showMeasurementStartedToast, setShowMeasurementStartedToast] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
-  
-  // 초기 각도 베이스라인용 상태
-  const baselineAngleRef = useRef<number | null>(null);
-  const targetBaseline = 55; // 가이드라인 시점의 정상 각도를 55로 설정 -> 이후 베이스라인(기준점)이 됨
-  const baselineBufferRef = useRef<any[]>([]);
-
-  // 🔹 통계/서버 관련 상태 (두 번째 파일 로직)
+  // 🔹 통계/서버 관련 상태
   const [hourlyList, setHourlyList] = useState<any[]>([]);
   const [todayAvg, setTodayAvg] = useState<number | null>(null);
   const [isHourlyVisible, setIsHourlyVisible] = useState(false);
   const [isTodayAvgVisible, setIsTodayAvgVisible] = useState(false);
-  const [stopEstimating, setStopEstimating] = useState(false);
-  const turtleNeckNumberInADay = useAppStore((s) => s.turtleNeckNumberInADay);
+  const turtleNeckNumberInADay = useAppStore((s) => s.turtleNeckNumberInADay); // 지금은 안 쓰이지만 일단 유지
 
-  // 🔹 각도/거북목 상태를 기반으로 IndexedDB에 10초 단위 저장하는 훅
-  const userId = (session?.user as any)?.id as string | undefined;
-
-  const sessionIdRef = useRef<string | null>(null);
-  if (!sessionIdRef.current) {
-    sessionIdRef.current = `measure-${userId ?? "guest"}-${Date.now()}`;
+  // 세션 로딩 처리
+  if (status === "loading") {
+    return <div>loading</div>;
   }
-  const sessionId = sessionIdRef.current;
 
-  if (!userId || !sessionId) return <div>loading</div>;
+  if (!userId) {
+    return <div>로그인이 필요합니다.</div>;
+  }
 
-  usePostureStorageManager(userId,angle, isTurtle, sessionId, measuringRef.current);
-
-  // 🔹 "거북목 측정을 시작합니다" 토스트 자동 숨김
+  // 페이지에서 떠날 때 자동 중단 처리
   useEffect(() => {
-    if (!showMeasurementStartedToast) return;
-    const timer = setTimeout(() => setShowMeasurementStartedToast(false), 1500);
-    return () => clearTimeout(timer);
-  }, [showMeasurementStartedToast]);
-
-  // 🔹 Mediapipe 초기화 + 메인 루프
-  useEffect(() => {
-    let cancelled = false;
-
-    (async () => {
-      try {
-        const video = videoRef.current;
-        if (!video) return;
-
-        video.muted = true;
-        video.playsInline = true;
-
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: { width: { ideal: 640 }, height: { ideal: 480 } },
-          audio: false,
-        });
-        streamRef.current = stream;
-        video.srcObject = stream;
-
-        await new Promise<void>((res) => {
-          const onReady = () => {
-            video.removeEventListener("loadedmetadata", onReady);
-            video.removeEventListener("canplay", onReady);
-            res();
-          };
-          video.addEventListener("loadedmetadata", onReady, { once: true });
-          video.addEventListener("canplay", onReady, { once: true });
-        });
-
-        await video.play();
-        if (cancelled) return;
-
-        const vision = await FilesetResolver.forVisionTasks(
-          "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm"
-        );
-
-        landmarkerRef.current = await PoseLandmarker.createFromOptions(vision, {
-          baseOptions: {
-            modelAssetPath:
-              "https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task",
-          },
-          runningMode: "VIDEO",
-          numPoses: 1,
-          minPoseDetectionConfidence: 0.5,
-          minPosePresenceConfidence: 0.5,
-          minTrackingConfidence: 0.5,
-        });
-
-        if (cancelled) return;
-
-        // 페이지 visibility에 따라 프레임 레이트 조절
-        const getFPS = () => (document.hidden ? 10 : 30); // 백그라운드: 10fps, 포그라운드: 30fps
-        const getInterval = () => 1000 / getFPS();
-
-        const loop = async () => {
-          const v = videoRef.current;
-          const c = canvasRef.current;
-          const lm = landmarkerRef.current;
-
-          if (!lm || !v || !c || v.videoWidth === 0 || v.videoHeight === 0) {
-            return;
-          }
-
-          if (c.width !== v.videoWidth || c.height !== v.videoHeight) {
-            c.width = v.videoWidth;
-            c.height = v.videoHeight;
-          }
-
-          const nowPerformance = performance.now();
-          const result = lm.detectForVideo(v, nowPerformance);
-          const ctx = c.getContext("2d")!;
-
-          ctx.clearRect(0, 0, c.width, c.height);
-          ctx.save();
-          ctx.scale(-1, 1);
-          ctx.drawImage(v, -c.width, 0, c.width, c.height);
-          ctx.restore();
-
-          const poses = result.landmarks ?? [];
-
-          if (stopEstimating) {
-            measuringRef.current = false;
-            countdownStartRef.current = null;
-            lastGuideMessageRef.current = null;
-            setGuideMessage(null);
-            setCountdownRemain(null);
-            setIsTurtle(false);
-            lastStateRef.current = null;
-            setAngle(0);
-
-            if (lastBeepIntervalRef.current) {
-              clearInterval(lastBeepIntervalRef.current);
-              lastBeepIntervalRef.current = null;
-            }
-
-            return;
-          }
-
-          const centerX = c.width / 2;
-          const centerY = c.height / 2;
-          const offsetY = 30;
-
-          // --- 가이드라인 내부 체크 함수들 ---
-          const isInsideFaceGuideline = (x: number, y: number) => {
-            const pixelX = x * c.width;
-            const pixelY = y * c.height;
-
-            const faceCenterX = centerX;
-            const faceCenterY = centerY - 80 + offsetY;
-            const radiusX = 90;
-            const radiusY = 110;
-
-            const dx = (pixelX - faceCenterX) / radiusX;
-            const dy = (pixelY - faceCenterY) / radiusY;
-            return dx * dx + dy * dy <= 1;
-          };
-
-          const isInsideUpperBodyGuideline = (x: number, y: number) => {
-            const pixelX = x * c.width;
-            const pixelY = y * c.height;
-
-            const leftBound = centerX - 225;
-            const rightBound = centerX + 225;
-            const topBound = centerY + 60 + offsetY;
-            const bottomBound = centerY + 280 + offsetY;
-
-            return pixelX >= leftBound && pixelX <= rightBound && pixelY >= topBound && pixelY <= bottomBound;
-          };
-
-          let faceInside = true;
-          let shoulderInside = true;
-          let isDistanceOk = true;
-          let distanceRatio = 1;
-
-          const tooCloseThreshold = 1.05;
-          const tooFarThreshold = 0.7;
-
-          if (poses.length > 0) {
-            const pose = poses[0];
-            poseBufferRef.current.push({
-              earLeft: { x: pose[7].x, y: pose[7].y, z: pose[7].z },
-              earRight: { x: pose[8].x, y: pose[8].y, z: pose[8].z },
-              shoulderLeft: { x: pose[11].x, y: pose[11].y, z: pose[11].z },
-              shoulderRight: { x: pose[12].x, y: pose[12].y, z: pose[12].z },
-            });
-
-            const faceLandmarks = pose.slice(0, 11);
-            if (faceLandmarks.length > 0) {
-              faceInside = faceLandmarks.every((lm: any) => isInsideFaceGuideline(lm.x, lm.y));
-            }
-
-            const shoulderLandmarks = pose.slice(11, 13);
-            if (shoulderLandmarks.length > 0) {
-              shoulderInside = shoulderLandmarks.every((lm: any) => isInsideUpperBodyGuideline(lm.x, lm.y));
-            }
-
-            const lm11 = pose[11];
-            const lm12 = pose[12];
-
-            if (lm11 && lm12) {
-              const shoulderWidth = Math.sqrt(
-                Math.pow((lm12.x - lm11.x) * c.width, 2) + Math.pow((lm12.y - lm11.y) * c.height, 2)
-              );
-
-              const referenceShoulderWidth = 380;
-              distanceRatio = shoulderWidth / referenceShoulderWidth;
-
-              isDistanceOk = distanceRatio >= tooFarThreshold && distanceRatio <= tooCloseThreshold;
-            }
-          }
-
-          const allInside = faceInside && shoulderInside && isDistanceOk;
-          let nextGuideMessage: string | null = null;
-          let nextGuideColor: "green" | "red" | "orange" = lastGuideColorRef.current ?? "red";
-          let nextCountdownRemain: number | null = null;
-
-          // --- 측정 시작 전: 가이드 + 카운트다운 ---
-          if (!measuringRef.current) {
-            nextGuideMessage = "가이드라인 안으로 들어오세요";
-            nextGuideColor = "red";
-
-            if (!isDistanceOk) {
-              if (distanceRatio >= tooCloseThreshold) {
-                nextGuideMessage = "너무 가까워요";
-                nextGuideColor = "orange";
-              } else if (distanceRatio <= tooFarThreshold) {
-                nextGuideMessage = "너무 멀어요";
-                nextGuideColor = "orange";
-              }
-              countdownStartRef.current = null;
-            } else if (allInside) {
-              if (!countdownStartRef.current) {
-                countdownStartRef.current = nowPerformance;
-                baselineBufferRef.current = [];
-              }
-
-              const elapsed = nowPerformance - countdownStartRef.current;
-              const remain = Math.max(0, 3000 - elapsed);
-              nextCountdownRemain = Math.ceil(remain / 1000);
-
-              // 베이스라인 좌표 저장(0.2초간)
-              if (elapsed >= 2800 && elapsed < 3000) {
-                if (poses.length > 0) {
-                  const p = poses[0];
-                  baselineBufferRef.current.push({
-                    earLeft:  { x:p[7].x,  y:p[7].y,  z:p[7].z },
-                    earRight: { x:p[8].x,  y:p[8].y,  z:p[8].z },
-                    shoulderLeft: { x:p[11].x, y:p[11].y, z:p[11].z },
-                    shoulderRight:{ x:p[12].x, y:p[12].y, z:p[12].z },
-                  });
-                }
-              }
-
-              // 베이스라인 계산
-              if (elapsed >= 3000) {
-                measuringRef.current = true;
-                setMeasurementStarted(true);
-                setShowMeasurementStartedToast(true);
-
-                nextGuideMessage = null;
-                nextGuideColor = "green";
-                nextCountdownRemain = null;
-                countdownStartRef.current = null;
-                lastGuideMessageRef.current = null;
-                setGuideMessage(null);
-
-                const buf = baselineBufferRef.current;
-                if (buf.length > 0) {
-                  const avg = (key:"earLeft"|"earRight"|"shoulderLeft"|"shoulderRight") => ({
-                    x: buf.reduce((s,a)=>s+a[key].x,0)/buf.length,
-                    y: buf.reduce((s,a)=>s+a[key].y,0)/buf.length,
-                    z: buf.reduce((s,a)=>s+a[key].z,0)/buf.length,
-                  });
-
-                  const lm7 = avg("earLeft");
-                  const lm8 = avg("earRight");
-                  const lm11 = avg("shoulderLeft");
-                  const lm12 = avg("shoulderRight");
-                  
-                  const t = analyzeTurtleNeck({
-                    earLeft:lm7,
-                    earRight:lm8,
-                    shoulderLeft:lm11,
-                    shoulderRight:lm12,
-                    sensitivity:getSensitivity()
-                  });
-
-                  baselineAngleRef.current = t.angleDeg;
-                  console.log("베이스라인 저장됨: ", baselineAngleRef.current);
-
-                  baselineBufferRef.current = [];
-                }
-              } else {
-                nextGuideMessage = `좋아요! ${nextCountdownRemain}초 유지하세요`;
-                nextGuideColor = "green";
-              }
-            } else {
-              countdownStartRef.current = null;
-              baselineBufferRef.current = [];
-            }
-          }
-
-          // 가이드 메시지/색상 업데이트
-          if (!measuringRef.current) {
-            if (lastGuideMessageRef.current !== nextGuideMessage) {
-              lastGuideMessageRef.current = nextGuideMessage;
-              setGuideMessage(nextGuideMessage);
-            }
-            if (lastGuideColorRef.current !== nextGuideColor) {
-              lastGuideColorRef.current = nextGuideColor;
-              setGuideColor(nextGuideColor);
-            }
-            setCountdownRemain(nextCountdownRemain);
-          } else {
-            if (lastGuideMessageRef.current !== null) {
-              lastGuideMessageRef.current = null;
-              setGuideMessage(null);
-            }
-            setCountdownRemain(null);
-          }
-
-          // --- 미측정 상태: 가이드라인 그리기 ---
-          if (!measuringRef.current) {
-            const guidelineColor = allInside ? "rgba(0, 255, 0, 0.6)" : "rgba(255, 0, 0, 0.6)";
-
-            ctx.save();
-            ctx.strokeStyle = guidelineColor;
-            ctx.lineWidth = 3;
-            ctx.lineCap = "round";
-            ctx.lineJoin = "round";
-
-            // 얼굴
-            ctx.beginPath();
-            ctx.ellipse(centerX, centerY - 80 + offsetY, 90, 110, 0, 0, Math.PI * 2);
-            ctx.stroke();
-
-            // 목
-            ctx.beginPath();
-            ctx.moveTo(centerX - 40, centerY + 10 + offsetY);
-            ctx.lineTo(centerX - 35, centerY + 40 + offsetY);
-            ctx.moveTo(centerX + 40, centerY + 10 + offsetY);
-            ctx.lineTo(centerX + 35, centerY + 40 + offsetY);
-            ctx.stroke();
-
-            // 어깨
-            ctx.beginPath();
-            ctx.moveTo(centerX - 35, centerY + 40 + offsetY);
-            ctx.lineTo(centerX - 190, centerY + 60 + offsetY);
-            ctx.moveTo(centerX + 35, centerY + 40 + offsetY);
-            ctx.lineTo(centerX + 190, centerY + 60 + offsetY);
-            ctx.stroke();
-
-            // 상체
-            ctx.beginPath();
-            ctx.moveTo(centerX - 190, centerY + 60 + offsetY);
-            ctx.bezierCurveTo(
-              centerX - 200,
-              centerY + 150 + offsetY,
-              centerX - 215,
-              centerY + 220 + offsetY,
-              centerX - 225,
-              centerY + 280 + offsetY
-            );
-
-            ctx.moveTo(centerX + 190, centerY + 60 + offsetY);
-            ctx.bezierCurveTo(
-              centerX + 200,
-              centerY + 150 + offsetY,
-              centerX + 215,
-              centerY + 220 + offsetY,
-              centerX + 225,
-              centerY + 280 + offsetY
-            );
-
-            ctx.moveTo(centerX - 225, centerY + 280 + offsetY);
-            ctx.lineTo(centerX + 225, centerY + 280 + offsetY);
-            ctx.stroke();
-
-            ctx.restore();
-          }
-
-          // --- 측정 시작 후: 거북목 계산 + 경고음 ---
-          for (const pose of poses) {
-            const now = performance.now();
-            if (!measuringRef.current) {
-              lastBufferTimeRef.current = now;
-              poseBufferRef.current = [];
-              continue;
-            }
-
-            if (now - lastBufferTimeRef.current >= 200) {
-              lastBufferTimeRef.current = now;
-
-              const buf = poseBufferRef.current;
-              poseBufferRef.current = [];
-
-              const avg = (key: "earLeft" | "earRight" | "shoulderLeft" | "shoulderRight") => {
-                return {
-                  x: buf.reduce((a, b) => a + b[key].x, 0) / buf.length,
-                  y: buf.reduce((a, b) => a + b[key].y, 0) / buf.length,
-                  z: buf.reduce((a, b) => a + b[key].z, 0) / buf.length,
-                };
-              };
-
-              const lm7 = avg("earLeft");
-              const lm8 = avg("earRight");
-              const lm11 = avg("shoulderLeft");
-              const lm12 = avg("shoulderRight");
-
-              // 민감도 설정 가져오기
-              const sensitivity = getSensitivity();
-
-              const turtleData = analyzeTurtleNeck({
-                earLeft: { x: lm7["x"], y: lm7["y"], z: lm7["z"] },
-                earRight: { x: lm8["x"], y: lm8["y"], z: lm8["z"] },
-                shoulderLeft: { x: lm11["x"], y: lm11["y"], z: lm11["z"] },
-                shoulderRight: { x: lm12["x"], y: lm12["y"], z: lm12["z"] },
-                sensitivity,
-              });
-
-              let corrected = turtleData.angleDeg;
-              if (baselineAngleRef.current) {
-                corrected = (corrected / baselineAngleRef.current) * targetBaseline;
-              }
-
-              const result = turtleStabilizer(corrected, sensitivity);
-
-              let turtleNow = lastStateRef.current ?? false;
-              let avgAngle = 0;
-
-              if (result !== null) {
-                avgAngle = result.avgAngle;
-                turtleNow = result.isTurtle;
-                setAngle(avgAngle);
-              }
-
-              if (turtleNow !== lastStateRef.current) {
-                setIsTurtle(turtleNow);
-                lastStateRef.current = turtleNow;
-
-                if (turtleNow) {
-                  const beepInterval = setInterval(() => {
-                    const audioCtx = new AudioContext();
-                    const osc = audioCtx.createOscillator();
-                    const gain = audioCtx.createGain();
-                    osc.connect(gain);
-                    gain.connect(audioCtx.destination);
-                    osc.type = "sine";
-                    osc.frequency.setValueAtTime(880, audioCtx.currentTime);
-                    gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-                    osc.start();
-                    osc.stop(audioCtx.currentTime + 0.2);
-                    setTimeout(() => audioCtx.close(), 300);
-                  }, 1000);
-                  lastBeepIntervalRef.current = beepInterval;
-                } else {
-                  if (lastBeepIntervalRef.current) {
-                    clearInterval(lastBeepIntervalRef.current);
-                    lastBeepIntervalRef.current = null;
-                  }
-                }
-              }
-            }
-          }
-        };
-
-        // visibility 변경 시 프레임 레이트 조절
-        const handleVisibilityChange = () => {
-          if (intervalRef.current) {
-            clearInterval(intervalRef.current);
-            intervalRef.current = setInterval(loop, getInterval());
-          }
-        };
-        visibilityChangeHandlerRef.current = handleVisibilityChange;
-        document.addEventListener("visibilitychange", handleVisibilityChange);
-
-        // 초기 루프 시작
-        intervalRef.current = setInterval(loop, getInterval());
-      } catch (e: any) {
-        console.error("Camera / Mediapipe init error:", e);
-        setError(e?.message ?? "카메라 초기화 중 오류가 발생했습니다.");
-      }
-    })();
-
     return () => {
-      cancelled = true;
-      if (visibilityChangeHandlerRef.current) {
-        document.removeEventListener("visibilitychange", visibilityChangeHandlerRef.current);
-        visibilityChangeHandlerRef.current = null;
+      if (!stopEstimating) {
+        handleStopEstimating(true);
       }
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-        intervalRef.current = null;
-      }
-      landmarkerRef.current?.close?.();
-      landmarkerRef.current = null;
-
-      if (streamRef.current) {
-        streamRef.current.getTracks().forEach((t) => t.stop());
-        streamRef.current = null;
-      }
-
-      if (lastBeepIntervalRef.current) {
-        clearInterval(lastBeepIntervalRef.current);
-        lastBeepIntervalRef.current = null;
-      }
-
-      const tracks = (videoRef.current?.srcObject as MediaStream | null)?.getTracks() || [];
-      tracks.forEach((t) => t.stop());
     };
-  }, [stopEstimating]);
+  }, []);
 
   // 🔹 "오늘의 측정 중단하기" 버튼: IndexedDB -> DailyPostureSummary POST
-  const handleStopEstimating = async () => {
+  const handleStopEstimating = async (forced?: boolean) => { // forced: 비정상적인 측정 종료 여부
     try {
       if (!stopEstimating) {
+        await storeMeasurementAndAccumulate({
+          userId,
+          ts: Date.now(),
+          angleDeg: angle,
+          isTurtle,
+          hasPose: true,
+          sessionId: session?.user?.id,
+          sampleGapS: 10,
+        });
+        // 측정 중 → 중단으로 변경: 요약 데이터 전송
         const rows = await getTodayHourly(userId);
-
+        console.log("[handleStopEstimating] hourly rows:", rows);
         const dailySumWeighted = rows?.reduce((acc: number, r: any) => acc + (r?.sumWeighted ?? 0), 0) ?? 0;
         const dailyWeightSeconds = rows?.reduce((acc: number, r: any) => acc + (r?.weight ?? 0), 0) ?? 0;
         const count = await getTodayCount(userId);
-        const now = new Date();
-        const yyyy = now.getFullYear();
-        const mm = String(now.getMonth() + 1).padStart(2, "0");
-        const dd = String(now.getDate()).padStart(2, "0");
-        const dateISO = `${yyyy}-${mm}-${dd}`;
-
+        const dateISO = createISO();
+        console.log("[handleStopEstimating] sumWeighted:", dailySumWeighted);
+        console.log("[handleStopEstimating] weightSeconds:", dailyWeightSeconds);
         await fetch("/api/summaries/daily", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -574,24 +83,22 @@ export default function Estimate() {
             dateISO,
             sumWeighted: dailySumWeighted,
             weightSeconds: dailyWeightSeconds,
-            count: count,
+            count,
           }),
         });
+
+        if (forced) return;
       } else {
-        // 측정 시작: 모든 기존 측정 상태 리셋
-        measuringRef.current = false;
-        countdownStartRef.current = null;
-        lastGuideMessageRef.current = null;
-        setGuideMessage("가이드라인 안으로 들어오세요");
-        setGuideColor("red");
-        setMeasurementStarted(false);
-        setCountdownRemain(null);
-        setIsTurtle(false);
+        // 중단 → 다시 측정 시작 (측정 로직은 훅에서 초기화됨)
+        // 필요하다면 useTurtleNeckMeasurement에서 resetForNewMeasurement를 꺼내와서 여기서 호출해도 됨
+        // resetForNewMeasurement();
       }
     } catch (err) {
       console.error("[handleStopEstimating] error:", err);
     } finally {
-      setStopEstimating((prev) => !prev);
+      if (!forced) {
+        setStopEstimating((prev) => !prev);
+      }
     }
   };
 
@@ -609,6 +116,7 @@ export default function Estimate() {
       setIsHourlyVisible(true);
     }
   }
+
   // 🔹 오늘 지금까지 평균 토글
   async function toggleAvg() {
     if (isTodayAvgVisible) {
@@ -618,50 +126,26 @@ export default function Estimate() {
     // 다른 토글 비활성화
     setIsHourlyVisible(false);
     const avg = await computeTodaySoFarAverage(userId);
+    console.log(avg);
     setTodayAvg(avg);
     if (userId) await finalizeUpToNow(userId, true);
     setIsTodayAvgVisible(true);
   }
 
-  // 상태 배너 타입 결정
-  const getStatusBannerType = (): "success" | "warning" | "info" => {
-    if (stopEstimating) return "info";
-    if (isTurtle && measurementStarted) return "warning";
-    if (guideColor === "green" && guideMessage) return "success";
-    if (guideColor === "orange" && guideMessage) return "info";
-    if (guideColor === "red" && guideMessage) return "info";
-    return "success";
-  };
-
-  const statusBannerMessage = () => {
-    if (stopEstimating) return "측정이 중단되었습니다";
-    if (isTurtle && measurementStarted) return `거북목 자세입니다!`;
-    if (guideMessage) return guideMessage;
-    return "바른 자세입니다!";
-  };
-
-  // 시간 포맷팅 함수
   const formatTimeRange = (hourStartTs: number) => {
     const start = new Date(hourStartTs);
     const end = new Date(hourStartTs + 3600000);
-    const formatTime = (date: Date) => {
-      const hours = date.getHours();
-      const minutes = date.getMinutes();
-      const period = hours >= 12 ? "오후" : "오전";
-      const hour12 = hours > 12 ? hours - 12 : hours === 0 ? 12 : hours;
-      return `${period} ${String(hour12).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
-    };
+
     return `${formatTime(start)} ~ ${formatTime(end)}`;
   };
 
-  // 🔹 UI
   return (
     <div className="min-h-screen bg-[#F8FBF8]">
       <div className="max-w-[1200px] mx-auto px-70 py-8">
         {/* 측정 중단 버튼 */}
         <div className="flex justify-center mb-8">
           <button
-            onClick={handleStopEstimating}
+            onClick={() => handleStopEstimating()}
             className="px-12 py-4 bg-[#1A1A1A] text-white border-none rounded-xl text-[1.1rem] font-semibold cursor-pointer transition-all duration-300 shadow-[0_4px_15px_rgba(0,0,0,0.2)] hover:bg-[#374151] hover:-translate-y-0.5 hover:shadow-[0_6px_20px_rgba(0,0,0,0.3)]"
           >
             {stopEstimating ? "측정 시작하기" : "오늘의 측정 중단하기"}
