@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useAppStore } from "../store/app";
 import { getTodayHourly, computeTodaySoFarAverage, finalizeUpToNow } from "@/lib/hourlyOps";
@@ -44,8 +44,17 @@ export default function Estimate() {
     return <div>로그인이 필요합니다.</div>;
   }
 
+  // 페이지에서 떠날 때 자동 중단 처리
+  useEffect(() => {
+    return () => {
+      if (!stopEstimating) {
+        handleStopEstimating(true);
+      }
+    };
+  }, []);
+
   // 🔹 "오늘의 측정 중단하기" 버튼: IndexedDB -> DailyPostureSummary POST
-  const handleStopEstimating = async () => {
+  const handleStopEstimating = async (forced?: boolean) => { // forced: 비정상적인 측정 종료 여부
     try {
       if (!stopEstimating) {
         await storeMeasurementAndAccumulate({
@@ -132,7 +141,7 @@ export default function Estimate() {
         {/* 측정 중단 버튼 */}
         <div className="flex justify-center mb-8">
           <button
-            onClick={handleStopEstimating}
+            onClick={() => handleStopEstimating()}
             className="px-12 py-4 bg-[#1A1A1A] text-white border-none rounded-xl text-[1.1rem] font-semibold cursor-pointer transition-all duration-300 shadow-[0_4px_15px_rgba(0,0,0,0.2)] hover:bg-[#374151] hover:-translate-y-0.5 hover:shadow-[0_6px_20px_rgba(0,0,0,0.3)]"
           >
             {stopEstimating ? "측정 시작하기" : "오늘의 측정 중단하기"}
