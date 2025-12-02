@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { createISO } from "@/utils/createISO";
 
 const GOOD_DAY_MAX_WARNINGS = 10;
 // POST /api/summaries/daily
@@ -54,8 +55,8 @@ export async function GET(req: Request) {
     const daysParam = searchParams.get("days");
     if (!userId) return NextResponse.json({ error: "userId required" }, { status: 400 });
 
-    const today0 = new Date();
-    today0.setHours(0, 0, 0, 0);
+    const dateISO = createISO();
+    const today0 = new Date(dateISO);
 
     // ✅ days가 있으면 weekly 모드
     if (daysParam) {
@@ -74,11 +75,7 @@ export async function GET(req: Request) {
       const sum = safeRows.reduce((a, r) => a + r.avgAngle * r.weightSeconds, 0);
       const w = safeRows.reduce((a, r) => a + r.weightSeconds, 0);
       const weightedAvg = w > 0 ? sum / w : null;
-
-      // good day 기준: 측정 시간이 있고, 경고 횟수가 임계값 이하인 날
-      const goodDays = safeRows.filter(
-        (r) => r.weightSeconds > 0 && r.count <= GOOD_DAY_MAX_WARNINGS
-      ).length;
+      const goodDays = safeRows.length > 0 ? safeRows[safeRows.length - 1].goodDay : 0;
       return NextResponse.json({ mode: "weekly", days, weightedAvg, safeRows, goodDays }, { status: 200 });
     }
 
@@ -86,20 +83,12 @@ export async function GET(req: Request) {
     const row = await prisma.dailyPostureSummary.findUnique({
       where: { userId_date: { userId, date: today0 } },
     });
-    const safeRow = {
-      ...row,
-      id: Number(row?.id), // BigInt → number
-    };
-
-    // 전체 기간 기준 good day 개수 재계산
-    const goodDays = await prisma.dailyPostureSummary.count({
-      where: {
-        userId,
-        weightSeconds: { gt: 0 },
-        count: { lte: GOOD_DAY_MAX_WARNINGS },
-      },
-    });
-
+    const safeRow = row
+      ? {
+          ...row,
+          id: Number(row.id),
+        }
+      : null;
     return NextResponse.json(
       { mode: "today", todayAvg: safeRow?.avgAngle ?? null, safeRow, goodDays },
       { status: 200 }
