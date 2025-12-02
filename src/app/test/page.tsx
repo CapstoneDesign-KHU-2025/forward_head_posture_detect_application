@@ -229,7 +229,7 @@ export default function TurtleNeckUploadPage() {
         shoulderRight: { x: lm12.x, y: lm12.y, z: lm12.z },
       }).isTurtle;
 
-      setStatus(turtle? "turtle" : "good");
+      setStatus(turtle ? "turtle" : "good");
       handleTurtleTimeline(turtle, v.currentTime);
 
       const row = [
