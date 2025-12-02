@@ -38,11 +38,6 @@ export function usePostureStorageManager(
 
   // 🔹 10초 간격으로 샘플 저장 (interval은 userId/sessionId에만 의존)
   useEffect(() => {
-    console.log("[usePostureStorageManager] effect(setInterval)", {
-      userId,
-      sessionId,
-    });
-
     if (!userId || !sessionId) return;
     const SAMPLE_GAP_S = 10;
 
@@ -59,11 +54,6 @@ export function usePostureStorageManager(
         sessionId,
         sampleGapS: SAMPLE_GAP_S,
       };
-
-      console.log("[storeMeasurement] saving", {
-        userId,
-        sample,
-      });
 
       await storeMeasurementAndAccumulate(sample);
     }, SAMPLE_GAP_S * 1000);

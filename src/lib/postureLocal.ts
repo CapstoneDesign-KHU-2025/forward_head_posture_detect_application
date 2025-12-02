@@ -14,7 +14,6 @@ export type StoredPostureRecord = PostureMeasurement & { id?: number; uploadedFl
 export type StoredPostureDTO = Omit<StoredPostureRecord, "id" | "uploadedFlag">;
 
 export async function storeMeasurementAndAccumulate(data: PostureMeasurement) {
-  console.log("[storeMeasurementAndAccumulate] called with:", data);
   const db = await getDB();
 
   // 이 샘플이 대표하는 시간 간격(초) — 기본 10초
