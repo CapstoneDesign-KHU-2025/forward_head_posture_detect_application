@@ -315,7 +315,7 @@ export default function ThreeDModel({ characterId = "remy", idealAng = 52, userA
      * ======================= */
     function initSceneAndCamera() {
       scene = new THREE.Scene();
-      scene.background = new THREE.Color(0x202230);
+      scene.background = new THREE.Color("#7BC67E"); //배경 색
 
       camera = new THREE.PerspectiveCamera(
         70,
@@ -349,7 +349,7 @@ export default function ThreeDModel({ characterId = "remy", idealAng = 52, userA
     function initFloor() {
       const floor = new THREE.Mesh(
         new THREE.PlaneGeometry(40, 40),
-        new THREE.MeshStandardMaterial({ color: 0x1a1e2a, metalness: 0, roughness: 1 })
+        new THREE.MeshStandardMaterial({ color: "#e0e0e0", metalness: 0, roughness: 1 }) //바닥 색
       );
       floor.rotation.x = -Math.PI / 2;
       floor.receiveShadow = true;
