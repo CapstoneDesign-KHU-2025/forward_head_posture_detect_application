@@ -127,7 +127,7 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating }: UseTurtleNe
 
     if (result !== null) {
       avgAngle = result.avgAngle;
-      console.log("Avg", avgAngle);
+      
       turtleNow = result.isTurtle;
       setAngle(avgAngle);
     }
@@ -353,7 +353,7 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating }: UseTurtleNe
                   });
 
                   baselineAngleRef.current = t.angleDeg;
-                  console.log("베이스라인 저장됨: ", baselineAngleRef.current);
+                  
 
                   baselineBufferRef.current = [];
                 }
@@ -416,7 +416,7 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating }: UseTurtleNe
         // 초기 루프 시작
         intervalRef.current = setInterval(loop, getInterval());
       } catch (e: any) {
-        console.error("Camera / Mediapipe init error:", e);
+        
         setError(e?.message ?? "카메라 초기화 중 오류가 발생했습니다.");
       }
     })();
