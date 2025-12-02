@@ -86,6 +86,8 @@ export default function Estimate() {
             count,
           }),
         });
+
+        if (forced) return;
       } else {
         // 중단 → 다시 측정 시작 (측정 로직은 훅에서 초기화됨)
         // 필요하다면 useTurtleNeckMeasurement에서 resetForNewMeasurement를 꺼내와서 여기서 호출해도 됨
@@ -94,7 +96,9 @@ export default function Estimate() {
     } catch (err) {
       console.error("[handleStopEstimating] error:", err);
     } finally {
-      setStopEstimating((prev) => !prev);
+      if (!forced) {
+        setStopEstimating((prev) => !prev);
+      }
     }
   };
 
