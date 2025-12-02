@@ -1,7 +1,18 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { createISO } from "@/utils/createISO";
-
+type rType = {
+  count: number;
+  id: bigint;
+  userId: string;
+  avgAngle: number;
+  sumWeighted: number;
+  weightSeconds: number;
+  date: Date;
+  goodDay: number;
+  createdAt: Date;
+  updatedAt: Date;
+};
 const GOOD_DAY_MAX_WARNINGS = 10;
 // POST /api/summaries/daily
 // { userId, dateISO("YYYY-MM-DD"), sumWeighted, weightSeconds, count }
@@ -79,7 +90,7 @@ export async function GET(req: Request) {
         where: { userId, date: { gte: since, lte: today0 } },
         orderBy: { date: "asc" },
       });
-      const safeRows = rows.map((r) => ({
+      const safeRows = rows.map((r: rType) => ({
         ...r,
         id: Number(r.id),
       }));
