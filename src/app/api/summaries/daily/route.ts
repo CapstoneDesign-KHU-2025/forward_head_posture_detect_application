@@ -13,6 +13,18 @@ type rType = {
   createdAt: Date;
   updatedAt: Date;
 };
+type rType2 = {
+  count: number;
+  id: number;
+  userId: string;
+  avgAngle: number;
+  sumWeighted: number;
+  weightSeconds: number;
+  date: Date;
+  goodDay: number;
+  createdAt: Date;
+  updatedAt: Date;
+};
 
 const GOOD_DAY_MAX_WARNINGS = 10;
 // POST /api/summaries/daily
@@ -95,8 +107,8 @@ export async function GET(req: Request) {
         ...r,
         id: Number(r.id),
       }));
-      const sum = safeRows.reduce((a: number, r) => a + r.avgAngle * r.weightSeconds, 0);
-      const w = safeRows.reduce((a: number, r) => a + r.weightSeconds, 0);
+      const sum = safeRows.reduce((a: number, r: rType2) => a + r.avgAngle * r.weightSeconds, 0);
+      const w = safeRows.reduce((a: number, r: rType2) => a + r.weightSeconds, 0);
       const weightedAvg = w > 0 ? sum / w : null;
       const goodDays = safeRows.length > 0 ? safeRows[safeRows.length - 1].goodDay : 0;
       return NextResponse.json({ mode: "weekly", days, weightedAvg, safeRows, goodDays }, { status: 200 });
