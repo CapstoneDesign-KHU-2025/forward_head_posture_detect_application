@@ -4,6 +4,8 @@ export type ApiOk<T> = { ok: true; data: T };
 export type ApiFail = { ok: false; status: number; message: string; body?: unknown };
 export type ApiResult<T> = ApiOk<T> | ApiFail;
 
+export type ApiRequestInit = Omit<RequestInit, "body"> & { body?: any };
+
 async function readBody(res: Response): Promise<unknown> {
   if (res.status === 204 || res.status === 205) return null;
 
@@ -26,9 +28,11 @@ async function readBody(res: Response): Promise<unknown> {
 export async function apiRequest<T>({
   requestPath,
   init,
+  tags,
 }: {
   requestPath: string;
-  init?: RequestInit;
+  init?: ApiRequestInit;
+  tags?: Array<string>;
 }): Promise<ApiResult<T>> {
   try {
     const isJsonBody = init?.body && typeof init.body === "object" && !(init.body instanceof FormData);
@@ -41,7 +45,8 @@ export async function apiRequest<T>({
     const response = await fetch(`${BASE_PATH}/${requestPath}`, {
       ...init,
       headers,
-      body: isJsonBody ? JSON.stringify(init.body) : init?.body,
+      body: isJsonBody ? JSON.stringify(init.body) : (init?.body as BodyInit),
+      next: { tags: tags },
     });
 
     const body = await readBody(response);
