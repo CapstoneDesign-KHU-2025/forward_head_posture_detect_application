@@ -11,7 +11,7 @@ type postBody = {
   tags: Array<string>;
 };
 
-export async function postDailySummaryAction(prevState: any, data: postBody) {
+export async function postDailySummaryAction(_prevState: any, data: postBody) {
   const result = await apiRequest<string>({
     requestPath: "/summaries/daily",
     init: {

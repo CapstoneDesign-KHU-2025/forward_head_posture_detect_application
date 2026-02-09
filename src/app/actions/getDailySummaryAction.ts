@@ -1,10 +1,12 @@
 "use server";
 
 import { apiRequest } from "@/lib/api/client";
-
-export async function getDailySummaryAction(_prevState: any) {
+type getInfo = {
+  userId: string;
+};
+export async function getDailySummaryAction(_prevState: any, data: getInfo) {
   const result = await apiRequest<string>({
-    requestPath: "/summaries/daily?userId=${userId}&days=7",
+    requestPath: `/summaries/daily?userId=${data.userId}&days=7`,
     init: { method: "GET" },
   });
 

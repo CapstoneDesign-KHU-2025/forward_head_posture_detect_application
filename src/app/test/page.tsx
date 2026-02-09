@@ -8,7 +8,7 @@ import { Button } from "@/components/atoms/Button";
 
 type TurtleStatus = "idle" | "good" | "turtle" | "no-pose";
 
-type TestInfo = {
+export type TestInfo = {
   monitorDistance: number; // cm
   monitorHight: number; // cm (오타 원문 유지: Hight)
   angleBetweenBodyAndCam: number; // deg
@@ -16,7 +16,7 @@ type TestInfo = {
   turtleNeckLevel: "none" | "mild" | "severe";
 };
 
-type Period = { start: number; end: number; duration: number };
+export type Period = { start: number; end: number; duration: number };
 
 export default function TurtleNeckUploadPage() {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -426,7 +426,7 @@ export default function TurtleNeckUploadPage() {
 
       const data = await res.json();
       alert(
-        `서버에 저장 완료!\nJSON: ${data.jsonPath}\nCSV: ${data.csvPath}\n(호스팅 환경에 따라 경로는 임시일 수 있어요)`
+        `서버에 저장 완료!\nJSON: ${data.jsonPath}\nCSV: ${data.csvPath}\n(호스팅 환경에 따라 경로는 임시일 수 있어요)`,
       );
     } catch (err: any) {
       console.error(err);
@@ -462,10 +462,10 @@ export default function TurtleNeckUploadPage() {
     status === "idle"
       ? "Idle"
       : status === "no-pose"
-      ? "No person detected"
-      : status === "turtle"
-      ? "Turtle neck"
-      : "Good posture";
+        ? "No person detected"
+        : status === "turtle"
+          ? "Turtle neck"
+          : "Good posture";
 
   const statusColor = status === "turtle" ? "bg-red-500" : status === "good" ? "bg-emerald-500" : "bg-slate-500";
 
