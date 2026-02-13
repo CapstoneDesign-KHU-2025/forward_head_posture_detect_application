@@ -10,6 +10,7 @@ import { createISO } from "@/utils/createISO";
 import { postDailySummaryAction } from "../actions/postDailySummaryAction";
 import useTodayStatus from "@/hooks/useTodayStatus";
 import { Button } from "@/components/atoms/Button";
+import EstimatePanel from "@/components/molecules/EstimatePanel";
 
 export default function Estimate() {
   const { data: session } = useSession();
@@ -97,82 +98,19 @@ export default function Estimate() {
   return (
     <div className="min-h-screen bg-[#F8FBF8]">
       <div className="max-w-[1200px] mx-auto px-70 py-8">
-        {/* 측정 중단 버튼 */}
         <div className="flex justify-center mb-8">
           <Button>{stopEstimating ? "측정 시작하기" : "오늘의 측정 중단하기"}</Button>
         </div>
 
-        {/* 측정 섹션 */}
-        <section className="bg-white rounded-[20px] overflow-hidden shadow-[0_4px_30px_rgba(45,95,46,0.1)]">
-          <div className="p-0">
-            {/* 상태 배너 */}
-            <div
-              className={`w-full px-8 py-4 text-center text-[1.1rem] font-semibold transition-all duration-300 rounded-t-[20px] ${
-                getStatusBannerType() === "success"
-                  ? "bg-gradient-to-r from-[#4A9D4D] to-[#66BB6A] text-white"
-                  : getStatusBannerType() === "warning"
-                    ? "bg-gradient-to-r from-[#DC2626] to-[#EF4444] text-white"
-                    : "bg-gradient-to-r from-[#6B7280] to-[#9CA3AF] text-white"
-              }`}
-            >
-              {statusBannerMessage()}
-            </div>
-
-            {/* 카메라 컨테이너 */}
-            <div
-              className="relative w-full m-0 rounded-none overflow-hidden bg-[#2C3E50]"
-              style={{ aspectRatio: "4/3" }}
-            >
-              {/* 비디오는 숨기고, 캔버스만 화면에 표시 */}
-              <video ref={videoRef} className="absolute -left-[9999px]" />
-              <canvas ref={canvasRef} className="w-full h-full block bg-[#2C3E50]" />
-
-              {/* 측정 시작 토스트 */}
-              {showMeasurementStartedToast && (
-                <div
-                  style={{
-                    position: "absolute",
-                    top: "50%",
-                    left: "50%",
-                    transform: "translate(-50%, -50%)",
-                    backgroundColor: "rgba(64, 64, 64, 0.85)",
-                    color: "white",
-                    padding: "16px 28px",
-                    borderRadius: "9999px",
-                    fontWeight: "bold",
-                    fontSize: "20px",
-                    textAlign: "center",
-                    boxShadow: "0 10px 30px rgba(0, 0, 0, 0.35)",
-                    pointerEvents: "none",
-                    zIndex: 1000,
-                  }}
-                >
-                  거북목 측정을 시작합니다
-                </div>
-              )}
-
-              {/* 3초 카운트다운 */}
-              {countdownRemain !== null && !measurementStarted && (
-                <div
-                  style={{
-                    position: "absolute",
-                    bottom: 20,
-                    left: "50%",
-                    transform: "translateX(-50%)",
-                    backgroundColor: "rgba(0, 0, 0, 0.6)",
-                    color: "white",
-                    padding: "12px 24px",
-                    borderRadius: "9999px",
-                    fontSize: "32px",
-                    fontWeight: "bold",
-                  }}
-                >
-                  {countdownRemain}
-                </div>
-              )}
-            </div>
-          </div>
-        </section>
+        <EstimatePanel
+          bannerType={getStatusBannerType()}
+          bannerMessage={statusBannerMessage()}
+          videoRef={videoRef}
+          canvasRef={canvasRef}
+          showMeasurementStartedToast={showMeasurementStartedToast}
+          countdownRemain={countdownRemain}
+          measurementStarted={measurementStarted}
+        />
 
         {/* 토글 버튼 (웹캠 박스 밖) */}
         <div className="flex justify-center gap-4 my-6">
