@@ -8,7 +8,6 @@ type postBody = {
   sumWeighted: number;
   weightSeconds: number;
   count: number;
-  tags: Array<string>;
 };
 
 export async function postDailySummaryAction(_prevState: any, data: postBody) {

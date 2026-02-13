@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useAppStore } from "../store/app";
 import { getTodayHourly, computeTodaySoFarAverage, finalizeUpToNow } from "@/lib/hourlyOps";
@@ -8,11 +8,12 @@ import { getTodayCount, storeMeasurementAndAccumulate } from "@/lib/postureLocal
 import { useTurtleNeckMeasurement } from "@/hooks/useTurtleNeckMeasurement";
 import { formatTime } from "@/utils/formatTime";
 import { createISO } from "@/utils/createISO";
+import { postDailySummaryAction } from "../actions/postDaliySummaryAction";
 
 export default function Estimate() {
   const { data: session, status } = useSession();
   const userId = (session?.user as any)?.id as string;
-
+  const [dailySumState, dailySumAction] = useActionState(postDailySummaryAction, null);
   const [stopEstimating, setStopEstimating] = useState(true);
 
   const {
@@ -60,25 +61,20 @@ export default function Estimate() {
         });
         // 측정 중 → 중단으로 변경: 요약 데이터 전송
         const rows = await getTodayHourly(userId);
-        console.log("[handleStopEstimating] hourly rows:", rows);
+
         const dailySumWeighted = rows?.reduce((acc: number, r: any) => acc + (r?.sumWeighted ?? 0), 0) ?? 0;
         const dailyWeightSeconds = rows?.reduce((acc: number, r: any) => acc + (r?.weight ?? 0), 0) ?? 0;
         const count = await getTodayCount(userId);
         const dateISO = createISO();
-        console.log("[handleStopEstimating] sumWeighted:", dailySumWeighted);
-        console.log("[handleStopEstimating] weightSeconds:", dailyWeightSeconds);
-        await fetch("/api/summaries/daily", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            userId,
-            dateISO,
-            sumWeighted: dailySumWeighted,
-            weightSeconds: dailyWeightSeconds,
-            count,
-          }),
-        });
 
+        const postData = {
+          userId,
+          dateISO,
+          sumWeighted: dailySumWeighted,
+          weightSeconds: dailyWeightSeconds,
+          count,
+        };
+        dailySumAction(postData);
         if (forced) return;
       } else {
         // 중단 → 다시 측정 시작 (측정 로직은 훅에서 초기화됨)
