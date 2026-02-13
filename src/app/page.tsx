@@ -125,8 +125,8 @@ export default function Page() {
     improvement == null
       ? "데이터 부족"
       : improvement >= 0
-      ? `${improvement.toFixed(1)}% 개선`
-      : `${Math.abs(improvement).toFixed(1)}% 악화`;
+        ? `${improvement.toFixed(1)}% 개선`
+        : `${Math.abs(improvement).toFixed(1)}% 악화`;
 
   const improvementValue = improvement == null ? 0 : Math.max(-100, Math.min(100, improvement));
 
@@ -152,8 +152,8 @@ export default function Page() {
               todayAvg != null
                 ? todayAvg.toFixed(1) // 소수 1자리
                 : loading
-                ? "로딩 중..."
-                : "-",
+                  ? "로딩 중..."
+                  : "-",
             unit: "°",
             delta: "up",
             deltaText: weeklyAvg != null && todayAvg != null ? `${(todayAvg - weeklyAvg).toFixed(1)}°` : "",
