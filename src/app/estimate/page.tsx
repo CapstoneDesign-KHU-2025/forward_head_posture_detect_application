@@ -2,18 +2,19 @@
 
 import { useActionState, useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import { useAppStore } from "../store/app";
-import { getTodayHourly, computeTodaySoFarAverage, finalizeUpToNow } from "@/lib/hourlyOps";
+import { getTodayHourly } from "@/lib/hourlyOps";
 import { getTodayCount, storeMeasurementAndAccumulate } from "@/lib/postureLocal";
 import { useTurtleNeckMeasurement } from "@/hooks/useTurtleNeckMeasurement";
 import { formatTime } from "@/utils/formatTime";
 import { createISO } from "@/utils/createISO";
-import { postDailySummaryAction } from "../actions/postDaliySummaryAction";
+import { postDailySummaryAction } from "../actions/postDailySummaryAction";
+import useTodayStatus from "@/hooks/useTodayStatus";
+import { Button } from "@/components/atoms/Button";
 
 export default function Estimate() {
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
   const userId = (session?.user as any)?.id as string;
-  const [dailySumState, dailySumAction] = useActionState(postDailySummaryAction, null);
+  const [_dailySumState, dailySumAction] = useActionState(postDailySummaryAction, null);
   const [stopEstimating, setStopEstimating] = useState(true);
 
   const {
@@ -29,11 +30,7 @@ export default function Estimate() {
     angle,
   } = useTurtleNeckMeasurement({ userId, stopEstimating });
 
-  // 🔹 통계/서버 관련 상태
-  const [hourlyList, setHourlyList] = useState<any[]>([]);
-  const [todayAvg, setTodayAvg] = useState<number | null>(null);
-  const [isHourlyVisible, setIsHourlyVisible] = useState(false);
-  const [isTodayAvgVisible, setIsTodayAvgVisible] = useState(false);
+  const { toggleHourly, isHourlyVisible, toggleAvg, isTodayAvgVisible, hourlyList, todayAvg } = useTodayStatus(userId);
 
   // 페이지에서 떠날 때 자동 중단 처리
   useEffect(() => {
@@ -60,9 +57,10 @@ export default function Estimate() {
         });
         // 측정 중 → 중단으로 변경: 요약 데이터 전송
         const rows = await getTodayHourly(userId);
-
         const dailySumWeighted = rows?.reduce((acc: number, r: any) => acc + (r?.sumWeighted ?? 0), 0) ?? 0;
+
         const dailyWeightSeconds = rows?.reduce((acc: number, r: any) => acc + (r?.weight ?? 0), 0) ?? 0;
+
         const count = await getTodayCount(userId);
         const dateISO = createISO();
 
@@ -89,36 +87,6 @@ export default function Estimate() {
     }
   };
 
-  // 시간별 평균 토글
-  async function toggleHourly() {
-    if (isHourlyVisible) {
-      setIsHourlyVisible(false);
-      return;
-    }
-    // 다른 토글 비활성화
-    setIsTodayAvgVisible(false);
-    if (userId) {
-      const rows = await getTodayHourly(userId);
-      setHourlyList(rows);
-      setIsHourlyVisible(true);
-    }
-  }
-
-  //  오늘 지금까지 평균 토글
-  async function toggleAvg() {
-    if (isTodayAvgVisible) {
-      setIsTodayAvgVisible(false);
-      return;
-    }
-    // 다른 토글 비활성화
-    setIsHourlyVisible(false);
-    const avg = await computeTodaySoFarAverage(userId);
-
-    setTodayAvg(avg);
-    if (userId) await finalizeUpToNow(userId, true);
-    setIsTodayAvgVisible(true);
-  }
-
   const formatTimeRange = (hourStartTs: number) => {
     const start = new Date(hourStartTs);
     const end = new Date(hourStartTs + 3600000);
@@ -131,12 +99,7 @@ export default function Estimate() {
       <div className="max-w-[1200px] mx-auto px-70 py-8">
         {/* 측정 중단 버튼 */}
         <div className="flex justify-center mb-8">
-          <button
-            onClick={() => handleStopEstimating()}
-            className="px-12 py-4 bg-[#1A1A1A] text-white border-none rounded-xl text-[1.1rem] font-semibold cursor-pointer transition-all duration-300 shadow-[0_4px_15px_rgba(0,0,0,0.2)] hover:bg-[#374151] hover:-translate-y-0.5 hover:shadow-[0_6px_20px_rgba(0,0,0,0.3)]"
-          >
-            {stopEstimating ? "측정 시작하기" : "오늘의 측정 중단하기"}
-          </button>
+          <Button>{stopEstimating ? "측정 시작하기" : "오늘의 측정 중단하기"}</Button>
         </div>
 
         {/* 측정 섹션 */}
