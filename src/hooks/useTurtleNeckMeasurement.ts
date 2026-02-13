@@ -11,7 +11,7 @@ import { checkGuidelinesAndDistance, Pose } from "@/utils/checkGuidelinesAndDist
 import { drawGuidelines } from "@/utils/drawGuidelines";
 import { startBeep, stopBeep } from "@/utils/manageBeep";
 type GuideColor = "green" | "red" | "orange";
-type StatusBannerType = "success" | "warning" | "info";
+export type StatusBannerType = "success" | "warning" | "info";
 
 interface UseTurtleNeckMeasurementOptions {
   userId?: string;
@@ -127,7 +127,7 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating }: UseTurtleNe
 
     if (result !== null) {
       avgAngle = result.avgAngle;
-      
+
       turtleNow = result.isTurtle;
       setAngle(avgAngle);
     }
@@ -184,7 +184,7 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating }: UseTurtleNe
         if (cancelled) return;
 
         const vision = await FilesetResolver.forVisionTasks(
-          "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm"
+          "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm",
         );
 
         landmarkerRef.current = await PoseLandmarker.createFromOptions(vision, {
@@ -260,7 +260,7 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating }: UseTurtleNe
             c,
             centerX,
             centerY,
-            offsetY
+            offsetY,
           );
 
           const tooCloseThreshold = 1.05;
@@ -310,10 +310,10 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating }: UseTurtleNe
                 if (poses.length > 0) {
                   const p = poses[0];
                   baselineBufferRef.current.push({
-                    earLeft:  { x:p[7].x,  y:p[7].y,  z:p[7].z },
-                    earRight: { x:p[8].x,  y:p[8].y,  z:p[8].z },
-                    shoulderLeft: { x:p[11].x, y:p[11].y, z:p[11].z },
-                    shoulderRight:{ x:p[12].x, y:p[12].y, z:p[12].z },
+                    earLeft: { x: p[7].x, y: p[7].y, z: p[7].z },
+                    earRight: { x: p[8].x, y: p[8].y, z: p[8].z },
+                    shoulderLeft: { x: p[11].x, y: p[11].y, z: p[11].z },
+                    shoulderRight: { x: p[12].x, y: p[12].y, z: p[12].z },
                   });
                 }
               }
@@ -333,10 +333,10 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating }: UseTurtleNe
                 // 베이스라인 계산
                 const buf = baselineBufferRef.current;
                 if (buf.length > 0) {
-                  const avg = (key:"earLeft"|"earRight"|"shoulderLeft"|"shoulderRight") => ({
-                    x: buf.reduce((s,a)=>s+a[key].x,0)/buf.length,
-                    y: buf.reduce((s,a)=>s+a[key].y,0)/buf.length,
-                    z: buf.reduce((s,a)=>s+a[key].z,0)/buf.length,
+                  const avg = (key: "earLeft" | "earRight" | "shoulderLeft" | "shoulderRight") => ({
+                    x: buf.reduce((s, a) => s + a[key].x, 0) / buf.length,
+                    y: buf.reduce((s, a) => s + a[key].y, 0) / buf.length,
+                    z: buf.reduce((s, a) => s + a[key].z, 0) / buf.length,
                   });
 
                   const lm7 = avg("earLeft");
@@ -345,15 +345,14 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating }: UseTurtleNe
                   const lm12 = avg("shoulderRight");
 
                   const t = analyzeTurtleNeck({
-                    earLeft:lm7,
-                    earRight:lm8,
-                    shoulderLeft:lm11,
-                    shoulderRight:lm12,
-                    sensitivity:getSensitivity()
+                    earLeft: lm7,
+                    earRight: lm8,
+                    shoulderLeft: lm11,
+                    shoulderRight: lm12,
+                    sensitivity: getSensitivity(),
                   });
 
                   baselineAngleRef.current = t.angleDeg;
-                  
 
                   baselineBufferRef.current = [];
                 }
@@ -416,7 +415,6 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating }: UseTurtleNe
         // 초기 루프 시작
         intervalRef.current = setInterval(loop, getInterval());
       } catch (e: any) {
-        
         setError(e?.message ?? "카메라 초기화 중 오류가 발생했습니다.");
       }
     })();
