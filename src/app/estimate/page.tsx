@@ -11,7 +11,7 @@ import { createISO } from "@/utils/createISO";
 
 export default function Estimate() {
   const { data: session, status } = useSession();
-  const userId = (session?.user as any)?.id as string | undefined;
+  const userId = (session?.user as any)?.id as string;
 
   const [stopEstimating, setStopEstimating] = useState(true);
 
