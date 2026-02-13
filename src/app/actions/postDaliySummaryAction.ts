@@ -18,7 +18,7 @@ export async function postDailySummaryAction(_prevState: any, data: postBody) {
       method: "POST",
       body: data,
     },
-    tags: ["daily_summery"],
+    tags: ["daily_summary"],
   });
 
   return result;

@@ -1,6 +1,6 @@
 "use server";
 
-import { apiRequest } from "@/lib/api/client";
+import { apiRequest, ApiResult } from "@/lib/api/client";
 type getInfo = {
   userId: string;
 };
@@ -10,7 +10,7 @@ export async function getDailySummaryAction(_prevState: any, data: getInfo) {
     days: "7",
   });
   const result = await apiRequest<string>({
-    requestPath: `/summaries/daily?userId=${params.toString()}`,
+    requestPath: `/summaries/daily?${params.toString()}`,
     init: { method: "GET" },
   });
 

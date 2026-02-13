@@ -1,3 +1,4 @@
+"use server";
 import { apiRequest } from "@/lib/api/client";
 import { Period, TestInfo } from "../test/page";
 
@@ -10,7 +11,7 @@ type postData = {
 };
 export default async function postPostureSessionAction(_prevState: any, data: postData) {
   const result = await apiRequest<string>({
-    requestPath: "",
+    requestPath: "posture-sessions",
     init: {
       method: "POST",
       body: data,
