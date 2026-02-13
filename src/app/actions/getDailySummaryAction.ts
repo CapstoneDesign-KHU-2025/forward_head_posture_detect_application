@@ -5,8 +5,12 @@ type getInfo = {
   userId: string;
 };
 export async function getDailySummaryAction(_prevState: any, data: getInfo) {
+  const params = new URLSearchParams({
+    userId: data.userId,
+    days: "7",
+  });
   const result = await apiRequest<string>({
-    requestPath: `/summaries/daily?userId=${data.userId}&days=7`,
+    requestPath: `/summaries/daily?userId=${params.toString()}`,
     init: { method: "GET" },
   });
 
