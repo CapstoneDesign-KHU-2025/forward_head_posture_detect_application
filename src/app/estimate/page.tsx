@@ -35,15 +35,6 @@ export default function Estimate() {
   const [isTodayAvgVisible, setIsTodayAvgVisible] = useState(false);
   const turtleNeckNumberInADay = useAppStore((s) => s.turtleNeckNumberInADay); // 지금은 안 쓰이지만 일단 유지
 
-  // 세션 로딩 처리
-  if (status === "loading") {
-    return <div>loading</div>;
-  }
-
-  if (!userId) {
-    return <div>로그인이 필요합니다.</div>;
-  }
-
   // 페이지에서 떠날 때 자동 중단 처리
   useEffect(() => {
     return () => {
@@ -54,7 +45,8 @@ export default function Estimate() {
   }, []);
 
   // 🔹 "오늘의 측정 중단하기" 버튼: IndexedDB -> DailyPostureSummary POST
-  const handleStopEstimating = async (forced?: boolean) => { // forced: 비정상적인 측정 종료 여부
+  const handleStopEstimating = async (forced?: boolean) => {
+    // forced: 비정상적인 측정 종료 여부
     try {
       if (!stopEstimating) {
         await storeMeasurementAndAccumulate({
@@ -161,8 +153,8 @@ export default function Estimate() {
                 getStatusBannerType() === "success"
                   ? "bg-gradient-to-r from-[#4A9D4D] to-[#66BB6A] text-white"
                   : getStatusBannerType() === "warning"
-                  ? "bg-gradient-to-r from-[#DC2626] to-[#EF4444] text-white"
-                  : "bg-gradient-to-r from-[#6B7280] to-[#9CA3AF] text-white"
+                    ? "bg-gradient-to-r from-[#DC2626] to-[#EF4444] text-white"
+                    : "bg-gradient-to-r from-[#6B7280] to-[#9CA3AF] text-white"
               }`}
             >
               {statusBannerMessage()}
