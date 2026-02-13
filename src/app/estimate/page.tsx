@@ -34,7 +34,6 @@ export default function Estimate() {
   const [todayAvg, setTodayAvg] = useState<number | null>(null);
   const [isHourlyVisible, setIsHourlyVisible] = useState(false);
   const [isTodayAvgVisible, setIsTodayAvgVisible] = useState(false);
-  const turtleNeckNumberInADay = useAppStore((s) => s.turtleNeckNumberInADay); // 지금은 안 쓰이지만 일단 유지
 
   // 페이지에서 떠날 때 자동 중단 처리
   useEffect(() => {
@@ -45,7 +44,7 @@ export default function Estimate() {
     };
   }, []);
 
-  // 🔹 "오늘의 측정 중단하기" 버튼: IndexedDB -> DailyPostureSummary POST
+  // "오늘의 측정 중단하기" 버튼: IndexedDB -> DailyPostureSummary POST
   const handleStopEstimating = async (forced?: boolean) => {
     // forced: 비정상적인 측정 종료 여부
     try {
@@ -90,7 +89,7 @@ export default function Estimate() {
     }
   };
 
-  // 🔹 시간별 평균 토글
+  // 시간별 평균 토글
   async function toggleHourly() {
     if (isHourlyVisible) {
       setIsHourlyVisible(false);
@@ -105,7 +104,7 @@ export default function Estimate() {
     }
   }
 
-  // 🔹 오늘 지금까지 평균 토글
+  //  오늘 지금까지 평균 토글
   async function toggleAvg() {
     if (isTodayAvgVisible) {
       setIsTodayAvgVisible(false);
@@ -114,7 +113,7 @@ export default function Estimate() {
     // 다른 토글 비활성화
     setIsHourlyVisible(false);
     const avg = await computeTodaySoFarAverage(userId);
-    console.log(avg);
+
     setTodayAvg(avg);
     if (userId) await finalizeUpToNow(userId, true);
     setIsTodayAvgVisible(true);
