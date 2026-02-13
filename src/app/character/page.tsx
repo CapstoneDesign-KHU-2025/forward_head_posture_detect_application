@@ -3,31 +3,29 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/atoms/Button";
-
+const characters = [
+  {
+    id: "remy",
+    icon: "/icons/remy.png",
+    name: "래미",
+    description: "부드럽고 따뜻한\n친근한 캐릭터",
+  },
+  {
+    id: "jerry",
+    icon: "/icons/cat.png",
+    name: "제리",
+    description: "활발하고 귀여운\n사랑스러운 캐릭터",
+  },
+  {
+    id: "jessica",
+    icon: "/icons/girl.png",
+    name: "제시카",
+    description: "우아하고 세련된\n멋진 캐릭터",
+  },
+];
 export default function CharacterSelectionPage() {
   const [selectedCharacter, setSelectedCharacter] = useState<string | null>(null);
   const router = useRouter();
-
-  const characters = [
-    {
-      id: "remy",
-      icon: "/icons/remy.png",
-      name: "래미",
-      description: "부드럽고 따뜻한\n친근한 캐릭터",
-    },
-    {
-      id: "jerry",
-      icon: "/icons/cat.png",
-      name: "제리",
-      description: "활발하고 귀여운\n사랑스러운 캐릭터",
-    },
-    {
-      id: "jessica",
-      icon: "/icons/girl.png",
-      name: "제시카",
-      description: "우아하고 세련된\n멋진 캐릭터",
-    },
-  ];
 
   const handleCharacterSelect = (characterId: string) => {
     setSelectedCharacter(characterId);
@@ -38,7 +36,6 @@ export default function CharacterSelectionPage() {
       // 선택된 캐릭터 저장 (나중에 백엔드로 전송)
       if (typeof window !== "undefined") {
         localStorage.setItem("selectedCharacter", selectedCharacter);
-        // 홈페이지로 이동
         window.location.href = "/";
       } else {
         router.push("/");
@@ -50,14 +47,12 @@ export default function CharacterSelectionPage() {
     // 기본 캐릭터 설정
     if (typeof window !== "undefined") {
       localStorage.setItem("selectedCharacter", "remy");
-      // 홈페이지로 이동
       window.location.href = "/";
     } else {
       router.push("/");
     }
   };
 
-  // 키보드 단축키
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Enter" && selectedCharacter) {
@@ -137,4 +132,3 @@ export default function CharacterSelectionPage() {
     </div>
   );
 }
-
