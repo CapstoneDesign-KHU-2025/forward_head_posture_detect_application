@@ -1,6 +1,8 @@
 export default function LoadingSkeleton() {
   return (
     <div 
+      role="status"
+      aria-live="polite"
       className="w-full h-full flex flex-col items-center justify-center bg-[#2C3E50] text-white rounded-[20px]"
       style={{ aspectRatio: "4/3" }}
     >
