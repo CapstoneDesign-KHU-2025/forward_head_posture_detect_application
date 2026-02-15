@@ -39,7 +39,9 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating }: UseTurtleNe
   const lastGuideMessageRef = useRef<string | null>(null);
   const lastGuideColorRef = useRef<GuideColor>("red");
   if (!userId) {
-    return null;
+    useEffect(() => {
+      if (!userId) return;
+    }, [userId, stopEstimating]);
   }
   // === 상태값들 (UI + 측정) ===
   const [isTurtle, setIsTurtle] = useState(false);

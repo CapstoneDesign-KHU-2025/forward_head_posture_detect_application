@@ -1,6 +1,5 @@
 "use client";
 import { StatusBannerType } from "@/hooks/useTurtleNeckMeasurement";
-import { useEffect } from "react";
 
 type estimatePanelProps = {
   bannerType: StatusBannerType;
