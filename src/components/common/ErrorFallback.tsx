@@ -1,8 +1,12 @@
 "use client";
 
 import { FallbackProps } from "react-error-boundary";
+import { useRouter } from "next/navigation";
+import { startTransition } from "react";
 
 export default function ErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
+  const router = useRouter();
+
   return (
     <div 
       className="w-full h-full flex flex-col items-center justify-center bg-[#2C3E50] text-white p-6 rounded-[20px]"
@@ -16,7 +20,12 @@ export default function ErrorFallback({ error, resetErrorBoundary }: FallbackPro
       
       <div className="flex gap-3">
         <button
-          onClick={() => window.location.reload()}
+          onClick={() => {
+            startTransition(() => {
+              router.refresh();
+              resetErrorBoundary();
+            });
+          }}
           className="px-5 py-2 bg-gray-600 hover:bg-gray-500 rounded-lg text-sm font-medium transition-colors"
         >
           새로고침
