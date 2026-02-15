@@ -8,12 +8,11 @@ type postBody = {
   sumWeighted: number;
   weightSeconds: number;
   count: number;
-  tags: Array<string>;
 };
 
 export async function postDailySummaryAction(_prevState: any, data: postBody) {
   const result = await apiRequest<string>({
-    requestPath: "/summaries/daily",
+    requestPath: "summaries/daily",
     init: {
       method: "POST",
       body: data,

@@ -5,7 +5,7 @@ import Header from "@/components/organisms/layout/Header";
 import Footer from "@/components/organisms/layout/Footer";
 import PageContainer from "@/components/organisms/layout/PageContainer";
 import { auth } from "@/auth";
-
+import { redirect } from "next/navigation";
 import Providers from "./providers";
 
 export const metadata: Metadata = {
@@ -18,31 +18,26 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
-
+  if (!session) redirect("/login");
   const user = session?.user
     ? { name: session.user.name || "사용자", avatarSrc: session.user.image || undefined }
     : null;
-
-  return (
-    <html lang="ko">
-      <body className="min-h-dvh bg-neutral-50 text-black antialiased">
-        <Providers session={session}>
-          {/* 공통 헤더 */}
-          <Header user={user} />
-
-          {/* 본문 */}
-          <PageContainer>{children}</PageContainer>
-
-          {/* 공통 푸터 */}
-          <Footer
-            links={[
-              { label: "Privacy Policy", href: "/privacy" },
-              { label: "Terms of Service", href: "/terms" },
-              { label: "Contact Us", href: "/contact" },
-            ]}
-          />
-        </Providers>
-      </body>
-    </html>
-  );
+  if (!session)
+    return (
+      <html lang="ko">
+        <body className="min-h-dvh bg-neutral-50 text-black antialiased">
+          <Providers session={session}>
+            <Header user={user} />
+            <PageContainer>{children}</PageContainer>
+            <Footer
+              links={[
+                { label: "Privacy Policy", href: "/privacy" },
+                { label: "Terms of Service", href: "/terms" },
+                { label: "Contact Us", href: "/contact" },
+              ]}
+            />
+          </Providers>
+        </body>
+      </html>
+    );
 }
