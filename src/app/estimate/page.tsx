@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
+import { startTransition, useActionState, useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { getTodayHourly } from "@/lib/hourlyOps";
 import { getTodayCount, storeMeasurementAndAccumulate } from "@/lib/postureLocal";
@@ -11,6 +11,7 @@ import { postDailySummaryAction } from "../actions/postDailySummaryAction";
 import useTodayStatus from "@/hooks/useTodayStatus";
 import { Button } from "@/components/atoms/Button";
 import EstimatePanel from "@/components/molecules/EstimatePanel";
+import { getStatusBannerMessageCore } from "@/utils/getStatusBanner";
 
 export default function Estimate() {
   const { data: session } = useSession();
@@ -72,7 +73,10 @@ export default function Estimate() {
           weightSeconds: dailyWeightSeconds,
           count,
         };
-        dailySumAction(postData);
+        startTransition(() => {
+          dailySumAction(postData);
+        });
+
         if (forced) return;
       } else {
         // 중단 → 다시 측정 시작 (측정 로직은 훅에서 초기화됨)
@@ -94,17 +98,20 @@ export default function Estimate() {
 
     return `${formatTime(start)} ~ ${formatTime(end)}`;
   };
-
+  const bannerType = getStatusBannerType();
+  const bannerMessage = statusBannerMessage();
   return (
     <div className="min-h-screen bg-[#F8FBF8]">
       <div className="max-w-[1200px] mx-auto px-70 py-8">
         <div className="flex justify-center mb-8">
-          <Button>{stopEstimating ? "측정 시작하기" : "오늘의 측정 중단하기"}</Button>
+          <Button onClick={() => handleStopEstimating()}>
+            {stopEstimating ? "측정 시작하기" : "오늘의 측정 중단하기"}
+          </Button>
         </div>
 
         <EstimatePanel
-          bannerType={getStatusBannerType()}
-          bannerMessage={statusBannerMessage()}
+          bannerType={bannerType}
+          bannerMessage={bannerMessage}
           videoRef={videoRef}
           canvasRef={canvasRef}
           showMeasurementStartedToast={showMeasurementStartedToast}
