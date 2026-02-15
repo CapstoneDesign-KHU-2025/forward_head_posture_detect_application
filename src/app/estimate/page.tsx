@@ -1,18 +1,21 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { startTransition, useActionState, useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import { useAppStore } from "../store/app";
-import { getTodayHourly, computeTodaySoFarAverage, finalizeUpToNow } from "@/lib/hourlyOps";
+import { getTodayHourly } from "@/lib/hourlyOps";
 import { getTodayCount, storeMeasurementAndAccumulate } from "@/lib/postureLocal";
 import { useTurtleNeckMeasurement } from "@/hooks/useTurtleNeckMeasurement";
 import { formatTime } from "@/utils/formatTime";
 import { createISO } from "@/utils/createISO";
+import { postDailySummaryAction } from "../actions/postDailySummaryAction";
+import useTodayStatus from "@/hooks/useTodayStatus";
+import { Button } from "@/components/atoms/Button";
+import EstimatePanel from "@/components/molecules/EstimatePanel";
 
 export default function Estimate() {
-  const { data: session, status } = useSession();
-  const userId = (session?.user as any)?.id as string | undefined;
-
+  const { data: session } = useSession();
+  const userId = (session?.user as any)?.id as string;
+  const [_dailySumState, dailySumAction] = useActionState(postDailySummaryAction, null);
   const [stopEstimating, setStopEstimating] = useState(true);
 
   const {
@@ -28,21 +31,7 @@ export default function Estimate() {
     angle,
   } = useTurtleNeckMeasurement({ userId, stopEstimating });
 
-  // 🔹 통계/서버 관련 상태
-  const [hourlyList, setHourlyList] = useState<any[]>([]);
-  const [todayAvg, setTodayAvg] = useState<number | null>(null);
-  const [isHourlyVisible, setIsHourlyVisible] = useState(false);
-  const [isTodayAvgVisible, setIsTodayAvgVisible] = useState(false);
-  const turtleNeckNumberInADay = useAppStore((s) => s.turtleNeckNumberInADay); // 지금은 안 쓰이지만 일단 유지
-
-  // 세션 로딩 처리
-  if (status === "loading") {
-    return <div>loading</div>;
-  }
-
-  if (!userId) {
-    return <div>로그인이 필요합니다.</div>;
-  }
+  const { toggleHourly, isHourlyVisible, toggleAvg, isTodayAvgVisible, hourlyList, todayAvg } = useTodayStatus(userId);
 
   // 페이지에서 떠날 때 자동 중단 처리
   useEffect(() => {
@@ -51,10 +40,11 @@ export default function Estimate() {
         handleStopEstimating(true);
       }
     };
-  }, []);
+  }, [stopEstimating]);
 
-  // 🔹 "오늘의 측정 중단하기" 버튼: IndexedDB -> DailyPostureSummary POST
-  const handleStopEstimating = async (forced?: boolean) => { // forced: 비정상적인 측정 종료 여부
+  // "오늘의 측정 중단하기" 버튼: IndexedDB -> DailyPostureSummary POST
+  const handleStopEstimating = async (forced?: boolean) => {
+    // forced: 비정상적인 측정 종료 여부
     try {
       if (!stopEstimating) {
         await storeMeasurementAndAccumulate({
@@ -68,23 +58,22 @@ export default function Estimate() {
         });
         // 측정 중 → 중단으로 변경: 요약 데이터 전송
         const rows = await getTodayHourly(userId);
-        console.log("[handleStopEstimating] hourly rows:", rows);
         const dailySumWeighted = rows?.reduce((acc: number, r: any) => acc + (r?.sumWeighted ?? 0), 0) ?? 0;
+
         const dailyWeightSeconds = rows?.reduce((acc: number, r: any) => acc + (r?.weight ?? 0), 0) ?? 0;
+
         const count = await getTodayCount(userId);
         const dateISO = createISO();
-        console.log("[handleStopEstimating] sumWeighted:", dailySumWeighted);
-        console.log("[handleStopEstimating] weightSeconds:", dailyWeightSeconds);
-        await fetch("/api/summaries/daily", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            userId,
-            dateISO,
-            sumWeighted: dailySumWeighted,
-            weightSeconds: dailyWeightSeconds,
-            count,
-          }),
+
+        const postData = {
+          userId,
+          dateISO,
+          sumWeighted: dailySumWeighted,
+          weightSeconds: dailyWeightSeconds,
+          count,
+        };
+        startTransition(() => {
+          dailySumAction(postData);
         });
 
         if (forced) return;
@@ -102,127 +91,32 @@ export default function Estimate() {
     }
   };
 
-  // 🔹 시간별 평균 토글
-  async function toggleHourly() {
-    if (isHourlyVisible) {
-      setIsHourlyVisible(false);
-      return;
-    }
-    // 다른 토글 비활성화
-    setIsTodayAvgVisible(false);
-    if (userId) {
-      const rows = await getTodayHourly(userId);
-      setHourlyList(rows);
-      setIsHourlyVisible(true);
-    }
-  }
-
-  // 🔹 오늘 지금까지 평균 토글
-  async function toggleAvg() {
-    if (isTodayAvgVisible) {
-      setIsTodayAvgVisible(false);
-      return;
-    }
-    // 다른 토글 비활성화
-    setIsHourlyVisible(false);
-    const avg = await computeTodaySoFarAverage(userId);
-    console.log(avg);
-    setTodayAvg(avg);
-    if (userId) await finalizeUpToNow(userId, true);
-    setIsTodayAvgVisible(true);
-  }
-
   const formatTimeRange = (hourStartTs: number) => {
     const start = new Date(hourStartTs);
     const end = new Date(hourStartTs + 3600000);
 
     return `${formatTime(start)} ~ ${formatTime(end)}`;
   };
-
+  const bannerType = getStatusBannerType();
+  const bannerMessage = statusBannerMessage();
   return (
     <div className="min-h-screen bg-[#F8FBF8]">
       <div className="max-w-[1200px] mx-auto px-70 py-8">
-        {/* 측정 중단 버튼 */}
         <div className="flex justify-center mb-8">
-          <button
-            onClick={() => handleStopEstimating()}
-            className="px-12 py-4 bg-[#1A1A1A] text-white border-none rounded-xl text-[1.1rem] font-semibold cursor-pointer transition-all duration-300 shadow-[0_4px_15px_rgba(0,0,0,0.2)] hover:bg-[#374151] hover:-translate-y-0.5 hover:shadow-[0_6px_20px_rgba(0,0,0,0.3)]"
-          >
+          <Button onClick={() => handleStopEstimating()}>
             {stopEstimating ? "측정 시작하기" : "오늘의 측정 중단하기"}
-          </button>
+          </Button>
         </div>
 
-        {/* 측정 섹션 */}
-        <section className="bg-white rounded-[20px] overflow-hidden shadow-[0_4px_30px_rgba(45,95,46,0.1)]">
-          <div className="p-0">
-            {/* 상태 배너 */}
-            <div
-              className={`w-full px-8 py-4 text-center text-[1.1rem] font-semibold transition-all duration-300 rounded-t-[20px] ${
-                getStatusBannerType() === "success"
-                  ? "bg-gradient-to-r from-[#4A9D4D] to-[#66BB6A] text-white"
-                  : getStatusBannerType() === "warning"
-                  ? "bg-gradient-to-r from-[#DC2626] to-[#EF4444] text-white"
-                  : "bg-gradient-to-r from-[#6B7280] to-[#9CA3AF] text-white"
-              }`}
-            >
-              {statusBannerMessage()}
-            </div>
-
-            {/* 카메라 컨테이너 */}
-            <div
-              className="relative w-full m-0 rounded-none overflow-hidden bg-[#2C3E50]"
-              style={{ aspectRatio: "4/3" }}
-            >
-              {/* 비디오는 숨기고, 캔버스만 화면에 표시 */}
-              <video ref={videoRef} className="absolute -left-[9999px]" />
-              <canvas ref={canvasRef} className="w-full h-full block bg-[#2C3E50]" />
-
-              {/* 측정 시작 토스트 */}
-              {showMeasurementStartedToast && (
-                <div
-                  style={{
-                    position: "absolute",
-                    top: "50%",
-                    left: "50%",
-                    transform: "translate(-50%, -50%)",
-                    backgroundColor: "rgba(64, 64, 64, 0.85)",
-                    color: "white",
-                    padding: "16px 28px",
-                    borderRadius: "9999px",
-                    fontWeight: "bold",
-                    fontSize: "20px",
-                    textAlign: "center",
-                    boxShadow: "0 10px 30px rgba(0, 0, 0, 0.35)",
-                    pointerEvents: "none",
-                    zIndex: 1000,
-                  }}
-                >
-                  거북목 측정을 시작합니다
-                </div>
-              )}
-
-              {/* 3초 카운트다운 */}
-              {countdownRemain !== null && !measurementStarted && (
-                <div
-                  style={{
-                    position: "absolute",
-                    bottom: 20,
-                    left: "50%",
-                    transform: "translateX(-50%)",
-                    backgroundColor: "rgba(0, 0, 0, 0.6)",
-                    color: "white",
-                    padding: "12px 24px",
-                    borderRadius: "9999px",
-                    fontSize: "32px",
-                    fontWeight: "bold",
-                  }}
-                >
-                  {countdownRemain}
-                </div>
-              )}
-            </div>
-          </div>
-        </section>
+        <EstimatePanel
+          bannerType={bannerType}
+          bannerMessage={bannerMessage}
+          videoRef={videoRef}
+          canvasRef={canvasRef}
+          showMeasurementStartedToast={showMeasurementStartedToast}
+          countdownRemain={countdownRemain}
+          measurementStarted={measurementStarted}
+        />
 
         {/* 토글 버튼 (웹캠 박스 밖) */}
         <div className="flex justify-center gap-4 my-6">

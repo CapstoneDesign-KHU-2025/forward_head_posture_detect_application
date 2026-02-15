@@ -1,4 +1,4 @@
-const BASE_PATH = "/api";
+const BASE_PATH = "http://localhost:3000/api";
 
 export type ApiOk<T> = { ok: true; data: T };
 export type ApiFail = { ok: false; status: number; message: string; body?: unknown };

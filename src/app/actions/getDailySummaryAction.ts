@@ -10,7 +10,7 @@ export async function getDailySummaryAction(_prevState: any, data: getInfo) {
     days: "7",
   });
   const result = await apiRequest<string>({
-    requestPath: `/summaries/daily?${params.toString()}`,
+    requestPath: `summaries/daily?${params.toString()}`,
     init: { method: "GET" },
   });
 
