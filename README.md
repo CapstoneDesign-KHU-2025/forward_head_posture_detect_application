@@ -35,8 +35,9 @@
 | **AI / Pose Estimation** | MediaPipe Pose Landmarker |
 | **3D Visualization** | Three.js |
 | **Backend / DB** | PostgreSQL, AWS EC2 |
-| **Tools** | GitHub, Figma, VS Code |
+| **Tools** | GitHub, Figma, VS Code, Jira |
 
+Jira link | https://kge0211114.atlassian.net/jira/software/projects/TNA/boards/34?atlOrigin=eyJpIjoiYjhhOGVmODg0ZTdmNGM5NTg1ZTk4ZTQ1ZWI1MjY5NzciLCJwIjoiaiJ9
 ---
 
 ## 주요 구현 내용
