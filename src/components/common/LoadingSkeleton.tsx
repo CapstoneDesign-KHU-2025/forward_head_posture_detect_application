@@ -11,7 +11,7 @@ export default function LoadingSkeleton() {
       
       {/* 텍스트 */}
       <div className="flex flex-col items-center">
-        <p className="text-lg font-bold">🤖 AI 모델 로딩 중...</p>
+        <p className="text-lg font-bold">📷 카메라를 켜고 있습니다...</p>
         <p className="text-sm text-gray-400 mt-2">잠시만 기다려주세요</p>
       </div>
     </div>
