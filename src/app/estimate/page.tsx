@@ -40,7 +40,7 @@ export default function Estimate() {
         handleStopEstimating(true);
       }
     };
-  }, []);
+  }, [stopEstimating]);
 
   // "오늘의 측정 중단하기" 버튼: IndexedDB -> DailyPostureSummary POST
   const handleStopEstimating = async (forced?: boolean) => {
