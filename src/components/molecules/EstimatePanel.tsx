@@ -57,7 +57,7 @@ export default function EstimatePanel({
         {/* 카메라 컨테이너 */}
         <div className="relative w-full m-0 rounded-none overflow-hidden bg-[#2C3E50]" style={{ aspectRatio: "4/3" }}>
 
-          {/* 👇 3. 로딩 중이면 스켈레톤을 위에 덮어씌우기 (absolute) */}
+          {/* 로딩 중이면 스켈레톤을 위에 덮어씌우기 */}
           {isCameraLoading && (
              <div className="absolute inset-0 z-10 w-full h-full">
                <LoadingSkeleton />
