@@ -1,7 +1,7 @@
 "use client";
 import { StatusBannerType } from "@/hooks/useTurtleNeckMeasurement";
 
-type estimatePanelProps = {
+type EstimatePanelProps = {
   bannerType: StatusBannerType;
   bannerMessage: string;
   videoRef: React.RefObject<HTMLVideoElement | null>;
@@ -18,7 +18,7 @@ export default function EstimatePanel({
   showMeasurementStartedToast,
   countdownRemain,
   measurementStarted,
-}: estimatePanelProps) {
+}: EstimatePanelProps) {
   return (
     <section className="bg-white rounded-[20px] overflow-hidden shadow-[0_4px_30px_rgba(45,95,46,0.1)]">
       <div className="p-0">

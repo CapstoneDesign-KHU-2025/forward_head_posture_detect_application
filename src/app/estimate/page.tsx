@@ -11,7 +11,6 @@ import { postDailySummaryAction } from "../actions/postDailySummaryAction";
 import useTodayStatus from "@/hooks/useTodayStatus";
 import { Button } from "@/components/atoms/Button";
 import EstimatePanel from "@/components/molecules/EstimatePanel";
-import { getStatusBannerMessageCore } from "@/utils/getStatusBanner";
 
 export default function Estimate() {
   const { data: session } = useSession();
