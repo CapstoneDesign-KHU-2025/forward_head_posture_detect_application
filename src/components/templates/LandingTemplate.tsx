@@ -101,7 +101,6 @@ export default function LandingTemplate() {
         </div>
       </section>
 
-      {/* 솔루션 섹션 */}
       <section id="features" className="py-20 px-8 bg-[#E8F5E9]">
         <div className="max-w-[1200px] mx-auto">
           <h2 className="text-[2.5rem] font-bold text-[#2D5F2E] text-center mb-12">
