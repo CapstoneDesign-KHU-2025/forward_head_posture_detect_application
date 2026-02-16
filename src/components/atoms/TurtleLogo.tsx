@@ -1,6 +1,61 @@
 export default function TurtleLogo() {
   return (
     <div className="hero-image bg-white rounded-3xl p-8 shadow-xl text-center">
+      {" "}
+      <style jsx>{`
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        @keyframes fadeInRight {
+          from {
+            opacity: 0;
+            transform: translateX(30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+        @keyframes float {
+          0%,
+          100% {
+            transform: translateY(0px);
+          }
+          50% {
+            transform: translateY(-10px);
+          }
+        }
+        @keyframes pulse {
+          0%,
+          100% {
+            opacity: 0.2;
+            transform: scale(1);
+          }
+          50% {
+            opacity: 0.4;
+            transform: scale(1.1);
+          }
+        }
+        .hero-content {
+          animation: fadeInUp 0.8s ease-out;
+        }
+        .hero-image {
+          animation: fadeInRight 0.8s ease-out 0.2s both;
+        }
+        .turtle-float {
+          animation: float 3s ease-in-out infinite;
+        }
+        .check-pulse {
+          animation: pulse 2s ease-in-out infinite;
+        }
+      `}</style>
       <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg" className="w-full max-w-md mx-auto turtle-float">
         {/* 거북이 등껍질 */}
         <ellipse cx="200" cy="180" rx="100" ry="80" fill="#4A9D4D" />

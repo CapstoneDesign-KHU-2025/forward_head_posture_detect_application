@@ -4,67 +4,12 @@ import * as React from "react";
 import { Button } from "@/components/atoms/Button";
 import { signIn } from "next-auth/react";
 import TurtleLogo from "../atoms/TurtleLogo";
-import MetricCard from "../atoms/StatCard";
+import MetricCard from "../atoms/MetricCard";
 
 export default function LandingTemplate() {
   return (
     <div className="min-h-screen bg-[#F8FBF8] w-screen pt-16">
-      {/* 히어로 섹션 */}
       <section className="min-h-screen bg-gradient-to-br from-[#E8F5E9] to-[#F8FBF8] flex items-center py-16 px-4">
-        <style jsx>{`
-          @keyframes fadeInUp {
-            from {
-              opacity: 0;
-              transform: translateY(30px);
-            }
-            to {
-              opacity: 1;
-              transform: translateY(0);
-            }
-          }
-          @keyframes fadeInRight {
-            from {
-              opacity: 0;
-              transform: translateX(30px);
-            }
-            to {
-              opacity: 1;
-              transform: translateX(0);
-            }
-          }
-          @keyframes float {
-            0%,
-            100% {
-              transform: translateY(0px);
-            }
-            50% {
-              transform: translateY(-10px);
-            }
-          }
-          @keyframes pulse {
-            0%,
-            100% {
-              opacity: 0.2;
-              transform: scale(1);
-            }
-            50% {
-              opacity: 0.4;
-              transform: scale(1.1);
-            }
-          }
-          .hero-content {
-            animation: fadeInUp 0.8s ease-out;
-          }
-          .hero-image {
-            animation: fadeInRight 0.8s ease-out 0.2s both;
-          }
-          .turtle-float {
-            animation: float 3s ease-in-out infinite;
-          }
-          .check-pulse {
-            animation: pulse 2s ease-in-out infinite;
-          }
-        `}</style>
         <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-16 items-center">
           <div className="hero-content">
             <h1 className="text-4xl md:text-4xl font-bold text-[#2D5F2E] mb-6 leading-normal">
