@@ -22,22 +22,22 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const user = session?.user
     ? { name: session.user.name || "사용자", avatarSrc: session.user.image || undefined }
     : null;
-  if (!session)
-    return (
-      <html lang="ko">
-        <body className="min-h-dvh bg-neutral-50 text-black antialiased">
-          <Providers session={session}>
-            <Header user={user} />
-            <PageContainer>{children}</PageContainer>
-            <Footer
-              links={[
-                { label: "Privacy Policy", href: "/privacy" },
-                { label: "Terms of Service", href: "/terms" },
-                { label: "Contact Us", href: "/contact" },
-              ]}
-            />
-          </Providers>
-        </body>
-      </html>
-    );
+
+  return (
+    <html lang="ko">
+      <body className="min-h-dvh bg-neutral-50 text-black antialiased">
+        <Providers session={session}>
+          <Header user={user} />
+          <PageContainer>{children}</PageContainer>
+          <Footer
+            links={[
+              { label: "Privacy Policy", href: "/privacy" },
+              { label: "Terms of Service", href: "/terms" },
+              { label: "Contact Us", href: "/contact" },
+            ]}
+          />
+        </Providers>
+      </body>
+    </html>
+  );
 }
