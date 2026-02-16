@@ -11,6 +11,8 @@ import { postDailySummaryAction } from "../actions/postDailySummaryAction";
 import useTodayStatus from "@/hooks/useTodayStatus";
 import { Button } from "@/components/atoms/Button";
 import EstimatePanel from "@/components/molecules/EstimatePanel";
+import AsyncBoundary from "@/components/common/AsyncBoundary";
+import LoadingSkeleton from "@/components/common/LoadingSkeleton";
 
 export default function Estimate() {
   const { data: session } = useSession();
@@ -108,15 +110,17 @@ export default function Estimate() {
           </Button>
         </div>
 
-        <EstimatePanel
-          bannerType={bannerType}
-          bannerMessage={bannerMessage}
-          videoRef={videoRef}
-          canvasRef={canvasRef}
-          showMeasurementStartedToast={showMeasurementStartedToast}
-          countdownRemain={countdownRemain}
-          measurementStarted={measurementStarted}
-        />
+        <AsyncBoundary suspenseFallback={<LoadingSkeleton />}>
+          <EstimatePanel
+            bannerType={bannerType}
+            bannerMessage={bannerMessage}
+            videoRef={videoRef}
+            canvasRef={canvasRef}
+            showMeasurementStartedToast={showMeasurementStartedToast}
+            countdownRemain={countdownRemain}
+            measurementStarted={measurementStarted}
+          />
+        </AsyncBoundary>
 
         {/* 토글 버튼 (웹캠 박스 밖) */}
         <div className="flex justify-center gap-4 my-6">

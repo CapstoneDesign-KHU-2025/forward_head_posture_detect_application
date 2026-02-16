@@ -1,5 +1,7 @@
 "use client";
 import { StatusBannerType } from "@/hooks/useTurtleNeckMeasurement";
+import { useState, useEffect } from "react";
+import LoadingSkeleton from "@/components/common/LoadingSkeleton";
 
 type EstimatePanelProps = {
   bannerType: StatusBannerType;
@@ -19,6 +21,23 @@ export default function EstimatePanel({
   countdownRemain,
   measurementStarted,
 }: EstimatePanelProps) {
+  // 로딩 상태 로직 추가 (비디오가 준비될 때까지 true)
+  const [isCameraLoading, setIsCameraLoading] = useState(true);
+
+  useEffect(() => {
+    // 비디오가 준비되었는지 0.1초마다 확인
+    const checkVideoReady = () => {
+      // readyState 2 이상이면 데이터가 충분히 로딩된 상태
+      if (videoRef.current && videoRef.current.readyState >= 2) {
+        setIsCameraLoading(false); // 로딩 끝
+      }
+    };
+
+    const interval = setInterval(checkVideoReady, 100);
+    return () => clearInterval(interval);
+  }, [videoRef]);
+
+
   return (
     <section className="bg-white rounded-[20px] overflow-hidden shadow-[0_4px_30px_rgba(45,95,46,0.1)]">
       <div className="p-0">
@@ -37,6 +56,14 @@ export default function EstimatePanel({
 
         {/* 카메라 컨테이너 */}
         <div className="relative w-full m-0 rounded-none overflow-hidden bg-[#2C3E50]" style={{ aspectRatio: "4/3" }}>
+
+          {/* 로딩 중이면 스켈레톤을 위에 덮어씌우기 */}
+          {isCameraLoading && (
+             <div className="absolute inset-0 z-10 w-full h-full">
+               <LoadingSkeleton />
+             </div>
+          )}
+
           {/* 비디오는 숨기고, 캔버스만 화면에 표시 */}
           <video ref={videoRef} className="absolute -left-[9999px]" />
           <canvas ref={canvasRef} className="w-full h-full block bg-[#2C3E50]" />
