@@ -4,6 +4,7 @@ import * as React from "react";
 import { Button } from "@/components/atoms/Button";
 import { signIn } from "next-auth/react";
 import TurtleLogo from "../atoms/TurtleLogo";
+import MetricCard from "../atoms/StatCard";
 
 export default function LandingTemplate() {
   return (
@@ -106,18 +107,13 @@ export default function LandingTemplate() {
           </p>
 
           <div className="grid md:grid-cols-3 gap-8 mt-12">
-            <div className="bg-[#F8FBF8] p-8 rounded-xl border-l-4 border-[#4A9D4D]">
-              <div className="text-5xl font-bold text-[#2D5F2E] mb-2">8시간+</div>
-              <div className="text-lg text-[#4F4F4F]">하루 평균 컴퓨터 사용 시간</div>
-            </div>
-            <div className="bg-[#F8FBF8] p-8 rounded-xl border-l-4 border-[#4A9D4D]">
-              <div className="text-5xl font-bold text-[#2D5F2E] mb-2">70%</div>
-              <div className="text-lg text-[#4F4F4F]">직장인 거북목 유병률</div>
-            </div>
-            <div className="bg-[#F8FBF8] p-8 rounded-xl border-l-4 border-[#4A9D4D]">
-              <div className="text-5xl font-bold text-[#2D5F2E] mb-2">15kg</div>
-              <div className="text-lg text-[#4F4F4F]">잘못된 자세로 인한 목 부담</div>
-            </div>
+            <MetricCard
+              title="5시간+"
+              description="하루 평균 컴퓨터 사용 시간"
+              source="출처 | 방송통신위원회의 스마트폰∙PC 이용 행태 조사"
+            />
+            <MetricCard title="70%" description="현대인 거북목 유병률" source="출처 | 질병관리청" />
+            <MetricCard title="15kg+" description="잘못된 자세로 인한 목 부담" source="출처 | 질병관리청" />
           </div>
         </div>
       </section>
