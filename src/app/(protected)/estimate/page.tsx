@@ -12,6 +12,7 @@ import useTodayStatus from "@/hooks/useTodayStatus";
 import { Button } from "@/components/atoms/Button";
 import EstimatePanel from "@/components/molecules/EstimatePanel";
 import ErrorBanner from "@/components/atoms/ErrorBanner";
+import ToggleButton from "@/components/molecules/ToggleButton";
 
 export default function Estimate() {
   const { data: session } = useSession();
@@ -119,28 +120,19 @@ export default function Estimate() {
           measurementStarted={measurementStarted}
         />
 
-        {/* 토글 버튼 (웹캠 박스 밖) */}
         <div className="flex justify-center gap-4 my-6">
-          <button
-            onClick={toggleHourly}
-            className={`px-8 py-3 border-2 rounded-[10px] text-base font-semibold cursor-pointer transition-all duration-300 ${
-              isHourlyVisible
-                ? "bg-gradient-to-r from-[#F59E0B] to-[#F97316] text-white border-[#F59E0B] shadow-[0_2px_10px_rgba(245,158,11,0.3)]"
-                : "border-[#E8F5E9] bg-white text-[#4F4F4F] hover:border-[#7BC67E] hover:bg-[#F8FBF8] hover:text-[#2D5F2E]"
-            }`}
-          >
-            {isHourlyVisible ? "⏱️ 시간별 평균 숨기기" : "⏱️ 시간별 평균 보기"}
-          </button>
-          <button
-            onClick={toggleAvg}
-            className={`px-8 py-3 border-2 rounded-[10px] text-base font-semibold cursor-pointer transition-all duration-300 ${
-              isTodayAvgVisible
-                ? "bg-gradient-to-r from-[#F59E0B] to-[#F97316] text-white border-[#F59E0B] shadow-[0_2px_10px_rgba(245,158,11,0.3)]"
-                : "border-[#E8F5E9] bg-white text-[#4F4F4F] hover:border-[#7BC67E] hover:bg-[#F8FBF8] hover:text-[#2D5F2E]"
-            }`}
-          >
-            {isTodayAvgVisible ? "📊 지금까지 평균 숨기기" : "📊 지금까지 평균 계산"}
-          </button>
+          <ToggleButton
+            handleButtonClick={toggleHourly}
+            isVisible={isHourlyVisible}
+            prevStatus="⏱️ 시간별 평균 보기"
+            postStatus="⏱️ 시간별 평균 숨기기"
+          />
+          <ToggleButton
+            handleButtonClick={toggleAvg}
+            isVisible={isTodayAvgVisible}
+            prevStatus="📊 지금까지 평균 계산"
+            postStatus="📊 지금까지 평균 숨기기"
+          />
         </div>
 
         {/* 통계 섹션 - 시간별 평균 */}
