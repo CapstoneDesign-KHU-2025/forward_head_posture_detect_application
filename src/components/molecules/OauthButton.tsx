@@ -17,7 +17,7 @@ export default function OauthButton({ provider }: OauthButtonProps) {
   };
 
   const styleClass =
-    provider === "google"
+    provider === "github"
       ? "w-full flex items-center justify-center gap-3 p-4 border-2 border-[#E0E0E0] rounded-[10px] bg-white text-[#1A1A1A] text-base font-semibold transition-all duration-300 hover:border-[#24292e] hover:bg-[#F8FBF8] hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(0,0,0,0.1)]"
       : "w-full flex items-center justify-center gap-3 p-4 border-2 border-[#E0E0E0] rounded-[10px] bg-white text-[#1A1A1A] text-base font-semibold transition-all duration-300 hover:border-[#4285F4] hover:bg-[#F8FBF8] hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(0,0,0,0.1)]";
   const svgLink =
