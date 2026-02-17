@@ -109,7 +109,7 @@ export default function LandingTemplate() {
 
           <div className="grid md:grid-cols-3 gap-8">
             {introducingCards.map((card) => (
-              <IntroducingCard icon={card.icon} title={card.title} description={card.description} />
+              <IntroducingCard icon={card.icon} title={card.title} description={card.description} key={card.id} />
             ))}
           </div>
         </div>
