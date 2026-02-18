@@ -1,8 +1,8 @@
 "use client";
 
-import * as React from "react";
 import { Button } from "@/components/atoms/Button";
 import { useRouter } from "next/navigation";
+import { useCallback } from "react";
 
 type WelcomeHeroProps = {
   userName?: string;
@@ -12,7 +12,7 @@ type WelcomeHeroProps = {
 
 export default function WelcomeHero({ userName = "사용자", onPrimaryAction, className }: WelcomeHeroProps) {
   const router = useRouter();
-  const handlePrimaryAction = React.useCallback(() => {
+  const handlePrimaryAction = useCallback(() => {
     if (onPrimaryAction) {
       onPrimaryAction();
       return;
@@ -38,7 +38,7 @@ export default function WelcomeHero({ userName = "사용자", onPrimaryAction, c
         <p className="text-[1.1rem] text-[#4F4F4F] mb-6">거북거북!</p>
 
         <div className="flex justify-center">
-          <Button onClick={handlePrimaryAction} />
+          <Button onClick={handlePrimaryAction}>측정하기</Button>
         </div>
       </div>
     </section>

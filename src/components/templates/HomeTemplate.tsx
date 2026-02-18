@@ -1,4 +1,3 @@
-import * as React from "react";
 import WelcomeHero from "@/components/organisms/home/WelcomeHero";
 import StatCard from "@/components/molecules/StatCard";
 import ChallengePanel from "@/components/organisms/home/ChallengePanel";

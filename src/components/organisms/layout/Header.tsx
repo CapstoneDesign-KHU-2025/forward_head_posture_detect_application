@@ -1,6 +1,5 @@
 "use client";
 
-import * as React from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/atoms/Button";
@@ -8,6 +7,7 @@ import { Home, Play } from "lucide-react";
 import { useSession, signIn } from "next-auth/react";
 import UserMenuDropdown from "@/components/molecules/UserMenuDropdown";
 import AvatarLogo from "@/components/molecules/AvatarLogo";
+import { useRef, useState } from "react";
 type HeaderProps = {
   user?: { name: string; avatarSrc?: string } | null;
   className?: string;
@@ -15,8 +15,8 @@ type HeaderProps = {
 export default function Header({ user: initialUser, className }: HeaderProps) {
   const pathname = usePathname();
   const { data: session, status } = useSession();
-  const [isUserMenuOpen, setIsUserMenuOpen] = React.useState(false);
-  const userMenuAnchorRef = React.useRef<HTMLDivElement>(null);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const userMenuAnchorRef = useRef<HTMLDivElement>(null);
 
   const navItems = [
     { label: "Home", href: "/", icon: <Home size={18} /> },

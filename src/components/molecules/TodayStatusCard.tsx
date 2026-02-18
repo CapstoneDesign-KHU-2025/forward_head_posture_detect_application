@@ -1,7 +1,5 @@
 "use client";
 
-import * as React from "react";
-
 type StatusType = "excellent" | "normal" | "bad" | "empty";
 
 type TodayStatusCardProps = {
@@ -110,8 +108,13 @@ export default function TodayStatusCard({ warningCount, isNewUser }: TodayStatus
     >
       <style jsx>{`
         @keyframes bounce {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-10px); }
+          0%,
+          100% {
+            transform: translateY(0);
+          }
+          50% {
+            transform: translateY(-10px);
+          }
         }
         .status-emoji {
           font-size: ${statusInfo.statusClass === "empty" ? "3.5rem" : "4rem"};
@@ -144,4 +147,3 @@ export default function TodayStatusCard({ warningCount, isNewUser }: TodayStatus
     </div>
   );
 }
-

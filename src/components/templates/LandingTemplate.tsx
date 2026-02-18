@@ -1,6 +1,5 @@
 "use client";
 
-import * as React from "react";
 import { Button } from "@/components/atoms/Button";
 import { signIn } from "next-auth/react";
 import TurtleLogo from "../atoms/TurtleLogo";

@@ -1,6 +1,5 @@
 "use client";
-
-import * as React from "react";
+import { cloneElement } from "react";
 import { cn } from "@/utils/cn";
 
 type IconProps = {
@@ -20,7 +19,7 @@ export function Icon({ children, size = "md", className }: IconProps) {
 
   return (
     <span className={cn("inline-flex items-center", className)}>
-      {React.cloneElement(children, { className: childClass })}
+      {cloneElement(children, { className: childClass })}
     </span>
   );
 }

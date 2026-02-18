@@ -123,7 +123,7 @@ export default function Estimate() {
             measurementStarted={measurementStarted}
           />
         </AsyncBoundary>
-
+        {error && <ErrorBanner error={error} />}
         <div className="flex justify-center gap-4 my-6">
           <ToggleButton
             handleButtonClick={toggleHourly}
@@ -179,8 +179,6 @@ export default function Estimate() {
             </div>
           </div>
         )}
-
-        {error && <ErrorBanner error={error} />}
       </div>
     </div>
   );

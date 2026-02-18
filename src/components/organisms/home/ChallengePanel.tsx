@@ -1,8 +1,8 @@
 // src/components/organisms/home/ChallengePanel.tsx
 "use client";
 
-import * as React from "react";
 import dynamic from "next/dynamic";
+import { useEffect, useState } from "react";
 
 // 3DModel은 클라이언트 전용이므로 ssr: false
 const ThreeDModel = dynamic(() => import("@/components/molecules/3DModel"), {
@@ -31,10 +31,10 @@ export default function ChallengePanel({
   description = "3D 모델",
   illustration,
 }: ChallengePanelProps) {
-  const [characterId, setCharacterId] = React.useState<string>("remy");
+  const [characterId, setCharacterId] = useState<string>("remy");
 
   // 컴포넌트 마운트 시 선택한 캐릭터 읽기
-  React.useEffect(() => {
+  useEffect(() => {
     setCharacterId(getSelectedCharacter());
 
     // localStorage 변경 감지 (다른 탭이나 페이지에서 변경된 경우)
