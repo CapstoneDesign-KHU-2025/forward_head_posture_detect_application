@@ -13,6 +13,8 @@ import { Button } from "@/components/atoms/Button";
 import EstimatePanel from "@/components/molecules/EstimatePanel";
 import ErrorBanner from "@/components/atoms/ErrorBanner";
 import ToggleButton from "@/components/molecules/ToggleButton";
+import AsyncBoundary from "@/components/common/AsyncBoundary";
+import LoadingSkeleton from "@/components/common/LoadingSkeleton";
 
 export default function Estimate() {
   const { data: session } = useSession();
@@ -110,15 +112,17 @@ export default function Estimate() {
           </Button>
         </div>
 
-        <EstimatePanel
-          bannerType={bannerType}
-          bannerMessage={bannerMessage}
-          videoRef={videoRef}
-          canvasRef={canvasRef}
-          showMeasurementStartedToast={showMeasurementStartedToast}
-          countdownRemain={countdownRemain}
-          measurementStarted={measurementStarted}
-        />
+        <AsyncBoundary suspenseFallback={<LoadingSkeleton />}>
+          <EstimatePanel
+            bannerType={bannerType}
+            bannerMessage={bannerMessage}
+            videoRef={videoRef}
+            canvasRef={canvasRef}
+            showMeasurementStartedToast={showMeasurementStartedToast}
+            countdownRemain={countdownRemain}
+            measurementStarted={measurementStarted}
+          />
+        </AsyncBoundary>
 
         <div className="flex justify-center gap-4 my-6">
           <ToggleButton
