@@ -43,7 +43,7 @@ export default function HomeTemplate({
 }: HomeTemplateProps) {
   // 측정 시간 KPI 찾기
   const measureTimeKpi = kpis?.find(
-    (kpi) => kpi.label === "측정 시간" || (typeof kpi.label === "string" && kpi.label.includes("측정 시간"))
+    (kpi) => kpi.label === "측정 시간" || (typeof kpi.label === "string" && kpi.label.includes("측정 시간")),
   );
 
   return (
