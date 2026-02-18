@@ -9,6 +9,7 @@ import { useSession } from "next-auth/react";
 import { getTodayCount, getTodayMeasuredSeconds } from "@/lib/postureLocal";
 
 import { computeImprovementPercent } from "@/utils/computeImprovementPercent";
+import ErrorBanner from "@/components/atoms/ErrorBanner";
 
 type HomeData = {
   user: { name: string; avgAng: number; avatarSrc?: string } | null;
@@ -191,16 +192,8 @@ export default function Page() {
     },
   };
 
-  // 에러 표시(필요하면 따로 UI로 빼도 됨)
   if (error) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="rounded-lg bg-red-50 px-6 py-4 text-red-700 shadow">
-          <p className="font-semibold">홈 데이터를 불러오지 못했어요 😥</p>
-          <p className="text-sm mt-1">{error}</p>
-        </div>
-      </div>
-    );
+    return <ErrorBanner error={error} />;
   }
 
   // 경고 횟수 (오늘 거북목 경고 횟수)
