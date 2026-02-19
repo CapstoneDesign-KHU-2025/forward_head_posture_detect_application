@@ -1,7 +1,7 @@
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { getDailySummaryAction } from "./actions/getDailySummaryAction";
-import HomeClient from "@/components/templates/HomeClient";
+import HomeClient, { WeeklySummaryData } from "@/components/templates/HomeClient";
 
 export default async function Page() {
   const session = await auth();
@@ -10,15 +10,16 @@ export default async function Page() {
     return redirect("/landing");
   }
   const userId = session.user.id as string;
-  const res = await getDailySummaryAction(null, { userId: userId });
-  let weeklyData = null;
-  if (!res.ok || !res.data) {
-    return (
-      <HomeClient
-        weeklyData={null}
-        user={{ id: userId, name: session.user.name ?? "거북거북", image: session.user.image ?? undefined }}
-      />
-    );
+  const result = await getDailySummaryAction(null, { userId: userId });
+  let weeklyData: WeeklySummaryData | null = null;
+
+  if (result.ok && result.data) {
+    try {
+      weeklyData = typeof result.data === "string" ? JSON.parse(result.data) : result.data;
+    } catch (e) {
+      console.error("Failed to parse weekly summary data:", e);
+      weeklyData = null;
+    }
   }
   return (
     <HomeClient

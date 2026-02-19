@@ -21,7 +21,8 @@ export default function Estimate() {
   const userId = (session?.user as any)?.id as string;
   const [_dailySumState, dailySumAction] = useActionState(postDailySummaryAction, null);
   const [stopEstimating, setStopEstimating] = useState(true);
-
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [isInitial, setIsInitial] = useState(true);
   const {
     videoRef,
     canvasRef,
@@ -33,7 +34,7 @@ export default function Estimate() {
     statusBannerMessage,
     isTurtle,
     angle,
-  } = useTurtleNeckMeasurement({ userId, stopEstimating });
+  } = useTurtleNeckMeasurement({ userId, stopEstimating, isInitial });
 
   const { toggleHourly, isHourlyVisible, toggleAvg, isTodayAvgVisible, hourlyList, todayAvg } = useTodayStatus(userId);
 
@@ -48,8 +49,11 @@ export default function Estimate() {
 
   // "오늘의 측정 중단하기" 버튼: IndexedDB -> DailyPostureSummary POST
   const handleStopEstimating = async (forced?: boolean) => {
+    setIsInitial(false);
+    if (isProcessing) return;
     // forced: 비정상적인 측정 종료 여부
     try {
+      setIsProcessing(true);
       if (!stopEstimating) {
         await storeMeasurementAndAccumulate({
           userId,
@@ -92,6 +96,7 @@ export default function Estimate() {
       if (!forced) {
         setStopEstimating((prev) => !prev);
       }
+      setIsProcessing(false);
     }
   };
 
