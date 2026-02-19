@@ -34,24 +34,18 @@ export default function CharacterSelectionPage() {
 
   const handleConfirm = () => {
     if (selectedCharacter) {
-      // 선택된 캐릭터 저장 (나중에 백엔드로 전송)
       if (typeof window !== "undefined") {
         localStorage.setItem("selectedCharacter", selectedCharacter);
-        window.location.href = "/";
-      } else {
-        router.push("/");
       }
+      router.push("/");
     }
   };
 
   const handleSkip = () => {
-    // 기본 캐릭터 설정
     if (typeof window !== "undefined") {
       localStorage.setItem("selectedCharacter", "remy");
-      window.location.href = "/";
-    } else {
-      router.push("/");
     }
+    router.push("/");
   };
 
   useEffect(() => {
