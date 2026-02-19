@@ -69,7 +69,6 @@ export default function HomeClient({ weeklyData, user }: HomeClientProps) {
 
   const weeklyAvg = weeklyData?.weightedAvg ?? null;
   const goodDays = weeklyData?.goodDays ?? 0;
-  console.log(weeklyAvg, goodDays, weeklyData);
 
   const [isNewUser, setIsNewUser] = useState<boolean>(() => {
     if (typeof window === "undefined") return false;
