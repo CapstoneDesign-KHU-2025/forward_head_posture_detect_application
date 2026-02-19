@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/db";
 import { NextResponse } from "next/server";
+import { auth } from "@/auth";
 export const runtime = "nodejs";
 
 function json(data: unknown, status = 200) {
@@ -11,33 +12,40 @@ function json(data: unknown, status = 200) {
 
 export async function GET() {
   try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return json({ error: "Unauthorized" }, 401);
+    }
+
     const data = await prisma.postureSample.findMany({
+      where: { userId: session.user.id },
       orderBy: { ts: "desc" },
       take: 100,
     });
-    return json(data, 200); // ← BigInt-safe
-  } catch (error: any) {
-    console.error("[GET /api/postures] error:", {
-      message: error?.message,
-      code: error?.code,
-      meta: error?.meta,
-    });
+    return json(data, 200);
+  } catch (error) {
+    console.error("[GET /api/postures] error:", error);
     return json({ error: "Failed to fetch posture samples." }, 500);
   }
 }
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json();
-    const { userId, ts, angleDeg, isTurtle, hasPose, sessionId, sampleGapS } = body;
+    const session = await auth();
+    if (!session?.user?.id) {
+      return json({ error: "Unauthorized" }, 401);
+    }
 
-    if (!userId || typeof angleDeg !== "number" || typeof isTurtle !== "boolean") {
-      return json({ error: "Invalid input: userId, angleDeg, and isTurtle are required." }, 400);
+    const body = await req.json();
+    const { ts, angleDeg, isTurtle, hasPose, sessionId, sampleGapS } = body;
+
+    if (typeof angleDeg !== "number" || typeof isTurtle !== "boolean") {
+      return json({ error: "Invalid input: angleDeg and isTurtle are required." }, 400);
     }
 
     const newSample = await prisma.postureSample.create({
       data: {
-        userId,
+        userId: session.user.id,
         ts: ts ? new Date(ts) : new Date(),
         angleDeg,
         isTurtle,
@@ -48,12 +56,8 @@ export async function POST(req: Request) {
     });
 
     return json(newSample, 201);
-  } catch (error: any) {
-    console.error("[POST /api/postures] error:", {
-      message: error?.message,
-      code: error?.code,
-      meta: error?.meta,
-    });
+  } catch (error) {
+    console.error("[POST /api/postures] error:", error);
     return json({ error: "Failed to create posture sample." }, 500);
   }
 }

@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { createISO } from "@/utils/createISO";
+import { auth } from "@/auth";
+
 type rType = {
   count: number;
   id: bigint;
@@ -31,15 +33,21 @@ const GOOD_DAY_MAX_WARNINGS = 10;
 // { userId, dateISO("YYYY-MM-DD"), sumWeighted, weightSeconds, count }
 export async function POST(req: Request) {
   try {
-    const { userId, dateISO, sumWeighted, weightSeconds, count } = await req.json();
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
-    if (!userId || !dateISO) {
-      return NextResponse.json({ error: "userId, dateISO are required." }, { status: 400 });
+    const { dateISO, sumWeighted, weightSeconds, count } = await req.json();
+
+    if (!dateISO) {
+      return NextResponse.json({ error: "dateISO is required." }, { status: 400 });
     }
     if (typeof sumWeighted !== "number" || typeof weightSeconds !== "number" || weightSeconds <= 0) {
       return NextResponse.json({ error: "Invalid sums/weights." }, { status: 400 });
     }
 
+    const userId = session.user.id;
     const avgAngle = sumWeighted / weightSeconds;
     // Prisma @db.Date 이므로 자정으로만 저장되어도 OK
     const date = new Date(dateISO); // "YYYY-MM-DD"
@@ -78,22 +86,26 @@ export async function POST(req: Request) {
       id: Number(row.id), // BigInt → number
     };
     return NextResponse.json(safeRow, { status: 200 });
-  } catch (e: any) {
+  } catch (e) {
     console.error("[POST /api/summaries/daily] error:", e);
-    return NextResponse.json({ error: e.message }, { status: 500 });
+    return NextResponse.json({ error: "Failed to save daily summary." }, { status: 500 });
   }
 }
 export async function GET(req: Request) {
   try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const { searchParams } = new URL(req.url);
-    const userId = searchParams.get("userId");
+    const userId = session.user.id;
     const daysParam = searchParams.get("days");
-    if (!userId) return NextResponse.json({ error: "userId required" }, { status: 400 });
 
     const dateISO = createISO();
     const today0 = new Date(dateISO);
 
-    // ✅ days가 있으면 weekly 모드
+    // days가 있으면 weekly 모드
     if (daysParam) {
       const days = Math.max(1, Number(daysParam) || 7);
       const since = new Date(today0);
@@ -114,7 +126,7 @@ export async function GET(req: Request) {
       return NextResponse.json({ mode: "weekly", days, weightedAvg, safeRows, goodDays }, { status: 200 });
     }
 
-    // ✅ days 없으면 daily 모드
+    // days 없으면 daily 모드
     const row = await prisma.dailyPostureSummary.findUnique({
       where: { userId_date: { userId, date: today0 } },
     });
@@ -128,9 +140,9 @@ export async function GET(req: Request) {
       { mode: "today", todayAvg: safeRow?.avgAngle ?? null, safeRow, goodDays: safeRow?.goodDay ?? 0 },
       { status: 200 }
     );
-  } catch (e: any) {
+  } catch (e) {
     console.error("[GET /api/summaries/daily]", e);
-    return NextResponse.json({ error: e.message }, { status: 500 });
+    return NextResponse.json({ error: "Failed to fetch daily summary." }, { status: 500 });
   }
 }
 export const runtime = "nodejs";
