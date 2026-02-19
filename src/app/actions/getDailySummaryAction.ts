@@ -1,6 +1,6 @@
 "use server";
 
-import { apiRequest, ApiResult } from "@/lib/api/client";
+import { apiRequest } from "@/lib/api/client";
 type getInfo = {
   userId: string;
 };
