@@ -3,7 +3,7 @@ import { prisma } from "@/lib/db";
 import { createISO } from "@/utils/createISO";
 import { auth } from "@/auth";
 
-type rType = {
+type resType = {
   count: number;
   id: bigint;
   userId: string;
@@ -15,7 +15,7 @@ type rType = {
   createdAt: Date;
   updatedAt: Date;
 };
-type rType2 = {
+type resType2 = {
   count: number;
   id: number;
   userId: string;
@@ -115,12 +115,12 @@ export async function GET(req: Request) {
         where: { userId, date: { gte: since, lte: today0 } },
         orderBy: { date: "asc" },
       });
-      const safeRows = rows.map((r: rType) => ({
+      const safeRows = rows.map((r: resType) => ({
         ...r,
         id: Number(r.id),
       }));
-      const sum = safeRows.reduce((a: number, r: rType2) => a + r.avgAngle * r.weightSeconds, 0);
-      const w = safeRows.reduce((a: number, r: rType2) => a + r.weightSeconds, 0);
+      const sum = safeRows.reduce((a: number, r: resType2) => a + r.avgAngle * r.weightSeconds, 0);
+      const w = safeRows.reduce((a: number, r: resType2) => a + r.weightSeconds, 0);
       const weightedAvg = w > 0 ? sum / w : null;
       const goodDays = safeRows.length > 0 ? safeRows[safeRows.length - 1].goodDay : 0;
       return NextResponse.json({ mode: "weekly", days, weightedAvg, safeRows, goodDays }, { status: 200 });
@@ -138,7 +138,7 @@ export async function GET(req: Request) {
       : null;
     return NextResponse.json(
       { mode: "today", todayAvg: safeRow?.avgAngle ?? null, safeRow, goodDays: safeRow?.goodDay ?? 0 },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (e) {
     console.error("[GET /api/summaries/daily]", e);
