@@ -3,6 +3,13 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum FriendRequestStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  CANCELED
+}
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -91,4 +98,36 @@ model PostureSample {
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, ts])
+}
+
+
+model FriendRequest {
+  id          String               @id  @default(cuid())
+  fromUserId  String
+  toUserId    String
+  status      FriendRequestStatus  @default(PENDING)
+  createAt    DateTime             @default(now())
+  respondedAt DateTime?
+
+  fromUser  User  @relation("FriendRequestFrom", fields: [fromUserId], references: [id], onDelete: Cascade )
+  toUser   User   @relation("FriendRequestTo", fields: [toUserId], references: [id], onDelete: Cascade)
+
+  @@unique([fromUserId, toUserId])
+  @@index([toUserId, status, createdAt])
+  @@index([fromUserId, status, createdAt])
+
+}
+
+model FriendShip {
+  id         String   @id  @default(cuid())
+  userAId    String
+  userBId    String
+  createdAt  DateTime @default(now())
+
+  userA  User   @relation("FriendshipA", fields: [userAId], references: [id], onDelete: Cascade)
+  userB  USer  @relation("FriendshipB", fields: [userBId], references: [id], onDelete: Cascade)
+
+  @@unique([userAId, userBId])
+  @@index([userAId])
+  @@index([userBId])
 }
