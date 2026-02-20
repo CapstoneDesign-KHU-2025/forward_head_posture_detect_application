@@ -6,7 +6,7 @@ export function getStatusBannerTypeCore(
   isTurtle: boolean,
   measurementStarted: boolean,
   guideColor: GuideColor,
-  guideMessage: string | null
+  guideMessage: string | null,
 ): StatusBannerType {
   if (stopEstimating) return "info";
   if (isTurtle && measurementStarted) return "warning";
@@ -17,11 +17,13 @@ export function getStatusBannerTypeCore(
 }
 
 export function getStatusBannerMessageCore(
+  isInitial: boolean,
   stopEstimating: boolean,
   isTurtle: boolean,
   measurementStarted: boolean,
-  guideMessage: string | null
+  guideMessage: string | null,
 ): string {
+  if (isInitial) return "측정을 시작해주세요!";
   if (stopEstimating) return "측정이 중단되었습니다";
   if (isTurtle && measurementStarted) return "거북목 자세입니다!";
   if (guideMessage) return guideMessage;

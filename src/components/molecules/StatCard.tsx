@@ -1,5 +1,3 @@
-import * as React from "react";
-
 type StatCardProps = {
   /** 상단 라벨 (예: '측정 시간') */
   label: React.ReactNode;

@@ -1,8 +1,8 @@
 "use client";
 
-import * as React from "react";
 import { Button } from "@/components/atoms/Button";
 import { useRouter } from "next/navigation";
+import { useCallback } from "react";
 
 type WelcomeHeroProps = {
   userName?: string;
@@ -10,13 +10,9 @@ type WelcomeHeroProps = {
   className?: string;
 };
 
-export default function WelcomeHero({
-  userName = "사용자",
-  onPrimaryAction,
-  className,
-}: WelcomeHeroProps) {
+export default function WelcomeHero({ userName = "사용자", onPrimaryAction, className }: WelcomeHeroProps) {
   const router = useRouter();
-  const handlePrimaryAction = React.useCallback(() => {
+  const handlePrimaryAction = useCallback(() => {
     if (onPrimaryAction) {
       onPrimaryAction();
       return;
@@ -31,7 +27,9 @@ export default function WelcomeHero({
         "py-12 mb-8",
         "shadow-[0_2px_20px_rgba(45,95,46,0.08)]",
         className,
-      ].filter(Boolean).join(" ")}
+      ]
+        .filter(Boolean)
+        .join(" ")}
     >
       <div className="mx-auto max-w-4xl">
         <h1 className="text-[2rem] font-bold mb-2">
@@ -40,12 +38,7 @@ export default function WelcomeHero({
         <p className="text-[1.1rem] text-[#4F4F4F] mb-6">거북거북!</p>
 
         <div className="flex justify-center">
-          <button
-            onClick={handlePrimaryAction}
-            className="bg-[#2D5F2E] text-white border-none px-12 py-4 text-[1.1rem] font-semibold rounded-xl cursor-pointer transition-all duration-300 shadow-[0_4px_15px_rgba(45,95,46,0.2)] hover:bg-[#4A9D4D] hover:-translate-y-0.5 hover:shadow-[0_6px_20px_rgba(45,95,46,0.3)]"
-          >
-            측정하기
-          </button>
+          <Button onClick={handlePrimaryAction}>측정하기</Button>
         </div>
       </div>
     </section>

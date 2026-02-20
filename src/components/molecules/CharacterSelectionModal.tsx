@@ -1,7 +1,7 @@
 "use client";
 
-import * as React from "react";
 import { Button } from "@/components/atoms/Button";
+import { useEffect, useState } from "react";
 
 type CharacterSelectionModalProps = {
   isOpen: boolean;
@@ -43,10 +43,10 @@ function getCharacterName(characterId: string): string {
 }
 
 export default function CharacterSelectionModal({ isOpen, onClose }: CharacterSelectionModalProps) {
-  const [currentCharacter, setCurrentCharacter] = React.useState<string>("remy");
-  const [selectedCharacter, setSelectedCharacter] = React.useState<string>("remy"); // 임시 선택
+  const [currentCharacter, setCurrentCharacter] = useState<string>("remy");
+  const [selectedCharacter, setSelectedCharacter] = useState<string>("remy"); // 임시 선택
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (isOpen) {
       const saved = getSelectedCharacter();
       setCurrentCharacter(saved);
@@ -73,14 +73,8 @@ export default function CharacterSelectionModal({ isOpen, onClose }: CharacterSe
   if (!isOpen) return null;
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
-      onClick={onClose}
-    >
-      <div
-        className="bg-white rounded-lg shadow-xl p-6 max-w-md w-full mx-4"
-        onClick={(e) => e.stopPropagation()}
-      >
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={onClose}>
+      <div className="bg-white rounded-lg shadow-xl p-6 max-w-md w-full mx-4" onClick={(e) => e.stopPropagation()}>
         <h2 className="text-2xl font-bold mb-4">캐릭터 변경</h2>
 
         {/* 현재 캐릭터 상태 */}
@@ -109,11 +103,7 @@ export default function CharacterSelectionModal({ isOpen, onClose }: CharacterSe
                 `}
               >
                 <div className="w-10 h-10 flex-shrink-0">
-                  <img
-                    src={character.icon}
-                    alt={character.name}
-                    className="w-full h-full object-contain"
-                  />
+                  <img src={character.icon} alt={character.name} className="w-full h-full object-contain" />
                 </div>
                 <div className="flex-1 text-left">
                   <div className="font-semibold">{character.name}</div>
@@ -140,4 +130,3 @@ export default function CharacterSelectionModal({ isOpen, onClose }: CharacterSe
     </div>
   );
 }
-

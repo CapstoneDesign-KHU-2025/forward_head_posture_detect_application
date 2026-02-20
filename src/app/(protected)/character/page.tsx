@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/atoms/Button";
+import CharacterGrid from "@/components/molecules/CharacterGrid";
 const characters = [
   {
     id: "remy",
@@ -33,24 +34,18 @@ export default function CharacterSelectionPage() {
 
   const handleConfirm = () => {
     if (selectedCharacter) {
-      // 선택된 캐릭터 저장 (나중에 백엔드로 전송)
       if (typeof window !== "undefined") {
         localStorage.setItem("selectedCharacter", selectedCharacter);
-        window.location.href = "/";
-      } else {
-        router.push("/");
       }
+      router.push("/");
     }
   };
 
   const handleSkip = () => {
-    // 기본 캐릭터 설정
     if (typeof window !== "undefined") {
       localStorage.setItem("selectedCharacter", "remy");
-      window.location.href = "/";
-    } else {
-      router.push("/");
     }
+    router.push("/");
   };
 
   useEffect(() => {
@@ -76,40 +71,17 @@ export default function CharacterSelectionPage() {
           <p className="text-[1.1rem] text-[#4F4F4F]">측정 중 화면에 표시될 캐릭터를 골라주세요</p>
         </div>
 
-        {/* 캐릭터 그리드 */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12 max-w-[900px] mx-auto">
           {characters.map((character) => (
-            <div
+            <CharacterGrid
               key={character.id}
-              onClick={() => handleCharacterSelect(character.id)}
-              className={`
-                bg-[#F8FBF8] rounded-2xl py-8 px-6 text-center cursor-pointer transition-all duration-300
-                border-[3px] border-transparent relative
-                hover:-translate-y-2 hover:shadow-[0_8px_25px_rgba(45,95,46,0.2)] hover:border-[#7BC67E]
-                ${
-                  selectedCharacter === character.id
-                    ? "bg-gradient-to-br from-[#E8F5E9] to-[#F0F9F0] border-[#4A9D4D] shadow-[0_8px_25px_rgba(74,157,77,0.3)]"
-                    : ""
-                }
-              `}
-            >
-              {selectedCharacter === character.id && (
-                <div className="absolute top-4 right-4 bg-[#4A9D4D] text-white w-[30px] h-[30px] rounded-full flex items-center justify-center font-bold text-[1.2rem]">
-                  ✓
-                </div>
-              )}
-              <div className="w-24 h-24 mx-auto mb-4">
-                <img src={character.icon} alt={character.name} className="w-full h-full object-contain" />
-              </div>
-              <div className="text-[1.2rem] font-bold text-[#2D5F2E] mb-2">{character.name}</div>
-              <div className="text-[0.9rem] text-[#4F4F4F] leading-[1.4] whitespace-pre-line">
-                {character.description}
-              </div>
-            </div>
+              characterObject={character}
+              handleGridClick={() => handleCharacterSelect(character.id)}
+              selectedCharacterId={selectedCharacter}
+            />
           ))}
         </div>
 
-        {/* 버튼 영역 */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Button
             variant="secondary"

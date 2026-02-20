@@ -1,8 +1,8 @@
 "use client";
 
-import * as React from "react";
 import { Button } from "@/components/atoms/Button";
 import { getSensitivity, setSensitivity, getSensitivityLabel, type Sensitivity } from "@/utils/sensitivity";
+import { useEffect, useState } from "react";
 
 type SensitivitySettingsModalProps = {
   isOpen: boolean;
@@ -10,10 +10,10 @@ type SensitivitySettingsModalProps = {
 };
 
 export default function SensitivitySettingsModal({ isOpen, onClose }: SensitivitySettingsModalProps) {
-  const [currentSensitivity, setCurrentSensitivity] = React.useState<Sensitivity>("normal");
-  const [selectedSensitivity, setSelectedSensitivity] = React.useState<Sensitivity>("normal"); // 임시 선택
+  const [currentSensitivity, setCurrentSensitivity] = useState<Sensitivity>("normal");
+  const [selectedSensitivity, setSelectedSensitivity] = useState<Sensitivity>("normal"); // 임시 선택
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (isOpen) {
       const saved = getSensitivity();
       setCurrentSensitivity(saved);
@@ -36,16 +36,10 @@ export default function SensitivitySettingsModal({ isOpen, onClose }: Sensitivit
   if (!isOpen) return null;
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
-      onClick={onClose}
-    >
-      <div
-        className="bg-white rounded-lg shadow-xl p-6 max-w-md w-full mx-4"
-        onClick={(e) => e.stopPropagation()}
-      >
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={onClose}>
+      <div className="bg-white rounded-lg shadow-xl p-6 max-w-md w-full mx-4" onClick={(e) => e.stopPropagation()}>
         <h2 className="text-2xl font-bold mb-4">민감도 설정</h2>
-        
+
         {/* 현재 민감도 상태 */}
         <div className="mb-6">
           <p className="text-sm text-black/60 mb-2">현재 민감도 상태</p>
@@ -95,4 +89,3 @@ export default function SensitivitySettingsModal({ isOpen, onClose }: Sensitivit
     </div>
   );
 }
-

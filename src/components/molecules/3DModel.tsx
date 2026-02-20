@@ -1,6 +1,7 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { useEffect, useRef } from "react";
+
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { FBXLoader } from "three/examples/jsm/loaders/FBXLoader.js";
 
@@ -93,7 +94,7 @@ declare global {
     setHeadLandmarks?: (arr: Landmark[]) => void;
     setHeadFromMediapipe?: (
       landmarksOrResult: PoseResult | Landmark[],
-      opts?: { useWorld?: boolean; zFlip?: boolean; scale?: number }
+      opts?: { useWorld?: boolean; zFlip?: boolean; scale?: number },
     ) => void;
     __anglePanel?: { set?: (absDeg: number, deltaDeg: number, idealDeg: number) => void };
     SAMPLE_MP?: PoseResult;
@@ -321,7 +322,7 @@ export default function ThreeDModel({ characterId = "remy", idealAng = 52, userA
         70,
         (currentContainer.clientWidth || 1) / (currentContainer.clientHeight || 1),
         0.05,
-        200
+        200,
       );
       camera.position.copy(CAMERA_UPPER_POS);
     }
@@ -349,7 +350,7 @@ export default function ThreeDModel({ characterId = "remy", idealAng = 52, userA
     function initFloor() {
       const floor = new THREE.Mesh(
         new THREE.PlaneGeometry(40, 40),
-        new THREE.MeshStandardMaterial({ color: "#e0e0e0", metalness: 0, roughness: 1 }) //바닥 색
+        new THREE.MeshStandardMaterial({ color: "#e0e0e0", metalness: 0, roughness: 1 }), //바닥 색
       );
       floor.rotation.x = -Math.PI / 2;
       floor.receiveShadow = true;
@@ -507,7 +508,7 @@ export default function ThreeDModel({ characterId = "remy", idealAng = 52, userA
           }
         },
         undefined,
-        (e) => console.error("Idle/Upper FBX load error:", e)
+        (e) => console.error("Idle/Upper FBX load error:", e),
       );
 
       // full body 모드용 Walking.fbx
@@ -522,7 +523,7 @@ export default function ThreeDModel({ characterId = "remy", idealAng = 52, userA
           object.visible = false;
         },
         undefined,
-        (e) => console.error("Walking/Full FBX load error:", e)
+        (e) => console.error("Walking/Full FBX load error:", e),
       );
     }
 
@@ -543,7 +544,7 @@ export default function ThreeDModel({ characterId = "remy", idealAng = 52, userA
       }
       const lineMaterial = new THREE.LineBasicMaterial({ color: 0x00ffe2 });
       const lineGeom = new THREE.BufferGeometry().setFromPoints(
-        new Array(POSE_CONNECTIONS.length * 2).fill(0).map(() => new THREE.Vector3())
+        new Array(POSE_CONNECTIONS.length * 2).fill(0).map(() => new THREE.Vector3()),
       );
       lineMesh = new THREE.LineSegments(lineGeom, lineMaterial);
       lineMesh.visible = false;
@@ -554,7 +555,7 @@ export default function ThreeDModel({ characterId = "remy", idealAng = 52, userA
       const guideMat = new THREE.LineBasicMaterial({ color: 0xffff00 });
       guideLine = new THREE.Line(
         new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), new THREE.Vector3()]),
-        guideMat
+        guideMat,
       );
       guideLine.visible = false;
       scene.add(guideLine);
@@ -566,7 +567,7 @@ export default function ThreeDModel({ characterId = "remy", idealAng = 52, userA
       });
       upRefLine = new THREE.Line(
         new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), new THREE.Vector3()]),
-        upRefMat
+        upRefMat,
       );
       upRefLine.visible = false;
       scene.add(upRefLine);
@@ -614,8 +615,8 @@ export default function ThreeDModel({ characterId = "remy", idealAng = 52, userA
             Math.abs(deltaDeg) >= 15
               ? "rgba(255,120,120,0.9)"
               : Math.abs(deltaDeg) >= 8
-              ? "rgba(255,200,120,0.9)"
-              : "rgba(255,255,255,0.95)";
+                ? "rgba(255,200,120,0.9)"
+                : "rgba(255,255,255,0.95)";
         },
       };
 
@@ -677,7 +678,7 @@ export default function ThreeDModel({ characterId = "remy", idealAng = 52, userA
             snapToGround: true,
             groundY: 0,
             groundPadding: 0.0,
-          }
+          },
         );
         applyVisibilityForMode(poseMode);
         rebuildLinesNow();
@@ -988,7 +989,7 @@ export default function ThreeDModel({ characterId = "remy", idealAng = 52, userA
 
       window.setHeadFromMediapipe = (
         landmarksOrResult: PoseResult | Landmark[],
-        opts: { useWorld?: boolean; zFlip?: boolean; scale?: number } = {}
+        opts: { useWorld?: boolean; zFlip?: boolean; scale?: number } = {},
       ) => {
         const { useWorld = true, zFlip = true, scale = 1 } = opts;
         let lm: Landmark[] | null = null;
@@ -1118,14 +1119,14 @@ export default function ThreeDModel({ characterId = "remy", idealAng = 52, userA
           const neckLocal = new THREE.Vector3(
             (pose[IDX.L_SHOULDER].x + pose[IDX.R_SHOULDER].x) / 2,
             (pose[IDX.L_SHOULDER].y + pose[IDX.R_SHOULDER].y) / 2 + 0.06,
-            (pose[IDX.L_SHOULDER].z + pose[IDX.R_SHOULDER].z) / 2
+            (pose[IDX.L_SHOULDER].z + pose[IDX.R_SHOULDER].z) / 2,
           );
           const headLocal = headProvider(t);
           for (let k = 0; k <= 10; k++) pose[k].copy(neckLocal).add(headLocal[k]);
           const rootLocal = new THREE.Vector3(
             (pose[IDX.L_HIP].x + pose[IDX.R_HIP].x) / 2,
             (pose[IDX.L_HIP].y + pose[IDX.R_HIP].y) / 2,
-            (pose[IDX.L_HIP].z + pose[IDX.R_HIP].z) / 2
+            (pose[IDX.L_HIP].z + pose[IDX.R_HIP].z) / 2,
           );
           for (let i = 0; i < 33; i++) {
             const pLocal = pose[i].clone();
@@ -1164,7 +1165,7 @@ export default function ThreeDModel({ characterId = "remy", idealAng = 52, userA
         const applyExtraWorldRotationFromBind = (
           bone: THREE.Bone | undefined,
           extraWorldQ: THREE.Quaternion,
-          slerp = 0.65
+          slerp = 0.65,
         ) => {
           if (!bone) return;
           const baseWorldQ = (bindWorldQ.get(bone) || new THREE.Quaternion()).clone();
@@ -1241,7 +1242,7 @@ export default function ThreeDModel({ characterId = "remy", idealAng = 52, userA
 
       updateSpriteText(
         angleSprite,
-        `${absNeckDeg.toFixed(1)}° (ideal ${IDEAL_NECK_ANGLE_DEG.toFixed(0)}°)\nΔ ${angleSmoothed!.toFixed(1)}°`
+        `${absNeckDeg.toFixed(1)}° (ideal ${IDEAL_NECK_ANGLE_DEG.toFixed(0)}°)\nΔ ${angleSmoothed!.toFixed(1)}°`,
       );
       window.__anglePanel?.set?.(absNeckDeg, deltaWorldInstant, IDEAL_NECK_ANGLE_DEG);
 
