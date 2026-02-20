@@ -2,6 +2,14 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { createISO } from "@/utils/createISO";
 import { auth } from "@/auth";
+import { z } from "zod";
+
+const summaryPostSchema = z.object({
+  dateISO: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  sumWeighted: z.number().refine(Number.isFinite, { message: "Must be a finite number" }),
+  weightSeconds: z.number().refine(n => Number.isFinite(n) && n > 0, { message: "Must be a positive finite number" }),
+  count: z.number().int().nonnegative().optional(),
+});
 
 type rType = {
   count: number;
@@ -38,15 +46,13 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { dateISO, sumWeighted, weightSeconds, count } = await req.json();
-
-    if (!dateISO) {
-      return NextResponse.json({ error: "dateISO is required." }, { status: 400 });
-    }
-    if (typeof sumWeighted !== "number" || typeof weightSeconds !== "number" || weightSeconds <= 0) {
-      return NextResponse.json({ error: "Invalid sums/weights." }, { status: 400 });
+    const body = await req.json();
+    const parsed = summaryPostSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json({ error: "Invalid input" }, { status: 400 });
     }
 
+    const { dateISO, sumWeighted, weightSeconds, count } = parsed.data;
     const userId = session.user.id;
     const avgAngle = sumWeighted / weightSeconds;
     // Prisma @db.Date 이므로 자정으로만 저장되어도 OK

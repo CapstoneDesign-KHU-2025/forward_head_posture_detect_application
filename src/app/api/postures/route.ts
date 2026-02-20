@@ -1,7 +1,17 @@
 import { prisma } from "@/lib/db";
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
+import { z } from "zod";
 export const runtime = "nodejs";
+
+const posturePostSchema = z.object({
+  ts: z.string().optional(),
+  angleDeg: z.number().refine(Number.isFinite, { message: "Must be a finite number" }),
+  isTurtle: z.boolean(),
+  hasPose: z.boolean().optional(),
+  sessionId: z.number().optional().nullable(),
+  sampleGapS: z.number().optional().nullable(),
+});
 
 function json(data: unknown, status = 200) {
   return new NextResponse(
@@ -37,11 +47,12 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const { ts, angleDeg, isTurtle, hasPose, sessionId, sampleGapS } = body;
-
-    if (typeof angleDeg !== "number" || typeof isTurtle !== "boolean") {
-      return json({ error: "Invalid input: angleDeg and isTurtle are required." }, 400);
+    const parsed = posturePostSchema.safeParse(body);
+    if (!parsed.success) {
+      return json({ error: "Invalid input" }, 400);
     }
+
+    const { ts, angleDeg, isTurtle, hasPose, sessionId, sampleGapS } = parsed.data;
 
     const newSample = await prisma.postureSample.create({
       data: {
