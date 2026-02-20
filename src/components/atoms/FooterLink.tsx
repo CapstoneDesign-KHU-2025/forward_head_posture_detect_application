@@ -1,4 +1,3 @@
-import * as React from "react";
 import Link from "next/link";
 
 type FooterLinkProps = {
@@ -8,12 +7,7 @@ type FooterLinkProps = {
   className?: string;
 };
 
-export function FooterLink({
-  href,
-  children,
-  underline = false,
-  className,
-}: FooterLinkProps) {
+export function FooterLink({ href, children, underline = false, className }: FooterLinkProps) {
   return (
     <Link
       href={href}

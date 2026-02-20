@@ -1,7 +1,5 @@
 "use client";
 
-import * as React from "react";
-
 type TitleCardProps = {
   goodDays: number; // 누적 좋은 날 (경고 10회 이하인 날)
 };

@@ -7,10 +7,12 @@ import { getTodayCount, storeMeasurementAndAccumulate } from "@/lib/postureLocal
 import { useTurtleNeckMeasurement } from "@/hooks/useTurtleNeckMeasurement";
 import { formatTime } from "@/utils/formatTime";
 import { createISO } from "@/utils/createISO";
-import { postDailySummaryAction } from "../actions/postDailySummaryAction";
+import { postDailySummaryAction } from "../../actions/postDailySummaryAction";
 import useTodayStatus from "@/hooks/useTodayStatus";
 import { Button } from "@/components/atoms/Button";
 import EstimatePanel from "@/components/molecules/EstimatePanel";
+import ErrorBanner from "@/components/atoms/ErrorBanner";
+import ToggleButton from "@/components/molecules/ToggleButton";
 import AsyncBoundary from "@/components/common/AsyncBoundary";
 import LoadingSkeleton from "@/components/common/LoadingSkeleton";
 
@@ -19,7 +21,8 @@ export default function Estimate() {
   const userId = (session?.user as any)?.id as string;
   const [_dailySumState, dailySumAction] = useActionState(postDailySummaryAction, null);
   const [stopEstimating, setStopEstimating] = useState(true);
-
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [isInitial, setIsInitial] = useState(true);
   const {
     videoRef,
     canvasRef,
@@ -31,7 +34,7 @@ export default function Estimate() {
     statusBannerMessage,
     isTurtle,
     angle,
-  } = useTurtleNeckMeasurement({ userId, stopEstimating });
+  } = useTurtleNeckMeasurement({ userId, stopEstimating, isInitial });
 
   const { toggleHourly, isHourlyVisible, toggleAvg, isTodayAvgVisible, hourlyList, todayAvg } = useTodayStatus(userId);
 
@@ -46,8 +49,11 @@ export default function Estimate() {
 
   // "오늘의 측정 중단하기" 버튼: IndexedDB -> DailyPostureSummary POST
   const handleStopEstimating = async (forced?: boolean) => {
+    setIsInitial(false);
+    if (isProcessing) return;
     // forced: 비정상적인 측정 종료 여부
     try {
+      setIsProcessing(true);
       if (!stopEstimating) {
         await storeMeasurementAndAccumulate({
           userId,
@@ -90,6 +96,7 @@ export default function Estimate() {
       if (!forced) {
         setStopEstimating((prev) => !prev);
       }
+      setIsProcessing(false);
     }
   };
 
@@ -121,29 +128,20 @@ export default function Estimate() {
             measurementStarted={measurementStarted}
           />
         </AsyncBoundary>
-
-        {/* 토글 버튼 (웹캠 박스 밖) */}
+        {error && <ErrorBanner error={error} />}
         <div className="flex justify-center gap-4 my-6">
-          <button
-            onClick={toggleHourly}
-            className={`px-8 py-3 border-2 rounded-[10px] text-base font-semibold cursor-pointer transition-all duration-300 ${
-              isHourlyVisible
-                ? "bg-gradient-to-r from-[#F59E0B] to-[#F97316] text-white border-[#F59E0B] shadow-[0_2px_10px_rgba(245,158,11,0.3)]"
-                : "border-[#E8F5E9] bg-white text-[#4F4F4F] hover:border-[#7BC67E] hover:bg-[#F8FBF8] hover:text-[#2D5F2E]"
-            }`}
-          >
-            {isHourlyVisible ? "⏱️ 시간별 평균 숨기기" : "⏱️ 시간별 평균 보기"}
-          </button>
-          <button
-            onClick={toggleAvg}
-            className={`px-8 py-3 border-2 rounded-[10px] text-base font-semibold cursor-pointer transition-all duration-300 ${
-              isTodayAvgVisible
-                ? "bg-gradient-to-r from-[#F59E0B] to-[#F97316] text-white border-[#F59E0B] shadow-[0_2px_10px_rgba(245,158,11,0.3)]"
-                : "border-[#E8F5E9] bg-white text-[#4F4F4F] hover:border-[#7BC67E] hover:bg-[#F8FBF8] hover:text-[#2D5F2E]"
-            }`}
-          >
-            {isTodayAvgVisible ? "📊 지금까지 평균 숨기기" : "📊 지금까지 평균 계산"}
-          </button>
+          <ToggleButton
+            handleButtonClick={toggleHourly}
+            isVisible={isHourlyVisible}
+            prevStatus="⏱️ 시간별 평균 보기"
+            postStatus="⏱️ 시간별 평균 숨기기"
+          />
+          <ToggleButton
+            handleButtonClick={toggleAvg}
+            isVisible={isTodayAvgVisible}
+            prevStatus="📊 지금까지 평균 계산"
+            postStatus="📊 지금까지 평균 숨기기"
+          />
         </div>
 
         {/* 통계 섹션 - 시간별 평균 */}
@@ -184,13 +182,6 @@ export default function Estimate() {
               <div className="text-[1.1rem] text-[#4F4F4F] mb-4">오늘 지금까지 평균:</div>
               <div className="text-[3rem] font-bold text-[#2D5F2E]">{todayAvg.toFixed(2)}°</div>
             </div>
-          </div>
-        )}
-
-        {/* 에러 메시지 */}
-        {error && (
-          <div className="mt-6 p-6 bg-[#FFF9E6] rounded-xl border-l-4 border-[#F59E0B]">
-            <p className="text-[#92400E] leading-relaxed">⚠️ {error}</p>
           </div>
         )}
       </div>
