@@ -463,7 +463,6 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating, isInitial }: 
     setMeasurementStarted(false);
     setCountdownRemain(null);
     setIsTurtle(false);
-    setIsInitial(true);
   };
 
   // === 상태 배너 계산 ===

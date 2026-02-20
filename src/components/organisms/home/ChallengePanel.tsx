@@ -1,12 +1,15 @@
 // src/components/organisms/home/ChallengePanel.tsx
 "use client";
 
+import AsyncBoundary from "@/components/common/AsyncBoundary";
+import LoadingSkeleton from "@/components/common/LoadingSkeleton";
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 
 // 3DModel은 클라이언트 전용이므로 ssr: false
 const ThreeDModel = dynamic(() => import("@/components/molecules/3DModel"), {
   ssr: false,
+  loading: () => <LoadingSkeleton />,
 });
 
 type ChallengePanelProps = {
@@ -75,7 +78,7 @@ export default function ChallengePanel({
       {/* 3D 모델 영역 - 기존 ThreeDModel 사용 */}
       <div className="bg-[#2C3E50] rounded-xl p-8 min-h-[500px] flex flex-col justify-between relative mb-4">
         <div className="absolute inset-0 rounded-xl overflow-hidden">
-          <ThreeDModel characterId={characterId} idealAng={idealAng} userAng={userAng ?? idealAng} />
+          <ThreeDModel characterId={characterId} idealAng={idealAng} userAng={userAng ?? idealAng} />{" "}
         </div>
       </div>
 
