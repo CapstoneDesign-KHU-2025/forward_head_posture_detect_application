@@ -1,9 +1,9 @@
 import WelcomeHero from "@/components/organisms/home/WelcomeHero";
 import StatCard from "@/components/molecules/StatCard";
-import ChallengePanel from "@/components/organisms/home/ChallengePanel";
 import TodayStatusCard from "@/components/molecules/TodayStatusCard";
 import TitleCard from "@/components/molecules/TitleCard";
 import { formatMeasuredTime } from "@/utils/formatMeasuredTime";
+import GraphicModelPanel from "@/components/organisms/home/GraphicModelPanel";
 
 type KPIItem = {
   label: string;
@@ -83,7 +83,7 @@ export default function HomeTemplate({
 
           {/* RIGHT: 측정 섹션 */}
           <div>
-            <ChallengePanel
+            <GraphicModelPanel
               userAng={user?.avgAng}
               title={challenge?.title ?? "당신의 거북목 도전기"}
               description={

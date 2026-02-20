@@ -28,7 +28,7 @@ function getSelectedCharacter(): string {
   return selected || "remy"; // 기본값: remy
 }
 
-export default function ChallengePanel({
+export default function GraphicModelPanel({
   userAng,
   title = "당신의 거북목 도전기",
   description = "3D 모델",
