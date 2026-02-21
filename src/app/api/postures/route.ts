@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/db";
 import { auth } from "@/auth";
-import { json, withApi } from "@/lib/api/utils";
+import { json, withApi, withApiReq } from "@/lib/api/utils";
 export const runtime = "nodejs";
 
 export const GET = withApi(
@@ -22,8 +22,8 @@ export const GET = withApi(
   },
 );
 
-export const POST(req: Request) {
-  try {
+export const POST = withApiReq(
+  async (req) => {
     const session = await auth();
     if (!session?.user?.id) {
       return json({ error: "Unauthorized" }, 401);
@@ -47,10 +47,7 @@ export const POST(req: Request) {
         sampleGapS: sampleGapS ?? null,
       },
     });
-
+ 
     return json(newSample, 201);
-  } catch (error) {
-    console.error("[POST /api/postures] error:", error);
-    return json({ error: "Failed to create posture sample." }, 500);
-  }
-}
+  }, {path: "/api/postures POST"}
+  )
