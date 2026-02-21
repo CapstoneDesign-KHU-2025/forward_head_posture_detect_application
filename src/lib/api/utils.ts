@@ -1,5 +1,6 @@
 import { Prisma } from "@prisma/client";
 import { NextResponse } from "next/server";
+import * as Sentry from "@sentry/nextjs";
 
 export type ApiErrorBody = {
   error: string;
@@ -72,6 +73,18 @@ export function apiError(error: unknown, context?: { path?: string; hint?: strin
   }
 
   if (error instanceof Error) {
+    Sentry.captureException(error, {
+      tags: {
+        api_path: context?.path || "unknown",
+        error_hint: context?.hint || "none",
+      },
+    });
+    Sentry.captureException(error, {
+      tags: {
+        api_path: context?.path || "unknown",
+        error_hint: context?.hint || "none",
+      },
+    });
     return json(
       {
         error: error.message || "Server error",
