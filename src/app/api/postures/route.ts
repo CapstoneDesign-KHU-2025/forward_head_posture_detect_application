@@ -1,14 +1,7 @@
 import { prisma } from "@/lib/db";
-import { NextResponse } from "next/server";
 import { auth } from "@/auth";
+import { json } from "@/lib/api/utils";
 export const runtime = "nodejs";
-
-function json(data: unknown, status = 200) {
-  return new NextResponse(
-    JSON.stringify(data, (_, v) => (typeof v === "bigint" ? v.toString() : v)),
-    { status, headers: { "Content-Type": "application/json" } }
-  );
-}
 
 export async function GET() {
   try {
