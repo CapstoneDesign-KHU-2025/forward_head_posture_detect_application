@@ -106,3 +106,17 @@ export function withApi<T>(
     }
   };
 }
+
+export function withApiReq(
+  handler: (req: Request, context: any) => Promise<NextResponse>,
+  contextInfo?: { path?: string; hint?: string },
+  statusFallback?: number,
+) {
+  return async (req: Request, context: any) => {
+    try {
+      return await handler(req, context);
+    } catch (e) {
+      return apiError(e, contextInfo, statusFallback);
+    }
+  };
+}
