@@ -1,23 +1,21 @@
 "use server";
-import { apiRequest } from "@/lib/api/client";
-import { Period, TestInfo } from "../test/page";
 
-type postData = {
-  savedAt: string;
-  videoDuration: number | null;
-  testInfo: TestInfo;
-  turtleNeckPeriods: Period[];
-  csv: string;
-};
-export default async function postPostureSessionAction(_prevState: any, data: postData) {
-  const result = await apiRequest<string>({
-    requestPath: "posture-sessions",
-    init: {
-      method: "POST",
-      body: data,
-    },
-    tags: ["posture_session"],
-  });
+import { createPostureSample } from "@/services/posture.service";
+import * as Sentry from "@sentry/nextjs";
+type ApiResult<T> = { ok: true; data: T } | { ok: false; message: string };
 
-  return result;
+export async function postPostureSessionAction(data: any): Promise<ApiResult<any>> {
+  try {
+    const result = await createPostureSample(data);
+
+    return { ok: true, data: result };
+  } catch (error: any) {
+    console.error("[Action Error]", error);
+    Sentry.captureException(error);
+
+    return {
+      ok: false,
+      message: error.message || "error occurs during server action",
+    };
+  }
 }
