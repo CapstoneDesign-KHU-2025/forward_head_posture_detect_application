@@ -92,3 +92,17 @@ export function apiError(error: unknown, context?: { path?: string; hint?: strin
     statusFallback,
   );
 }
+
+export function withApi<T>(
+  handler: () => Promise<NextResponse>,
+  context?: { path?: string; hint?: string },
+  statusFallback?: number,
+) {
+  return async () => {
+    try {
+      return await handler();
+    } catch (e) {
+      return apiError(e, context, statusFallback);
+    }
+  };
+}
