@@ -1,6 +1,5 @@
 import { Prisma } from "@prisma/client";
 import { NextResponse } from "next/server";
-import { DetachedBindMode } from "three";
 
 export type ApiErrorBody = {
   error: string;

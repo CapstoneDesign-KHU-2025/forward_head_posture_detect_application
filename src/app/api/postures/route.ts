@@ -47,7 +47,8 @@ export const POST = withApiReq(
         sampleGapS: sampleGapS ?? null,
       },
     });
- 
+
     return json(newSample, 201);
-  }, {path: "/api/postures POST"}
-  )
+  },
+  { path: "/api/postures POST" },
+);

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { createISO } from "@/utils/createISO";
 import { auth } from "@/auth";
+import { json, withApiReq } from "@/lib/api/utils";
 
 type resType = {
   count: number;
@@ -31,20 +32,20 @@ type resType2 = {
 const GOOD_DAY_MAX_WARNINGS = 10;
 // POST /api/summaries/daily
 // { userId, dateISO("YYYY-MM-DD"), sumWeighted, weightSeconds, count }
-export async function POST(req: Request) {
-  try {
+export const POST = withApiReq(
+  async (req) => {
     const session = await auth();
     if (!session?.user?.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return json({ error: "Unauthorized" }, 401);
     }
 
     const { dateISO, sumWeighted, weightSeconds, count } = await req.json();
 
     if (!dateISO) {
-      return NextResponse.json({ error: "dateISO is required." }, { status: 400 });
+      return json({ error: "dateISO is required." }, 400);
     }
     if (typeof sumWeighted !== "number" || typeof weightSeconds !== "number" || weightSeconds <= 0) {
-      return NextResponse.json({ error: "Invalid sums/weights." }, { status: 400 });
+      return json({ error: "Invalid sums/weights." }, 400);
     }
 
     const userId = session.user.id;
@@ -86,16 +87,14 @@ export async function POST(req: Request) {
       id: Number(row.id), // BigInt → number
     };
     return NextResponse.json(safeRow, { status: 200 });
-  } catch (e) {
-    console.error("[POST /api/summaries/daily] error:", e);
-    return NextResponse.json({ error: "Failed to save daily summary." }, { status: 500 });
-  }
-}
-export async function GET(req: Request) {
-  try {
+  },
+  { path: "/api/summaries/daily POST" },
+);
+export const GET = withApiReq(
+  async (req) => {
     const session = await auth();
     if (!session?.user?.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return json({ error: "Unauthorized" }, 401);
     }
 
     const { searchParams } = new URL(req.url);
@@ -123,7 +122,7 @@ export async function GET(req: Request) {
       const w = safeRows.reduce((a: number, r: resType2) => a + r.weightSeconds, 0);
       const weightedAvg = w > 0 ? sum / w : null;
       const goodDays = safeRows.length > 0 ? safeRows[safeRows.length - 1].goodDay : 0;
-      return NextResponse.json({ mode: "weekly", days, weightedAvg, safeRows, goodDays }, { status: 200 });
+      return json({ mode: "weekly", days, weightedAvg, safeRows, goodDays }, 200);
     }
 
     // days 없으면 daily 모드
@@ -136,13 +135,8 @@ export async function GET(req: Request) {
           id: Number(row.id),
         }
       : null;
-    return NextResponse.json(
-      { mode: "today", todayAvg: safeRow?.avgAngle ?? null, safeRow, goodDays: safeRow?.goodDay ?? 0 },
-      { status: 200 },
-    );
-  } catch (e) {
-    console.error("[GET /api/summaries/daily]", e);
-    return NextResponse.json({ error: "Failed to fetch daily summary." }, { status: 500 });
-  }
-}
+    return json({ mode: "today", todayAvg: safeRow?.avgAngle ?? null, safeRow, goodDays: safeRow?.goodDay ?? 0 }, 200);
+  },
+  { path: "/api/summaries/daily GET" },
+);
 export const runtime = "nodejs";
