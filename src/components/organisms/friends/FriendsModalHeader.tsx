@@ -1,5 +1,6 @@
 "use client";
 
+import { Users } from "lucide-react";
 import { ModalTabBar } from "./ModalTabBar";
 import type { ModalTabBarProps } from "./ModalTabBar";
 import { cn } from "@/utils/cn";
@@ -23,8 +24,9 @@ export function FriendsModalHeader({
     >
       <div className="mb-5 flex items-center justify-between">
         <div>
-          <h2 className="font-extrabold text-[18px] text-white" style={{ fontFamily: "Nunito, sans-serif" }}>
-            👥 친구 관리
+          <h2 className="flex items-center gap-2 font-extrabold text-[18px] text-white" style={{ fontFamily: "Nunito, sans-serif" }}>
+            <Users size={20} className="text-white" strokeWidth={2} />
+            친구 관리
           </h2>
           <p className="mt-0.5 text-[12px] text-white/75">친구와 함께 거북목 탈출!</p>
         </div>
