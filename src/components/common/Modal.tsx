@@ -3,6 +3,13 @@
 import { useEffect } from "react";
 import { cn } from "@/utils/cn";
 
+function clearBodyScrollLock() {
+  document.body.style.removeProperty("--scrollbar-width");
+  delete document.body.dataset.modalOpen;
+  document.body.style.paddingRight = "";
+  document.body.style.overflow = "";
+}
+
 type ModalProps = {
   isOpen: boolean;
   onClose: () => void;
@@ -26,12 +33,12 @@ export function Modal({ isOpen, onClose, children, contentClassName }: ModalProp
 
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
-      document.body.style.removeProperty("--scrollbar-width");
-      delete document.body.dataset.modalOpen;
-      document.body.style.paddingRight = "";
-      document.body.style.overflow = "";
+      // body 스타일 해제는 onTransitionEnd에서 처리 (닫힘 애니메이션 완료 후)
     };
   }, [isOpen, onClose]);
+
+  // 언마운트 시 body 스타일 해제 (닫기 애니메이션 없이 컴포넌트가 사라지는 경우)
+  useEffect(() => () => clearBodyScrollLock(), []);
 
   return (
     <div
@@ -44,6 +51,15 @@ export function Modal({ isOpen, onClose, children, contentClassName }: ModalProp
         isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
       )}
       onClick={onClose}
+      onTransitionEnd={(e) => {
+        if (
+          !isOpen &&
+          e.target === e.currentTarget &&
+          e.propertyName === "opacity"
+        ) {
+          clearBodyScrollLock();
+        }
+      }}
     >
       <div
         className={cn(
