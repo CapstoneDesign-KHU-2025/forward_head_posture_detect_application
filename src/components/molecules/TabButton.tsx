@@ -14,7 +14,7 @@ export function TabButton({ isActive, badgeCount, children, className, ...props 
       type="button"
       className={cn(
         "flex flex-1 items-center justify-center gap-1.5 rounded-t-[10px] px-2 py-2.5",
-        "text-[13px] font-semibold transition-all",
+        "text-[15px] font-semibold transition-all",
         isActive
           ? "bg-white text-[#4a7c59]"
           : "bg-transparent text-white/80 hover:bg-white/15",
@@ -24,7 +24,7 @@ export function TabButton({ isActive, badgeCount, children, className, ...props 
     >
       {children}
       {badgeCount != null && badgeCount > 0 && (
-        <Badge count={badgeCount} className="h-[18px] min-w-[18px] text-[10px]" />
+        <Badge count={badgeCount} className="h-[20px] min-w-[20px]" />
       )}
     </button>
   );

@@ -52,7 +52,7 @@ export function SearchResultList({ searchResults, onSendRequest }: SearchResultL
                     <span
                       className={cn(
                         "rounded-[10px] border border-[#c2dfc9] bg-[#e8f5ec px-3.5 py-1.5",
-                        "whitespace-nowrap text-[12px] font-semibold text-[#4a7c59]"
+                        "whitespace-nowrap text-[14px] font-semibold text-[#4a7c59]"
                       )}
                     >
                       ✓ 요청됨
@@ -63,7 +63,7 @@ export function SearchResultList({ searchResults, onSendRequest }: SearchResultL
                       onClick={() => onSendRequest(u)}
                       className={cn(
                         "rounded-[10px] border-none bg-[#4a7c59] px-3.5 py-1.5",
-                        "whitespace-nowrap text-[12px] font-semibold text-white",
+                        "whitespace-nowrap text-[14px] font-semibold text-white",
                         "transition-colors hover:bg-[#3a6147]"
                       )}
                     >

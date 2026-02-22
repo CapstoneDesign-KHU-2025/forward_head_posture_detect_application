@@ -51,7 +51,7 @@ export function IncomingRequestList({ items, onAccept, onDecline }: IncomingRequ
                     onClick={() => onAccept(r.id, r.fromUser)}
                     className={cn(
                       "rounded-[10px] border-none bg-[#4a7c59] px-3.5 py-1.5",
-                      "whitespace-nowrap text-[12px] font-semibold text-white",
+                      "whitespace-nowrap text-[14px] font-semibold text-white",
                       "transition-colors hover:bg-[#3a6147]"
                     )}
                   >
@@ -62,7 +62,7 @@ export function IncomingRequestList({ items, onAccept, onDecline }: IncomingRequ
                     onClick={() => onDecline(r.id, r.fromUser.id)}
                     className={cn(
                       "rounded-[10px] border border-[#d4ead9] bg-transparent px-2.5 py-1.5",
-                      "whitespace-nowrap text-[12px] font-semibold text-[#7a9585]",
+                      "whitespace-nowrap text-[14px] font-semibold text-[#7a9585]",
                       "transition-colors hover:border-[#ff8c8c] hover:text-[#ff8c8c]"
                     )}
                   >

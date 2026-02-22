@@ -24,11 +24,11 @@ export function FriendsModalHeader({
     >
       <div className="mb-5 flex items-center justify-between">
         <div>
-          <h2 className="flex items-center gap-2 font-extrabold text-[18px] text-white" style={{ fontFamily: "Nunito, sans-serif" }}>
-            <Users size={20} className="text-white" strokeWidth={2} />
+          <h2 className="flex items-center gap-2 font-extrabold text-[20px] text-white" style={{ fontFamily: "Nunito, sans-serif" }}>
+            <Users size={22} className="text-white" strokeWidth={2} />
             친구 관리
           </h2>
-          <p className="mt-0.5 text-[12px] text-white/75">친구와 함께 거북목 탈출!</p>
+          <p className="mt-0.5 text-[14px] text-white/75">친구와 함께 거북목 탈출!</p>
         </div>
         <button
           type="button"

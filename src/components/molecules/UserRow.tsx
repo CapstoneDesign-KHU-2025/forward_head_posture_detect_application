@@ -29,8 +29,8 @@ export function UserRow({
     >
       <UserAvatar initial={initial} bgColor={bgColor} />
       <div className="min-w-0 flex-1">
-        <div className="text-sm font-semibold text-[#2d3b35]">{name}</div>
-        <div className="text-xs text-[#7a9585]">{email}</div>
+        <div className="text-base font-semibold text-[#2d3b35]">{name}</div>
+        <div className="text-sm text-[#7a9585]">{email}</div>
       </div>
       {actions && (
         <div className="flex flex-shrink-0 items-center gap-1.5">{actions}</div>

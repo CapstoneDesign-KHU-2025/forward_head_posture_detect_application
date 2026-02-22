@@ -52,7 +52,7 @@ export function OutgoingRequestList({ items, onCancel }: OutgoingRequestListProp
                     onClick={() => onCancel(r.id, r.toUser.id, r.toUser.name)}
                     className={cn(
                       "rounded-[10px] border border-[#e4e4e4] bg-transparent px-3 py-1.5",
-                      "whitespace-nowrap text-[12px] font-semibold text-[#bbb]",
+                      "whitespace-nowrap text-[14px] font-semibold text-[#bbb]",
                       "transition-colors hover:border-[#ffb3a0] hover:bg-[#fff5f2] hover:text-[#ff8c6b]"
                     )}
                   >

@@ -45,7 +45,7 @@ export function FriendList({ friends, onDelete }: FriendListProps) {
                 title="친구 삭제"
                 className={cn(
                   "flex h-7 w-7 items-center justify-center rounded-lg",
-                  "border-none bg-transparent text-[15px] text-[#d0d0d0]",
+                  "border-none bg-transparent text-[16px] text-[#d0d0d0]",
                   "transition-colors hover:bg-[#fff0f0] hover:text-[#ff8c8c]"
                 )}
               >

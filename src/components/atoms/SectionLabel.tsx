@@ -9,7 +9,7 @@ export function SectionLabel({ children, className }: SectionLabelProps) {
   return (
     <div
       className={cn(
-        "mb-1 pt-1 text-[11px] font-bold tracking-wide text-[#aac8b2]",
+        "mb-1 pt-1 text-[13px] font-bold tracking-wide text-[#aac8b2]",
         className
       )}
     >

@@ -15,7 +15,7 @@ export function EmptyState({ icon, message, className }: EmptyStateProps) {
       )}
     >
       <div className="mb-2 text-[30px] leading-none">{icon}</div>
-      <p className="text-[13px]">{message}</p>
+      <p className="text-[15px]">{message}</p>
     </div>
   );
 }
