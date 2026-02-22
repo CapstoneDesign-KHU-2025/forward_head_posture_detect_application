@@ -11,6 +11,12 @@ export type ApiErrorBody = {
 export function orderUserPair(a: string, b: string): [string, string] {
   return a < b ? [a, b] : [b, a];
 }
+export type ActionState<T = undefined> = {
+  ok: boolean;
+  message?: string;
+  status?: number;
+  data?: T;
+} | null;
 
 export function json(data: unknown, status = 200) {
   return new NextResponse(
