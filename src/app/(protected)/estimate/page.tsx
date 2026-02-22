@@ -15,6 +15,7 @@ import ErrorBanner from "@/components/atoms/ErrorBanner";
 import ToggleButton from "@/components/molecules/ToggleButton";
 import AsyncBoundary from "@/components/common/AsyncBoundary";
 import LoadingSkeleton from "@/components/common/LoadingSkeleton";
+import { logger } from "@/lib/logger";
 
 export default function Estimate() {
   const { data: session } = useSession();
@@ -91,7 +92,7 @@ export default function Estimate() {
         // resetForNewMeasurement();
       }
     } catch (err) {
-      console.error("[handleStopEstimating] error:", err);
+      logger.error("[handleStopEstimating] error:", err);
     } finally {
       if (!forced) {
         setStopEstimating((prev) => !prev);

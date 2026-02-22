@@ -5,6 +5,7 @@ import type { PoseLandmarker } from "@mediapipe/tasks-vision";
 import { FilesetResolver } from "@mediapipe/tasks-vision";
 import isTurtleNeck from "@/utils/isTurtleNeck";
 import { Button } from "@/components/atoms/Button";
+import { logger } from "@/lib/logger";
 
 type TurtleStatus = "idle" | "good" | "turtle" | "no-pose";
 
@@ -94,7 +95,7 @@ export default function TurtleNeckUploadPage() {
       });
       setLmReady(true);
     } catch (e: any) {
-      console.error(e);
+      logger.error("Landmarker error", e);
       setLastErr(String(e?.message || e));
     }
   }
@@ -184,7 +185,7 @@ export default function TurtleNeckUploadPage() {
     try {
       result = lm.detectForVideo(v, ts);
     } catch (e: any) {
-      console.error("[detectForVideo] failed", e);
+      logger.error("[detectForVideo] failed", e);
       setLastErr(String(e?.message || e));
       rafRef.current = requestAnimationFrame(loop);
       return;
@@ -429,8 +430,7 @@ export default function TurtleNeckUploadPage() {
         `서버에 저장 완료!\nJSON: ${data.jsonPath}\nCSV: ${data.csvPath}\n(호스팅 환경에 따라 경로는 임시일 수 있어요)`,
       );
     } catch (err: any) {
-      console.error(err);
-      alert(`서버 저장 실패: ${err.message ?? String(err)}`);
+      logger.error("[TurtleNeckUploadPage]", err);
     }
   }
 

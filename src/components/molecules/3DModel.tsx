@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { FBXLoader } from "three/examples/jsm/loaders/FBXLoader.js";
+import { logger } from "@/lib/logger";
 
 /* ========= TypeScript 타입 ========= */
 type CharacterId = "Mouse" | "Remy" | "Woman";
@@ -508,7 +509,7 @@ export default function ThreeDModel({ characterId = "remy", idealAng = 52, userA
           }
         },
         undefined,
-        (e) => console.error("Idle/Upper FBX load error:", e),
+        (e) => logger.error("Idle/Upper FBX load error:", e),
       );
 
       // full body 모드용 Walking.fbx
@@ -523,7 +524,7 @@ export default function ThreeDModel({ characterId = "remy", idealAng = 52, userA
           object.visible = false;
         },
         undefined,
-        (e) => console.error("Walking/Full FBX load error:", e),
+        (e) => logger.error("Walking/Full FBX load error:", e),
       );
     }
 

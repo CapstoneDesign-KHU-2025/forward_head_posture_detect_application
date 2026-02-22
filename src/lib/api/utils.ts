@@ -1,6 +1,7 @@
 import { Prisma } from "@prisma/client";
 import { NextResponse } from "next/server";
 import * as Sentry from "@sentry/nextjs";
+import { logger } from "../logger";
 
 export type ApiErrorBody = {
   error: string;
@@ -33,7 +34,7 @@ export function safeDetails(details: unknown) {
 export function apiError(error: unknown, context?: { path?: string; hint?: string }, statusFallback = 500) {
   const path = context?.path ? `${context.path}` : "";
   const hint = context?.hint ? `${context.hint}` : "";
-  console.error(`[API ERROR]${path}${hint}`, error);
+  logger.error(`[API ERROR]${path}${hint}`, error);
 
   if (error instanceof Prisma.PrismaClientKnownRequestError) {
     if (error.code === "P2002") {
