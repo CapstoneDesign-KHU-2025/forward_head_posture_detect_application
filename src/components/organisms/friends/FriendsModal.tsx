@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { Modal } from "@/components/common/Modal";
 import { Toast } from "@/components/common/Toast";
 import { FriendsModalHeader } from "./FriendsModalHeader";
 import { SearchResultList } from "./SearchResultList";
@@ -8,7 +9,6 @@ import { IncomingRequestList } from "./IncomingRequestList";
 import { OutgoingRequestList } from "./OutgoingRequestList";
 import { FriendList } from "./FriendList";
 import { useFriendsData } from "@/hooks/useFriendsData";
-import { cn } from "@/utils/cn";
 
 type TabId = "search" | "requests" | "friends";
 
@@ -41,41 +41,9 @@ export function FriendsModal({ isOpen, onClose, friendsData: externalData }: Fri
     isToastVisible,
   } = data;
 
-  useEffect(() => {
-    if (!isOpen) return;
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
-    document.addEventListener("keydown", handleKeyDown);
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-      document.body.style.overflow = "";
-    };
-  }, [isOpen, onClose]);
-
   return (
     <>
-      <div
-        role="dialog"
-        aria-modal="true"
-        aria-hidden={!isOpen}
-        className={cn(
-          "fixed inset-0 z-[100] flex items-center justify-center p-4",
-          "bg-black/40 transition-opacity duration-200",
-          isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
-        )}
-        onClick={onClose}
-      >
-        <div
-          className={cn(
-            "flex h-[500px] w-full max-w-[480px] flex-col overflow-hidden",
-            "rounded-2xl bg-white shadow-2xl",
-            "transform transition-all duration-200",
-            isOpen ? "scale-100 translate-y-0" : "scale-95 translate-y-2"
-          )}
-          onClick={(e) => e.stopPropagation()}
-        >
+      <Modal isOpen={isOpen} onClose={onClose} contentClassName="h-[500px] max-w-[480px]">
         <FriendsModalHeader
           activeTab={activeTab}
           incomingCount={incomingCount}
@@ -106,8 +74,7 @@ export function FriendsModal({ isOpen, onClose, friendsData: externalData }: Fri
             )}
           </div>
         )}
-        </div>
-      </div>
+      </Modal>
 
       <Toast message={toastMessage} isVisible={isToastVisible} />
     </>

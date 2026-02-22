@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/atoms/Button";
+import { Modal } from "@/components/common/Modal";
 import { useEffect, useState } from "react";
 
 type CharacterSelectionModalProps = {
@@ -70,11 +71,8 @@ export default function CharacterSelectionModal({ isOpen, onClose }: CharacterSe
     onClose(); // 모달 닫기
   };
 
-  if (!isOpen) return null;
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={onClose}>
-      <div className="bg-white rounded-lg shadow-xl p-6 max-w-md w-full mx-4" onClick={(e) => e.stopPropagation()}>
+    <Modal isOpen={isOpen} onClose={onClose} contentClassName="max-w-md w-full p-6">
         <h2 className="text-2xl font-bold mb-4">캐릭터 변경</h2>
 
         {/* 현재 캐릭터 상태 */}
@@ -126,7 +124,6 @@ export default function CharacterSelectionModal({ isOpen, onClose }: CharacterSe
             확인
           </Button>
         </div>
-      </div>
-    </div>
+    </Modal>
   );
 }
