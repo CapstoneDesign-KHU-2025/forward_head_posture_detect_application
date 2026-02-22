@@ -138,3 +138,42 @@ export function withApiReq(
     }
   };
 }
+export const SERVER_MESSAGES = {
+  AUTH_REQUIRED: {
+    ko: "앗! 로그인이 필요한 서비스예요. 로그인을 먼저 해 주시겠어요? 🔑",
+    en: "Oops! You need to log in first. Could you sign in for us? 🔑",
+  },
+
+  INVALID_INPUT: {
+    ko: "음... 입력하신 정보 중에 빠진 게 있거나 잘못된 정보인가 봐요! 다시 한번 확인해 주세요 🧐",
+    en: "Hmm... something's missing or wrong! Could you double-check? 🧐",
+  },
+  SYSTEM_MESSAGES: {
+    ko: "서버가 응답을 받지 않네요! 저희에게 현상을 신고해주시면 신속히 고쳐드릴게요 🙊",
+    en: "Server is not answering! Could you report us this situation? We are going to solve it soon 🙊",
+  },
+
+  STALE_REQUEST: {
+    ko: "앗, 상태가 바뀌었나 봐요! 새로고침 후 다시 확인해 볼까요? 🔄",
+    en: "Oops! It looks like this request was already handled or is no longer available. Let's refresh and check again! 🔄",
+  },
+
+  FRIEND_NOT_FOUND: {
+    ko: "아직 저희 서비스를 이용하지 않는 친구 같아요. 이 기회에 초대해 보는 건 어떨까요? 💌",
+    en: "It looks like your friend hasn't joined us yet. Why not invite them? 💌",
+  },
+
+  FETCH_FAILED: {
+    ko: "데이터를 불러오는 중에 살짝 길을 잃었어요! 잠시 후 다시 시도해 주시겠어요? 📍",
+    en: "We lost our way while fetching data! Could you try again in a bit? 📍",
+  },
+
+  REQUEST_FAILED: {
+    ko: "요청하신 작업을 처리하지 못했어요. 다시 한번만 눌러주세요! 🔄",
+    en: "We couldn't finish your request. Give it one more try! 🔄",
+  },
+  INTERNAL_SERVER_ERROR: {
+    ko: "죄송해요, 서버가 잠시 쉬고 싶나 봐요. 얼른 깨워놓을게요! 조금만 기다려 주세요 💤",
+    en: "Sorry, the server is taking a quick nap. We'll wake it up shortly! 💤",
+  },
+};

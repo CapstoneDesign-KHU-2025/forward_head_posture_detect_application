@@ -3,7 +3,7 @@
 import { auth } from "@/auth";
 import { z } from "zod";
 import { getWeeklySummary, upsertDailySummary } from "@/services/summary.service";
-import type { ActionState } from "@/lib/api/utils";
+import { SERVER_MESSAGES, type ActionState } from "@/lib/api/utils";
 import { revalidateTag } from "next/cache";
 
 // GET
@@ -16,12 +16,12 @@ export type GetDailySummaryInput = z.infer<typeof GetDailySummarySchema>;
 export async function getDailySummaryAction(_prevState: ActionState<unknown>, data: GetDailySummaryInput) {
   const session = await auth();
   if (!session?.user?.id) {
-    return { ok: false, status: 401, message: "unauthorized" } as const;
+    return { ok: false, status: 401, message: SERVER_MESSAGES.AUTH_REQUIRED } as const;
   }
 
   const parsed = GetDailySummarySchema.safeParse(data);
   if (!parsed.success) {
-    return { ok: false, status: 400, message: "wrong date rage" } as const;
+    return { ok: false, status: 400, message: SERVER_MESSAGES.REQUEST_FAILED } as const;
   }
 
   try {
@@ -30,7 +30,7 @@ export async function getDailySummaryAction(_prevState: ActionState<unknown>, da
     return { ok: true, data: result } as const;
   } catch (error: unknown) {
     console.error("[getDailySummaryAction] Error:", error);
-    return { ok: false, status: 500, message: "server error" } as const;
+    return { ok: false, status: 500, message: SERVER_MESSAGES.INTERNAL_SERVER_ERROR } as const;
   }
 }
 
@@ -47,12 +47,12 @@ export type PostDailySummaryInput = z.infer<typeof PostDailySummarySchema>;
 export async function postDailySummaryAction(_prevState: ActionState<unknown>, data: PostDailySummaryInput) {
   const session = await auth();
   if (!session?.user?.id) {
-    return { ok: false, status: 401, message: "unauthorized" } as const;
+    return { ok: false, status: 401, message: SERVER_MESSAGES.AUTH_REQUIRED } as const;
   }
 
   const parsed = PostDailySummarySchema.safeParse(data);
   if (!parsed.success) {
-    return { ok: false, status: 400, message: "wrong data" } as const;
+    return { ok: false, status: 400, message: SERVER_MESSAGES.SYSTEM_MESSAGES } as const;
   }
 
   try {
@@ -65,6 +65,6 @@ export async function postDailySummaryAction(_prevState: ActionState<unknown>, d
     return { ok: true, data: result } as const;
   } catch (error: unknown) {
     console.error("[postDailySummaryAction] Error:", error);
-    return { ok: false, status: 500, message: "server error" } as const;
+    return { ok: false, status: 500, message: SERVER_MESSAGES.INTERNAL_SERVER_ERROR } as const;
   }
 }
