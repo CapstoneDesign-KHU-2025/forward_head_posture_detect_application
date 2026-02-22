@@ -17,20 +17,17 @@ export async function getDailySummaryAction(_prevState: ActionState<any>, data: 
     return { ok: false, status: 401, message: "unauthorized" } as const;
   }
 
-  // 4. 입력값 검증
   const parsed = GetDailySummarySchema.safeParse(data);
   if (!parsed.success) {
-    return { ok: false, status: 400, message: "잘못된 입력값입니다." } as const;
+    return { ok: false, status: 400, message: "wrong date rage" } as const;
   }
 
   try {
-    // 5. 아키텍처 개선: 불필요한 HTTP 통신(apiRequest) 제거!
-    // DB와 직접 소통하는 Service 함수를 즉시 호출합니다.
     const result = await getWeeklySummary(session.user.id, parsed.data.days);
 
     return { ok: true, data: result } as const;
   } catch (error: any) {
     console.error("[getDailySummaryAction] Error:", error);
-    return { ok: false, status: 500, message: "요약 데이터를 불러오는 중 오류가 발생했습니다." } as const;
+    return { ok: false, status: 500, message: "server error" } as const;
   }
 }
