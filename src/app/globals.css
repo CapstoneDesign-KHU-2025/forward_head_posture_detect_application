@@ -25,6 +25,11 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+/* 모달 열릴 때 fixed 헤더도 함께 padding 적용 (스크롤바 영역 보정) */
+body[data-modal-open] header {
+  padding-right: var(--scrollbar-width, 0px);
+}
+
 @keyframes slideDown {
   from {
     opacity: 0;
