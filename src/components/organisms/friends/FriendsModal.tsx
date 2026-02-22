@@ -13,13 +13,19 @@ import { cn } from "@/utils/cn";
 
 type TabId = "search" | "requests" | "friends";
 
+export type FriendsModalData = ReturnType<typeof useFriendsData>;
+
 type FriendsModalProps = {
   isOpen: boolean;
   onClose: () => void;
+  friendsData?: FriendsModalData;
 };
 
-export function FriendsModal({ isOpen, onClose }: FriendsModalProps) {
+export function FriendsModal({ isOpen, onClose, friendsData: externalData }: FriendsModalProps) {
   const [activeTab, setActiveTab] = useState<TabId>("search");
+
+  const internalData = useFriendsData();
+  const data = externalData ?? internalData;
 
   const {
     friends,
@@ -34,7 +40,7 @@ export function FriendsModal({ isOpen, onClose }: FriendsModalProps) {
     deleteFriend,
     toastMessage,
     isToastVisible,
-  } = useFriendsData();
+  } = data;
 
   useEffect(() => {
     if (!isOpen) return;
