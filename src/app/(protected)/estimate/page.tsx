@@ -7,7 +7,7 @@ import { getTodayCount, storeMeasurementAndAccumulate } from "@/lib/postureLocal
 import { useTurtleNeckMeasurement } from "@/hooks/useTurtleNeckMeasurement";
 import { formatTime } from "@/utils/formatTime";
 import { createISO } from "@/utils/createISO";
-import { postDailySummaryAction } from "../../actions/postDailySummaryAction";
+import { postDailySummaryAction } from "@/app/actions/summaryActions";
 import useTodayStatus from "@/hooks/useTodayStatus";
 import { Button } from "@/components/atoms/Button";
 import EstimatePanel from "@/components/molecules/EstimatePanel";

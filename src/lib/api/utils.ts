@@ -13,7 +13,7 @@ export function orderUserPair(a: string, b: string): [string, string] {
 }
 export type ActionState<T = undefined> = {
   ok: boolean;
-  message?: string;
+  message?: { ko: string; en: string };
   status?: number;
   data?: T;
 } | null;
