@@ -3,7 +3,7 @@
 import { auth } from "@/auth";
 import { z } from "zod";
 import { getWeeklySummary } from "@/services/summary.service";
-import type { ActionState } from "@/types/";
+import type { ActionState } from "@/lib/api/utils";
 
 const GetDailySummarySchema = z.object({
   days: z.number().min(1).max(30).default(7),
@@ -11,10 +11,10 @@ const GetDailySummarySchema = z.object({
 
 export type GetDailySummaryInput = z.infer<typeof GetDailySummarySchema>;
 
-export async function getDailySummaryAction(_prevState: any, data: GetDailySummaryInput) {
+export async function getDailySummaryAction(_prevState: ActionState<any>, data: GetDailySummaryInput) {
   const session = await auth();
   if (!session?.user?.id) {
-    return { ok: false, status: 401, message: "로그인이 필요합니다." } as const;
+    return { ok: false, status: 401, message: "unauthorized" } as const;
   }
 
   // 4. 입력값 검증
