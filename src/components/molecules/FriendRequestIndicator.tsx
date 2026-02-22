@@ -20,8 +20,9 @@ export function FriendRequestIndicator({
       type="button"
       onClick={onClick}
       className={cn(
-        "flex items-center gap-1.5 rounded-[20px] border border-[#d4ead9] bg-white px-3.5 py-1.5",
-        "font-medium transition-colors hover:border-[#6aab7a] hover:bg-[#e8f5ec]",
+        "flex h-11 min-h-11 items-center justify-center gap-2 rounded-[25px] border-2 border-[#d4ead9] bg-white px-5 py-2",
+        "font-semibold text-base transition-all duration-300",
+        "hover:border-[#6aab7a] hover:bg-[#e8f5ec] hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(74,124,89,0.25)]",
         className
       )}
     >

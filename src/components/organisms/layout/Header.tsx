@@ -66,7 +66,7 @@ export default function Header({ user: initialUser, className }: HeaderProps) {
                   <div className="relative" ref={userMenuAnchorRef}>
                   <button
                     onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                    className="bg-[#E8F5E9] text-[#2D5F2E] border-2 border-[#7BC67E] px-5 py-2 rounded-[25px] font-semibold cursor-pointer transition-all duration-300 text-base hover:bg-[#7BC67E] hover:text-white hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(123,198,126,0.3)]"
+                    className="flex h-11 min-h-11 items-center bg-[#E8F5E9] text-[#2D5F2E] border-2 border-[#7BC67E] px-5 py-2 rounded-[25px] font-semibold cursor-pointer transition-all duration-300 text-base hover:bg-[#7BC67E] hover:text-white hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(123,198,126,0.3)]"
                   >
                     {user.name ?? "사용자"}
                   </button>
@@ -143,7 +143,7 @@ export default function Header({ user: initialUser, className }: HeaderProps) {
                   <div className="relative" ref={userMenuAnchorRef}>
                   <button
                     onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                    className="bg-[#E8F5E9] text-[#2D5F2E] border-2 border-[#7BC67E] px-5 py-2 rounded-[25px] font-semibold cursor-pointer transition-all duration-300 text-base hover:bg-[#7BC67E] hover:text-white hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(123,198,126,0.3)]"
+                    className="flex h-11 min-h-11 items-center bg-[#E8F5E9] text-[#2D5F2E] border-2 border-[#7BC67E] px-5 py-2 rounded-[25px] font-semibold cursor-pointer transition-all duration-300 text-base hover:bg-[#7BC67E] hover:text-white hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(123,198,126,0.3)]"
                   >
                     {user.name ?? "사용자"}
                   </button>
