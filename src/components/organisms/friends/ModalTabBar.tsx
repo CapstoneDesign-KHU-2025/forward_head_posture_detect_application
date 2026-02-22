@@ -5,7 +5,7 @@ import { Search, Mail, Turtle } from "lucide-react";
 
 type TabId = "search" | "requests" | "friends";
 
-type ModalTabBarProps = {
+export type ModalTabBarProps = {
   activeTab: TabId;
   incomingCount: number;
   onTabChange: (tab: TabId) => void;
