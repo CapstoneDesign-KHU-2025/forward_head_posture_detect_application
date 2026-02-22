@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { ModalBackdrop } from "@/components/common/ModalBackdrop";
 import { Toast } from "@/components/common/Toast";
 import { FriendsModalHeader } from "./FriendsModalHeader";
 import { SearchResultList } from "./SearchResultList";
@@ -55,18 +54,28 @@ export function FriendsModal({ isOpen, onClose, friendsData: externalData }: Fri
     };
   }, [isOpen, onClose]);
 
-  if (!isOpen) return null;
-
   return (
     <>
-      <ModalBackdrop isOpen={isOpen} onClose={onClose} />
       <div
+        role="dialog"
+        aria-modal="true"
+        aria-hidden={!isOpen}
         className={cn(
-          "fixed left-1/2 top-1/2 z-[101] flex h-[500px] w-[min(480px,95vw)] -translate-x-1/2 -translate-y-1/2",
-          "flex-col overflow-hidden rounded-[24px] bg-white",
-          "shadow-[0_20px_60px_rgba(74,124,89,0.2)]"
+          "fixed inset-0 z-[100] flex items-center justify-center p-4",
+          "bg-black/40 transition-opacity duration-200",
+          isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
         )}
+        onClick={onClose}
       >
+        <div
+          className={cn(
+            "flex h-[500px] w-full max-w-[480px] flex-col overflow-hidden",
+            "rounded-2xl bg-white shadow-2xl",
+            "transform transition-all duration-200",
+            isOpen ? "scale-100 translate-y-0" : "scale-95 translate-y-2"
+          )}
+          onClick={(e) => e.stopPropagation()}
+        >
         <FriendsModalHeader
           activeTab={activeTab}
           incomingCount={incomingCount}
@@ -97,6 +106,7 @@ export function FriendsModal({ isOpen, onClose, friendsData: externalData }: Fri
             )}
           </div>
         )}
+        </div>
       </div>
 
       <Toast message={toastMessage} isVisible={isToastVisible} />
