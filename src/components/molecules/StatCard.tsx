@@ -16,7 +16,6 @@ type StatCardProps = {
   className?: string;
 };
 
-/** StatCard: HTML 시안 .stat-card — 라벨 + 값+단위 + 선택적 서브(도트+캡션) */
 export default function StatCard({
   label,
   value,

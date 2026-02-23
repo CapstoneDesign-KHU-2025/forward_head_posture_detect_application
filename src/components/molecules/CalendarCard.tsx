@@ -6,7 +6,7 @@ import { cn } from "@/utils/cn";
 type DayStatus = "good" | "bad" | null;
 
 type CalendarCardProps = {
-  /** 해당 월의 날짜별 상태 (날짜 → good/bad). 없으면 점 미표시 */
+  // 해당 월의 날짜별 상태 (good일 때 점 표시)
   dayStatusMap?: Record<number, DayStatus>;
   className?: string;
 };

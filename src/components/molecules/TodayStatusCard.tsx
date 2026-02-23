@@ -1,5 +1,7 @@
 "use client";
 
+import { cn } from "@/utils/cn";
+
 type StatusType = "excellent" | "normal" | "bad" | "empty";
 
 type TodayStatusCardProps = {
@@ -64,7 +66,33 @@ function getStatusInfo(warningCount: number | null | undefined, isNewUser: boole
 export default function TodayStatusCard({ warningCount, isNewUser }: TodayStatusCardProps) {
   const statusInfo = getStatusInfo(warningCount, isNewUser);
 
-  const statusStyles: Record<StatusType, { borderColor: string; background: string }> = {
+  // 신규/오늘 첫 측정일 때
+  if (statusInfo.statusClass === "empty") {
+    return (
+      <div
+        className={cn(
+          "flex flex-col items-center justify-center text-center",
+          "rounded-[18px] shadow-[0_4px_16px_rgba(74,124,89,0.2)]",
+          "bg-gradient-to-br from-[#4a7c59] to-[#6aab7a]",
+          "px-6 py-6 sm:px-8 sm:py-7 text-white"
+        )}
+      >
+        <div className="mb-2 text-[32px] sm:text-[36px] animate-bounce-slow">{statusInfo.emoji}</div>
+        <div
+          className="mb-1 text-[18px] font-extrabold sm:text-[19px]"
+          style={{ fontFamily: "Nunito, sans-serif" }}
+        >
+          {statusInfo.title}
+        </div>
+        <div className="text-[13px] leading-relaxed text-[rgba(255,255,255,0.85)] whitespace-pre-line">
+          {statusInfo.message}
+        </div>
+      </div>
+    );
+  }
+
+  // 자세 좋음/보통/나쁨
+  const statusStyles: Record<Exclude<StatusType, "empty">, { borderColor: string; background: string }> = {
     excellent: {
       borderColor: "#4A9D4D",
       background: "linear-gradient(135deg, #ffffff 0%, #E8F5E9 100%)",
@@ -76,10 +104,6 @@ export default function TodayStatusCard({ warningCount, isNewUser }: TodayStatus
     bad: {
       borderColor: "#FF7043",
       background: "linear-gradient(135deg, #ffffff 0%, #FFE8E0 100%)",
-    },
-    empty: {
-      borderColor: "#9CA3AF",
-      background: "linear-gradient(135deg, #ffffff 0%, #F9FAFB 100%)",
     },
   };
 
@@ -106,42 +130,14 @@ export default function TodayStatusCard({ warningCount, isNewUser }: TodayStatus
         e.currentTarget.style.boxShadow = "0 4px 20px rgba(0,0,0,0.08)";
       }}
     >
-      <style jsx>{`
-        @keyframes bounce {
-          0%,
-          100% {
-            transform: translateY(0);
-          }
-          50% {
-            transform: translateY(-10px);
-          }
-        }
-        .status-emoji {
-          font-size: ${statusInfo.statusClass === "empty" ? "3.5rem" : "4rem"};
-          margin-bottom: 1rem;
-          animation: bounce 2s infinite;
-        }
-      `}</style>
-      <div className="status-emoji">{statusInfo.emoji}</div>
+      <div className="mb-2 text-[32px] sm:text-[36px] animate-bounce-slow">{statusInfo.emoji}</div>
       <div
-        style={{
-          fontSize: statusInfo.statusClass === "empty" ? "1.6rem" : "1.8rem",
-          fontWeight: "bold",
-          color: statusInfo.statusClass === "empty" ? "#4F4F4F" : "#2D5F2E",
-          marginBottom: "0.8rem",
-        }}
+        className="mb-1 text-[18px] font-extrabold text-[#2D5F2E] sm:text-[19px]"
+        style={{ fontFamily: "Nunito, sans-serif" }}
       >
         {statusInfo.title}
       </div>
-      <div
-        style={{
-          fontSize: statusInfo.statusClass === "empty" ? "1rem" : "1.1rem",
-          fontWeight: "normal",
-          color: statusInfo.statusClass === "empty" ? "#6B7280" : "#4F4F4F",
-          lineHeight: "1.6",
-          whiteSpace: "pre-line",
-        }}
-      >
+      <div className="text-[13px] leading-relaxed text-[#4F4F4F] whitespace-pre-line">
         {statusInfo.message}
       </div>
     </div>
