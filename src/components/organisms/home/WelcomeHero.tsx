@@ -3,6 +3,7 @@
 import { Button } from "@/components/atoms/Button";
 import { useRouter } from "next/navigation";
 import { useCallback } from "react";
+import { cn } from "@/utils/cn";
 
 type WelcomeHeroProps = {
   userName?: string;
@@ -22,25 +23,27 @@ export default function WelcomeHero({ userName = "사용자", onPrimaryAction, c
 
   return (
     <section
-      className={[
-        "w-full rounded-[20px] bg-white text-center",
-        "py-12 mb-8",
-        "shadow-[0_2px_20px_rgba(45,95,46,0.08)]",
-        className,
-      ]
-        .filter(Boolean)
-        .join(" ")}
+      className={cn(
+        "flex-shrink-0 flex items-center justify-between overflow-hidden",
+        "h-[270px] rounded-[18px] bg-white px-[80px] py-7",
+        "shadow-[0_4px_20px_rgba(74,124,89,0.12)]",
+        className
+      )}
     >
-      <div className="mx-auto max-w-4xl">
-        <h1 className="text-[2rem] font-bold mb-2">
-          <span className="text-[#4A9D4D]">{userName}</span> 님, 안녕하세요.
+      <div className="greeting-text">
+        <h1
+          className="mb-2 text-[1.6rem] font-extrabold"
+          style={{ fontFamily: "Nunito, sans-serif" }}
+        >
+          <span className="text-[#4a7c59]">{userName}</span> 님, 안녕하세요!
         </h1>
-        <p className="text-[1.1rem] text-[#4F4F4F] mb-6">거북거북!</p>
-
-        <div className="flex justify-center">
-          <Button onClick={handlePrimaryAction}>측정하기</Button>
-        </div>
+        <p className="text-sm leading-relaxed text-[#7a9585]">
+          오늘도 바른 자세로 하루를 시작해봐요 🐢
+        </p>
       </div>
+      <Button onClick={handlePrimaryAction} className="flex-shrink-0">
+        측정하기
+      </Button>
     </section>
   );
 }

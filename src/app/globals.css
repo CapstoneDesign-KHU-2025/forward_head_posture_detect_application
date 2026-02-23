@@ -69,3 +69,19 @@ body[data-modal-open] header {
 .animate-rotate-slow {
   animation: rotate-slow 3s ease-in-out infinite;
 }
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(0.85);
+  }
+}
+
+.animate-pulse-dot {
+  animation: pulse 1.2s infinite;
+}
