@@ -50,7 +50,7 @@ export default function CalendarCard({ dayStatusMap = {}, className }: CalendarC
             key={day}
             className={cn(
               "text-center text-[9px] font-bold py-0.5",
-              i === 0 ? "text-[#e05030]" : i === 6 ? "text-[#6b9fff]" : "text-[#aac8b2]"
+              i === 0 ? "text-[#e05030]" : "text-[#aac8b2]"
             )}
           >
             {day}
@@ -79,14 +79,8 @@ export default function CalendarCard({ dayStatusMap = {}, className }: CalendarC
               )}
             >
               {d}
-              {!isToday && status && (
-                <span
-                  className={cn(
-                    "absolute bottom-0.5 left-1/2 -translate-x-1/2 w-[3px] h-[3px] rounded-full",
-                    status === "good" && "bg-[#6aab7a]",
-                    status === "bad" && "bg-[#ff8c6b]"
-                  )}
-                />
+              {!isToday && status === "good" && (
+                <span className="absolute bottom-0.5 left-1/2 -translate-x-1/2 w-[3px] h-[3px] rounded-full bg-[#6aab7a]" />
               )}
             </div>
           );
@@ -97,10 +91,6 @@ export default function CalendarCard({ dayStatusMap = {}, className }: CalendarC
         <div className="flex items-center gap-1 text-[10px] text-[#aac8b2]">
           <span className="w-1.5 h-1.5 rounded-full bg-[#6aab7a]" />
           양호한 날
-        </div>
-        <div className="flex items-center gap-1 text-[10px] text-[#aac8b2]">
-          <span className="w-1.5 h-1.5 rounded-full bg-[#ff8c6b]" />
-          경고 많은 날
         </div>
       </div>
     </div>

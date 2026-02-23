@@ -4,9 +4,10 @@ import { useEffect, useState } from "react";
 import HomeTemplate from "@/components/templates/HomeTemplate";
 import ErrorBanner from "@/components/atoms/ErrorBanner";
 
-import { computeTodaySoFarAverage } from "@/lib/hourlyOps";
+import { computeTodaySoFarAverage, getTodayHourly } from "@/lib/hourlyOps";
 import { getTodayCount, getTodayMeasuredSeconds } from "@/lib/postureLocal";
 import { computeImprovementPercent } from "@/utils/computeImprovementPercent";
+import type { HourlyStat } from "@/components/molecules/AverageTabsCard";
 
 type WeeklySummaryRow = {
   id: number;
@@ -57,12 +58,14 @@ type HomeData = {
     progress: number;
     ctaText: string;
   };
+  hourlyStats: HourlyStat[];
 };
 
 export default function HomeClient({ weeklyData, user }: HomeClientProps) {
   const [todayAvg, setTodayAvg] = useState<number | null>(null);
   const [todayHour, setTodayHour] = useState<number | null>(null);
   const [todayCount, setTodayCount] = useState<number | null>(0);
+  const [hourlyStats, setHourlyStats] = useState<HourlyStat[]>([]);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -86,11 +89,27 @@ export default function HomeClient({ weeklyData, user }: HomeClientProps) {
         const avg = await computeTodaySoFarAverage(user.id);
         const count = await getTodayCount(user.id);
         const hours = await getTodayMeasuredSeconds(user.id);
+        const hourlyRows = await getTodayHourly(user.id);
+
+        const stats: HourlyStat[] =
+          hourlyRows?.map((r: any) => {
+            const date = new Date(r.hourStartTs);
+            const hour = date.getHours();
+            const label = `${hour.toString().padStart(2, "0")}시`;
+            const avgAngle =
+              r.finalized === 1 && typeof r.avgAngle === "number"
+                ? r.avgAngle
+                : r.weight > 0
+                  ? r.sumWeighted / r.weight
+                  : 0;
+            return { label, avg: avgAngle };
+          }) ?? [];
 
         if (!cancelled) {
           setTodayAvg(avg);
           setTodayCount(count);
           setTodayHour(hours);
+          setHourlyStats(stats);
         }
       } catch (e: any) {
         if (!cancelled) {
@@ -187,6 +206,7 @@ export default function HomeClient({ weeklyData, user }: HomeClientProps) {
       progress: isEmptyState ? 0 : 30,
       ctaText: "도전 계속하기",
     },
+    hourlyStats,
   };
 
   const warningCount =
@@ -197,6 +217,8 @@ export default function HomeClient({ weeklyData, user }: HomeClientProps) {
       user={homeData.user}
       kpis={homeData.kpis}
       challenge={homeData.challenge}
+      todayAvg={todayAvg}
+      hourlyStats={homeData.hourlyStats}
       warningCount={warningCount}
       isNewUser={isNewUser}
       goodDays={goodDays}

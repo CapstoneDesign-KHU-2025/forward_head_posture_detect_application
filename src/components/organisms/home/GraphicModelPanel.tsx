@@ -5,6 +5,7 @@ import AsyncBoundary from "@/components/common/AsyncBoundary";
 import LoadingSkeleton from "@/components/common/LoadingSkeleton";
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
+import { cn } from "@/utils/cn";
 
 // 3DModel은 클라이언트 전용이므로 ssr: false
 const ThreeDModel = dynamic(() => import("@/components/molecules/3DModel"), {
@@ -31,7 +32,7 @@ function getSelectedCharacter(): string {
 export default function GraphicModelPanel({
   userAng,
   title = "당신의 거북목 도전기",
-  description = "3D 모델",
+  description = "5분 단위 평균 목 각도",
   illustration,
 }: ChallengePanelProps) {
   const [characterId, setCharacterId] = useState<string>("remy");
@@ -69,24 +70,32 @@ export default function GraphicModelPanel({
   }, []);
 
   return (
-    <div className="rounded-[20px] bg-white p-8 shadow-[0_2px_20px_rgba(0,0,0,0.08)]">
-      {/* 제목 */}
-      <div className="flex justify-between items-center mb-6 pb-4 border-b-2 border-[#E8F5E9]">
-        <h2 className="text-[1.5rem] font-bold text-[#2D5F2E]">{title}</h2>
-      </div>
+    <section
+      className={cn(
+        "rounded-[18px] shadow-[0_4px_20px_rgba(74,124,89,0.12)]",
+        "bg-gradient-to-b from-white to-[#f0f8f3]",
+        "flex flex-col overflow-hidden",
+      )}
+    >
+      {/* 헤더 영역 */}
+      <header className="px-5 pt-3">
+        <div
+          className="text-[14px] font-extrabold text-[#2d3b35]"
+          style={{ fontFamily: "Nunito, sans-serif" }}
+        >
+          {title}
+        </div>
+      </header>
 
-      {/* 3D 모델 영역 - 기존 ThreeDModel 사용 */}
-      <div className="bg-[#2C3E50] rounded-xl p-8 min-h-[500px] flex flex-col justify-between relative mb-4">
-        <div className="absolute inset-0 rounded-xl overflow-hidden">
-          <ThreeDModel characterId={characterId} idealAng={idealAng} userAng={userAng ?? idealAng} />{" "}
+      {/* 3D 모델 영역 */}
+      <div className="relative mx-5 my-4 flex min-h-[320px] items-center justify-center rounded-[18px] bg-gradient-to-b from-[#e8f5ec] via-[#f4faf6] to-[#e0f0e5] overflow-hidden">
+        <div className="absolute inset-0">
+          <ThreeDModel characterId={characterId} idealAng={idealAng} userAng={userAng ?? idealAng} />
         </div>
       </div>
 
-      {/* 설명 */}
-      <p className="text-center mt-6 pt-6 border-t border-[#E8F5E9] text-[0.7rem] text-[#4F4F4F]">{description}</p>
-
-      {/* (옵션) 추가 일러스트/컨텐츠 */}
-      {illustration}
-    </div>
+      {/* (옵션) 추가 일러스트/컨텐츠 + 하단 영역 */}
+      {illustration && <div className="px-5 pb-4">{illustration}</div>}
+    </section>
   );
 }

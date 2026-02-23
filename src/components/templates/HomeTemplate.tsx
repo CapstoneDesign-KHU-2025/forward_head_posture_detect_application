@@ -3,8 +3,10 @@ import StatCard from "@/components/molecules/StatCard";
 import TodayStatusCard from "@/components/molecules/TodayStatusCard";
 import TitleCard from "@/components/molecules/TitleCard";
 import TurtleEvolutionCard from "@/components/molecules/TurtleEvolutionCard";
+import AverageTabsCard, { type HourlyStat } from "@/components/molecules/AverageTabsCard";
 import { formatMeasuredTime } from "@/utils/formatMeasuredTime";
 import GraphicModelPanel from "@/components/organisms/home/GraphicModelPanel";
+import CalendarCard from "@/components/molecules/CalendarCard";
 import AsyncBoundary from "../common/AsyncBoundary";
 import LoadingSkeleton from "../common/LoadingSkeleton";
 
@@ -27,6 +29,10 @@ type HomeTemplateProps = {
   };
   /** 오늘의 경고 횟수 (상태 카드용, null이면 데이터 없음) */
   warningCount?: number | null;
+  /** 오늘 지금까지 평균 목 각도 (탭 카드용) */
+  todayAvg?: number | null;
+  /** 시간대별 평균 각도 리스트 (탭 카드용) */
+  hourlyStats?: HourlyStat[];
   /** 신규 사용자 여부 (true: 완전 신규, false: 기존 사용자) */
   isNewUser?: boolean;
   /** 누적 좋은 날 수 (칭호 카드용) */
@@ -39,6 +45,8 @@ export default function HomeTemplate({
   kpis,
   challenge,
   warningCount = null,
+  todayAvg = null,
+  hourlyStats = [],
   isNewUser,
   goodDays = 0,
   className,
@@ -73,7 +81,7 @@ export default function HomeTemplate({
               <TodayStatusCard warningCount={warningCount} isNewUser={isNewUser} />
             </AsyncBoundary>
 
-            {/* 서브 정보: stats-row(측정 시간 + 경고 횟수) + 칭호 카드 */}
+            {/* 서브 정보: stats-row(측정 시간 + 경고 횟수) + 진화 카드 */}
             <div className="flex gap-4">
               <AsyncBoundary suspenseFallback={<LoadingSkeleton />}>
                 <div className="flex flex-1 gap-[14px]">
@@ -105,10 +113,13 @@ export default function HomeTemplate({
                 </div>
               </AsyncBoundary>
             </div>
+
+            {/* 평균 탭 카드 (시간별 평균 / 누적 평균) */}
+            <AverageTabsCard hourlyStats={hourlyStats} todayAvg={todayAvg} />
           </div>
 
-          {/* RIGHT: 측정 섹션 */}
-          <div>
+          {/* RIGHT: 당신의 거북목 도전기 + 캘린더 */}
+          <div className="flex flex-col gap-6">
             <GraphicModelPanel
               userAng={user?.avgAng}
               title={challenge?.title ?? "당신의 거북목 도전기"}
@@ -122,6 +133,7 @@ export default function HomeTemplate({
                 )
               }
             />
+            <CalendarCard />
           </div>
         </div>
       </div>
