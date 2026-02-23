@@ -1,8 +1,7 @@
 "use client";
 
-import { SectionLabel } from "@/components/atoms/SectionLabel";
 import { Modal } from "@/components/common/Modal";
-import { ModalHeader } from "@/components/common/ModalHeader";
+import { Button } from "@/components/atoms/Button";
 import { cn } from "@/utils/cn";
 import { useEffect, useState } from "react";
 
@@ -38,21 +37,13 @@ function getSelectedCharacter(): string {
   return selected || "remy";
 }
 
-function getCharacterName(characterId: string): string {
-  const character = characters.find((c) => c.id === characterId);
-  return character?.name || "래미";
-}
-
 export default function CharacterSelectionModal({ isOpen, onClose }: CharacterSelectionModalProps) {
-  const [currentCharacter, setCurrentCharacter] = useState<string>("remy");
   const [selectedCharacter, setSelectedCharacter] = useState<string>("remy");
 
   useEffect(() => {
-    if (isOpen) {
-      const saved = getSelectedCharacter();
-      setCurrentCharacter(saved);
-      setSelectedCharacter(saved);
-    }
+    if (!isOpen) return;
+    const saved = getSelectedCharacter();
+    setSelectedCharacter(saved);
   }, [isOpen]);
 
   const handleSelect = (characterId: string) => setSelectedCharacter(characterId);
@@ -62,34 +53,36 @@ export default function CharacterSelectionModal({ isOpen, onClose }: CharacterSe
       localStorage.setItem("selectedCharacter", selectedCharacter);
       window.dispatchEvent(new Event("storage"));
     }
-    setCurrentCharacter(selectedCharacter);
     onClose();
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} contentClassName="max-w-[440px] w-full">
-      <ModalHeader
-        title="캐릭터 변경"
-        subtitle="나를 대표할 캐릭터를 골라보세요"
-        onClose={onClose}
-      />
-      <div className="flex flex-1 flex-col overflow-y-auto px-6 py-[22px]">
-        <div className="mb-5">
-          <SectionLabel>현재 캐릭터</SectionLabel>
-          <div className="mt-1 inline-flex items-center gap-1.5 rounded-[10px] border-[1.5px] border-[#d4ead9] bg-[#f4faf6] px-3.5 py-1.5">
-            <img
-              src={characters.find((c) => c.id === currentCharacter)?.icon ?? "/icons/remy.png"}
-              alt=""
-              className="h-5 w-5 object-contain"
-            />
-            <span className="text-[14px] font-semibold text-[#4a7c59]">
-              {getCharacterName(currentCharacter)}
-            </span>
-          </div>
-        </div>
-
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      contentClassName="w-full max-w-[420px] rounded-[22px] shadow-[0_20px_60px_rgba(45,59,53,0.18)]"
+    >
+      <div className="flex shrink-0 items-start justify-between px-6 pt-[22px] pb-[8px]">
         <div>
-          <SectionLabel>캐릭터 선택하기</SectionLabel>
+          <h2
+            className="mb-1.5 text-[20px] font-black leading-tight text-[#2d3b35]"
+            style={{ fontFamily: "Nunito, sans-serif" }}
+          >
+            캐릭터 변경
+          </h2>
+          <p className="text-sm text-[#7a9585]">나를 대표할 캐릭터를 선택하세요</p>
+        </div>
+        <button
+          type="button"
+          onClick={onClose}
+          className="flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-lg border border-[#d4ead9] bg-[#f4faf6] text-xs text-[#7a9585] transition-colors hover:bg-[#e8f5ec]"
+        >
+          ✕
+        </button>
+      </div>
+
+      <div className="flex flex-1 flex-col overflow-y-auto px-6 py-[22px]">
+        <div>
           <div className="flex flex-col gap-2">
             {characters.map((character) => (
               <button
@@ -134,21 +127,23 @@ export default function CharacterSelectionModal({ isOpen, onClose }: CharacterSe
           </div>
         </div>
       </div>
-      <div className="flex shrink-0 gap-2.5 px-6 pb-[22px]">
-        <button
+      <div className="flex shrink-0 gap-2.5 px-6 py-3.5">
+        <Button
           type="button"
+          variant="secondary"
+          className="flex-1 text-[14px] font-semibold py-3"
           onClick={onClose}
-          className="flex-1 rounded-[14px] border-[1.5px] border-[#d4ead9] bg-white px-3 py-3 text-[14px] font-semibold text-[#7a9585] transition-colors hover:border-[#6aab7a] hover:bg-[#f4faf6] hover:text-[#4a7c59]"
         >
           닫기
-        </button>
-        <button
+        </Button>
+        <Button
           type="button"
+          variant="primary"
+          className="flex-1 text-[14px] py-3"
           onClick={handleConfirm}
-          className="flex-1 rounded-[14px] border-none bg-[#4a7c59] px-3 py-3 text-[14px] font-bold text-white transition-all hover:translate-y-[-1px] hover:bg-[#3a6147] hover:shadow-[0_4px_12px_rgba(74,124,89,0.25)]"
         >
           확인
-        </button>
+        </Button>
       </div>
     </Modal>
   );

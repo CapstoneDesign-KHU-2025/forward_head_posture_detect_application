@@ -1,6 +1,7 @@
 "use client";
 
 import { Modal } from "@/components/common/Modal";
+import { Button } from "@/components/atoms/Button";
 import { getSensitivity, setSensitivity, type Sensitivity } from "@/utils/sensitivity";
 import { cn } from "@/utils/cn";
 import { useEffect, useState } from "react";
@@ -10,7 +11,6 @@ type SensitivitySettingsModalProps = {
   onClose: () => void;
 };
 
-// HTML home_final (17).html 기준: sens-dot-box 배경, sens-dot 색
 const SENS_OPTIONS: {
   id: Sensitivity;
   name: string;
@@ -43,16 +43,15 @@ export default function SensitivitySettingsModal({ isOpen, onClose }: Sensitivit
       onClose={onClose}
       contentClassName="w-full max-w-[420px] rounded-[22px] shadow-[0_20px_60px_rgba(45,59,53,0.18)]"
     >
-      {/* modal-header — HTML과 동일: 흰 배경, 하단 보더 */}
-      <div className="flex shrink-0 items-start justify-between border-b border-[#d4ead9] px-6 pt-[22px] pb-[18px]">
+      <div className="flex shrink-0 items-start justify-between px-6 pt-[22px] pb-[8px]">
         <div>
           <h2
-            className="mb-1.5 text-[17px] font-black leading-tight text-[#2d3b35]"
+            className="mb-1.5 text-[20px] font-black leading-tight text-[#2d3b35]"
             style={{ fontFamily: "Nunito, sans-serif" }}
           >
             민감도 설정
           </h2>
-          <p className="text-xs text-[#7a9585]">거북목 감지 민감도를 조절해보세요</p>
+          <p className="text-sm text-[#7a9585]">거북목 감지 민감도를 조절해보세요</p>
         </div>
         <button
           type="button"
@@ -63,7 +62,6 @@ export default function SensitivitySettingsModal({ isOpen, onClose }: Sensitivit
         </button>
       </div>
 
-      {/* modal-body — sens-options만 (HTML에 현재 상태 칩 없음) */}
       <div className="flex flex-1 flex-col overflow-y-auto px-6 py-5">
         <div className="flex flex-col gap-[10px]">
           {SENS_OPTIONS.map((opt) => {
@@ -74,8 +72,10 @@ export default function SensitivitySettingsModal({ isOpen, onClose }: Sensitivit
                 type="button"
                 onClick={() => setSelectedSensitivity(opt.id)}
                 className={cn(
-                  "flex cursor-pointer items-center justify-between rounded-[14px] px-4 py-3.5 transition-all duration-150",
-                  isActive ? "bg-[#f4faf6]" : "bg-white hover:bg-[#f4faf6]"
+                  "flex cursor-pointer items-center justify-between rounded-[14px] border-[1.5px] px-4 py-3.5 transition-all duration-150",
+                  isActive
+                    ? "border-[#4a7c59] bg-[#f4faf6]"
+                    : "border-[#d4ead9] bg-white hover:border-[#6aab7a] hover:bg-[#f4faf6]"
                 )}
               >
                 <div className="flex items-center gap-3">
@@ -109,22 +109,23 @@ export default function SensitivitySettingsModal({ isOpen, onClose }: Sensitivit
         </div>
       </div>
 
-      {/* modal-footer — HTML .btn-cancel / .btn-save */}
-      <div className="flex shrink-0 gap-2.5 border-t border-[#d4ead9] px-6 py-3.5">
-        <button
+      <div className="flex shrink-0 gap-2.5 px-6 py-3.5">
+        <Button
           type="button"
+          variant="secondary"
+          className="flex-1 text-[13px] py-2.5"
           onClick={onClose}
-          className="flex-1 rounded-[10px] border border-[#d4ead9] bg-[#f4faf6] px-3 py-2.5 text-[13px] font-semibold text-[#7a9585] transition-colors hover:bg-[#e8f5ec]"
         >
           닫기
-        </button>
-        <button
+        </Button>
+        <Button
           type="button"
+          variant="primary"
+          className="flex-1 text-[13px] py-2.5"
           onClick={handleConfirm}
-          className="flex-1 rounded-[10px] border-none bg-[#4a7c59] px-3 py-2.5 text-[13px] font-bold text-white transition-colors hover:bg-[#3a6147]"
         >
           확인
-        </button>
+        </Button>
       </div>
     </Modal>
   );
