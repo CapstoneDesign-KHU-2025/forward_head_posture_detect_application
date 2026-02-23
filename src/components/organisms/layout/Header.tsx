@@ -66,9 +66,9 @@ export default function Header({ user: initialUser, className }: HeaderProps) {
                   <div className="relative" ref={userMenuAnchorRef}>
                   <button
                     onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                    className="flex h-11 min-h-11 items-center bg-[#E8F5E9] text-[#2D5F2E] border-2 border-[#7BC67E] px-5 py-2 rounded-[25px] font-semibold cursor-pointer transition-all duration-300 text-base hover:bg-[#7BC67E] hover:text-white hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(123,198,126,0.3)]"
+                    className="w-9 h-9 rounded-full bg-[#4a7c59] text-white flex items-center justify-center font-bold text-sm cursor-pointer transition-all duration-200 hover:opacity-90"
                   >
-                    {user.name ?? "사용자"}
+                    {(user.name ?? "사용자").charAt(0).toUpperCase()}
                   </button>
                   <UserMenuDropdown
                     userName={user.name ?? "사용자"}
@@ -110,7 +110,7 @@ export default function Header({ user: initialUser, className }: HeaderProps) {
               </Link>
             </div>
 
-            {/* Center: 네비게이션 */}
+            {/* Center: 네비게이션 (텍스트만) */}
             <nav className="flex items-center justify-center gap-8">
               {navItems.map((item) => {
                 const isActive = (pathname ?? "/") === item.href;
@@ -118,13 +118,12 @@ export default function Header({ user: initialUser, className }: HeaderProps) {
                   <Link
                     key={item.href}
                     href={item.href}
-                    className={`flex items-center gap-2 text-base font-medium transition-all duration-300 ${
+                    className={`text-base font-medium transition-all duration-300 ${
                       isActive ? "text-[#2D5F2E] font-semibold" : "text-[#4F4F4F] hover:text-[#2D5F2E]"
                     }`}
                     style={{ textDecoration: "none" }}
                   >
-                    <span className="text-lg">{item.icon}</span>
-                    <span>{item.label}</span>
+                    {item.label}
                   </Link>
                 );
               })}
@@ -143,9 +142,9 @@ export default function Header({ user: initialUser, className }: HeaderProps) {
                   <div className="relative" ref={userMenuAnchorRef}>
                   <button
                     onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                    className="flex h-11 min-h-11 items-center bg-[#E8F5E9] text-[#2D5F2E] border-2 border-[#7BC67E] px-5 py-2 rounded-[25px] font-semibold cursor-pointer transition-all duration-300 text-base hover:bg-[#7BC67E] hover:text-white hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(123,198,126,0.3)]"
+                    className="w-9 h-9 rounded-full bg-[#4a7c59] text-white flex items-center justify-center font-bold text-sm cursor-pointer transition-all duration-200 hover:opacity-90"
                   >
-                    {user.name ?? "사용자"}
+                    {(user.name ?? "사용자").charAt(0).toUpperCase()}
                   </button>
                   <UserMenuDropdown
                     userName={user.name ?? "사용자"}

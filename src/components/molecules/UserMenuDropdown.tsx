@@ -50,7 +50,7 @@ export default function UserMenuDropdown({
     <>
       <div
         ref={dropdownRef}
-        className={`absolute right-0 top-[calc(100%+0.8rem)] min-w-[280px] bg-white rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.12)] border-2 border-[#E8F5E9] z-50 transition-all duration-300 ease-in-out ${
+        className={`absolute right-0 top-[calc(100%+0.8rem)] min-w-[280px] bg-white rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.12)] z-50 transition-all duration-300 ease-in-out ${
           isOpen ? "opacity-100 visible translate-y-0" : "opacity-0 invisible -translate-y-2.5"
         }`}
       >

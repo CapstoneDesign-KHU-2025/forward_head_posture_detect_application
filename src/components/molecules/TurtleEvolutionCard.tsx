@@ -7,6 +7,7 @@ type TurtleEvolutionCardProps = {
   goodDays: number;
   /** 한 단계 진화에 필요한 좋은 날 수 (기본 10일) */
   targetDays?: number;
+  className?: string;
 };
 
 function getStageLabelFromGoodDays(goodDays: number): string {
@@ -47,7 +48,7 @@ function EvolutionProgressBar({ current, max }: EvolutionProgressBarProps) {
   );
 }
 
-export default function TurtleEvolutionCard({ goodDays, targetDays = 10 }: TurtleEvolutionCardProps) {
+export default function TurtleEvolutionCard({ goodDays, targetDays = 10, className }: TurtleEvolutionCardProps) {
   const currentCycle = Math.min(goodDays, targetDays);
   const daysRemaining = Math.max(targetDays - currentCycle, 0);
 
@@ -58,7 +59,8 @@ export default function TurtleEvolutionCard({ goodDays, targetDays = 10 }: Turtl
     <section
       className={cn(
         "rounded-[18px] bg-white shadow-[0_4px_20px_rgba(74,124,89,0.12)]",
-        "px-5 py-4 sm:px-6 sm:py-5 flex flex-col gap-3.5",
+        "px-5 py-4 sm:px-6 sm:py-5 flex flex-col gap-3.5 min-h-0",
+        className,
       )}
     >
       {/* 헤더 */}

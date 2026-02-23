@@ -18,8 +18,6 @@ export default function PageContainer({ children }: PageContainerProps) {
     return <div className="w-full">{children}</div>;
   }
   
-  return (
-    <div className="w-full pt-16">{children}</div>
-  );
+  return <div className="w-full pt-18">{children}</div>;
 }
 

@@ -18,6 +18,7 @@ type ChallengePanelProps = {
   title?: React.ReactNode;
   description?: React.ReactNode;
   illustration?: React.ReactNode; // 옵션
+  className?: string;
 };
 
 const idealAng = 52;
@@ -34,6 +35,7 @@ export default function GraphicModelPanel({
   title = "당신의 거북목 도전기",
   description = "5분 단위 평균 목 각도",
   illustration,
+  className,
 }: ChallengePanelProps) {
   const [characterId, setCharacterId] = useState<string>("remy");
 
@@ -72,9 +74,9 @@ export default function GraphicModelPanel({
   return (
     <section
       className={cn(
-        "rounded-[18px] shadow-[0_4px_20px_rgba(74,124,89,0.12)]",
-        "bg-gradient-to-b from-white to-[#f0f8f3]",
-        "flex flex-col overflow-hidden",
+        "rounded-[18px] bg-white shadow-[0_4px_20px_rgba(74,124,89,0.12)]",
+        "flex flex-col overflow-hidden min-h-0",
+        className,
       )}
     >
       {/* 헤더 영역 */}
@@ -88,7 +90,7 @@ export default function GraphicModelPanel({
       </header>
 
       {/* 3D 모델 영역 */}
-      <div className="relative mx-5 my-4 flex min-h-[320px] items-center justify-center rounded-[18px] bg-gradient-to-b from-[#e8f5ec] via-[#f4faf6] to-[#e0f0e5] overflow-hidden">
+      <div className="relative mx-5 my-4 flex min-h-[320px] items-center justify-center rounded-[18px] bg-white overflow-hidden">
         <div className="absolute inset-0">
           <ThreeDModel characterId={characterId} idealAng={idealAng} userAng={userAng ?? idealAng} />
         </div>

@@ -7,6 +7,7 @@ type StatusType = "excellent" | "normal" | "bad" | "empty";
 type TodayStatusCardProps = {
   warningCount?: number | null; // null이면 데이터 없음
   isNewUser?: boolean; // true: 완전 신규, false: 오늘 첫 방문 (기존 사용자)
+  className?: string;
 };
 
 type StatusInfo = {
@@ -63,7 +64,7 @@ function getStatusInfo(warningCount: number | null | undefined, isNewUser: boole
   }
 }
 
-export default function TodayStatusCard({ warningCount, isNewUser }: TodayStatusCardProps) {
+export default function TodayStatusCard({ warningCount, isNewUser, className }: TodayStatusCardProps) {
   const statusInfo = getStatusInfo(warningCount, isNewUser);
 
   // 신규/오늘 첫 측정일 때
@@ -74,7 +75,8 @@ export default function TodayStatusCard({ warningCount, isNewUser }: TodayStatus
           "flex flex-col items-center justify-center text-center",
           "rounded-[18px] shadow-[0_4px_16px_rgba(74,124,89,0.2)]",
           "bg-gradient-to-br from-[#4a7c59] to-[#6aab7a]",
-          "px-6 py-6 sm:px-8 sm:py-7 text-white"
+          "px-6 py-6 sm:px-8 sm:py-7 text-white",
+          className
         )}
       >
         <div className="mb-2 text-[32px] sm:text-[36px] animate-bounce-slow">{statusInfo.emoji}</div>
@@ -111,7 +113,7 @@ export default function TodayStatusCard({ warningCount, isNewUser }: TodayStatus
 
   return (
     <div
-      className="status-card"
+      className={cn("status-card", className)}
       style={{
         background: style.background,
         padding: "2.5rem 2rem",
