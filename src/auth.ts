@@ -16,8 +16,8 @@ export const {
   session: {
     // Session 모델 쓰는 DB 세션 방식 (지금 스키마랑 맞음)
     strategy: "database",
-    maxAge: 30 * 24 * 60 * 60, // 30일 후 만료
-    updateAge: 24 * 60 * 60, // 24시간마다 만료일 갱신
+    //maxAge: 30 * 24 * 60 * 60, // 30일 후 만료
+    //updateAge: 24 * 60 * 60, // 24시간마다 만료일 갱신
   },
   providers: [
     GitHub, // env: AUTH_GITHUB_ID / AUTH_GITHUB_SECRET 자동 사용
