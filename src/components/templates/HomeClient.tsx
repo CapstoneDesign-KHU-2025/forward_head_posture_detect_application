@@ -22,8 +22,9 @@ type WeeklySummaryRow = {
 };
 
 export type WeeklySummaryData = {
-  mode: "weekly";
-  days: number;
+  mode: "weekly" | "dynamic";
+  requestedDays: number;
+  actualDataDays: number;
   weightedAvg: number | null;
   safeRows: WeeklySummaryRow[];
   goodDays: number;

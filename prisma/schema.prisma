@@ -3,37 +3,50 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum FriendRequestStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  CANCELED
+}
+
 generator client {
   provider = "prisma-client-js"
 }
 
 model User {
-  id             String    @id @default(cuid())        // 문자열 ID (cuid)
-  name           String?
-  email          String?   @unique
-  emailVerified  DateTime?
-  image          String?
+  id            String    @id @default(cuid()) // 문자열 ID (cuid)
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
 
-  accounts       Account[]
-  sessions       Session[]
+  accounts Account[]
+  sessions Session[]
 
-  postureSamples PostureSample[]
+  postureSamples        PostureSample[]
   dailyPostureSummaries DailyPostureSummary[]
+
+  outgoingFriendRequests FriendRequest[] @relation("FriendRequestFrom")
+  incomingFriendRequests FriendRequest[] @relation("FriendRequestTo")
+
+  friendshipsA Friendship[] @relation("FriendshipA")
+  friendshipsB Friendship[] @relation("FriendshipB")
 }
 
 model Account {
   // 복합 PK (provider + providerAccountId) — NextAuth 표준
-  provider            String
-  providerAccountId   String
-  type                String
-  userId              String
-  refresh_token       String?   @db.Text
-  access_token        String?   @db.Text
-  expires_at          Int?
-  token_type          String?
-  scope               String?
-  id_token            String?   @db.Text
-  session_state       String?
+  provider          String
+  providerAccountId String
+  type              String
+  userId            String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -59,8 +72,8 @@ model VerificationToken {
 }
 
 model DailyPostureSummary {
-  id            BigInt   @id @default(autoincrement())
-  userId        String   @db.Text
+  id     BigInt @id @default(autoincrement())
+  userId String @db.Text
 
   date          DateTime @db.Date
   sumWeighted   Float
@@ -69,26 +82,56 @@ model DailyPostureSummary {
   avgAngle      Float
   goodDay       Int      @default(0)
 
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([userId, date])  
+  @@unique([userId, date])
   @@index([userId, date])
 }
 
 model PostureSample {
-  id          BigInt   @id @default(autoincrement())
-  userId      String   @db.Text               // User.id (String)와 타입 일치
-  ts          DateTime @db.Timestamptz(6)
-  angleDeg    Float
-  isTurtle    Boolean
-  hasPose     Boolean  @default(true)
-  sessionId   BigInt?
-  sampleGapS  Float?
+  id         BigInt   @id @default(autoincrement())
+  userId     String   @db.Text // User.id (String)와 타입 일치
+  ts         DateTime @db.Timestamptz(6)
+  angleDeg   Float
+  isTurtle   Boolean
+  hasPose    Boolean  @default(true)
+  sessionId  BigInt?
+  sampleGapS Float?
 
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, ts])
+}
+
+model FriendRequest {
+  id          String              @id @default(cuid())
+  fromUserId  String
+  toUserId    String
+  status      FriendRequestStatus @default(PENDING)
+  createdAt   DateTime            @default(now())
+  respondedAt DateTime?
+
+  fromUser User @relation("FriendRequestFrom", fields: [fromUserId], references: [id], onDelete: Cascade)
+  toUser   User @relation("FriendRequestTo", fields: [toUserId], references: [id], onDelete: Cascade)
+
+  @@unique([fromUserId, toUserId])
+  @@index([toUserId, status, createdAt])
+  @@index([fromUserId, status, createdAt])
+}
+
+model Friendship {
+  id        String   @id @default(cuid())
+  userAId   String
+  userBId   String
+  createdAt DateTime @default(now())
+
+  userA User @relation("FriendshipA", fields: [userAId], references: [id], onDelete: Cascade)
+  userB User @relation("FriendshipB", fields: [userBId], references: [id], onDelete: Cascade)
+
+  @@unique([userAId, userBId])
+  @@index([userAId])
+  @@index([userBId])
 }
