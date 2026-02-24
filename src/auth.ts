@@ -23,7 +23,6 @@ export const {
     GitHub, // env: AUTH_GITHUB_ID / AUTH_GITHUB_SECRET 자동 사용
     Google, // env: AUTH_GOOGLE_ID / AUTH_GOOGLE_SECRET 자동 사용
   ],
-  debug: process.env.NODE_ENV === "development",
   callbacks: {
     async session({ session, user }) {
       if (session.user) {
