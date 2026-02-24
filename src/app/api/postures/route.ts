@@ -1,17 +1,10 @@
 import { prisma } from "@/lib/db";
-import { NextResponse } from "next/server";
 import { auth } from "@/auth";
+import { json, withApi, withApiReq } from "@/lib/api/utils";
 export const runtime = "nodejs";
 
-function json(data: unknown, status = 200) {
-  return new NextResponse(
-    JSON.stringify(data, (_, v) => (typeof v === "bigint" ? v.toString() : v)),
-    { status, headers: { "Content-Type": "application/json" } }
-  );
-}
-
-export async function GET() {
-  try {
+export const GET = withApi(
+  async () => {
     const session = await auth();
     if (!session?.user?.id) {
       return json({ error: "Unauthorized" }, 401);
@@ -23,14 +16,14 @@ export async function GET() {
       take: 100,
     });
     return json(data, 200);
-  } catch (error) {
-    console.error("[GET /api/postures] error:", error);
-    return json({ error: "Failed to fetch posture samples." }, 500);
-  }
-}
+  },
+  {
+    path: "/api/postures GET",
+  },
+);
 
-export async function POST(req: Request) {
-  try {
+export const POST = withApiReq(
+  async (req) => {
     const session = await auth();
     if (!session?.user?.id) {
       return json({ error: "Unauthorized" }, 401);
@@ -56,8 +49,6 @@ export async function POST(req: Request) {
     });
 
     return json(newSample, 201);
-  } catch (error) {
-    console.error("[POST /api/postures] error:", error);
-    return json({ error: "Failed to create posture sample." }, 500);
-  }
-}
+  },
+  { path: "/api/postures POST" },
+);

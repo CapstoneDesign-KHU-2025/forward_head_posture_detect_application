@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import { signIn } from "next-auth/react";
 
 type OauthButtonProps = {
@@ -12,7 +13,7 @@ export default function OauthButton({ provider }: OauthButtonProps) {
         redirect: true,
       });
     } catch (error) {
-      console.error("Login error:", error);
+      logger.error("Login error:", error);
     }
   };
 

@@ -1,5 +1,3 @@
-const BASE_PATH = "http://localhost:3000/api";
-
 export type ApiOk<T> = { ok: true; data: T };
 export type ApiFail = { ok: false; status: number; message: string; body?: unknown };
 export type ApiResult<T> = ApiOk<T> | ApiFail;
@@ -42,7 +40,7 @@ export async function apiRequest<T>({
       headers.set("Content-type", "application/json");
     }
 
-    const response = await fetch(`${BASE_PATH}/${requestPath}`, {
+    const response = await fetch(`/api${requestPath}`, {
       ...init,
       headers,
       body: isJsonBody ? JSON.stringify(init.body) : (init?.body as BodyInit),

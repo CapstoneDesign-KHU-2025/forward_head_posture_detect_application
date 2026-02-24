@@ -1,3 +1,5 @@
+import { logger } from "@/lib/logger";
+
 export type Sensitivity = "low" | "normal" | "high";
 
 const SENSITIVITY_STORAGE_KEY = "turtle-neck-sensitivity";
@@ -6,16 +8,16 @@ const SENSITIVITY_STORAGE_KEY = "turtle-neck-sensitivity";
 
 export function getSensitivity(): Sensitivity {
   if (typeof window === "undefined") return "normal";
-  
+
   try {
     const stored = localStorage.getItem(SENSITIVITY_STORAGE_KEY);
     if (stored === "low" || stored === "normal" || stored === "high") {
       return stored;
     }
   } catch (e) {
-    console.error("Failed to read sensitivity from localStorage:", e);
+    logger.error("Failed to read sensitivity from localStorage:", e);
   }
-  
+
   return "normal";
 }
 
@@ -23,12 +25,12 @@ export function getSensitivity(): Sensitivity {
 
 export function setSensitivity(sensitivity: Sensitivity): void {
   if (typeof window === "undefined") return;
-  
+
   try {
     localStorage.setItem(SENSITIVITY_STORAGE_KEY, sensitivity);
     const thresholds = getSensitivityThresholds(sensitivity);
   } catch (e) {
-    console.error("Failed to save sensitivity to localStorage:", e);
+    logger.error("Failed to save sensitivity to localStorage:", e);
   }
 }
 
@@ -58,4 +60,3 @@ export function getSensitivityThresholds(sensitivity: Sensitivity): { enter: num
       return { enter: 48, exit: 51 };
   }
 }
-
