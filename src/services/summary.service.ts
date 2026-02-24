@@ -78,38 +78,78 @@ export async function upsertDailySummary(input: UpsertDailySummaryInput) {
   };
 }
 
-export async function getWeeklySummary(userId: string, daysParam: number) {
-  const dateISO = createISO();
-  const today0 = new Date(dateISO);
-  const days = Math.max(1, daysParam);
+// export async function getWeeklySummary(userId: string, daysParam: number) {
+//   const dateISO = createISO();
+//   const today0 = new Date(dateISO);
+//   const days = Math.max(1, daysParam);
 
-  const since = new Date(today0);
-  since.setDate(since.getDate() - (days - 1));
+//   const since = new Date(today0);
+//   since.setDate(since.getDate() - (days - 1));
+
+//   const rows = await prisma.dailyPostureSummary.findMany({
+//     where: { userId, date: { gte: since, lte: today0 } },
+//     orderBy: { date: "asc" },
+//   });
+//   const safeRows = rows.map((r: resType) => ({
+//     ...r,
+//     id: Number(r.id),
+//   }));
+
+//   const sum = safeRows.reduce((a: number, r: resType2) => a + r.avgAngle * r.weightSeconds, 0);
+//   const w = safeRows.reduce((a: number, r: resType2) => a + r.weightSeconds, 0);
+
+//   const weightedAvg = w > 0 ? sum / w : null;
+//   const goodDays = safeRows.length > 0 ? safeRows[safeRows.length - 1].goodDay : 0;
+
+//   return {
+//     mode: "weekly",
+//     days,
+//     weightedAvg,
+//     safeRows,
+//     goodDays,
+//   };
+// }
+export async function getWeeklySummary(userId: string, daysParam: number) {
+  const requestedDays = Math.max(1, daysParam);
+
+  const today = new Date();
+  today.setHours(23, 59, 59, 999);
+
+  const since = new Date(today);
+  since.setDate(today.getDate() - (requestedDays - 1));
+  since.setHours(0, 0, 0, 0);
 
   const rows = await prisma.dailyPostureSummary.findMany({
-    where: { userId, date: { gte: since, lte: today0 } },
+    where: {
+      userId,
+      date: { gte: since, lte: today },
+    },
     orderBy: { date: "asc" },
   });
-  const safeRows = rows.map((r: resType) => ({
+  const absoluteLatestRecord = await prisma.dailyPostureSummary.findFirst({
+    where: { userId },
+    orderBy: { date: "desc" },
+  });
+
+  const safeRows = rows.map((r) => ({
     ...r,
     id: Number(r.id),
   }));
 
-  const sum = safeRows.reduce((a: number, r: resType2) => a + r.avgAngle * r.weightSeconds, 0);
-  const w = safeRows.reduce((a: number, r: resType2) => a + r.weightSeconds, 0);
+  const sum = safeRows.reduce((a, r) => a + r.avgAngle * r.weightSeconds, 0);
+  const w = safeRows.reduce((a, r) => a + r.weightSeconds, 0);
 
   const weightedAvg = w > 0 ? sum / w : null;
-  const goodDays = safeRows.length > 0 ? safeRows[safeRows.length - 1].goodDay : 0;
-
+  const goodDays = absoluteLatestRecord ? absoluteLatestRecord.goodDay : 0;
   return {
-    mode: "weekly",
-    days,
+    mode: requestedDays === 7 ? "weekly" : "dynamic",
+    requestedDays,
+    actualDataDays: safeRows.length,
     weightedAvg,
     safeRows,
     goodDays,
   };
 }
-
 export async function getTodaySummary(userId: string) {
   const dateISO = createISO();
   const today0 = new Date(dateISO);

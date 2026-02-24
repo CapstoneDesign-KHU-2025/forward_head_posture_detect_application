@@ -17,12 +17,13 @@ export const {
     // Session 모델 쓰는 DB 세션 방식 (지금 스키마랑 맞음)
     strategy: "database",
     maxAge: 30 * 24 * 60 * 60, // 30일 후 만료
-    updateAge: 24 * 60 * 60,   // 24시간마다 만료일 갱신
+    updateAge: 24 * 60 * 60, // 24시간마다 만료일 갱신
   },
   providers: [
     GitHub, // env: AUTH_GITHUB_ID / AUTH_GITHUB_SECRET 자동 사용
     Google, // env: AUTH_GOOGLE_ID / AUTH_GOOGLE_SECRET 자동 사용
   ],
+  debug: process.env.NODE_ENV === "development",
   callbacks: {
     async session({ session, user }) {
       if (session.user) {

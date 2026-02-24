@@ -5,6 +5,7 @@ import { z } from "zod";
 import { revalidateTag } from "next/cache";
 import { getFriends, getFriendRequests, createFriendRequest, respondToFriendRequest } from "@/services/friends.service";
 import { SERVER_MESSAGES } from "@/lib/api/utils";
+import { logger } from "@/lib/logger";
 
 // GET: get my friends
 export async function getFriendsAction() {
@@ -15,7 +16,7 @@ export async function getFriendsAction() {
     const friends = await getFriends(session.user.id);
     return { ok: true, data: friends } as const;
   } catch (error: any) {
-    console.error("[getFriendsAction] Error:", error);
+    logger.error("[getFriendsAction] Error:", error);
     return { ok: false, status: 500, message: SERVER_MESSAGES.INTERNAL_SERVER_ERROR } as const;
   }
 }
@@ -39,7 +40,7 @@ export async function getFriendRequestsAction(data: GetRequestsInput) {
     const requests = await getFriendRequests(session.user.id, type, status);
     return { ok: true, data: requests } as const;
   } catch (error: any) {
-    console.error("[getFriendRequestsAction] Error:", error);
+    logger.error("[getFriendRequestsAction] Error:", error);
     return { ok: false, status: 500, message: SERVER_MESSAGES.INTERNAL_SERVER_ERROR } as const;
   }
 }
@@ -62,7 +63,7 @@ export async function postFriendRequestAction(_prevState: any, data: PostFriendR
 
     return { ok: true, data: request } as const;
   } catch (error: any) {
-    console.error("[postFriendRequestAction] Error:", error);
+    logger.error("[postFriendRequestAction] Error:", error);
     return { ok: false, status: 500, message: SERVER_MESSAGES.INTERNAL_SERVER_ERROR } as const;
   }
 }
@@ -89,7 +90,7 @@ export async function respondFriendRequestAction(_prevState: any, data: RespondR
 
     return { ok: true, data: result } as const;
   } catch (error: any) {
-    console.error("[respondFriendRequestAction] Error:", error);
+    logger.error("[respondFriendRequestAction] Error:", error);
     return { ok: false, status: 500, message: SERVER_MESSAGES.INTERNAL_SERVER_ERROR } as const;
   }
 }
