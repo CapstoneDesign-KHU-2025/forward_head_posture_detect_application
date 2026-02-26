@@ -21,7 +21,7 @@ export function UserRow({
   bgColor = "#6aab7a",
 }: UserRowProps) {
   return (
-    <div
+    <article
       className={cn(
         "flex items-center gap-3 border-b border-[#eef6f0] py-2.5 last:border-b-0",
         className
@@ -35,6 +35,6 @@ export function UserRow({
       {actions && (
         <div className="flex flex-shrink-0 items-center gap-1.5">{actions}</div>
       )}
-    </div>
+    </article>
   );
 }
