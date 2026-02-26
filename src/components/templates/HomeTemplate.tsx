@@ -4,8 +4,8 @@ import TodayStatusCard from "@/components/molecules/TodayStatusCard";
 import TitleCard from "@/components/molecules/TitleCard";
 import { formatMeasuredTime } from "@/utils/formatMeasuredTime";
 import GraphicModelPanel from "@/components/organisms/home/GraphicModelPanel";
-import AsyncBoundary from "../common/AsyncBoundary";
-import LoadingSkeleton from "../common/LoadingSkeleton";
+import AsyncBoundary from "@/components/molecules/AsyncBoundary";
+import LoadingSkeleton from "@/components/molecules/LoadingSkeleton";
 
 type KPIItem = {
   label: string;
