@@ -6,7 +6,7 @@ import { Button } from "@/components/atoms/Button";
 import { useSession, signIn } from "next-auth/react";
 import UserMenuDropdown from "@/components/molecules/UserMenuDropdown";
 import TurtleLogo from "@/components/molecules/TurtleLogo";
-import { FriendRequestIndicator } from "@/components/molecules/FriendRequestIndicator";
+import { FriendsButton } from "@/components/molecules/FriendsButton";
 import { FriendsModal } from "@/components/organisms/friends/FriendsModal";
 import { useFriendsData } from "@/hooks/useFriendsData";
 import { useRef, useState } from "react";
@@ -56,7 +56,7 @@ export default function Header({ user: initialUser, className }: HeaderProps) {
 
     return (
       <>
-        <FriendRequestIndicator
+        <FriendsButton
           requestCount={friendsData.incomingCount}
           onClick={() => setIsFriendsModalOpen(true)}
         />

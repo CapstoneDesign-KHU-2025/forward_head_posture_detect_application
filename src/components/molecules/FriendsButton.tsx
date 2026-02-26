@@ -3,17 +3,17 @@
 import { Users } from "lucide-react";
 import { cn } from "@/utils/cn";
 
-type FriendRequestIndicatorProps = {
+type FriendsButtonProps = {
   requestCount: number;
   onClick: () => void;
   className?: string;
 };
 
-export function FriendRequestIndicator({
+export function FriendsButton({
   requestCount,
   onClick,
   className,
-}: FriendRequestIndicatorProps) {
+}: FriendsButtonProps) {
   return (
     <button
       type="button"
