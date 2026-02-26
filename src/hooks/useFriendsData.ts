@@ -59,7 +59,7 @@ export function useFriendsData() {
   const [incoming, setIncoming] = useState<FriendRequestRow[]>([]);
   const [outgoing, setOutgoing] = useState<FriendRequestRow[]>([]);
   const [relation, setRelation] = useState<Record<string, RelationStatus>>({});
-
+  const [] = useActionState(getUsersAction, null);
   const [toastMessage, setToastMessage] = useState("");
   const [isToastVisible, setIsToastVisible] = useState(false);
 
