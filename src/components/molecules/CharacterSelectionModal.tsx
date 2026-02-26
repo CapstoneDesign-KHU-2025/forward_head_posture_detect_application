@@ -1,6 +1,7 @@
 "use client";
 
 import { SectionLabel } from "@/components/atoms/SectionLabel";
+import { Button } from "@/components/atoms/Button";
 import { Modal } from "@/components/common/Modal";
 import { ModalHeader } from "@/components/atoms/ModalHeader";
 import { cn } from "@/utils/cn";
@@ -135,20 +136,22 @@ export default function CharacterSelectionModal({ isOpen, onClose }: CharacterSe
         </div>
       </div>
       <div className="flex shrink-0 gap-2.5 px-6 pb-[22px]">
-        <button
+        <Button
           type="button"
+          variant="secondary"
+          className="flex-1 text-[14px] py-3"
           onClick={onClose}
-          className="flex-1 rounded-[14px] border-[1.5px] border-[#d4ead9] bg-white px-3 py-3 text-[14px] font-semibold text-[#7a9585] transition-colors hover:border-[#6aab7a] hover:bg-[#f4faf6] hover:text-[#4a7c59]"
         >
           닫기
-        </button>
-        <button
+        </Button>
+        <Button
           type="button"
+          variant="primary"
+          className="flex-1 text-[14px] py-3"
           onClick={handleConfirm}
-          className="flex-1 rounded-[14px] border-none bg-[#4a7c59] px-3 py-3 text-[14px] font-bold text-white transition-all hover:translate-y-[-1px] hover:bg-[#3a6147] hover:shadow-[0_4px_12px_rgba(74,124,89,0.25)]"
         >
           확인
-        </button>
+        </Button>
       </div>
     </Modal>
   );
