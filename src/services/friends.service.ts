@@ -165,3 +165,33 @@ export async function deleteFriendship(userId: string, friendshipId: string) {
 
   return { friendship: deleted };
 }
+
+export async function searchUsers(currentUserId: string, query: string) {
+  if (!query || query.trim().length < 2) return [];
+
+  const trimmedQuery = query.trim();
+
+  const users = await prisma.user.findMany({
+    where: {
+      AND: [
+        {
+          OR: [
+            { name: { contains: trimmedQuery, mode: "insensitive" } },
+            { email: { contains: trimmedQuery, mode: "insensitive" } },
+          ],
+        },
+        {
+          id: { not: currentUserId },
+        },
+      ],
+    },
+    select: {
+      id: true,
+      name: true,
+      image: true,
+    },
+    take: 20,
+  });
+
+  return users;
+}
