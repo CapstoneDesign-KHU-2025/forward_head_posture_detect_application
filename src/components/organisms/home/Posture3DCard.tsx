@@ -3,6 +3,8 @@
 
 import { Card } from "@/components/atoms/Card";
 import LoadingSkeleton from "@/components/molecules/LoadingSkeleton";
+import { SegmentToggle } from "@/components/molecules/SegmentToggle";
+import type { PoseMode } from "@/components/molecules/3DModel";
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 
@@ -35,6 +37,7 @@ export default function Posture3DCard({
   illustration,
 }: ChallengePanelProps) {
   const [characterId, setCharacterId] = useState<string>("remy");
+  const [poseMode, setPoseMode] = useState<PoseMode>("upper");
 
   // 컴포넌트 마운트 시 선택한 캐릭터 읽기
   useEffect(() => {
@@ -111,7 +114,18 @@ export default function Posture3DCard({
               characterId={characterId}
               idealAng={idealAng}
               userAng={currentAngle}
+              poseMode={poseMode}
             />
+            <div className="absolute bottom-3 right-3 z-10">
+              <SegmentToggle
+                options={[
+                  { value: "upper" as const, label: "Upper body" },
+                  { value: "stand" as const, label: "Full body" },
+                ]}
+                value={poseMode}
+                onChange={(v) => setPoseMode(v)}
+              />
+            </div>
           </div>
         </div>
       </div>

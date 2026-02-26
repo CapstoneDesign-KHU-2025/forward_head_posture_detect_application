@@ -67,13 +67,15 @@ type BodyOpts = {
   groundY?: number;
   groundPadding?: number;
 };
-type PoseMode = "stand" | "upper";
+export type PoseMode = "stand" | "upper";
 
 // ★ 캐릭터별 FBX 경로를 바꾸기 위해 추가한 props 타입
 type ThreeDModelProps = {
   characterId?: string; // 선택한 캐릭터 ID (remy, jerry, jessica)
   idealAng?: number; // 기준 목 각도
   userAng?: number; // 사용자 목 각도
+  /** 상반신/전신 모드 (외부 SegmentToggle에서 제어) */
+  poseMode?: PoseMode;
 };
 
 // 공통 mixer (현재 모드에 따라 mixerUpper / mixerFull 중 하나를 가리킴)
@@ -108,8 +110,18 @@ declare global {
 }
 
 // ★ 캐릭터 ID를 받아서 해당 캐릭터의 프리셋 사용
-export default function ThreeDModel({ characterId = "remy", idealAng = 52, userAng = 52 }: ThreeDModelProps) {
+export default function ThreeDModel({
+  characterId = "remy",
+  idealAng = 52,
+  userAng = 52,
+  poseMode: poseModeProp = "upper",
+}: ThreeDModelProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const setPoseModeRef = useRef<((m: PoseMode) => void) | null>(null);
+
+  useEffect(() => {
+    setPoseModeRef.current?.(poseModeProp);
+  }, [poseModeProp]);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -670,31 +682,8 @@ export default function ThreeDModel({ characterId = "remy", idealAng = 52, userA
       btnWorld.onclick = () => applyLandmarkSource(true);
       btnImg.onclick = () => applyLandmarkSource(false);
 
-      // full/upper 토글 (좌하단) – Upper body 버튼을 앞으로
-      const modePanel = document.createElement("div");
-      Object.assign(modePanel.style, {
-        position: "absolute",
-        bottom: "12px",
-        right: "12px",
-        zIndex: 3,
-        background: "#ffffff",
-        color: "var(--text-sub)",
-        padding: "3px 5px",
-        border: "1px solid var(--green-border)",
-        borderRadius: "999px",
-        boxShadow: "0 3px 14px rgba(74,124,89,0.16)",
-        display: "flex",
-        alignItems: "center",
-      });
-      const btnUpper = mkBtn("Upper body");
-      const btnFull = mkBtn("Full body");
-      modePanel.append(btnUpper, btnFull); // ← Upper 먼저
-      currentContainer.appendChild(modePanel);
-
       const setPoseModeUI = (mode: PoseMode) => {
         poseMode = mode;
-        setActive(btnFull, mode === "stand");
-        setActive(btnUpper, mode === "upper");
         applyVisibilityForMode(mode);
         rebuildLinesNow();
 
@@ -727,11 +716,10 @@ export default function ThreeDModel({ characterId = "remy", idealAng = 52, userA
           controls.target.copy(CAMERA_FULL_TARGET);
         }
       };
-      btnFull.onclick = () => setPoseModeUI("stand");
-      btnUpper.onclick = () => setPoseModeUI("upper");
+      setPoseModeRef.current = setPoseModeUI;
 
       // 초기 상태
-      setPoseModeUI("upper");
+      setPoseModeUI(poseModeProp);
       applyLandmarkSource(true);
     }
 
