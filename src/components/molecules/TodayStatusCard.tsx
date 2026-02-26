@@ -64,46 +64,65 @@ function getStatusInfo(warningCount: number | null | undefined, isNewUser: boole
 export default function TodayStatusCard({ warningCount, isNewUser }: TodayStatusCardProps) {
   const statusInfo = getStatusInfo(warningCount, isNewUser);
 
-  const statusStyles: Record<StatusType, { borderColor: string; background: string }> = {
+  type StatusStyle = {
+    background: string;
+    titleColor: string;
+    messageColor: string;
+    borderColor?: string;
+  };
+
+  const statusStyles: Record<Exclude<StatusType, "empty">, StatusStyle> = {
     excellent: {
-      borderColor: "#4A9D4D",
-      background: "linear-gradient(135deg, #ffffff 0%, #E8F5E9 100%)",
+      background: "linear-gradient(135deg, #d4f0dc 0%, #e8f8ee 100%)",
+      borderColor: "#6aab7a",
+      titleColor: "var(--green)",
+      messageColor: "var(--text-sub)",
     },
     normal: {
-      borderColor: "#FFA726",
-      background: "linear-gradient(135deg, #ffffff 0%, #FFF9E6 100%)",
+      background: "linear-gradient(135deg, #fff8e6 0%, #fffcf0 100%)",
+      borderColor: "#f0c040",
+      titleColor: "#b88a00",
+      messageColor: "var(--text-sub)",
     },
     bad: {
-      borderColor: "#FF7043",
-      background: "linear-gradient(135deg, #ffffff 0%, #FFE8E0 100%)",
-    },
-    empty: {
-      borderColor: "#9CA3AF",
-      background: "linear-gradient(135deg, #ffffff 0%, #F9FAFB 100%)",
+      background: "linear-gradient(135deg, #fff0ee 0%, #fff5f4 100%)",
+      borderColor: "#ff8c8c",
+      titleColor: "#c0392b",
+      messageColor: "var(--text-sub)",
     },
   };
 
-  const style = statusStyles[statusInfo.statusClass];
+  const style: StatusStyle =
+    statusInfo.statusClass === "empty"
+      ? isNewUser === true
+        ? {
+            // 신규 사용자 배너
+            background: "linear-gradient(135deg, #c8ecd4 0%, #e4f5e8 100%)",
+            titleColor: "#3a6147",
+            messageColor: "var(--text-sub)",
+          }
+        : {
+            // 오늘 첫 방문 배너
+            background: "linear-gradient(135deg, #4a7c59 0%, #6aab7a 100%)",
+            titleColor: "#ffffff",
+            messageColor: "rgba(255,255,255,0.85)",
+          }
+      : statusStyles[statusInfo.statusClass as Exclude<StatusType, "empty">];
 
   return (
     <div
       className="status-card"
       style={{
         background: style.background,
-        padding: "2.5rem 2rem",
-        borderRadius: "16px",
-        boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
+        padding: "22px 24px",
+        borderRadius: "18px",
+        boxShadow: "0 4px 16px rgba(74,124,89,0.2)",
+        border: style.borderColor ? `2px solid ${style.borderColor}` : "none",
         textAlign: "center",
-        border: `3px solid ${style.borderColor}`,
-        transition: "all 0.3s",
-      }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.transform = "translateY(-4px)";
-        e.currentTarget.style.boxShadow = "0 8px 30px rgba(45, 95, 46, 0.15)";
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.transform = "translateY(0)";
-        e.currentTarget.style.boxShadow = "0 4px 20px rgba(0,0,0,0.08)";
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
       }}
     >
       <style jsx>{`
@@ -117,27 +136,28 @@ export default function TodayStatusCard({ warningCount, isNewUser }: TodayStatus
           }
         }
         .status-emoji {
-          font-size: ${statusInfo.statusClass === "empty" ? "3.5rem" : "4rem"};
-          margin-bottom: 1rem;
+          font-size: 2.25rem;
+          margin-bottom: 10px;
           animation: bounce 2s infinite;
         }
       `}</style>
       <div className="status-emoji">{statusInfo.emoji}</div>
       <div
         style={{
-          fontSize: statusInfo.statusClass === "empty" ? "1.6rem" : "1.8rem",
-          fontWeight: "bold",
-          color: statusInfo.statusClass === "empty" ? "#4F4F4F" : "#2D5F2E",
-          marginBottom: "0.8rem",
+          fontFamily: "'Nunito', sans-serif",
+          fontSize: "18px",
+          fontWeight: 800,
+          color: style.titleColor,
+          marginBottom: "6px",
         }}
       >
         {statusInfo.title}
       </div>
       <div
         style={{
-          fontSize: statusInfo.statusClass === "empty" ? "1rem" : "1.1rem",
-          fontWeight: "normal",
-          color: statusInfo.statusClass === "empty" ? "#6B7280" : "#4F4F4F",
+          fontSize: "13px",
+          fontWeight: 400,
+          color: style.messageColor,
           lineHeight: "1.6",
           whiteSpace: "pre-line",
         }}
