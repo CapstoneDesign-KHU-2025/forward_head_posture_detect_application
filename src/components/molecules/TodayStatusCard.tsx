@@ -111,12 +111,11 @@ export default function TodayStatusCard({ warningCount, isNewUser }: TodayStatus
 
   return (
     <div
-      className="status-card"
+      className="status-card shadow-soft-card"
       style={{
         background: style.background,
         padding: "22px 24px",
         borderRadius: "18px",
-        boxShadow: "0 4px 16px rgba(74,124,89,0.2)",
         border: style.borderColor ? `2px solid ${style.borderColor}` : "none",
         textAlign: "center",
         display: "flex",

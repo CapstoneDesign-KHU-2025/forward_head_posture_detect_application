@@ -33,7 +33,7 @@ export default function StatCard({
       className={[
         "flex flex-col items-start text-left",
         "rounded-[18px] bg-white px-[18px] py-[14px]",
-        "shadow-[0_4px_20px_rgba(74,124,89,0.12)]",
+        "shadow-soft-card",
 
         className,
       ]

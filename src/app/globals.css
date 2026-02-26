@@ -94,3 +94,8 @@ body[data-modal-open] header {
 .animate-rotate-slow {
   animation: rotate-slow 3s ease-in-out infinite;
 }
+
+/* 공통 카드 그림자 */
+.shadow-soft-card {
+  box-shadow: 0 4px 20px rgba(74, 124, 89, 0.12);
+}
