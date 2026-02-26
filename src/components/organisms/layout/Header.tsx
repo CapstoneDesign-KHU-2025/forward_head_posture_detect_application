@@ -32,7 +32,7 @@ export default function Header({ user: initialUser, className }: HeaderProps) {
   const isCharacterPage = pathname === "/character";
 
   const Brand = () => (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-1">
       <TurtleLogo size="s" />
       <span
         className="text-[20px] font-extrabold"
