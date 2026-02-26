@@ -1,7 +1,8 @@
 "use client";
+
 import { StatusBannerType } from "@/hooks/useTurtleNeckMeasurement";
-import { useState, useEffect } from "react";
-import LoadingSkeleton from "@/components/common/LoadingSkeleton";
+import { useEffect, useState } from "react";
+import LoadingSkeleton from "@/components/molecules/LoadingSkeleton";
 
 type EstimatePanelProps = {
   bannerType: StatusBannerType;
@@ -12,6 +13,7 @@ type EstimatePanelProps = {
   countdownRemain: number | null;
   measurementStarted: boolean;
 };
+
 export default function EstimatePanel({
   bannerType,
   bannerMessage,
@@ -37,7 +39,6 @@ export default function EstimatePanel({
     return () => clearInterval(interval);
   }, [videoRef]);
 
-
   return (
     <section className="bg-white rounded-[20px] overflow-hidden shadow-[0_4px_30px_rgba(45,95,46,0.1)]">
       <div className="p-0">
@@ -56,12 +57,11 @@ export default function EstimatePanel({
 
         {/* 카메라 컨테이너 */}
         <div className="relative w-full m-0 rounded-none overflow-hidden bg-[#2C3E50]" style={{ aspectRatio: "4/3" }}>
-
           {/* 로딩 중이면 스켈레톤을 위에 덮어씌우기 */}
           {isCameraLoading && (
-             <div className="absolute inset-0 z-10 w-full h-full">
-               <LoadingSkeleton />
-             </div>
+            <div className="absolute inset-0 z-10 w-full h-full">
+              <LoadingSkeleton />
+            </div>
           )}
 
           {/* 비디오는 숨기고, 캔버스만 화면에 표시 */}

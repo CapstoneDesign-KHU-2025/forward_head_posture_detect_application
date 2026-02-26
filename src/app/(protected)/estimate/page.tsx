@@ -13,8 +13,8 @@ import { Button } from "@/components/atoms/Button";
 import EstimatePanel from "@/components/molecules/EstimatePanel";
 import ErrorBanner from "@/components/atoms/ErrorBanner";
 import ToggleButton from "@/components/molecules/ToggleButton";
-import AsyncBoundary from "@/components/common/AsyncBoundary";
-import LoadingSkeleton from "@/components/common/LoadingSkeleton";
+import AsyncBoundary from "@/components/molecules/AsyncBoundary";
+import LoadingSkeleton from "@/components/molecules/LoadingSkeleton";
 import { logger } from "@/lib/logger";
 
 export default function Estimate() {
