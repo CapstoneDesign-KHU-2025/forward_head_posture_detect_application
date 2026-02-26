@@ -3,11 +3,11 @@
 import { useState } from "react";
 import { Modal } from "@/components/common/Modal";
 import { Toast } from "@/components/common/Toast";
-import { FriendsModalHeader } from "./FriendsModalHeader";
-import { SearchResultList } from "./SearchResultList";
-import { IncomingRequestList } from "./IncomingRequestList";
-import { OutgoingRequestList } from "./OutgoingRequestList";
-import { FriendList } from "./FriendList";
+import { FriendsModalHeader } from "@/components/organisms/friends/FriendsModalHeader";
+import { SearchResultList } from "@/components/organisms/friends/SearchResultList";
+import { IncomingRequestList } from "@/components/organisms/friends/IncomingRequestList";
+import { OutgoingRequestList } from "@/components/organisms/friends/OutgoingRequestList";
+import { FriendList } from "@/components/organisms/friends/FriendList";
 import { useFriendsData } from "@/hooks/useFriendsData";
 
 type TabId = "search" | "requests" | "friends";
