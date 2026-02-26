@@ -16,9 +16,9 @@ const variantClass: Record<NonNullable<ButtonProps["variant"]>, string> = {
   primary:
     "bg-[#4a7c59] text-white border border-transparent hover:bg-[#3a6147] " +
     "focus-visible:ring-[#4a7c59] ring-offset-white",
-  // .btn-cancel
+  // .btn-cancel (white background + green border)
   secondary:
-    "bg-[#f4faf6] text-[#7a9585] border border-[#d4ead9] hover:bg-[#e8f5ec] " +
+    "bg-white text-[#7a9585] border border-[#d4ead9] hover:bg-[#f4faf6] " +
     "focus-visible:ring-[#4a7c59] ring-offset-white",
   // icon은 크기/색을 사용하는 쪽에서 완전히 제어하도록 기본 스타일을 비워둔다.
   icon: "",
