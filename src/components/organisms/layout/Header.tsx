@@ -6,7 +6,7 @@ import { Button } from "@/components/atoms/Button";
 import { Home, Play } from "lucide-react";
 import { useSession, signIn } from "next-auth/react";
 import UserMenuDropdown from "@/components/molecules/UserMenuDropdown";
-import AvatarLogo from "@/components/molecules/AvatarLogo";
+import TurtleLogo from "@/components/molecules/TurtleLogo";
 import { FriendRequestIndicator } from "@/components/molecules/FriendRequestIndicator";
 import { FriendsModal } from "@/components/organisms/friends/FriendsModal";
 import { useFriendsData } from "@/hooks/useFriendsData";
@@ -46,14 +46,14 @@ export default function Header({ user: initialUser, className }: HeaderProps) {
         {isLandingPage ? (
           // 랜딩 페이지: 로고와 프로필만 있는 간단한 레이아웃
           <div className="flex items-center justify-between">
-            <Link
-              href="/"
-              className="flex items-center gap-2 text-xl font-bold"
-              style={{ color: "#2D5F2E", textDecoration: "none" }}
-            >
-              <AvatarLogo size="s" />
-              <span>거북목 거북거북!</span>
-            </Link>
+              <Link
+                href="/"
+                className="flex items-center gap-2 text-xl font-bold"
+                style={{ color: "#2D5F2E", textDecoration: "none" }}
+              >
+                <TurtleLogo size="s" />
+                <span>거북목 거북거북!</span>
+              </Link>
             <div className="flex items-center gap-2">
               {isLoading ? (
                 <span className="text-sm text-black/40">...</span>
