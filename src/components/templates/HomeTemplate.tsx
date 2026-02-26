@@ -1,7 +1,7 @@
 import WelcomeHero from "@/components/organisms/home/WelcomeHero";
 import StatCard from "@/components/molecules/StatCard";
 import TodayStatusCard from "@/components/molecules/TodayStatusCard";
-import TitleCard from "@/components/molecules/TitleCard";
+import TurtleEvolutionCard from "@/components/molecules/TurtleEvolutionCard";
 import { formatMeasuredTime } from "@/utils/formatMeasuredTime";
 import GraphicModelPanel from "@/components/organisms/home/GraphicModelPanel";
 import AsyncBoundary from "@/components/molecules/AsyncBoundary";
@@ -89,7 +89,7 @@ export default function HomeTemplate({
               <AsyncBoundary suspenseFallback={<LoadingSkeleton />}>
                 <div className="flex-[1.3]">
                   {/* 칭호 카드 */}
-                  <TitleCard goodDays={goodDays} />
+                  <TurtleEvolutionCard goodDays={goodDays} />
                 </div>
               </AsyncBoundary>
             </div>
