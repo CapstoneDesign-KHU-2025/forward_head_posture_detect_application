@@ -45,7 +45,7 @@
 } */
 
 body {
-  background: var(--background);
+  background: var(--green-pale);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
