@@ -1,6 +1,5 @@
 "use client";
 
-import { Badge } from "@/components/atoms/Badge";
 import { Users } from "lucide-react";
 import { cn } from "@/utils/cn";
 
@@ -19,15 +18,21 @@ export function FriendRequestIndicator({
     <button
       type="button"
       onClick={onClick}
+      title="친구 관리"
       className={cn(
-        "flex h-11 min-h-11 items-center justify-center gap-2 rounded-[25px] border-2 border-[#d4ead9] bg-white px-5 py-2",
-        "font-semibold text-base transition-all duration-300",
-        "hover:border-[#6aab7a] hover:bg-[#e8f5ec] hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(74,124,89,0.25)]",
+        "relative flex h-11 w-11 shrink-0 items-center justify-center rounded-[12px]",
+        "text-[var(--text-sub)] transition-all duration-150",
+        "hover:bg-[var(--green-light)] hover:text-[var(--green)]",
         className
       )}
     >
-      <Users size={17} className="text-[#4a7c59]" />
-      <Badge count={requestCount} />
+      <Users size={24} strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" />
+      {requestCount > 0 && (
+        <span
+          className="absolute top-1.5 right-1.5 h-[7px] w-[7px] shrink-0 rounded-full bg-[#ff8c6b] border-[1.5px] border-white"
+          aria-hidden
+        />
+      )}
     </button>
   );
 }
