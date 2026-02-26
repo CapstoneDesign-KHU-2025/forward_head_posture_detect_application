@@ -2,7 +2,7 @@ import { forwardRef } from "react";
 import { cn } from "@/utils/cn";
 
 type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
-  variant?: "primary" | "secondary" | "danger" | "icon";
+  variant?: "primary" | "secondary" | "danger";
   size?: "lg" | "md" | "sm";
 };
 
@@ -24,8 +24,6 @@ const variantClass: Record<NonNullable<ButtonProps["variant"]>, string> = {
   danger:
     "bg-[var(--danger-bg)] text-[var(--danger-text)] border border-[var(--danger-border)] hover:bg-[#ffe5e0] " +
     "focus-visible:ring-[var(--danger-text)] ring-offset-white",
-  // icon은 크기/색을 사용하는 쪽에서 완전히 제어하도록 기본 스타일을 비워둔다.
-  icon: "",
 };
 
 // 사이즈 스타일 (padding + font-size + radius/hover)
@@ -44,12 +42,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     return (
       <button
         ref={ref}
-        className={cn(
-          base,
-          variant === "icon" ? "" : sizeClass[size], // 아이콘 버튼은 크기를 직접 지정
-          variantClass[variant],
-          className,
-        )}
+        className={cn(base, sizeClass[size], variantClass[variant], className)}
         {...props}
       />
     );

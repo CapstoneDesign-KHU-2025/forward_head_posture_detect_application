@@ -2,7 +2,7 @@
 
 import { UserRow } from "@/components/molecules/UserRow";
 import { EmptyState } from "@/components/atoms/EmptyState";
-import { Button } from "@/components/atoms/Button";
+import { IconButton } from "@/components/atoms/IconButton";
 import type { Friend } from "@/types/friends";
 import { cn } from "@/utils/cn";
 
@@ -40,19 +40,18 @@ export function FriendList({ friends, onDelete }: FriendListProps) {
             initial={getInitial(f.user.name, f.user.id)}
             bgColor={getAvatarStyle(f.user.id)}
             actions={
-              <Button
-                type="button"
-                variant="icon"
+              <IconButton
+                variant="ghost"
+                size="sm"
+                icon="✕"
                 onClick={() => onDelete(f.friendshipId, f.user)}
                 title="친구 삭제"
+                aria-label="친구 삭제"
                 className={cn(
-                  "h-7 w-7 px-0 rounded-lg",
-                  "border-none bg-transparent text-[16px] text-[#d0d0d0]",
-                  "transition-colors hover:bg-[#fff0f0] hover:text-[#ff8c8c]"
+                  "h-7 w-7 rounded-lg text-[16px]",
+                  "transition-colors"
                 )}
-              >
-                ✕
-              </Button>
+              />
             }
           />
         ))

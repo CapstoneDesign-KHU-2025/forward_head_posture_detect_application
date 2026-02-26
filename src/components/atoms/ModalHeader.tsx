@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@/components/atoms/Button";
+import { IconButton } from "@/components/atoms/IconButton";
 
 type ModalHeaderProps = {
   title: string;
@@ -26,14 +26,12 @@ export function ModalHeader({ title, subtitle, icon, onClose }: ModalHeaderProps
           </h2>
           {subtitle && <p className="mt-0.5 text-[14px] text-white/75">{subtitle}</p>}
         </div>
-        <Button
-          type="button"
-          variant="icon"
+        <IconButton
+          variant="outline"
+          icon={<span className="leading-none text-[20px]">×</span>}
           onClick={onClose}
-          className="h-[34px] w-[34px] px-0 rounded-[10px] bg-white/20 text-white hover:bg-white/35 text-[20px] leading-none"
-        >
-          ×
-        </Button>
+          aria-label="모달 닫기"
+        />
       </div>
     </header>
   );
