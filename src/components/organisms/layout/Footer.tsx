@@ -10,11 +10,8 @@ type FooterProps = {
 
 export default function Footer({ links, className }: FooterProps) {
   const pathname = usePathname();
-  const isLoginPage = pathname === "/login";
-  const isCharacterPage = pathname === "/character";
 
-  // 로그인 페이지와 캐릭터 선택 페이지에서는 Footer 숨김
-  if (isLoginPage || isCharacterPage) return null;
+  if (pathname !== "/landing") return null;
 
   return (
     <footer className={["w-full border-t border-black/10 bg-white", className].filter(Boolean).join(" ")}>
