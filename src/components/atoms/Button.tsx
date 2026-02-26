@@ -14,16 +14,16 @@ const base =
 const variantClass: Record<NonNullable<ButtonProps["variant"]>, string> = {
   // .btn-save
   primary:
-    "bg-[#4a7c59] text-white border border-transparent hover:bg-[#3a6147] " +
-    "focus-visible:ring-[#4a7c59] ring-offset-white",
+    "bg-[var(--green)] text-white border border-transparent hover:bg-[var(--green-dark)] " +
+    "focus-visible:ring-[var(--green)] ring-offset-white",
   // .btn-cancel (white background + green border)
   secondary:
-    "bg-white text-[#7a9585] border border-[#d4ead9] hover:bg-[#f4faf6] " +
-    "focus-visible:ring-[#4a7c59] ring-offset-white",
+    "bg-white text-[var(--text-sub)] border border-[var(--green-border)] hover:bg-[var(--green-pale)] " +
+    "focus-visible:ring-[var(--green)] ring-offset-white",
   // danger: 측정 중단 버튼 등 (연분홍 배경 + 주황 텍스트/테두리)
   danger:
-    "bg-[#fff0ee] text-[#e05030] border border-[#ffcfc7] hover:bg-[#ffe5e0] " +
-    "focus-visible:ring-[#e05030] ring-offset-white",
+    "bg-[var(--danger-bg)] text-[var(--danger-text)] border border-[var(--danger-border)] hover:bg-[#ffe5e0] " +
+    "focus-visible:ring-[var(--danger-text)] ring-offset-white",
   // icon은 크기/색을 사용하는 쪽에서 완전히 제어하도록 기본 스타일을 비워둔다.
   icon: "",
 };
