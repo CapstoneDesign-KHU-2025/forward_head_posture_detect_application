@@ -1,8 +1,8 @@
 // src/components/organisms/home/ChallengePanel.tsx
 "use client";
 
-import AsyncBoundary from "@/components/common/AsyncBoundary";
-import LoadingSkeleton from "@/components/common/LoadingSkeleton";
+import AsyncBoundary from "@/components/molecules/AsyncBoundary";
+import LoadingSkeleton from "@/components/molecules/LoadingSkeleton";
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 

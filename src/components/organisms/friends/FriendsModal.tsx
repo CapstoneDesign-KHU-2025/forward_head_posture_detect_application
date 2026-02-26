@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Modal } from "@/components/common/Modal";
-import { Toast } from "@/components/common/Toast";
+import { Modal } from "@/components/atoms/Modal";
+import { Toast } from "@/components/atoms/Toast";
 import { FriendsModalHeader } from "@/components/organisms/friends/FriendsModalHeader";
 import { SearchResultList } from "@/components/organisms/friends/SearchResultList";
 import { IncomingRequestList } from "@/components/organisms/friends/IncomingRequestList";

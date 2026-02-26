@@ -2,7 +2,7 @@
 
 import { SectionLabel } from "@/components/atoms/SectionLabel";
 import { Button } from "@/components/atoms/Button";
-import { Modal } from "@/components/common/Modal";
+import { Modal } from "@/components/atoms/Modal";
 import { ModalHeader } from "@/components/atoms/ModalHeader";
 import { getSensitivity, setSensitivity, getSensitivityLabel, type Sensitivity } from "@/utils/sensitivity";
 import { cn } from "@/utils/cn";

@@ -2,7 +2,7 @@
 
 import { SectionLabel } from "@/components/atoms/SectionLabel";
 import { Button } from "@/components/atoms/Button";
-import { Modal } from "@/components/common/Modal";
+import { Modal } from "@/components/atoms/Modal";
 import { ModalHeader } from "@/components/atoms/ModalHeader";
 import { cn } from "@/utils/cn";
 import { useEffect, useState } from "react";
