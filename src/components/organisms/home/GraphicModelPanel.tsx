@@ -1,6 +1,7 @@
 // src/components/organisms/home/ChallengePanel.tsx
 "use client";
 
+import { Card } from "@/components/atoms/Card";
 import LoadingSkeleton from "@/components/molecules/LoadingSkeleton";
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
@@ -79,17 +80,17 @@ export default function GraphicModelPanel({
   }
 
   return (
-    <div className="rounded-[18px] bg-white shadow-soft-card flex flex-col overflow-hidden">
+    <Card className="p-6 pt-4 flex flex-col gap-4 overflow-hidden">
       {/* 헤더 */}
-      <div className="flex items-center justify-between px-5 py-3.5">
+      <div className="flex items-center justify-between">
         <div>
           <h2
-            className="text-[14px] font-extrabold text-[var(--text)]"
+            className="text-[18px] font-extrabold text-[var(--text)]"
             style={{ fontFamily: "Nunito, sans-serif" }}
           >
             {title}
           </h2>
-          <p className="mt-[2px] text-[11px] text-[var(--text-muted)]">5분 단위 평균 목 각도</p>
+          <p className="mt-[2px] text-[12px] font-semibold text-[var(--text-muted)]">5분 단위 평균 목 각도</p>
         </div>
         <div
           className="bg-[var(--green-light)] rounded-full px-4 py-[4px] text-[15px] font-extrabold text-[var(--green)]"
@@ -100,7 +101,7 @@ export default function GraphicModelPanel({
       </div>
 
       {/* 3D 모델 영역 */}
-      <div className="flex-1 min-h-[260px] px-6 pt-6 pb-7 flex flex-col items-center justify-center relative">
+      <div className="flex-1 min-h-[260px] flex flex-col items-center justify-center relative">
         <div className="w-full aspect-[4/3] rounded-[22px] bg-[linear-gradient(180deg,#e8f5ec_0%,#f4faf6_70%,#e0f0e5_100%)] flex items-center justify-center relative overflow-hidden">
           {/* 바닥 그라디언트 느낌 */}
           <div className="absolute inset-x-0 bottom-0 h-10 bg-[linear-gradient(0deg,rgba(74,124,89,0.12)_0%,transparent_100%)]" />
@@ -117,6 +118,6 @@ export default function GraphicModelPanel({
 
       {/* (옵션) 추가 일러스트/컨텐츠 */}
       {illustration}
-    </div>
+    </Card>
   );
 }

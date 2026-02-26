@@ -1,5 +1,7 @@
 "use client";
 
+import { Card } from "@/components/atoms/Card";
+
 type StatusType = "excellent" | "normal" | "bad" | "empty";
 
 type TodayStatusCardProps = {
@@ -110,18 +112,12 @@ export default function TodayStatusCard({ warningCount, isNewUser }: TodayStatus
       : statusStyles[statusInfo.statusClass as Exclude<StatusType, "empty">];
 
   return (
-    <div
-      className="status-card shadow-soft-card"
+    <Card
+      className="status-card flex flex-col items-center justify-center px-6 py-5"
       style={{
         background: style.background,
-        padding: "22px 24px",
-        borderRadius: "18px",
         border: style.borderColor ? `2px solid ${style.borderColor}` : "none",
         textAlign: "center",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
       }}
     >
       <style jsx>{`
@@ -163,6 +159,6 @@ export default function TodayStatusCard({ warningCount, isNewUser }: TodayStatus
       >
         {statusInfo.message}
       </div>
-    </div>
+    </Card>
   );
 }

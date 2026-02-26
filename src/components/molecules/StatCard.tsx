@@ -18,6 +18,8 @@ type StatCardProps = {
   valueClassName?: string;
 };
 
+import { Card } from "@/components/atoms/Card";
+
 /** StatCard: 라벨 + (값+단위) */
 export default function StatCard({
   label,
@@ -29,12 +31,10 @@ export default function StatCard({
   valueClassName = "font-[900] text-[1.7rem] leading-none text-[var(--green)]",
 }: StatCardProps) {
   return (
-    <div
+    <Card
       className={[
         "flex flex-col items-start text-left",
-        "rounded-[18px] bg-white px-[18px] py-[14px]",
-        "shadow-soft-card",
-
+        "px-[18px] py-[14px]",
         className,
       ]
         .filter(Boolean)
@@ -64,6 +64,6 @@ export default function StatCard({
           {subtitle}
         </div>
       ) : null}
-    </div>
+    </Card>
   );
 }
