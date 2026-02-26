@@ -4,12 +4,12 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/atoms/Button";
 import { useSession, signIn } from "next-auth/react";
-import UserMenuDropdown from "@/components/molecules/UserMenuDropdown";
 import TurtleLogo from "@/components/molecules/TurtleLogo";
 import { FriendsButton } from "@/components/molecules/FriendsButton";
+import { UserButton } from "@/components/molecules/UserButton";
 import { FriendsModal } from "@/components/organisms/friends/FriendsModal";
 import { useFriendsData } from "@/hooks/useFriendsData";
-import { useRef, useState } from "react";
+import { useState } from "react";
 type HeaderProps = {
   user?: { name: string; avatarSrc?: string } | null;
   className?: string;
@@ -17,9 +17,7 @@ type HeaderProps = {
 export default function Header({ user: initialUser, className }: HeaderProps) {
   const pathname = usePathname();
   const { data: session, status } = useSession();
-  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isFriendsModalOpen, setIsFriendsModalOpen] = useState(false);
-  const userMenuAnchorRef = useRef<HTMLDivElement>(null);
   const friendsData = useFriendsData(); 
 
   const navItems = [
@@ -60,22 +58,14 @@ export default function Header({ user: initialUser, className }: HeaderProps) {
           requestCount={friendsData.incomingCount}
           onClick={() => setIsFriendsModalOpen(true)}
         />
-        <div className="relative" ref={userMenuAnchorRef}>
-          <button
-            onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--green)] text-white font-semibold cursor-pointer transition-colors duration-200 hover:bg-[var(--green-dark)]"
-          >
-            {(user.name ?? "사용자").charAt(0)}
-          </button>
-          <UserMenuDropdown
-            userName={user.name ?? "사용자"}
-            userEmail={(user as any)?.email}
-            userImage={(user as any)?.image || (user as any)?.avatarSrc}
-            isOpen={isUserMenuOpen}
-            onClose={() => setIsUserMenuOpen(false)}
-            anchorRef={userMenuAnchorRef}
-          />
-        </div>
+        <UserButton
+          user={{
+            name: user.name ?? "사용자",
+            email: (user as any)?.email,
+            image: (user as any)?.image,
+            avatarSrc: (user as any)?.avatarSrc,
+          }}
+        />
         <FriendsModal
           isOpen={isFriendsModalOpen}
           onClose={() => setIsFriendsModalOpen(false)}
@@ -94,18 +84,18 @@ export default function Header({ user: initialUser, className }: HeaderProps) {
         .filter(Boolean)
         .join(" ")}
     >
-      <div className="mx-auto max-w-[1400px] px-8">
+      <div className="w-full px-6 md:px-8">
         {isLandingPage ? (
           // 랜딩 페이지: 로고와 프로필만 있는 간단한 레이아웃
-          <div className="flex h-[var(--header-height)] items-center">
+          <div className="flex h-[var(--header-height)] w-full items-center justify-between">
             <Brand />
-            <div className="ml-auto flex items-center gap-2">
+            <div className="flex items-center gap-2">
               <UserActions />
             </div>
           </div>
         ) : (
           // 일반 페이지: 좌 로고 / 중앙 탭 / 우측 아이콘 & 프로필
-          <div className="relative flex h-[var(--header-height)] items-center">
+          <div className="relative flex h-[var(--header-height)] w-full items-center justify-between">
             {/* Left: Logo & brand */}
             <Brand />
 
@@ -118,7 +108,7 @@ export default function Header({ user: initialUser, className }: HeaderProps) {
                     key={item.href}
                     href={item.href}
                     className={[
-                      "px-4 py-[7px] rounded-[10px] text-[15px] font-semibold transition-colors duration-150",
+                      "px-4 py-[7px] rounded-[10px] text-base font-semibold transition-colors duration-150",
                       isActive
                         ? "bg-[var(--green-light)] text-[var(--green)]"
                         : "text-[var(--text-sub)] hover:bg-[var(--green-light)] hover:text-[var(--green)]",
@@ -134,7 +124,7 @@ export default function Header({ user: initialUser, className }: HeaderProps) {
             </nav>
 
             {/* Right: 친구 아이콘 + 프로필 */}
-            <div className="ml-auto flex items-center gap-2">
+            <div className="flex items-center gap-2">
               <UserActions />
             </div>
           </div>
