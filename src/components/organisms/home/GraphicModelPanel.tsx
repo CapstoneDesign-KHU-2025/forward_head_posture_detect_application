@@ -1,7 +1,6 @@
 // src/components/organisms/home/ChallengePanel.tsx
 "use client";
 
-import AsyncBoundary from "@/components/molecules/AsyncBoundary";
 import LoadingSkeleton from "@/components/molecules/LoadingSkeleton";
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
@@ -31,7 +30,7 @@ function getSelectedCharacter(): string {
 export default function GraphicModelPanel({
   userAng,
   title = "당신의 거북목 도전기",
-  description = "3D 모델",
+  description,
   illustration,
 }: ChallengePanelProps) {
   const [characterId, setCharacterId] = useState<string>("remy");
@@ -68,22 +67,53 @@ export default function GraphicModelPanel({
     };
   }, []);
 
-  return (
-    <div className="rounded-[20px] bg-white p-8 shadow-[0_2px_20px_rgba(0,0,0,0.08)]">
-      {/* 제목 */}
-      <div className="flex justify-between items-center mb-6 pb-4 border-b-2 border-[#E8F5E9]">
-        <h2 className="text-[1.5rem] font-bold text-[#2D5F2E]">{title}</h2>
-      </div>
+  const currentAngle = userAng ?? idealAng;
+  const delta = currentAngle - idealAng;
+  const deltaLabel = `${delta >= 0 ? "+" : ""}${delta.toFixed(1)}°`;
 
-      {/* 3D 모델 영역 - 기존 ThreeDModel 사용 */}
-      <div className="bg-[#2C3E50] rounded-xl p-8 min-h-[500px] flex flex-col justify-between relative mb-4">
-        <div className="absolute inset-0 rounded-xl overflow-hidden">
-          <ThreeDModel characterId={characterId} idealAng={idealAng} userAng={userAng ?? idealAng} />{" "}
+  let statusText = "바른 자세 유지 중 👍";
+  if (Math.abs(delta) > 5) {
+    statusText = "목을 쉬게 해주세요!";
+  } else if (Math.abs(delta) > 2) {
+    statusText = "조금만 더 신경 써볼까요?";
+  }
+
+  return (
+    <div className="rounded-[18px] bg-white shadow-soft-card flex flex-col overflow-hidden">
+      {/* 헤더 */}
+      <div className="flex items-center justify-between px-5 py-3.5">
+        <div>
+          <h2
+            className="text-[14px] font-extrabold text-[var(--text)]"
+            style={{ fontFamily: "Nunito, sans-serif" }}
+          >
+            {title}
+          </h2>
+          <p className="mt-[2px] text-[11px] text-[var(--text-muted)]">5분 단위 평균 목 각도</p>
+        </div>
+        <div
+          className="bg-[var(--green-light)] rounded-full px-4 py-[4px] text-[15px] font-extrabold text-[var(--green)]"
+          style={{ fontFamily: "Nunito, sans-serif" }}
+        >
+          {currentAngle.toFixed(1)}°
         </div>
       </div>
 
-      {/* 설명 */}
-      <p className="text-center mt-6 pt-6 border-t border-[#E8F5E9] text-[0.7rem] text-[#4F4F4F]">{description}</p>
+      {/* 3D 모델 영역 */}
+      <div className="flex-1 min-h-[260px] px-6 pt-6 pb-7 flex flex-col items-center justify-center relative">
+        <div className="w-full aspect-[4/3] rounded-[22px] bg-[linear-gradient(180deg,#e8f5ec_0%,#f4faf6_70%,#e0f0e5_100%)] flex items-center justify-center relative overflow-hidden">
+          {/* 바닥 그라디언트 느낌 */}
+          <div className="absolute inset-x-0 bottom-0 h-10 bg-[linear-gradient(0deg,rgba(74,124,89,0.12)_0%,transparent_100%)]" />
+
+          <div className="relative z-[1] w-full h-full">
+            <ThreeDModel
+              characterId={characterId}
+              idealAng={idealAng}
+              userAng={currentAngle}
+            />
+          </div>
+        </div>
+      </div>
 
       {/* (옵션) 추가 일러스트/컨텐츠 */}
       {illustration}
