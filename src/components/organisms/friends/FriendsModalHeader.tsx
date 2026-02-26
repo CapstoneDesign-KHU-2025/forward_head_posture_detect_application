@@ -3,7 +3,7 @@
 import { Users } from "lucide-react";
 import { ModalTabBar } from "./ModalTabBar";
 import type { ModalTabBarProps } from "./ModalTabBar";
-import { cn } from "@/utils/cn";
+import { Button } from "@/components/atoms/Button";
 
 type TabId = "search" | "requests" | "friends";
 
@@ -30,17 +30,14 @@ export function FriendsModalHeader({
           </h2>
           <p className="mt-0.5 text-[14px] text-white/75">친구와 함께 거북목 탈출!</p>
         </div>
-        <button
+        <Button
           type="button"
+          variant="icon"
           onClick={onClose}
-          className={cn(
-            "flex h-[34px] w-[34px] items-center justify-center rounded-[10px]",
-            "bg-white/20 text-white transition-colors hover:bg-white/35",
-            "text-[20px] leading-none"
-          )}
+          className="h-[34px] w-[34px] px-0 rounded-[10px] bg-white/20 text-white hover:bg-white/35 text-[20px] leading-none"
         >
           ×
-        </button>
+        </Button>
       </div>
       <ModalTabBar
         activeTab={activeTab}
