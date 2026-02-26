@@ -7,6 +7,9 @@ import { Home, Play } from "lucide-react";
 import { useSession, signIn } from "next-auth/react";
 import UserMenuDropdown from "@/components/molecules/UserMenuDropdown";
 import AvatarLogo from "@/components/molecules/AvatarLogo";
+import { FriendRequestIndicator } from "@/components/molecules/FriendRequestIndicator";
+import { FriendsModal } from "@/components/organisms/friends/FriendsModal";
+import { useFriendsData } from "@/hooks/useFriendsData";
 import { useRef, useState } from "react";
 type HeaderProps = {
   user?: { name: string; avatarSrc?: string } | null;
@@ -16,7 +19,9 @@ export default function Header({ user: initialUser, className }: HeaderProps) {
   const pathname = usePathname();
   const { data: session, status } = useSession();
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [isFriendsModalOpen, setIsFriendsModalOpen] = useState(false);
   const userMenuAnchorRef = useRef<HTMLDivElement>(null);
+  const friendsData = useFriendsData();
 
   const navItems = [
     { label: "Home", href: "/", icon: <Home size={18} /> },
@@ -49,14 +54,19 @@ export default function Header({ user: initialUser, className }: HeaderProps) {
               <AvatarLogo size="s" />
               <span>거북목 거북거북!</span>
             </Link>
-            <div className="flex items-center">
+            <div className="flex items-center gap-2">
               {isLoading ? (
                 <span className="text-sm text-black/40">...</span>
               ) : user ? (
-                <div className="relative" ref={userMenuAnchorRef}>
+                <>
+                  <FriendRequestIndicator
+                    requestCount={friendsData.incomingCount}
+                    onClick={() => setIsFriendsModalOpen(true)}
+                  />
+                  <div className="relative" ref={userMenuAnchorRef}>
                   <button
                     onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                    className="bg-[#E8F5E9] text-[#2D5F2E] border-2 border-[#7BC67E] px-5 py-2 rounded-[25px] font-semibold cursor-pointer transition-all duration-300 text-base hover:bg-[#7BC67E] hover:text-white hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(123,198,126,0.3)]"
+                    className="flex h-11 min-h-11 items-center bg-[#E8F5E9] text-[#2D5F2E] border-2 border-[#7BC67E] px-5 py-2 rounded-[25px] font-semibold cursor-pointer transition-all duration-300 text-base hover:bg-[#7BC67E] hover:text-white hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(123,198,126,0.3)]"
                   >
                     {user.name ?? "사용자"}
                   </button>
@@ -69,6 +79,12 @@ export default function Header({ user: initialUser, className }: HeaderProps) {
                     anchorRef={userMenuAnchorRef}
                   />
                 </div>
+                <FriendsModal
+                  isOpen={isFriendsModalOpen}
+                  onClose={() => setIsFriendsModalOpen(false)}
+                  friendsData={friendsData}
+                />
+                </>
               ) : (
                 <Button onClick={() => signIn()}>로그인</Button>
               )}
@@ -115,14 +131,19 @@ export default function Header({ user: initialUser, className }: HeaderProps) {
             </nav>
 
             {/* Right: 프로필 */}
-            <div className="flex items-center justify-end">
+            <div className="flex items-center justify-end gap-2">
               {isLoading ? (
                 <span className="text-sm text-black/40">...</span>
               ) : user ? (
-                <div className="relative" ref={userMenuAnchorRef}>
+                <>
+                  <FriendRequestIndicator
+                    requestCount={friendsData.incomingCount}
+                    onClick={() => setIsFriendsModalOpen(true)}
+                  />
+                  <div className="relative" ref={userMenuAnchorRef}>
                   <button
                     onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                    className="bg-[#E8F5E9] text-[#2D5F2E] border-2 border-[#7BC67E] px-5 py-2 rounded-[25px] font-semibold cursor-pointer transition-all duration-300 text-base hover:bg-[#7BC67E] hover:text-white hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(123,198,126,0.3)]"
+                    className="flex h-11 min-h-11 items-center bg-[#E8F5E9] text-[#2D5F2E] border-2 border-[#7BC67E] px-5 py-2 rounded-[25px] font-semibold cursor-pointer transition-all duration-300 text-base hover:bg-[#7BC67E] hover:text-white hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(123,198,126,0.3)]"
                   >
                     {user.name ?? "사용자"}
                   </button>
@@ -135,6 +156,12 @@ export default function Header({ user: initialUser, className }: HeaderProps) {
                     anchorRef={userMenuAnchorRef}
                   />
                 </div>
+                <FriendsModal
+                  isOpen={isFriendsModalOpen}
+                  onClose={() => setIsFriendsModalOpen(false)}
+                  friendsData={friendsData}
+                />
+                </>
               ) : (
                 <Button onClick={() => signIn()}>로그인</Button>
               )}

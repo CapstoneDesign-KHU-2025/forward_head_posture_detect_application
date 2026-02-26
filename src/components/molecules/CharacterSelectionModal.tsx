@@ -1,6 +1,9 @@
 "use client";
 
-import { Button } from "@/components/atoms/Button";
+import { SectionLabel } from "@/components/atoms/SectionLabel";
+import { Modal } from "@/components/common/Modal";
+import { ModalHeader } from "@/components/common/ModalHeader";
+import { cn } from "@/utils/cn";
 import { useEffect, useState } from "react";
 
 type CharacterSelectionModalProps = {
@@ -13,30 +16,28 @@ const characters = [
     id: "remy",
     icon: "/icons/remy.png",
     name: "래미",
-    description: "부드럽고 따뜻한\n친근한 캐릭터",
+    description: "부드럽고 따뜻한 친근한 캐릭터",
   },
   {
     id: "jerry",
     icon: "/icons/cat.png",
     name: "제리",
-    description: "활발하고 귀여운\n사랑스러운 캐릭터",
+    description: "활발하고 귀여운 사랑스러운 캐릭터",
   },
   {
     id: "jessica",
     icon: "/icons/girl.png",
     name: "제시카",
-    description: "우아하고 세련된\n멋진 캐릭터",
+    description: "우아하고 세련된 멋진 캐릭터",
   },
 ];
 
-// localStorage에서 선택한 캐릭터 가져오기
 function getSelectedCharacter(): string {
   if (typeof window === "undefined") return "remy";
   const selected = localStorage.getItem("selectedCharacter");
   return selected || "remy";
 }
 
-// 캐릭터 이름 가져오기
 function getCharacterName(characterId: string): string {
   const character = characters.find((c) => c.id === characterId);
   return character?.name || "래미";
@@ -44,89 +45,111 @@ function getCharacterName(characterId: string): string {
 
 export default function CharacterSelectionModal({ isOpen, onClose }: CharacterSelectionModalProps) {
   const [currentCharacter, setCurrentCharacter] = useState<string>("remy");
-  const [selectedCharacter, setSelectedCharacter] = useState<string>("remy"); // 임시 선택
+  const [selectedCharacter, setSelectedCharacter] = useState<string>("remy");
 
   useEffect(() => {
     if (isOpen) {
       const saved = getSelectedCharacter();
       setCurrentCharacter(saved);
-      setSelectedCharacter(saved); // 모달 열 때 현재 선택된 캐릭터로 초기화
+      setSelectedCharacter(saved);
     }
   }, [isOpen]);
 
-  // 캐릭터 선택 (임시로만 선택, 아직 저장 안 함)
-  const handleSelect = (characterId: string) => {
-    setSelectedCharacter(characterId);
-  };
+  const handleSelect = (characterId: string) => setSelectedCharacter(characterId);
 
-  // 확인 버튼 클릭 시 실제로 저장하고 모달 닫기
   const handleConfirm = () => {
     if (typeof window !== "undefined") {
       localStorage.setItem("selectedCharacter", selectedCharacter);
-      // storage 이벤트 발생시키기 (다른 컴포넌트에서 감지할 수 있도록)
       window.dispatchEvent(new Event("storage"));
     }
     setCurrentCharacter(selectedCharacter);
-    onClose(); // 모달 닫기
+    onClose();
   };
 
-  if (!isOpen) return null;
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={onClose}>
-      <div className="bg-white rounded-lg shadow-xl p-6 max-w-md w-full mx-4" onClick={(e) => e.stopPropagation()}>
-        <h2 className="text-2xl font-bold mb-4">캐릭터 변경</h2>
-
-        {/* 현재 캐릭터 상태 */}
-        <div className="mb-6">
-          <p className="text-sm text-black/60 mb-2">현재 캐릭터</p>
-          <div className="inline-flex items-center px-4 py-2 bg-black/5 rounded-md">
-            <span className="font-semibold text-lg">{getCharacterName(currentCharacter)}</span>
+    <Modal isOpen={isOpen} onClose={onClose} contentClassName="max-w-[440px] w-full">
+      <ModalHeader
+        title="캐릭터 변경"
+        subtitle="나를 대표할 캐릭터를 골라보세요"
+        onClose={onClose}
+      />
+      <div className="flex flex-1 flex-col overflow-y-auto px-6 py-[22px]">
+        <div className="mb-5">
+          <SectionLabel>현재 캐릭터</SectionLabel>
+          <div className="mt-1 inline-flex items-center gap-1.5 rounded-[10px] border-[1.5px] border-[#d4ead9] bg-[#f4faf6] px-3.5 py-1.5">
+            <img
+              src={characters.find((c) => c.id === currentCharacter)?.icon ?? "/icons/remy.png"}
+              alt=""
+              className="h-5 w-5 object-contain"
+            />
+            <span className="text-[14px] font-semibold text-[#4a7c59]">
+              {getCharacterName(currentCharacter)}
+            </span>
           </div>
         </div>
 
-        {/* 캐릭터 선택 버튼들 */}
-        <div className="space-y-3 mb-6">
-          <p className="text-sm text-black/60 mb-2">캐릭터 선택하기</p>
+        <div>
+          <SectionLabel>캐릭터 선택하기</SectionLabel>
           <div className="flex flex-col gap-2">
             {characters.map((character) => (
               <button
                 key={character.id}
+                type="button"
                 onClick={() => handleSelect(character.id)}
-                className={`
-                  w-full flex items-center gap-3 px-4 py-3 rounded-md border-2 transition-all duration-200
-                  ${
-                    selectedCharacter === character.id
-                      ? "bg-[#2D5F2E] text-white border-[#2D5F2E]"
-                      : "bg-white text-[#2D5F2E] border-[#4A9D4D] hover:bg-[#F8FBF8]"
-                  }
-                `}
+                className={cn(
+                  "flex items-center gap-3.5 rounded-2xl border-[1.5px] bg-white px-4 py-3 transition-all duration-[180ms]",
+                  "hover:border-[#6aab7a] hover:bg-[#f9fdf9]",
+                  selectedCharacter === character.id
+                    ? "border-[#4a7c59] bg-[#f0f9f3] shadow-[0_2px_10px_rgba(74,124,89,0.12)]"
+                    : "border-[#e4f0e8]"
+                )}
               >
-                <div className="w-10 h-10 flex-shrink-0">
-                  <img src={character.icon} alt={character.name} className="w-full h-full object-contain" />
+                <div className="flex h-[52px] w-[52px] shrink-0 items-center justify-center overflow-hidden rounded-xl bg-[#e8f5ec]">
+                  <img
+                    src={character.icon}
+                    alt={character.name}
+                    className="h-full w-full object-cover"
+                  />
                 </div>
                 <div className="flex-1 text-left">
-                  <div className="font-semibold">{character.name}</div>
-                  <div className="text-xs opacity-80 whitespace-pre-line">{character.description}</div>
+                  <div className="mb-0.5 text-base font-semibold text-[#2d3b35]">{character.name}</div>
+                  <div className="text-sm leading-relaxed text-[#7a9585]">
+                    {character.description}
+                  </div>
                 </div>
-                {selectedCharacter === character.id && (
-                  <div className={selectedCharacter === character.id ? "text-white" : "text-[#2D5F2E]"}>✓</div>
-                )}
+                <div
+                  className={cn(
+                    "flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-all duration-[180ms]",
+                    selectedCharacter === character.id
+                      ? "border-[#4a7c59] bg-[#4a7c59]"
+                      : "border-[#d4ead9]"
+                  )}
+                >
+                  {selectedCharacter === character.id && (
+                    <div className="h-2 w-2 rounded-full bg-white" />
+                  )}
+                </div>
               </button>
             ))}
           </div>
         </div>
-
-        {/* 버튼 영역 */}
-        <div className="flex gap-3">
-          <Button variant="secondary" onClick={onClose} className="flex-1">
-            닫기
-          </Button>
-          <Button variant="primary" onClick={handleConfirm} className="flex-1">
-            확인
-          </Button>
-        </div>
       </div>
-    </div>
+      <div className="flex shrink-0 gap-2.5 px-6 pb-[22px]">
+        <button
+          type="button"
+          onClick={onClose}
+          className="flex-1 rounded-[14px] border-[1.5px] border-[#d4ead9] bg-white px-3 py-3 text-[14px] font-semibold text-[#7a9585] transition-colors hover:border-[#6aab7a] hover:bg-[#f4faf6] hover:text-[#4a7c59]"
+        >
+          닫기
+        </button>
+        <button
+          type="button"
+          onClick={handleConfirm}
+          className="flex-1 rounded-[14px] border-none bg-[#4a7c59] px-3 py-3 text-[14px] font-bold text-white transition-all hover:translate-y-[-1px] hover:bg-[#3a6147] hover:shadow-[0_4px_12px_rgba(74,124,89,0.25)]"
+        >
+          확인
+        </button>
+      </div>
+    </Modal>
   );
 }
