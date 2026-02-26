@@ -28,7 +28,7 @@ export default function StatCard({
   subtitle,
   showStatusDot = false,
   className,
-  valueClassName = "font-[900] text-[1.7rem] leading-none text-[var(--green)]",
+  valueClassName = "font-[900] text-[27px] leading-none text-[var(--green)]",
 }: StatCardProps) {
   return (
     <Card
@@ -41,8 +41,8 @@ export default function StatCard({
         .join(" ")}
     >
       {/* 라벨 */}
-      <div className="mb-[6px]">
-        <span className="text-[11px] font-bold tracking-[0.03em] text-[var(--text-muted)]">
+      <div className="mb-[5px]">
+        <span className="text-[12px] font-bold tracking-[0.03em] text-[var(--text-muted)]">
           {label}
         </span>
       </div>
@@ -51,13 +51,13 @@ export default function StatCard({
       <div className="flex items-baseline gap-1">
         <span className={valueClassName}>{value}</span>
         {unit ? (
-          <span className="text-[13px] text-[var(--text-sub)] ml-[2px]">{unit}</span>
+          <span className="text-[14px] text-[var(--text-sub)] ml-[2px]">{unit}</span>
         ) : null}
       </div>
 
       {/* 보조 텍스트 + 상태 점 */}
       {subtitle ? (
-        <div className="mt-[5px] text-[11px] text-[var(--text-muted)] flex items-center gap-[5px]">
+        <div className="mt-[5px] text-[12px] font-semibold text-[var(--text-muted)] flex items-center gap-[5px]">
           {showStatusDot && (
             <span className="inline-block h-[6px] w-[6px] rounded-full bg-[#ccc]" />
           )}

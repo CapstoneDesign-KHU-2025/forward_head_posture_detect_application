@@ -77,12 +77,12 @@ export default function HomeTemplate({
                       subtitle="측정 중 아님"
                     />
                   ) : (
-                    <StatCard
-                      label="측정 시간"
-                      value="측정을 시작해보세요!"
-                      showStatusDot
-                      subtitle="측정 중 아님"
-                    />
+                  <StatCard
+                    label="측정 시간"
+                    value="00:00"
+                    showStatusDot
+                    subtitle="측정 중 아님"
+                  />
                   )}
                 </div>
               </AsyncBoundary>
