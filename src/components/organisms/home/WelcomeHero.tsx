@@ -38,7 +38,9 @@ export default function WelcomeHero({ userName = "사용자", onPrimaryAction, c
         <p className="text-[1.1rem] text-[#4F4F4F] mb-6">거북거북!</p>
 
         <div className="flex justify-center">
-          <Button onClick={handlePrimaryAction}>측정하기</Button>
+          <Button size="lg" onClick={handlePrimaryAction}>
+            측정하기
+          </Button>
         </div>
       </div>
     </section>

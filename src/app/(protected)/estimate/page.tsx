@@ -113,7 +113,7 @@ export default function Estimate() {
     <div className="min-h-screen bg-[#F8FBF8]">
       <div className="max-w-[1200px] mx-auto px-70 py-8">
         <div className="flex justify-center mb-8">
-          <Button onClick={() => handleStopEstimating()}>
+          <Button size="lg" onClick={() => handleStopEstimating()}>
             {stopEstimating ? "측정 시작하기" : "오늘의 측정 중단하기"}
           </Button>
         </div>
