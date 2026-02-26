@@ -11,6 +11,9 @@
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 
+  /* Layout */
+  --header-height: 80px; /* 메인 헤더 높이 (fixed 헤더 전체 높이) */
+
   /* Green palette */
   --green-dark:   #3a6147;  /* hover, 강조 */
   --green:        #4a7c59;  /* primary 버튼, 주요 텍스트 */

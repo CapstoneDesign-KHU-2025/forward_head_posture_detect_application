@@ -55,7 +55,7 @@ export default function HomeTemplate({
 
   return (
     <main className={["bg-[#F8FBF8] min-h-screen", className].filter(Boolean).join(" ")}>
-      <div className="max-w-[1400px] mx-auto px-8 py-8">
+      <div className="max-w-[1400px] mx-auto px-8 pb-8 pt-2">
         <WelcomeHero userName={user?.name ?? "사용자"} />
 
         {/* 본문 2열 레이아웃: 좌(KPI), 우(도전기) */}
