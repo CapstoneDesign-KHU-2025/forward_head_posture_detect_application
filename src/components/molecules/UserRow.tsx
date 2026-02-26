@@ -16,9 +16,9 @@ export function UserRow({
   name,
   email,
   initial,
-  bgColor = "#6aab7a",
   actions,
   className,
+  bgColor = "#6aab7a",
 }: UserRowProps) {
   return (
     <div
