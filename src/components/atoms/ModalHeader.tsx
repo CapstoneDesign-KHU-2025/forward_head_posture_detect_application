@@ -41,3 +41,4 @@ export function ModalHeader({ title, subtitle, icon, onClose }: ModalHeaderProps
     </div>
   );
 }
+
