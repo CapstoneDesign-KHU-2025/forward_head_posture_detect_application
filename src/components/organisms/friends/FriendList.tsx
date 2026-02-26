@@ -1,8 +1,10 @@
 "use client";
 
+import { Icon } from "@/components/atoms/Icon";
 import { UserRow } from "@/components/molecules/UserRow";
 import { EmptyState } from "@/components/atoms/EmptyState";
 import { IconButton } from "@/components/atoms/IconButton";
+import { X } from "lucide-react";
 import type { Friend } from "@/types/friends";
 import { cn } from "@/utils/cn";
 
@@ -43,14 +45,15 @@ export function FriendList({ friends, onDelete }: FriendListProps) {
               <IconButton
                 variant="ghost"
                 size="sm"
-                icon="✕"
+                icon={
+                  <Icon size="xs">
+                    <X />
+                  </Icon>
+                }
                 onClick={() => onDelete(f.friendshipId, f.user)}
                 title="친구 삭제"
                 aria-label="친구 삭제"
-                className={cn(
-                  "h-7 w-7 rounded-lg text-[16px]",
-                  "transition-colors"
-                )}
+                className={cn("h-7 w-7 rounded-lg", "transition-colors")}
               />
             }
           />

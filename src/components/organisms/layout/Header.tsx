@@ -33,7 +33,7 @@ export default function Header({ user: initialUser, className }: HeaderProps) {
 
   const Brand = () => (
     <div className="flex items-center gap-1">
-      <TurtleLogo size="s" />
+      <TurtleLogo iconSize="xl" />
       <span
         className="text-[20px] font-extrabold"
         style={{ fontFamily: "Nunito, sans-serif", color: "var(--green)" }}

@@ -1,6 +1,7 @@
 "use client";
 
 import { TabButton } from "@/components/molecules/TabButton";
+import { Icon } from "@/components/atoms/Icon";
 import { Search, Mail, Turtle } from "lucide-react";
 
 type TabId = "search" | "requests" | "friends";
@@ -18,7 +19,9 @@ export function ModalTabBar({ activeTab, incomingCount, onTabChange }: ModalTabB
         isActive={activeTab === "search"}
         onClick={() => onTabChange("search")}
       >
-        <Search size={14} />
+        <Icon size="xs">
+          <Search />
+        </Icon>
         검색
       </TabButton>
       <TabButton
@@ -26,14 +29,18 @@ export function ModalTabBar({ activeTab, incomingCount, onTabChange }: ModalTabB
         badgeCount={incomingCount}
         onClick={() => onTabChange("requests")}
       >
-        <Mail size={14} />
+        <Icon size="xs">
+          <Mail />
+        </Icon>
         요청
       </TabButton>
       <TabButton
         isActive={activeTab === "friends"}
         onClick={() => onTabChange("friends")}
       >
-        <Turtle size={14} />
+        <Icon size="xs">
+          <Turtle />
+        </Icon>
         친구
       </TabButton>
     </div>

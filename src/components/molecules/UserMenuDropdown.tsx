@@ -1,5 +1,6 @@
 "use client";
 
+import { Icon } from "@/components/atoms/Icon";
 import { Settings, LogOut, UserCircle } from "lucide-react";
 import { signOut } from "next-auth/react";
 import SensitivitySettingsModal from "./SensitivitySettingsModal";
@@ -81,7 +82,9 @@ export default function UserMenuDropdown({
             }}
             className="w-full flex items-center gap-4 px-4 py-3 rounded-xl text-base font-medium text-black transition-colors duration-150 hover:bg-[#F8FBF8] cursor-pointer text-left"
           >
-            <Settings size={20} className="text-black shrink-0" />
+            <Icon size="sm">
+              <Settings className="text-black shrink-0" />
+            </Icon>
             <span>민감도 설정</span>
           </button>
 
@@ -92,7 +95,9 @@ export default function UserMenuDropdown({
             }}
             className="w-full flex items-center gap-4 px-4 py-3 rounded-xl text-base font-medium text-black transition-colors duration-150 hover:bg-[#F8FBF8] cursor-pointer text-left"
           >
-            <UserCircle size={20} className="text-black shrink-0" />
+            <Icon size="sm">
+              <UserCircle className="text-black shrink-0" />
+            </Icon>
             <span>캐릭터 변경</span>
           </button>
 
@@ -103,7 +108,9 @@ export default function UserMenuDropdown({
             }}
             className="w-full flex items-center gap-4 px-4 py-3 rounded-xl text-base font-medium text-black transition-colors duration-150 hover:bg-[#F8FBF8] cursor-pointer text-left"
           >
-            <LogOut size={20} className="text-black shrink-0" />
+            <Icon size="sm">
+              <LogOut className="text-black shrink-0" />
+            </Icon>
             <span>로그아웃</span>
           </button>
         </div>

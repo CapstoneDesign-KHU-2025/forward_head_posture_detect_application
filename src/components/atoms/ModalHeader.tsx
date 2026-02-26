@@ -1,6 +1,8 @@
 "use client";
 
+import { Icon } from "@/components/atoms/Icon";
 import { IconButton } from "@/components/atoms/IconButton";
+import { X } from "lucide-react";
 
 type ModalHeaderProps = {
   title: string;
@@ -28,7 +30,11 @@ export function ModalHeader({ title, subtitle, icon, onClose }: ModalHeaderProps
         </div>
         <IconButton
           variant="outline"
-          icon={<span className="leading-none text-[20px]">×</span>}
+          icon={
+            <Icon size="xs">
+              <X />
+            </Icon>
+          }
           onClick={onClose}
           aria-label="모달 닫기"
         />

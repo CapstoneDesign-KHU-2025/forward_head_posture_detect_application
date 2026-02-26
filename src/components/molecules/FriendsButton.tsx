@@ -1,5 +1,6 @@
 "use client";
 
+import { Icon } from "@/components/atoms/Icon";
 import { Users } from "lucide-react";
 import { cn } from "@/utils/cn";
 
@@ -26,7 +27,9 @@ export function FriendsButton({
         className
       )}
     >
-      <Users size={24} strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" />
+      <Icon size="md">
+        <Users strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" />
+      </Icon>
       {requestCount > 0 && (
         <span
           className="absolute top-1.5 right-1.5 h-[7px] w-[7px] shrink-0 rounded-full bg-[#ff8c6b] border-[1.5px] border-white"

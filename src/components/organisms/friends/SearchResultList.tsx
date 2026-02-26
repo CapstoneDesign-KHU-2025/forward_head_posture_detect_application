@@ -6,6 +6,7 @@ import { SearchInput } from "@/components/molecules/SearchInput";
 import { EmptyState } from "@/components/atoms/EmptyState";
 import { SectionLabel } from "@/components/atoms/SectionLabel";
 import type { SearchResultItem } from "@/hooks/useFriendsData";
+import { Icon } from "@/components/atoms/Icon";
 import { Search } from "lucide-react";
 import { cn } from "@/utils/cn";
 
@@ -30,12 +31,20 @@ export function SearchResultList({ searchResults, onSendRequest }: SearchResultL
         <SectionLabel>검색 결과</SectionLabel>
         {query.trim().length < 2 ? (
           <EmptyState
-            icon={<Search size={30} className="text-[#7a9585]" />}
+            icon={
+              <Icon size="lg">
+                <Search className="text-[#7a9585]" />
+              </Icon>
+            }
             message="이메일을 입력해서 친구를 찾아보세요"
           />
         ) : results.length === 0 ? (
           <EmptyState
-            icon={<span>😢</span>}
+            icon={
+              <Icon size="lg">
+                <Search className="text-[#7a9585]" />
+              </Icon>
+            }
             message="일치하는 사용자를 찾을 수 없어요"
           />
         ) : (
