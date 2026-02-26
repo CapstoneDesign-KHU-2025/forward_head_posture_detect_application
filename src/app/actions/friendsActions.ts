@@ -111,7 +111,7 @@ export async function searchUsersAction(_prevState: ActionState<unknown>, data: 
   const session = await auth();
 
   if (!session?.user?.id) {
-    return { ok: false, data: [], status: 4001, message: SERVER_MESSAGES.AUTH_REQUIRED } as const;
+    return { ok: false, data: [], status: 401, message: SERVER_MESSAGES.AUTH_REQUIRED } as const;
   }
 
   const parsed = SearchUsersSchema.safeParse(data);
