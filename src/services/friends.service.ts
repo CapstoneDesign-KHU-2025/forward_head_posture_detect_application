@@ -181,7 +181,21 @@ export async function searchUsers(currentUserId: string, query: string) {
           ],
         },
         {
-          id: { not: currentUserId },
+          NOT: [
+            { id: currentUserId },
+            {
+              OR: [
+                { friendshipsA: { some: { userBId: currentUserId } } },
+                { friendshipsB: { some: { userAId: currentUserId } } },
+              ],
+            },
+            {
+              OR: [
+                /*  { incomingFriendRequests: { some: { fromUserId: currentUserId, status: "PENDING" } } }, */
+                { outgoingFriendRequests: { some: { toUserId: currentUserId, status: "PENDING" } } },
+              ],
+            },
+          ],
         },
       ],
     },

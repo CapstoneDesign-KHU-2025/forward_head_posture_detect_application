@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useCallback, useEffect, useActionState } from "react";
-import type { Friend, FriendRequestRow, RelationStatus } from "@/types/friends";
+import { useState, useCallback, useEffect, useMemo, useRef, useActionState } from "react";
+import type { Friend, FriendRequestRow, RelationStatus, SearchUser } from "@/types/friends";
+import { searchUsersAction } from "@/app/actions/friendsActions";
 
 export type SearchResultItem = {
   id: string;
@@ -22,6 +23,12 @@ type FriendRequestsApiResponse = {
   ok: boolean;
   rows?: FriendRequestRow[];
   error?: string;
+};
+
+type SearchUsersApiResponse = {
+  ok?: boolean;
+  users?: SearchUser[];
+  error?: string | { ko: string; en: string };
 };
 
 function buildRelationMap(
@@ -59,10 +66,11 @@ export function useFriendsData() {
   const [incoming, setIncoming] = useState<FriendRequestRow[]>([]);
   const [outgoing, setOutgoing] = useState<FriendRequestRow[]>([]);
   const [relation, setRelation] = useState<Record<string, RelationStatus>>({});
-  const [] = useActionState(getUsersAction, null);
+  const [searchUsers, setSearchUsers] = useState<SearchUser[]>([]);
+  const lastSearchQueryRef = useRef<string>("");
   const [toastMessage, setToastMessage] = useState("");
   const [isToastVisible, setIsToastVisible] = useState(false);
-
+  const [searchState, searchAction, isSearching] = useActionState(searchUsersAction, null);
   const showToast = useCallback((msg: string) => {
     setToastMessage(msg);
     setIsToastVisible(true);
@@ -117,6 +125,57 @@ export function useFriendsData() {
     void refreshAll();
   }, [refreshAll]);
 
+  const fetchSearchUsers = useCallback(
+    async (query: string) => {
+      const trimmed = query.trim();
+      if (trimmed.length < 2) {
+        setSearchUsers([]);
+        lastSearchQueryRef.current = "";
+        return;
+      }
+
+      if (trimmed === lastSearchQueryRef.current) return;
+      lastSearchQueryRef.current = trimmed;
+
+      try {
+        const res = await fetch(`/api/users/search?q=${encodeURIComponent(trimmed)}`, {
+          cache: "no-store",
+        });
+        const json = (await res.json().catch(() => ({}))) as SearchUsersApiResponse;
+
+        if (!res.ok || !json.ok) {
+          showToast("사용자 검색에 실패했어요. 잠시 후 다시 시도해주세요.");
+          setSearchUsers([]);
+          return;
+        }
+
+        setSearchUsers(json.users ?? []);
+      } catch {
+        showToast("사용자 검색 중 문제가 발생했어요. 잠시 후 다시 시도해주세요.");
+        setSearchUsers([]);
+      }
+    },
+    [showToast],
+  );
+
+  const processedSearchResults = useMemo<SearchResultItem[]>(() => {
+    if (!searchUsers || searchUsers.length === 0) return [];
+
+    return searchUsers
+      .filter((u) => {
+        const status = relation[u.id] ?? "NONE";
+        return status !== "FRIEND" && status !== "INCOMING";
+      })
+      .map((u) => ({
+        id: u.id,
+        name: u.name,
+        image: u.image,
+        initial: u.name?.charAt(0) ?? "?",
+        color: "#6aab7a",
+        relation: (relation[u.id] ?? "NONE") as RelationStatus | "NONE",
+      }));
+  }, [searchUsers, relation]);
+
   const incomingCount = incoming.filter((r) => r.status === "PENDING").length;
 
   const searchResults = useCallback(
@@ -124,22 +183,26 @@ export function useFriendsData() {
       const q = query.trim().toLowerCase();
       if (q.length < 2) return [];
 
-      return MOCK_SEARCH_POOL.filter((u) => {
-        const status = relation[u.id] ?? "NONE";
-        if (status === "FRIEND" || status === "INCOMING") return false;
-        const matchName = (u.name ?? "").toLowerCase().includes(q);
-        const matchId = u.id.toLowerCase().includes(q);
-        return matchName || matchId;
-      }).map((u) => ({
-        id: u.id,
-        name: u.name,
-        image: u.image,
-        initial: u.initial ?? u.name?.charAt(0) ?? "?",
-        color: u.color ?? "#6aab7a",
-        relation: (relation[u.id] ?? "NONE") as RelationStatus | "NONE",
-      }));
+      void fetchSearchUsers(query);
+
+      return processedSearchResults
+        .filter((u) => {
+          const status = relation[u.id] ?? "NONE";
+          if (status === "FRIEND" || status === "INCOMING") return false;
+          const matchName = (u.name ?? "").toLowerCase().includes(q);
+          const matchId = u.id.toLowerCase().includes(q);
+          return matchName || matchId;
+        })
+        .map((u) => ({
+          id: u.id,
+          name: u.name,
+          image: u.image,
+          initial: u.initial ?? u.name?.charAt(0) ?? "?",
+          color: u.color ?? "#6aab7a",
+          relation: (relation[u.id] ?? "NONE") as RelationStatus | "NONE",
+        }));
     },
-    [relation],
+    [fetchSearchUsers, processedSearchResults, relation],
   );
 
   const sendRequest = useCallback(

@@ -10,7 +10,7 @@ import {
   respondToFriendRequest,
   searchUsers,
 } from "@/services/friends.service";
-import { SERVER_MESSAGES } from "@/lib/api/utils";
+import { ActionState, SERVER_MESSAGES } from "@/lib/api/utils";
 import { logger } from "@/lib/logger";
 
 // GET: get my friends
@@ -50,13 +50,14 @@ export async function getFriendRequestsAction(data: GetRequestsInput) {
     return { ok: false, status: 500, message: SERVER_MESSAGES.INTERNAL_SERVER_ERROR } as const;
   }
 }
+
 //POST : post friend request
 const PostFriendRequestSchema = z.object({
   toUserId: z.string().min(1, { message: SERVER_MESSAGES.FRIEND_NOT_FOUND.en }),
 });
 export type PostFriendRequestInput = z.infer<typeof PostFriendRequestSchema>;
 
-export async function postFriendRequestAction(_prevState: any, data: PostFriendRequestInput) {
+export async function postFriendRequestAction(_prevState: ActionState<unknown>, data: PostFriendRequestInput) {
   const session = await auth();
   if (!session?.user?.id) return { ok: false, message: SERVER_MESSAGES.AUTH_REQUIRED } as const;
 
@@ -81,7 +82,7 @@ const RespondRequestSchema = z.object({
 });
 export type RespondRequestInput = z.infer<typeof RespondRequestSchema>;
 
-export async function respondFriendRequestAction(_prevState: any, data: RespondRequestInput) {
+export async function respondFriendRequestAction(_prevState: ActionState<unknown>, data: RespondRequestInput) {
   const session = await auth();
   if (!session?.user?.id) return { ok: false, message: SERVER_MESSAGES.AUTH_REQUIRED } as const;
 
@@ -100,25 +101,22 @@ export async function respondFriendRequestAction(_prevState: any, data: RespondR
     return { ok: false, status: 500, message: SERVER_MESSAGES.INTERNAL_SERVER_ERROR } as const;
   }
 }
-
-// 검색 유효성 검사 스키마
+//get : search users
 const SearchUsersSchema = z.object({
   query: z.string().min(2, { message: "검색어는 최소 2글자 이상이어야 합니다." }),
 });
 export type SearchUsersInput = z.infer<typeof SearchUsersSchema>;
 
-// GET: search user
-
-export async function searchUsersAction(data: SearchUsersInput) {
+export async function searchUsersAction(_prevState: ActionState<unknown>, data: SearchUsersInput) {
   const session = await auth();
 
   if (!session?.user?.id) {
-    return { ok: false, message: SERVER_MESSAGES.AUTH_REQUIRED } as const;
+    return { ok: false, data: [], status: 4001, message: SERVER_MESSAGES.AUTH_REQUIRED } as const;
   }
 
   const parsed = SearchUsersSchema.safeParse(data);
   if (!parsed.success) {
-    return { ok: false, message: parsed.error.issues[0].message } as const;
+    return { ok: false, data: [], status: 400, message: SERVER_MESSAGES.FETCH_FAILED } as const;
   }
 
   try {
