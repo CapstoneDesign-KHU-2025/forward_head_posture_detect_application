@@ -11,7 +11,7 @@ type ModalHeaderProps = {
 
 export function ModalHeader({ title, subtitle, icon, onClose }: ModalHeaderProps) {
   return (
-    <div
+    <header
       className="flex shrink-0 flex-col px-6 pt-5 pb-5"
       style={{ background: "linear-gradient(135deg, #4a7c59 0%, #6aab7a 100%)" }}
     >
@@ -35,7 +35,7 @@ export function ModalHeader({ title, subtitle, icon, onClose }: ModalHeaderProps
           ×
         </Button>
       </div>
-    </div>
+    </header>
   );
 }
 
