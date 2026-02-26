@@ -21,7 +21,7 @@ function getInitial(name: string | null, id: string) {
 
 type OutgoingRequestListProps = {
   items: FriendRequestRow[];
-  onCancel: (requestId: string, toUserId: string, toUserName: string | null) => void;
+  onCancel: (requestId: string, toUserId: string, toUserName: string | null) => void | Promise<void>;
 };
 
 export function OutgoingRequestList({ items, onCancel }: OutgoingRequestListProps) {

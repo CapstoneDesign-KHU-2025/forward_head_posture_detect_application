@@ -20,8 +20,8 @@ function getInitial(name: string | null, id: string) {
 
 type IncomingRequestListProps = {
   items: FriendRequestRow[];
-  onAccept: (requestId: string, fromUser: { id: string; name: string | null; image: string | null }) => void;
-  onDecline: (requestId: string, fromUserId: string) => void;
+  onAccept: (requestId: string, fromUser: { id: string; name: string | null; image: string | null }) => void | Promise<void>;
+  onDecline: (requestId: string, fromUserId: string) => void | Promise<void>;
 };
 
 export function IncomingRequestList({ items, onAccept, onDecline }: IncomingRequestListProps) {

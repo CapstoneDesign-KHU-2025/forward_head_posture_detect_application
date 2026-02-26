@@ -11,7 +11,7 @@ import { cn } from "@/utils/cn";
 
 type SearchResultListProps = {
   searchResults: (query: string) => SearchResultItem[];
-  onSendRequest: (user: SearchResultItem) => void;
+  onSendRequest: (user: SearchResultItem) => void | Promise<void>;
 };
 
 export function SearchResultList({ searchResults, onSendRequest }: SearchResultListProps) {

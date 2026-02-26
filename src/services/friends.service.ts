@@ -127,3 +127,41 @@ export async function respondToFriendRequest(userId: string, requestId: string, 
     return { updated, friendship };
   });
 }
+
+export async function cancelFriendRequest(userId: string, requestId: string) {
+  const friendRequest = await prisma.friendRequest.findUnique({
+    where: { id: requestId },
+    select: { id: true, status: true, fromUserId: true },
+  });
+
+  if (!friendRequest) throw new Error("Friend request not found");
+  if (friendRequest.fromUserId !== userId) throw new Error("Forbidden: Not your request");
+  if (friendRequest.status !== "PENDING") throw new Error("Request already handled");
+
+  const updated = await prisma.friendRequest.update({
+    where: { id: requestId },
+    data: { status: "CANCELED", respondedAt: new Date() },
+    select: { id: true, status: true, respondedAt: true },
+  });
+
+  return { request: updated };
+}
+
+export async function deleteFriendship(userId: string, friendshipId: string) {
+  const friendship = await prisma.friendship.findUnique({
+    where: { id: friendshipId },
+    select: { id: true, userAId: true, userBId: true },
+  });
+
+  if (!friendship) throw new Error("Friendship not found");
+  if (friendship.userAId !== userId && friendship.userBId !== userId) {
+    throw new Error("Forbidden: Not your friendship");
+  }
+
+  const deleted = await prisma.friendship.delete({
+    where: { id: friendshipId },
+    select: { id: true },
+  });
+
+  return { friendship: deleted };
+}

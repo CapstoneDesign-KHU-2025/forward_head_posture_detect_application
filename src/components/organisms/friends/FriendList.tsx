@@ -19,7 +19,7 @@ function getInitial(name: string | null, id: string) {
 
 type FriendListProps = {
   friends: Friend[];
-  onDelete: (friendshipId: string, user: { id: string; name: string | null }) => void;
+  onDelete: (friendshipId: string, user: { id: string; name: string | null }) => void | Promise<void>;
 };
 
 export function FriendList({ friends, onDelete }: FriendListProps) {
