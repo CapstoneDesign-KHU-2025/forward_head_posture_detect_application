@@ -1,4 +1,4 @@
-// src/components/organisms/home/ChallengePanel.tsx
+// src/components/organisms/home/Posture3DCard.tsx
 "use client";
 
 import { Card } from "@/components/atoms/Card";
@@ -28,7 +28,7 @@ function getSelectedCharacter(): string {
   return selected || "remy"; // 기본값: remy
 }
 
-export default function GraphicModelPanel({
+export default function Posture3DCard({
   userAng,
   title = "당신의 거북목 도전기",
   description,

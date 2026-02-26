@@ -1,9 +1,9 @@
 import WelcomeHero from "@/components/organisms/home/WelcomeHero";
+import Posture3DCard from "@/components/organisms/home/Posture3DCard";
 import StatCard from "@/components/molecules/StatCard";
 import TodayStatusCard from "@/components/molecules/TodayStatusCard";
 import TurtleEvolutionCard from "@/components/molecules/TurtleEvolutionCard";
 import { formatMeasuredTime } from "@/utils/formatMeasuredTime";
-import GraphicModelPanel from "@/components/organisms/home/GraphicModelPanel";
 import AsyncBoundary from "@/components/molecules/AsyncBoundary";
 import LoadingSkeleton from "@/components/molecules/LoadingSkeleton";
 
@@ -97,7 +97,7 @@ export default function HomeTemplate({
 
           {/* RIGHT: 측정 섹션 */}
           <div>
-            <GraphicModelPanel
+            <Posture3DCard
               userAng={user?.avgAng}
               title={challenge?.title ?? "당신의 거북목 도전기"}
               description={

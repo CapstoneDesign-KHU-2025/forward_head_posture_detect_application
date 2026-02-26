@@ -23,19 +23,25 @@ export default function WelcomeHero({ userName = "사용자", onPrimaryAction, c
 
   return (
     <section className={className}>
-      <Card className="w-full text-center py-12 mb-8">
-        <div className="mx-auto max-w-4xl">
-          <h1 className="text-[2rem] font-bold mb-2">
-            <span className="text-[#4A9D4D]">{userName}</span> 님, 안녕하세요.
+      <Card className="w-full h-[270px] flex-shrink-0 flex items-center justify-between py-[28px] px-[80px] overflow-hidden">
+        <div className="greeting-text">
+          <h1
+            className="text-[27px] font-black mb-2"
+            style={{ fontFamily: "Nunito, sans-serif" }}
+          >
+            <span className="text-[var(--green)]">{userName}</span> 님, 안녕하세요!
           </h1>
-          <p className="text-[1.1rem] text-[#4F4F4F] mb-6">거북거북!</p>
-
-          <div className="flex justify-center">
-            <Button size="lg" onClick={handlePrimaryAction}>
-              측정하기
-            </Button>
-          </div>
+          <p className="text-[14px] font-semibold text-[var(--text-sub)] leading-relaxed">
+            오늘도 바른 자세로 하루를 시작해봐요 🐢
+          </p>
         </div>
+        <Button
+          size="lg"
+          onClick={handlePrimaryAction}
+          className="flex-shrink-0 py-3.5 px-8"
+        >
+          측정하기
+        </Button>
       </Card>
     </section>
   );
