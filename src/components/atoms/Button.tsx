@@ -2,7 +2,7 @@ import { forwardRef } from "react";
 import { cn } from "@/utils/cn";
 
 type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
-  variant?: "primary" | "secondary" | "icon";
+  variant?: "primary" | "secondary" | "danger" | "icon";
   size?: "lg" | "md" | "sm";
 };
 
@@ -20,6 +20,10 @@ const variantClass: Record<NonNullable<ButtonProps["variant"]>, string> = {
   secondary:
     "bg-white text-[#7a9585] border border-[#d4ead9] hover:bg-[#f4faf6] " +
     "focus-visible:ring-[#4a7c59] ring-offset-white",
+  // danger: 측정 중단 버튼 등 (연분홍 배경 + 주황 텍스트/테두리)
+  danger:
+    "bg-[#fff0ee] text-[#e05030] border border-[#ffcfc7] hover:bg-[#ffe5e0] " +
+    "focus-visible:ring-[#e05030] ring-offset-white",
   // icon은 크기/색을 사용하는 쪽에서 완전히 제어하도록 기본 스타일을 비워둔다.
   icon: "",
 };
