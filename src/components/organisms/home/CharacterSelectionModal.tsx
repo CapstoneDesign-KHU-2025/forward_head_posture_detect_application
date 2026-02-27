@@ -1,6 +1,7 @@
 "use client";
 
 import { Modal } from "@/components/atoms/Modal";
+import { ModalHeader } from "@/components/atoms/ModalHeader";
 import { Button } from "@/components/atoms/Button";
 import { cn } from "@/utils/cn";
 import { useEffect, useState } from "react";
@@ -62,24 +63,11 @@ export default function CharacterSelectionModal({ isOpen, onClose }: CharacterSe
       onClose={onClose}
       contentClassName="w-full max-w-[420px] rounded-[22px] shadow-[0_20px_60px_rgba(45,59,53,0.18)]"
     >
-      <div className="flex shrink-0 items-start justify-between px-6 pt-[22px] pb-[8px]">
-        <div>
-          <h2
-            className="mb-1.5 text-[20px] font-black leading-tight text-[#2d3b35]"
-            style={{ fontFamily: "Nunito, sans-serif" }}
-          >
-            캐릭터 변경
-          </h2>
-          <p className="text-sm text-[#7a9585]">나를 대표할 캐릭터를 선택하세요</p>
-        </div>
-        <button
-          type="button"
-          onClick={onClose}
-          className="flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-lg border border-[#d4ead9] bg-[#f4faf6] text-xs text-[#7a9585] transition-colors hover:bg-[#e8f5ec]"
-        >
-          ✕
-        </button>
-      </div>
+      <ModalHeader
+        title="캐릭터 변경"
+        subtitle="나를 대표할 캐릭터를 선택하세요"
+        onClose={onClose}
+      />
 
       <div className="flex flex-1 flex-col overflow-y-auto px-6 py-[22px]">
         <div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { Modal } from "@/components/atoms/Modal";
+import { ModalHeader } from "@/components/atoms/ModalHeader";
 import { Button } from "@/components/atoms/Button";
 import { getSensitivity, setSensitivity, type Sensitivity } from "@/utils/sensitivity";
 import { cn } from "@/utils/cn";
@@ -43,24 +44,11 @@ export default function SensitivitySettingsModal({ isOpen, onClose }: Sensitivit
       onClose={onClose}
       contentClassName="w-full max-w-[420px] rounded-[22px] shadow-[0_20px_60px_rgba(45,59,53,0.18)]"
     >
-      <div className="flex shrink-0 items-start justify-between px-6 pt-[22px] pb-[8px]">
-        <div>
-          <h2
-            className="mb-1.5 text-[20px] font-black leading-tight text-[#2d3b35]"
-            style={{ fontFamily: "Nunito, sans-serif" }}
-          >
-            민감도 설정
-          </h2>
-          <p className="text-sm text-[#7a9585]">거북목 감지 민감도를 조절해보세요</p>
-        </div>
-        <button
-          type="button"
-          onClick={onClose}
-          className="flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-lg border border-[#d4ead9] bg-[#f4faf6] text-xs text-[#7a9585] transition-colors hover:bg-[#e8f5ec]"
-        >
-          ✕
-        </button>
-      </div>
+      <ModalHeader
+        title="민감도 설정"
+        subtitle="거북목 감지 민감도를 조절해보세요"
+        onClose={onClose}
+      />
 
       <div className="flex flex-1 flex-col overflow-y-auto px-6 py-5">
         <div className="flex flex-col gap-[10px]">

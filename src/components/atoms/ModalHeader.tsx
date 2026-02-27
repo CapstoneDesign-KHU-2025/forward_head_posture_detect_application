@@ -1,9 +1,5 @@
 "use client";
 
-import { Icon } from "@/components/atoms/Icon";
-import { IconButton } from "@/components/atoms/IconButton";
-import { X } from "lucide-react";
-
 type ModalHeaderProps = {
   title: string;
   subtitle?: string;
@@ -13,33 +9,25 @@ type ModalHeaderProps = {
 
 export function ModalHeader({ title, subtitle, icon, onClose }: ModalHeaderProps) {
   return (
-    <header
-      className="flex shrink-0 flex-col px-6 pt-5 pb-5"
-      style={{ background: "linear-gradient(135deg, #4a7c59 0%, #6aab7a 100%)" }}
-    >
-      <div className="flex items-center justify-between">
-        <div>
-          <h2
-            className="flex items-center gap-2 font-extrabold text-[20px] text-white"
-            style={{ fontFamily: "Nunito, sans-serif" }}
-          >
-            {icon}
-            {title}
-          </h2>
-          {subtitle && <p className="mt-0.5 text-[14px] text-white/75">{subtitle}</p>}
-        </div>
-        <IconButton
-          variant="outline"
-          icon={
-            <Icon size="xs">
-              <X />
-            </Icon>
-          }
-          onClick={onClose}
-          aria-label="모달 닫기"
-        />
+    <header className="flex shrink-0 items-start justify-between px-6 pt-[22px] pb-[8px]">
+      <div>
+        <h2
+          className="mb-1.5 flex items-center gap-2 text-[20px] font-black leading-tight text-[#2d3b35]"
+          style={{ fontFamily: "Nunito, sans-serif" }}
+        >
+          {icon}
+          {title}
+        </h2>
+        {subtitle && <p className="text-sm text-[#7a9585]">{subtitle}</p>}
       </div>
+      <button
+        type="button"
+        onClick={onClose}
+        className="flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-lg border border-[#d4ead9] bg-[#f4faf6] text-xs text-[#7a9585] transition-colors hover:bg-[#e8f5ec]"
+        aria-label="모달 닫기"
+      >
+        ✕
+      </button>
     </header>
   );
 }
-
