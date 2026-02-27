@@ -5,7 +5,7 @@ import { cn } from "@/utils/cn";
 
 type IconButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   size?: "md" | "sm";
-  variant?: "ghost" | "filled" | "outline";
+  variant?: "ghost" | "outline";
   icon: React.ReactNode;
   ariaLabel?: string;
 };
@@ -22,8 +22,6 @@ const sizeClass: Record<NonNullable<IconButtonProps["size"]>, string> = {
 
 const variantClass: Record<NonNullable<IconButtonProps["variant"]>, string> = {
   ghost: "text-[var(--text-sub)] hover:bg-[var(--green-light)] hover:text-[var(--green)]",
-  filled:
-    "bg-[var(--green-light)] text-[var(--green)] hover:bg-[var(--green)] hover:text-white",
   outline:
     "bg-[var(--green-pale)] text-[var(--text-sub)] border border-[var(--green-border)] hover:bg-[var(--green-light)]",
 };
