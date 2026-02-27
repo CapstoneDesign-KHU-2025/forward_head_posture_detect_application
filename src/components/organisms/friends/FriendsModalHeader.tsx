@@ -12,12 +12,7 @@ type FriendsModalHeaderProps = ModalTabBarProps & {
   onClose: () => void;
 };
 
-export function FriendsModalHeader({
-  activeTab,
-  incomingCount,
-  onTabChange,
-  onClose,
-}: FriendsModalHeaderProps) {
+export function FriendsModalHeader({ activeTab, incomingCount, onTabChange, onClose }: FriendsModalHeaderProps) {
   return (
     <div
       className="flex shrink-0 flex-col bg-gradient-to-br from-[#4a7c59] to-[#6aab7a] px-6 pt-5"
@@ -44,11 +39,7 @@ export function FriendsModalHeader({
           aria-label="친구 모달 닫기"
         />
       </div>
-      <ModalTabBar
-        activeTab={activeTab}
-        incomingCount={incomingCount}
-        onTabChange={onTabChange}
-      />
+      <ModalTabBar activeTab={activeTab} incomingCount={incomingCount} onTabChange={onTabChange} />
     </div>
   );
 }

@@ -18,7 +18,7 @@ export default function Header({ user: initialUser, className }: HeaderProps) {
   const pathname = usePathname();
   const { data: session, status } = useSession();
   const [isFriendsModalOpen, setIsFriendsModalOpen] = useState(false);
-  const friendsData = useFriendsData(); 
+  const friendsData = useFriendsData();
 
   const navItems = [
     { label: "Home", href: "/" },
@@ -43,7 +43,7 @@ export default function Header({ user: initialUser, className }: HeaderProps) {
     return (
       <>
         <FriendsButton
-          requestCount={friendsData.incomingCount}
+          requestCount={friendsData?.incomingCount || 0}
           onClick={() => setIsFriendsModalOpen(true)}
         />
         <UserButton
@@ -57,7 +57,7 @@ export default function Header({ user: initialUser, className }: HeaderProps) {
         <FriendsModal
           isOpen={isFriendsModalOpen}
           onClose={() => setIsFriendsModalOpen(false)}
-          friendsData={friendsData}
+          friendsData={friendsData || undefined}
         />
       </>
     );

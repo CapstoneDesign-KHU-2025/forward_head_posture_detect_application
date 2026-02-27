@@ -22,17 +22,14 @@ function getInitial(name: string | null, id: string) {
 
 type FriendListProps = {
   friends: Friend[];
-  onDelete: (friendshipId: string, user: { id: string; name: string | null }) => void;
+  onDelete: (friendshipId: string, user: { id: string; name: string | null }) => void | Promise<void>;
 };
 
 export function FriendList({ friends, onDelete }: FriendListProps) {
   return (
     <div className="space-y-0">
       {friends.length === 0 ? (
-        <EmptyState
-          icon={<span>🐢</span>}
-          message="친구가 없어요. 검색에서 친구를 추가해보세요!"
-        />
+        <EmptyState icon={<span>🐢</span>} message="친구가 없어요. 검색에서 친구를 추가해보세요!" />
       ) : (
         friends.map((f) => (
           <UserRow

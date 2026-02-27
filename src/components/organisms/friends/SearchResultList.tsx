@@ -12,7 +12,7 @@ import { cn } from "@/utils/cn";
 
 type SearchResultListProps = {
   searchResults: (query: string) => SearchResultItem[];
-  onSendRequest: (user: SearchResultItem) => void;
+  onSendRequest: (user: SearchResultItem) => void | Promise<void>;
 };
 
 export function SearchResultList({ searchResults, onSendRequest }: SearchResultListProps) {
@@ -22,10 +22,7 @@ export function SearchResultList({ searchResults, onSendRequest }: SearchResultL
   return (
     <>
       <div className="shrink-0 bg-white px-6 pt-4">
-        <SearchInput
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-        />
+        <SearchInput value={query} onChange={(e) => setQuery(e.target.value)} />
       </div>
       <div className="flex-1 overflow-y-auto px-6 pb-6 pt-3">
         <SectionLabel>검색 결과</SectionLabel>
@@ -61,7 +58,7 @@ export function SearchResultList({ searchResults, onSendRequest }: SearchResultL
                     <span
                       className={cn(
                         "rounded-[10px] border border-[#c2dfc9] bg-[#e8f5ec px-3.5 py-1.5",
-                        "whitespace-nowrap text-[14px] font-semibold text-[#4a7c59]"
+                        "whitespace-nowrap text-[14px] font-semibold text-[#4a7c59]",
                       )}
                     >
                       ✓ 요청됨
@@ -73,7 +70,7 @@ export function SearchResultList({ searchResults, onSendRequest }: SearchResultL
                       className={cn(
                         "rounded-[10px] border-none bg-[#4a7c59] px-3.5 py-1.5",
                         "whitespace-nowrap text-[14px] font-semibold text-white",
-                        "transition-colors hover:bg-[#3a6147]"
+                        "transition-colors hover:bg-[#3a6147]",
                       )}
                     >
                       + 추가
