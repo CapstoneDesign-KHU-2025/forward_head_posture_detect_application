@@ -3,6 +3,7 @@
 import { useState, useMemo } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Card } from "@/components/atoms/Card";
+import { IconButton } from "@/components/atoms/IconButton";
 import { cn } from "@/utils/cn";
 
 const MONTHS_KO = [
@@ -113,22 +114,20 @@ export function Calendar({ dayStatusMap = {}, onDayClick, className }: CalendarP
           {MONTHS_KO[viewMonth]} {viewYear}
         </div>
         <div className="flex gap-1">
-          <button
-            type="button"
+          <IconButton
+            variant="calendar"
+            size="xs"
+            icon={<ChevronLeft size={12} strokeWidth={2.5} />}
+            ariaLabel="이전 달"
             onClick={() => moveMonth(-1)}
-            className="flex h-[22px] w-[22px] items-center justify-center rounded-full bg-[#e8f5ec] font-bold text-[#4a7c59] transition-colors hover:bg-[#d4ead9]"
-            aria-label="이전 달"
-          >
-            <ChevronLeft size={12} strokeWidth={2.5} />
-          </button>
-          <button
-            type="button"
+          />
+          <IconButton
+            variant="calendar"
+            size="xs"
+            icon={<ChevronRight size={12} strokeWidth={2.5} />}
+            ariaLabel="다음 달"
             onClick={() => moveMonth(1)}
-            className="flex h-[22px] w-[22px] items-center justify-center rounded-full bg-[#e8f5ec] font-bold text-[#4a7c59] transition-colors hover:bg-[#d4ead9]"
-            aria-label="다음 달"
-          >
-            <ChevronRight size={12} strokeWidth={2.5} />
-          </button>
+          />
         </div>
       </div>
 
