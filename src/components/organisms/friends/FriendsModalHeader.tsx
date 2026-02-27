@@ -1,45 +1,48 @@
 "use client";
 
-import { Icon } from "@/components/atoms/Icon";
-import { Users, X } from "lucide-react";
+import { Users } from "lucide-react";
 import { ModalTabBar } from "./ModalTabBar";
 import type { ModalTabBarProps } from "./ModalTabBar";
-import { IconButton } from "@/components/atoms/IconButton";
-
-type TabId = "search" | "requests" | "friends";
+import { cn } from "@/utils/cn";
 
 type FriendsModalHeaderProps = ModalTabBarProps & {
   onClose: () => void;
 };
 
-export function FriendsModalHeader({ activeTab, incomingCount, onTabChange, onClose }: FriendsModalHeaderProps) {
+export function FriendsModalHeader({
+  activeTab,
+  incomingCount,
+  onTabChange,
+  onClose,
+}: FriendsModalHeaderProps) {
   return (
-    <div
-      className="flex shrink-0 flex-col bg-gradient-to-br from-[#4a7c59] to-[#6aab7a] px-6 pt-5"
-      style={{ background: "linear-gradient(135deg, #4a7c59 0%, #6aab7a 100%)" }}
-    >
-      <div className="mb-5 flex items-center justify-between">
-        <div>
-          <h2 className="flex items-center gap-2 font-extrabold text-[20px] text-white" style={{ fontFamily: "Nunito, sans-serif" }}>
-            <Icon size="md">
-              <Users className="text-white" strokeWidth={2} />
-            </Icon>
-            친구 관리
-          </h2>
-          <p className="mt-0.5 text-[14px] text-white/75">친구와 함께 거북목 탈출!</p>
-        </div>
-        <IconButton
-          variant="outline"
-          icon={
-            <Icon size="sm">
-              <X />
-            </Icon>
-          }
-          onClick={onClose}
-          aria-label="친구 모달 닫기"
-        />
+    <div className="relative flex shrink-0 flex-col border-b border-[#d4ead9] bg-white px-6 pt-[22px]">
+      <button
+        type="button"
+        onClick={onClose}
+        className={cn(
+          "absolute right-6 top-[18px] flex h-[30px] w-[30px] items-center justify-center rounded-lg",
+          "border border-[#d4ead9] bg-[#f4faf6] text-[12px] text-[#7a9585] transition-colors hover:bg-[#e8f5ec]"
+        )}
+        aria-label="친구 모달 닫기"
+      >
+        ✕
+      </button>
+      <div className="mb-1 flex items-center gap-2.5">
+        <Users size={18} className="text-[#4a7c59]" strokeWidth={2.2} />
+        <h2
+          className="font-black text-[#2d3b35]"
+          style={{ fontFamily: "Nunito, sans-serif", fontSize: "19px" }}
+        >
+          친구 관리
+        </h2>
       </div>
-      <ModalTabBar activeTab={activeTab} incomingCount={incomingCount} onTabChange={onTabChange} />
+      <p className="mb-3.5 text-[12px] text-[#aac8b2]">친구와 함께 거북목 탈출!</p>
+      <ModalTabBar
+        activeTab={activeTab}
+        incomingCount={incomingCount}
+        onTabChange={onTabChange}
+      />
     </div>
   );
 }
