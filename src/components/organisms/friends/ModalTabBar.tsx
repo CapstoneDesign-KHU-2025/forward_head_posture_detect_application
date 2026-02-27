@@ -18,7 +18,7 @@ export function ModalTabBar({ activeTab, incomingCount, onTabChange }: ModalTabB
         type="button"
         onClick={() => onTabChange("search")}
         className={cn(
-          "flex items-center gap-1.5 px-4 pb-2.5 pt-1.5 text-[13px] font-bold transition-colors",
+          "flex items-center gap-1.5 px-4 pb-2.5 pt-1.5 text-[15px] font-bold transition-colors",
           "relative cursor-pointer",
           activeTab === "search"
             ? "text-[#4a7c59]"
@@ -38,7 +38,7 @@ export function ModalTabBar({ activeTab, incomingCount, onTabChange }: ModalTabB
         type="button"
         onClick={() => onTabChange("requests")}
         className={cn(
-          "flex items-center gap-1.5 px-4 pb-2.5 pt-1.5 text-[13px] font-bold transition-colors",
+          "flex items-center gap-1.5 px-4 pb-2.5 pt-1.5 text-[15px] font-bold transition-colors",
           "relative cursor-pointer",
           activeTab === "requests"
             ? "text-[#4a7c59]"
@@ -63,7 +63,7 @@ export function ModalTabBar({ activeTab, incomingCount, onTabChange }: ModalTabB
         type="button"
         onClick={() => onTabChange("friends")}
         className={cn(
-          "flex items-center gap-1.5 px-4 pb-2.5 pt-1.5 text-[13px] font-bold transition-colors",
+          "flex items-center gap-1.5 px-4 pb-2.5 pt-1.5 text-[15px] font-bold transition-colors",
           "relative cursor-pointer",
           activeTab === "friends"
             ? "text-[#4a7c59]"
