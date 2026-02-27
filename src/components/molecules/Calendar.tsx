@@ -147,22 +147,36 @@ export function Calendar({ dayStatusMap = {}, onDayClick, className }: CalendarP
         {gridDays.map(({ day, isCurrentMonth, date }, idx) => {
           const status = getDayStatus(date, isCurrentMonth);
           const todayClass = isToday(date);
+          const isInteractive = !!onDayClick;
+          const baseClass = cn(
+            "flex items-center justify-center rounded-md text-[11px] font-semibold transition-colors",
+            !isCurrentMonth && "text-[#aac8b2] opacity-40",
+            isCurrentMonth && "text-[#2d3b35]",
+            isInteractive && isCurrentMonth && "cursor-pointer",
+            todayClass && "rounded-lg bg-[#4a7c59] font-extrabold text-white",
+            !todayClass && status === "good" && "bg-[#d6f0df] text-[#3a6147] font-bold",
+            !todayClass && status === "bad" && "bg-[#fde0d8] text-[#c03020] font-bold"
+          );
           return (
-            <button
+            <div
               key={`${date.toISOString()}-${idx}`}
-              type="button"
-              onClick={() => onDayClick?.(date)}
-              className={cn(
-                "flex items-center justify-center rounded-md text-[11px] font-semibold transition-colors",
-                !isCurrentMonth && "text-[#aac8b2] opacity-40",
-                isCurrentMonth && "text-[#2d3b35] hover:bg-[#e8f5ec]",
-                todayClass && "rounded-lg bg-[#4a7c59] font-extrabold text-white",
-                !todayClass && status === "good" && "bg-[#d6f0df] text-[#3a6147] font-bold",
-                !todayClass && status === "bad" && "bg-[#fde0d8] text-[#c03020] font-bold"
-              )}
+              role={isInteractive ? "button" : undefined}
+              tabIndex={isInteractive ? 0 : undefined}
+              onClick={isInteractive ? () => onDayClick?.(date) : undefined}
+              onKeyDown={
+                isInteractive
+                  ? (e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        onDayClick?.(date);
+                      }
+                    }
+                  : undefined
+              }
+              className={baseClass}
             >
               {day}
-            </button>
+            </div>
           );
         })}
       </div>
