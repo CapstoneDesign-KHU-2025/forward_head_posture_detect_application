@@ -21,7 +21,6 @@ export default function Header({ user: initialUser, className }: HeaderProps) {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isFriendsModalOpen, setIsFriendsModalOpen] = useState(false);
   const userMenuAnchorRef = useRef<HTMLDivElement>(null);
-  const friendsData = useFriendsData();
 
   const navItems = [
     { label: "Home", href: "/", icon: <Home size={18} /> },
@@ -33,6 +32,7 @@ export default function Header({ user: initialUser, className }: HeaderProps) {
   const isLandingPage = pathname === "/landing";
   const isLoginPage = pathname === "/login";
   const isCharacterPage = pathname === "/character";
+  const friendsData = user ? useFriendsData() : null;
 
   // 로그인 페이지와 캐릭터 선택 페이지에서는 헤더 숨김
   if (isLoginPage || isCharacterPage) return null;
@@ -46,44 +46,44 @@ export default function Header({ user: initialUser, className }: HeaderProps) {
         {isLandingPage ? (
           // 랜딩 페이지: 로고와 프로필만 있는 간단한 레이아웃
           <div className="flex items-center justify-between">
-              <Link
-                href="/"
-                className="flex items-center gap-2 text-xl font-bold"
-                style={{ color: "#2D5F2E", textDecoration: "none" }}
-              >
-                <TurtleLogo size="s" />
-                <span>거북목 거북거북!</span>
-              </Link>
+            <Link
+              href="/"
+              className="flex items-center gap-2 text-xl font-bold"
+              style={{ color: "#2D5F2E", textDecoration: "none" }}
+            >
+              <TurtleLogo size="s" />
+              <span>거북목 거북거북!</span>
+            </Link>
             <div className="flex items-center gap-2">
               {isLoading ? (
                 <span className="text-sm text-black/40">...</span>
               ) : user ? (
                 <>
                   <FriendRequestIndicator
-                    requestCount={friendsData.incomingCount}
+                    requestCount={friendsData?.incomingCount || 0}
                     onClick={() => setIsFriendsModalOpen(true)}
                   />
                   <div className="relative" ref={userMenuAnchorRef}>
-                  <button
-                    onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                    className="flex h-11 min-h-11 items-center bg-[#E8F5E9] text-[#2D5F2E] border-2 border-[#7BC67E] px-5 py-2 rounded-[25px] font-semibold cursor-pointer transition-all duration-300 text-base hover:bg-[#7BC67E] hover:text-white hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(123,198,126,0.3)]"
-                  >
-                    {user.name ?? "사용자"}
-                  </button>
-                  <UserMenuDropdown
-                    userName={user.name ?? "사용자"}
-                    userEmail={(user as any)?.email}
-                    userImage={(user as any)?.image || (user as any)?.avatarSrc}
-                    isOpen={isUserMenuOpen}
-                    onClose={() => setIsUserMenuOpen(false)}
-                    anchorRef={userMenuAnchorRef}
+                    <button
+                      onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                      className="flex h-11 min-h-11 items-center bg-[#E8F5E9] text-[#2D5F2E] border-2 border-[#7BC67E] px-5 py-2 rounded-[25px] font-semibold cursor-pointer transition-all duration-300 text-base hover:bg-[#7BC67E] hover:text-white hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(123,198,126,0.3)]"
+                    >
+                      {user.name ?? "사용자"}
+                    </button>
+                    <UserMenuDropdown
+                      userName={user.name ?? "사용자"}
+                      userEmail={(user as any)?.email}
+                      userImage={(user as any)?.image || (user as any)?.avatarSrc}
+                      isOpen={isUserMenuOpen}
+                      onClose={() => setIsUserMenuOpen(false)}
+                      anchorRef={userMenuAnchorRef}
+                    />
+                  </div>
+                  <FriendsModal
+                    isOpen={isFriendsModalOpen}
+                    onClose={() => setIsFriendsModalOpen(false)}
+                    friendsData={friendsData || undefined}
                   />
-                </div>
-                <FriendsModal
-                  isOpen={isFriendsModalOpen}
-                  onClose={() => setIsFriendsModalOpen(false)}
-                  friendsData={friendsData}
-                />
                 </>
               ) : (
                 <Button onClick={() => signIn()}>로그인</Button>
@@ -137,30 +137,30 @@ export default function Header({ user: initialUser, className }: HeaderProps) {
               ) : user ? (
                 <>
                   <FriendRequestIndicator
-                    requestCount={friendsData.incomingCount}
+                    requestCount={friendsData?.incomingCount || 0}
                     onClick={() => setIsFriendsModalOpen(true)}
                   />
                   <div className="relative" ref={userMenuAnchorRef}>
-                  <button
-                    onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                    className="flex h-11 min-h-11 items-center bg-[#E8F5E9] text-[#2D5F2E] border-2 border-[#7BC67E] px-5 py-2 rounded-[25px] font-semibold cursor-pointer transition-all duration-300 text-base hover:bg-[#7BC67E] hover:text-white hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(123,198,126,0.3)]"
-                  >
-                    {user.name ?? "사용자"}
-                  </button>
-                  <UserMenuDropdown
-                    userName={user.name ?? "사용자"}
-                    userEmail={(user as any)?.email}
-                    userImage={(user as any)?.image || (user as any)?.avatarSrc}
-                    isOpen={isUserMenuOpen}
-                    onClose={() => setIsUserMenuOpen(false)}
-                    anchorRef={userMenuAnchorRef}
+                    <button
+                      onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                      className="flex h-11 min-h-11 items-center bg-[#E8F5E9] text-[#2D5F2E] border-2 border-[#7BC67E] px-5 py-2 rounded-[25px] font-semibold cursor-pointer transition-all duration-300 text-base hover:bg-[#7BC67E] hover:text-white hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(123,198,126,0.3)]"
+                    >
+                      {user.name ?? "사용자"}
+                    </button>
+                    <UserMenuDropdown
+                      userName={user.name ?? "사용자"}
+                      userEmail={(user as any)?.email}
+                      userImage={(user as any)?.image || (user as any)?.avatarSrc}
+                      isOpen={isUserMenuOpen}
+                      onClose={() => setIsUserMenuOpen(false)}
+                      anchorRef={userMenuAnchorRef}
+                    />
+                  </div>
+                  <FriendsModal
+                    isOpen={isFriendsModalOpen}
+                    onClose={() => setIsFriendsModalOpen(false)}
+                    friendsData={friendsData || undefined}
                   />
-                </div>
-                <FriendsModal
-                  isOpen={isFriendsModalOpen}
-                  onClose={() => setIsFriendsModalOpen(false)}
-                  friendsData={friendsData}
-                />
                 </>
               ) : (
                 <Button onClick={() => signIn()}>로그인</Button>

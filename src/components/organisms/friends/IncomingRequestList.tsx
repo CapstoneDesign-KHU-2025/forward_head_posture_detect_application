@@ -20,8 +20,11 @@ function getInitial(name: string | null, id: string) {
 
 type IncomingRequestListProps = {
   items: FriendRequestRow[];
-  onAccept: (requestId: string, fromUser: { id: string; name: string | null; image: string | null }) => void;
-  onDecline: (requestId: string, fromUserId: string) => void;
+  onAccept: (
+    requestId: string,
+    fromUser: { id: string; name: string | null; image: string | null },
+  ) => void | Promise<void>;
+  onDecline: (requestId: string, fromUserId: string) => void | Promise<void>;
 };
 
 export function IncomingRequestList({ items, onAccept, onDecline }: IncomingRequestListProps) {
@@ -31,10 +34,7 @@ export function IncomingRequestList({ items, onAccept, onDecline }: IncomingRequ
     <div className="space-y-5">
       <SectionLabel>받은 요청</SectionLabel>
       {pending.length === 0 ? (
-        <EmptyState
-          icon={<span>📩</span>}
-          message="받은 요청이 없어요"
-        />
+        <EmptyState icon={<span>📩</span>} message="받은 요청이 없어요" />
       ) : (
         <ul className="space-y-0">
           {pending.map((r) => (
@@ -52,7 +52,7 @@ export function IncomingRequestList({ items, onAccept, onDecline }: IncomingRequ
                       className={cn(
                         "rounded-[10px] border-none bg-[#4a7c59] px-3.5 py-1.5",
                         "whitespace-nowrap text-[14px] font-semibold text-white",
-                        "transition-colors hover:bg-[#3a6147]"
+                        "transition-colors hover:bg-[#3a6147]",
                       )}
                     >
                       수락
@@ -63,7 +63,7 @@ export function IncomingRequestList({ items, onAccept, onDecline }: IncomingRequ
                       className={cn(
                         "rounded-[10px] border border-[#d4ead9] bg-transparent px-2.5 py-1.5",
                         "whitespace-nowrap text-[14px] font-semibold text-[#7a9585]",
-                        "transition-colors hover:border-[#ff8c8c] hover:text-[#ff8c8c]"
+                        "transition-colors hover:border-[#ff8c8c] hover:text-[#ff8c8c]",
                       )}
                     >
                       거절

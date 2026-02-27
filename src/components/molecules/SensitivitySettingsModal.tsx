@@ -45,11 +45,7 @@ export default function SensitivitySettingsModal({ isOpen, onClose }: Sensitivit
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} contentClassName="max-w-[440px] w-full">
-      <ModalHeader
-        title="민감도 설정"
-        subtitle="거북목 감지 민감도를 조절해보세요"
-        onClose={onClose}
-      />
+      <ModalHeader title="민감도 설정" subtitle="거북목 감지 민감도를 조절해보세요" onClose={onClose} />
       <div className="flex flex-1 flex-col overflow-y-auto px-6 py-[22px]">
         <div className="mb-5">
           <SectionLabel>현재 민감도 상태</SectionLabel>
@@ -73,7 +69,7 @@ export default function SensitivitySettingsModal({ isOpen, onClose }: Sensitivit
                   "hover:border-[#6aab7a] hover:bg-[#f9fdf9]",
                   selectedSensitivity === opt.id
                     ? "border-[#4a7c59] bg-[#f0f9f3] shadow-[0_2px_10px_rgba(74,124,89,0.12)]"
-                    : "border-[#e4f0e8]"
+                    : "border-[#e4f0e8]",
                 )}
               >
                 <div
@@ -89,9 +85,7 @@ export default function SensitivitySettingsModal({ isOpen, onClose }: Sensitivit
                 <div
                   className={cn(
                     "flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-all duration-[180ms]",
-                    selectedSensitivity === opt.id
-                      ? "border-[#4a7c59] bg-[#4a7c59]"
-                      : "border-[#d4ead9]"
+                    selectedSensitivity === opt.id ? "border-[#4a7c59] bg-[#4a7c59]" : "border-[#d4ead9]",
                   )}
                 >
                   {selectedSensitivity === opt.id && <div className="h-2 w-2 rounded-full bg-white" />}
@@ -102,20 +96,10 @@ export default function SensitivitySettingsModal({ isOpen, onClose }: Sensitivit
         </div>
       </div>
       <div className="flex shrink-0 gap-2.5 px-6 pb-[22px]">
-        <Button
-          type="button"
-          variant="secondary"
-          className="flex-1 text-[14px] py-3"
-          onClick={onClose}
-        >
+        <Button type="button" variant="secondary" className="flex-1 text-[14px] py-3" onClick={onClose}>
           닫기
         </Button>
-        <Button
-          type="button"
-          variant="primary"
-          className="flex-1 text-[14px] py-3"
-          onClick={handleConfirm}
-        >
+        <Button type="button" variant="primary" className="flex-1 text-[14px] py-3" onClick={handleConfirm}>
           확인
         </Button>
       </div>

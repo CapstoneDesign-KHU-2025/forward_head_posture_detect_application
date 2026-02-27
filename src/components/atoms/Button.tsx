@@ -10,8 +10,7 @@ const base =
 
 // 색상 스타일 (variant)
 const variantClass: Record<NonNullable<ButtonProps["variant"]>, string> = {
-  primary:
-    "bg-[#2D5F2E] text-white hover:bg-[#4A9D4D] focus-visible:ring-[#2D5F2E] ring-offset-white",
+  primary: "bg-[#2D5F2E] text-white hover:bg-[#4A9D4D] focus-visible:ring-[#2D5F2E] ring-offset-white",
   secondary:
     "bg-white text-[#2D5F2E] border border-[#4A9D4D] hover:bg-[#F8FBF8] focus-visible:ring-[#4A9D4D] ring-offset-white",
   // icon은 크기/색을 사용하는 쪽에서 완전히 제어하도록 기본 스타일을 비워둔다.

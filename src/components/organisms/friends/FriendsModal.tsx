@@ -52,19 +52,12 @@ export function FriendsModal({ isOpen, onClose, friendsData: externalData }: Fri
         />
 
         {activeTab === "search" ? (
-          <SearchResultList
-            searchResults={searchResults}
-            onSendRequest={sendRequest}
-          />
+          <SearchResultList searchResults={searchResults} onSendRequest={sendRequest} />
         ) : (
           <div className="flex flex-1 flex-col overflow-y-auto px-6 pb-6 pt-3 [scrollbar-color:#d4ead9_transparent] [scrollbar-width:thin]">
             {activeTab === "requests" ? (
               <>
-                <IncomingRequestList
-                  items={incoming}
-                  onAccept={acceptRequest}
-                  onDecline={declineRequest}
-                />
+                <IncomingRequestList items={incoming} onAccept={acceptRequest} onDecline={declineRequest} />
                 <div className="mt-5">
                   <OutgoingRequestList items={outgoing} onCancel={cancelRequest} />
                 </div>

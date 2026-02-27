@@ -21,7 +21,7 @@ function getInitial(name: string | null, id: string) {
 
 type OutgoingRequestListProps = {
   items: FriendRequestRow[];
-  onCancel: (requestId: string, toUserId: string, toUserName: string | null) => void;
+  onCancel: (requestId: string, toUserId: string, toUserName: string | null) => void | Promise<void>;
 };
 
 export function OutgoingRequestList({ items, onCancel }: OutgoingRequestListProps) {
@@ -31,10 +31,7 @@ export function OutgoingRequestList({ items, onCancel }: OutgoingRequestListProp
     <div className="space-y-5">
       <SectionLabel>보낸 요청</SectionLabel>
       {pending.length === 0 ? (
-        <EmptyState
-          icon={<span>📤</span>}
-          message="보낸 요청이 없어요"
-        />
+        <EmptyState icon={<span>📤</span>} message="보낸 요청이 없어요" />
       ) : (
         <div className="space-y-0">
           {pending.map((r) => (
@@ -53,7 +50,7 @@ export function OutgoingRequestList({ items, onCancel }: OutgoingRequestListProp
                     className={cn(
                       "rounded-[10px] border border-[#e4e4e4] bg-transparent px-3 py-1.5",
                       "whitespace-nowrap text-[14px] font-semibold text-[#bbb]",
-                      "transition-colors hover:border-[#ffb3a0] hover:bg-[#fff5f2] hover:text-[#ff8c6b]"
+                      "transition-colors hover:border-[#ffb3a0] hover:bg-[#fff5f2] hover:text-[#ff8c6b]",
                     )}
                   >
                     취소

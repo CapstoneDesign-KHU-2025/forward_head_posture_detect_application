@@ -11,12 +11,7 @@ type FriendsModalHeaderProps = ModalTabBarProps & {
   onClose: () => void;
 };
 
-export function FriendsModalHeader({
-  activeTab,
-  incomingCount,
-  onTabChange,
-  onClose,
-}: FriendsModalHeaderProps) {
+export function FriendsModalHeader({ activeTab, incomingCount, onTabChange, onClose }: FriendsModalHeaderProps) {
   return (
     <div
       className="flex shrink-0 flex-col bg-gradient-to-br from-[#4a7c59] to-[#6aab7a] px-6 pt-5"
@@ -24,7 +19,10 @@ export function FriendsModalHeader({
     >
       <div className="mb-5 flex items-center justify-between">
         <div>
-          <h2 className="flex items-center gap-2 font-extrabold text-[20px] text-white" style={{ fontFamily: "Nunito, sans-serif" }}>
+          <h2
+            className="flex items-center gap-2 font-extrabold text-[20px] text-white"
+            style={{ fontFamily: "Nunito, sans-serif" }}
+          >
             <Users size={22} className="text-white" strokeWidth={2} />
             친구 관리
           </h2>
@@ -39,11 +37,7 @@ export function FriendsModalHeader({
           ×
         </Button>
       </div>
-      <ModalTabBar
-        activeTab={activeTab}
-        incomingCount={incomingCount}
-        onTabChange={onTabChange}
-      />
+      <ModalTabBar activeTab={activeTab} incomingCount={incomingCount} onTabChange={onTabChange} />
     </div>
   );
 }

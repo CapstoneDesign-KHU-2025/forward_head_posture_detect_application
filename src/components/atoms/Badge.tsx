@@ -13,7 +13,7 @@ export function Badge({ count, className }: BadgeProps) {
       className={cn(
         "inline-flex min-w-5 h-5 items-center justify-center rounded-full px-1.5",
         "bg-orange text-white text-[13px] font-bold leading-none",
-        className
+        className,
       )}
     >
       {count > 99 ? "99+" : count}

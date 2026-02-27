@@ -14,7 +14,8 @@ export const POST = withApiReq(
     const session = await auth();
     if (!session?.user?.id) return json({ error: "UNAUTHORIZED" }, 401);
 
-    const { requestId } = await ctx.params;
+    const { requestedId } = ctx.params;
+    const requestId = requestedId;
     const body = await req.json().catch(() => ({}));
 
     const parsed = RespondSchema.safeParse(body);
@@ -26,5 +27,5 @@ export const POST = withApiReq(
 
     return json({ ok: true, ...result }, 200);
   },
-  { path: "/api/friends/requests/[requestsId]/respond POST" },
+  { path: "/api/friends/requests/[requestedId]/respond POST" },
 );
