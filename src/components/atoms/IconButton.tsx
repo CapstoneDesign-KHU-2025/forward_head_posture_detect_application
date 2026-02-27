@@ -16,8 +16,8 @@ const base =
   "disabled:opacity-50 disabled:cursor-not-allowed";
 
 const sizeClass: Record<NonNullable<IconButtonProps["size"]>, string> = {
-  md: "h-10 w-10 text-[18px]",
-  sm: "h-8 w-8 text-[14px]",
+  md: "h-10 w-10",
+  sm: "h-8 w-8",
 };
 
 const variantClass: Record<NonNullable<IconButtonProps["variant"]>, string> = {
