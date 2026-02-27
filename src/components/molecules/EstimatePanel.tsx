@@ -42,7 +42,7 @@ export default function EstimatePanel({
   }, [videoRef, stopEstimating]);
 
   return (
-    <section className="bg-white rounded-[20px] overflow-hidden shadow-[0_4px_30px_rgba(45,95,46,0.1)]">
+    <section className="bg-white rounded-[20px] overflow-hidden shadow-[0_4px_30px_rgba(45,95,46,0.1)] w-full max-w-[580px] min-w-0 mx-auto">
       <div className="p-0">
         <div
           className={`w-full px-8 py-4 text-center text-[1.1rem] font-semibold transition-all duration-300 rounded-t-[20px] ${
@@ -56,7 +56,7 @@ export default function EstimatePanel({
           {bannerMessage}
         </div>
 
-        <div className="relative w-full m-0 rounded-none overflow-hidden bg-[#2C3E50]" style={{ aspectRatio: "4/3" }}>
+        <div className="relative w-full min-w-0 m-0 rounded-none overflow-hidden bg-[#2C3E50]" style={{ aspectRatio: "4/3" }}>
           {stopEstimating ? (
             <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 p-8 text-center">
               <p className="text-[#aac8b2] text-sm font-medium">

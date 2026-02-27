@@ -2,14 +2,14 @@
 
 import { cn } from "@/utils/cn";
 
-type RecoveryToastProps = {
+type RecoveryNoticeProps = {
   isVisible: boolean;
   onRestart: () => void;
   onDismiss: () => void;
   className?: string;
 };
 
-export function RecoveryToast({ isVisible, onRestart, onDismiss, className }: RecoveryToastProps) {
+export function RecoveryNotice({ isVisible, onRestart, onDismiss, className }: RecoveryNoticeProps) {
   return (
     <div
       role="alert"

@@ -19,7 +19,7 @@ import { useTurtleNeckMeasurement } from "@/hooks/useTurtleNeckMeasurement";
 import { createISO } from "@/utils/createISO";
 import { postDailySummaryAction } from "@/app/actions/summaryActions";
 import { FloatingBar } from "@/components/molecules/FloatingBar";
-import { RecoveryToast } from "@/components/molecules/RecoveryToast";
+import { RecoveryNotice } from "@/components/molecules/RecoveryNotice";
 import { logger } from "@/lib/logger";
 import type { StatusBannerType } from "@/hooks/useTurtleNeckMeasurement";
 
@@ -65,7 +65,7 @@ export function MeasurementProvider({ children }: { children: ReactNode }) {
   const [isProcessing, setIsProcessing] = useState(false);
   const [isInitial, setIsInitial] = useState(true);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
-  const [showRecoveryToast, setShowRecoveryToast] = useState(false);
+  const [showRecoveryNotice, setShowRecoveryNotice] = useState(false);
 
   const [_dailySumState, dailySumAction] = useActionState(postDailySummaryAction, null);
 
@@ -143,24 +143,24 @@ export function MeasurementProvider({ children }: { children: ReactNode }) {
     if (typeof window === "undefined" || !userId) return;
     const interrupted = sessionStorage.getItem(SESSION_STORAGE_MEASUREMENT_INTERRUPTED);
     if (interrupted === "1") {
-      setShowRecoveryToast(true);
+      setShowRecoveryNotice(true);
     }
   }, [userId]);
 
-  const dismissRecoveryToast = useCallback(() => {
+  const dismissRecoveryNotice = useCallback(() => {
     if (typeof window !== "undefined") {
       sessionStorage.removeItem(SESSION_STORAGE_MEASUREMENT_INTERRUPTED);
     }
-    setShowRecoveryToast(false);
+    setShowRecoveryNotice(false);
   }, []);
 
   const handleRecoveryRestart = useCallback(() => {
-    dismissRecoveryToast();
+    dismissRecoveryNotice();
     if (pathname !== "/estimate") {
       router.push("/estimate");
     }
     startMeasurement();
-  }, [dismissRecoveryToast, startMeasurement, pathname, router]);
+  }, [dismissRecoveryNotice, startMeasurement, pathname, router]);
 
   useEffect(() => {
     if (stopEstimating || !measurementStarted) {
@@ -241,10 +241,10 @@ export function MeasurementProvider({ children }: { children: ReactNode }) {
         onStop={stopMeasurement}
       />
 
-      <RecoveryToast
-        isVisible={showRecoveryToast}
+      <RecoveryNotice
+        isVisible={showRecoveryNotice}
         onRestart={handleRecoveryRestart}
-        onDismiss={dismissRecoveryToast}
+        onDismiss={dismissRecoveryNotice}
       />
     </MeasurementContext.Provider>
   );
