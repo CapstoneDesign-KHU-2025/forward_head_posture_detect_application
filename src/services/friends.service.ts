@@ -1,32 +1,45 @@
 import { prisma } from "@/lib/db";
 import { orderUserPair } from "@/lib/api/utils";
-
-export async function getFriends(userId: string) {
-  const friendships = await prisma.friendship.findMany({
-    where: {
-      OR: [{ userAId: userId }, { userBId: userId }],
-    },
-    orderBy: { createdAt: "desc" },
-    take: 200,
-    select: {
-      id: true,
-      createdAt: true,
-      userAId: true,
-      userBId: true,
-      userA: { select: { id: true, name: true, image: true } },
-      userB: { select: { id: true, name: true, image: true } },
-    },
-  });
-
-  return friendships.map((f) => {
-    const other = f.userAId === userId ? f.userB : f.userA;
-    return {
-      friendshipId: f.id,
-      createdAt: f.createdAt,
-      user: other,
-    };
-  });
+import { unstable_cache } from "next/cache";
+export interface FriendItem {
+  friendshipId: string;
+  createdAt: Date;
+  user: {
+    id: string;
+    name: string | null;
+    image: string | null;
+  };
 }
+export const getFriends: (userId: string) => Promise<FriendItem[]> = unstable_cache(
+  async (userId: string): Promise<FriendItem[]> => {
+    const friendships = await prisma.friendship.findMany({
+      where: {
+        OR: [{ userAId: userId }, { userBId: userId }],
+      },
+      orderBy: { createdAt: "desc" },
+      take: 200,
+      select: {
+        id: true,
+        createdAt: true,
+        userAId: true,
+        userBId: true,
+        userA: { select: { id: true, name: true, image: true } },
+        userB: { select: { id: true, name: true, image: true } },
+      },
+    });
+
+    return friendships.map((f) => {
+      const other = f.userAId === userId ? f.userB : f.userA;
+      return {
+        friendshipId: f.id,
+        createdAt: f.createdAt,
+        user: other,
+      };
+    });
+  },
+  ["friend-list"],
+  { tags: ["friends_list"], revalidate: 3600 },
+);
 
 export async function getFriendRequests(
   userId: string,
