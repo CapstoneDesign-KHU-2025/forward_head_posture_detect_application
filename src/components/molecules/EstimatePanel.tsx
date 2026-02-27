@@ -42,7 +42,7 @@ export default function EstimatePanel({
   }, [videoRef, stopEstimating]);
 
   return (
-    <section className="bg-white rounded-[20px] overflow-hidden shadow-[0_4px_30px_rgba(45,95,46,0.1)] w-full max-w-[580px] min-w-0 mx-auto">
+    <section className="bg-white rounded-[20px] overflow-hidden shadow-[0_4px_30px_rgba(45,95,46,0.1)] w-full max-w-[600px] min-w-0 mx-auto">
       <div className="p-0">
         <div
           className={`w-full px-8 py-4 text-center text-[1.1rem] font-semibold transition-all duration-300 rounded-t-[20px] ${
