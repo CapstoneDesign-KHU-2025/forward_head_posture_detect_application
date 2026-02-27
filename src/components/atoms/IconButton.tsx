@@ -7,6 +7,7 @@ type IconButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   size?: "md" | "sm";
   variant?: "ghost" | "filled" | "outline";
   icon: React.ReactNode;
+  ariaLabel?: string;
 };
 
 const base =
@@ -28,11 +29,12 @@ const variantClass: Record<NonNullable<IconButtonProps["variant"]>, string> = {
 };
 
 export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
-  ({ className, size = "md", variant = "ghost", icon, type, ...props }, ref) => {
+  ({ className, size = "md", variant = "ghost", icon, ariaLabel, type, ...props }, ref) => {
     return (
       <button
         ref={ref}
         type={type ?? "button"}
+        aria-label={ariaLabel}
         className={cn(base, sizeClass[size], variantClass[variant], className)}
         {...props}
       >
