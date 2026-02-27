@@ -4,8 +4,8 @@ import { forwardRef } from "react";
 import { cn } from "@/utils/cn";
 
 type IconButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
-  size?: "md" | "sm";
-  variant?: "ghost" | "outline";
+  size?: "md" | "sm" | "xs";
+  variant?: "ghost" | "outline" | "calendar";
   icon: React.ReactNode;
   ariaLabel?: string;
 };
@@ -18,12 +18,15 @@ const base =
 const sizeClass: Record<NonNullable<IconButtonProps["size"]>, string> = {
   md: "h-10 w-10",
   sm: "h-8 w-8",
+  xs: "h-[22px] w-[22px]",
 };
 
 const variantClass: Record<NonNullable<IconButtonProps["variant"]>, string> = {
   ghost: "text-[var(--text-sub)] hover:bg-[var(--green-light)] hover:text-[var(--green)]",
   outline:
     "rounded-lg border border-[#d4ead9] bg-[#f4faf6] text-xs text-[#7a9585] transition-colors hover:bg-[#e8f5ec]",
+  calendar:
+    "rounded-full bg-[#e8f5ec] font-bold text-[#4a7c59] transition-colors hover:bg-[#d4ead9]",
 };
 
 export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
