@@ -24,7 +24,7 @@ export function TabButton({ isActive, badgeCount, children, className, ...props 
     >
       {children}
       {badgeCount != null && badgeCount > 0 && (
-        <Badge count={badgeCount} className="h-[20px] min-w-[20px]" />
+        <Badge count={badgeCount} variant="count" className="h-[20px] min-w-[20px]" />
       )}
     </button>
   );

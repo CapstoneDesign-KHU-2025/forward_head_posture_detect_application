@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { UserAvatar } from "@/components/molecules/UserAvatar";
+import { UserAvatar } from "@/components/atoms/UserAvatar";
 import UserMenuDropdown from "@/components/molecules/UserMenuDropdown";
 
 type UserButtonProps = {

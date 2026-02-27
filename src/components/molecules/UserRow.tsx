@@ -1,6 +1,6 @@
 "use client";
 
-import { UserAvatar } from "@/components/molecules/UserAvatar";
+import { UserAvatar } from "@/components/atoms/UserAvatar";
 import { cn } from "@/utils/cn";
 
 type UserRowProps = {
