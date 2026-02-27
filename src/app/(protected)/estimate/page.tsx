@@ -9,6 +9,7 @@ import { createISO } from "@/utils/createISO";
 import { postDailySummaryAction } from "@/app/actions/summaryActions";
 import { Button } from "@/components/atoms/Button";
 import EstimatePanel from "@/components/molecules/EstimatePanel";
+import { FloatingBar } from "@/components/molecules/FloatingBar";
 import ErrorBanner from "@/components/atoms/ErrorBanner";
 import AsyncBoundary from "@/components/molecules/AsyncBoundary";
 import LoadingSkeleton from "@/components/molecules/LoadingSkeleton";
@@ -21,6 +22,7 @@ export default function Estimate() {
   const [stopEstimating, setStopEstimating] = useState(true);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isInitial, setIsInitial] = useState(true);
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const {
     videoRef,
     canvasRef,
@@ -42,6 +44,16 @@ export default function Estimate() {
       }
     };
   }, [stopEstimating]);
+
+  // 측정 중 경과 시간 타이머
+  useEffect(() => {
+    if (stopEstimating || !measurementStarted) {
+      setElapsedSeconds(0);
+      return;
+    }
+    const interval = setInterval(() => setElapsedSeconds((s) => s + 1), 1000);
+    return () => clearInterval(interval);
+  }, [stopEstimating, measurementStarted]);
 
   // "오늘의 측정 중단하기" 버튼: IndexedDB -> DailyPostureSummary POST
   const handleStopEstimating = async (forced?: boolean) => {
@@ -123,6 +135,13 @@ export default function Estimate() {
           />
         </AsyncBoundary>
         {error && <ErrorBanner error={error} />}
+
+        <FloatingBar
+          visible={!stopEstimating && measurementStarted}
+          title="측정 중"
+          elapsedSeconds={elapsedSeconds}
+          onStop={() => handleStopEstimating()}
+        />
       </div>
     </div>
   );
