@@ -38,7 +38,7 @@ export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
         className={cn(base, sizeClass[size], variantClass[variant], className)}
         {...props}
       >
-        {icon}
+        <span aria-hidden="true">{icon}</span>
       </button>
     );
   },
