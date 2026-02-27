@@ -1,8 +1,28 @@
 import { auth } from "@/auth";
 import { json, withApiReq } from "@/lib/api/utils";
 import { upsertDailySummary, getWeeklySummary, getTodaySummary } from "@/services/summary.service";
+import { z } from "zod";
 
 export const runtime = "nodejs";
+
+const DailySummaryBodySchema = z
+  .object({
+    dateISO: z.string().min(1),
+    sumWeighted: z.number().finite(),
+    weightSeconds: z.number().positive(),
+    count: z.number().int().nonnegative().optional(),
+  })
+  .strict();
+
+const DailySummaryQuerySchema = z
+  .object({
+    days: z
+      .string()
+      .transform((value) => parseInt(value, 10))
+      .pipe(z.number().int().gte(1).lte(365))
+      .optional(),
+  })
+  .strict();
 
 export const POST = withApiReq(
   async (req) => {
@@ -11,13 +31,15 @@ export const POST = withApiReq(
       return json({ error: "Unauthorized" }, 401);
     }
 
-    const body = await req.json();
-    if (!body.dateISO) {
-      return json({ error: "dateISO is required." }, 400);
+    const rawBody = await req.json().catch(() => ({}));
+    const parsed = DailySummaryBodySchema.safeParse(rawBody);
+
+    if (!parsed.success) {
+      return json({ error: parsed.error.issues[0]?.message ?? "Invalid input" }, 400);
     }
 
     const safeRow = await upsertDailySummary({
-      ...body,
+      ...parsed.data,
       userId: session.user.id,
     });
 
@@ -35,15 +57,22 @@ export const GET = withApiReq(
 
     const userId = session.user.id;
     const { searchParams } = new URL(req.url);
-    const daysParam = searchParams.get("days");
+    const daysParam = searchParams.get("days") ?? undefined;
 
-    if (daysParam) {
-      const weeklyData = await getWeeklySummary(userId, Number(daysParam));
-      return json(weeklyData, 200);
-    } else {
-      const todayData = await getTodaySummary(userId);
-      return json(todayData, 200);
+    const parsedQuery = DailySummaryQuerySchema.safeParse({ days: daysParam });
+    if (!parsedQuery.success) {
+      return json({ error: parsedQuery.error.issues[0]?.message ?? "Invalid query parameters" }, 400);
     }
+
+    const days = parsedQuery.data.days;
+
+    if (days != null) {
+      const weeklyData = await getWeeklySummary(userId, days);
+      return json(weeklyData, 200);
+    }
+
+    const todayData = await getTodaySummary(userId);
+    return json(todayData, 200);
   },
   { path: "/api/summaries/daily GET" },
 );
