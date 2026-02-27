@@ -3,7 +3,7 @@
 import { Modal } from "@/components/atoms/Modal";
 import { ModalHeader } from "@/components/atoms/ModalHeader";
 import { Button } from "@/components/atoms/Button";
-import { cn } from "@/utils/cn";
+import { SelectableOptionCard } from "@/components/molecules/SelectableOptionCard";
 import { useEffect, useState } from "react";
 
 type CharacterSelectionModalProps = {
@@ -70,21 +70,11 @@ export default function CharacterSelectionModal({ isOpen, onClose }: CharacterSe
       />
 
       <div className="flex flex-1 flex-col overflow-y-auto px-6 py-[22px]">
-        <div>
-          <div className="flex flex-col gap-2">
-            {characters.map((character) => (
-              <button
-                key={character.id}
-                type="button"
-                onClick={() => handleSelect(character.id)}
-                className={cn(
-                  "flex items-center gap-3.5 rounded-2xl border-[1.5px] bg-white px-4 py-3 transition-all duration-[180ms]",
-                  "hover:border-[#6aab7a] hover:bg-[#f9fdf9]",
-                  selectedCharacter === character.id
-                    ? "border-[#4a7c59] bg-[#f0f9f3] shadow-[0_2px_10px_rgba(74,124,89,0.12)]"
-                    : "border-[#e4f0e8]",
-                )}
-              >
+        <div className="flex flex-col gap-2">
+          {characters.map((character) => (
+            <SelectableOptionCard
+              key={character.id}
+              icon={
                 <div className="flex h-[52px] w-[52px] shrink-0 items-center justify-center overflow-hidden rounded-xl bg-[#e8f5ec]">
                   <img
                     src={character.icon}
@@ -92,27 +82,13 @@ export default function CharacterSelectionModal({ isOpen, onClose }: CharacterSe
                     className="h-full w-full object-cover"
                   />
                 </div>
-                <div className="flex-1 text-left">
-                  <div className="mb-0.5 text-base font-semibold text-[#2d3b35]">{character.name}</div>
-                  <div className="text-sm leading-relaxed text-[#7a9585]">
-                    {character.description}
-                  </div>
-                </div>
-                <div
-                  className={cn(
-                    "flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-all duration-[180ms]",
-                    selectedCharacter === character.id
-                      ? "border-[#4a7c59] bg-[#4a7c59]"
-                      : "border-[#d4ead9]"
-                  )}
-                >
-                  {selectedCharacter === character.id && (
-                    <div className="h-2 w-2 rounded-full bg-white" />
-                  )}
-                </div>
-              </button>
-            ))}
-          </div>
+              }
+              title={character.name}
+              description={character.description}
+              isSelected={selectedCharacter === character.id}
+              onClick={() => handleSelect(character.id)}
+            />
+          ))}
         </div>
       </div>
       <div className="flex shrink-0 gap-2.5 px-6 py-3.5">
