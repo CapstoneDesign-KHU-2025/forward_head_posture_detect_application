@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { Modal } from "@/components/atoms/Modal";
 import { ModalHeader } from "@/components/atoms/ModalHeader";
 import { Button } from "@/components/atoms/Button";
@@ -75,11 +76,13 @@ export default function CharacterSelectionModal({ isOpen, onClose }: CharacterSe
             <SelectableOptionCard
               key={character.id}
               icon={
-                <div className="flex h-[52px] w-[52px] shrink-0 items-center justify-center overflow-hidden rounded-xl bg-[#e8f5ec]">
-                  <img
+                <div className="relative flex h-[52px] w-[52px] shrink-0 items-center justify-center overflow-hidden rounded-xl bg-[#e8f5ec]">
+                  <Image
                     src={character.icon}
                     alt={character.name}
-                    className="h-full w-full object-cover"
+                    width={52}
+                    height={52}
+                    className="object-cover"
                   />
                 </div>
               }
