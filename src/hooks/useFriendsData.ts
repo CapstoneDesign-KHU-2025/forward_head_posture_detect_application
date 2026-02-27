@@ -8,6 +8,7 @@ export type SearchResultItem = {
   id: string;
   name: string | null;
   image: string | null;
+  email?: string | null;
   initial: string;
   color: string;
   relation: RelationStatus | "NONE";
@@ -168,6 +169,7 @@ export function useFriendsData() {
         id: u.id,
         name: u.name,
         image: u.image,
+        email: u.email,
         initial: u.name?.charAt(0) ?? "?",
         color: "#6aab7a",
         relation: (relation[u.id] ?? "NONE") as RelationStatus | "NONE",
@@ -195,6 +197,7 @@ export function useFriendsData() {
           id: u.id,
           name: u.name,
           image: u.image,
+          email: u.email,
           initial: u.initial ?? u.name?.charAt(0) ?? "?",
           color: u.color ?? "#6aab7a",
           relation: (relation[u.id] ?? "NONE") as RelationStatus | "NONE",

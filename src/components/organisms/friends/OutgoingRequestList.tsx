@@ -38,7 +38,7 @@ export function OutgoingRequestList({ items, onCancel }: OutgoingRequestListProp
             <UserRow
               key={r.id}
               name={r.toUser.name ?? "알 수 없음"}
-              email={r.toUser.id}
+              email={r.toUser.email ?? ""}
               initial={getInitial(r.toUser.name, r.toUser.id)}
               bgColor={getAvatarStyle(r.toUser.id)}
               actions={

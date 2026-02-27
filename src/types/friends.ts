@@ -4,6 +4,7 @@ export type UserInfo = {
   id: string;
   name: string | null;
   image: string | null;
+  email?: string | null;
 };
 
 export type Friend = {

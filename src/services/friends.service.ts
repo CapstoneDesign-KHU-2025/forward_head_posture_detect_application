@@ -8,6 +8,7 @@ export interface FriendItem {
     id: string;
     name: string | null;
     image: string | null;
+    email: string | null;
   };
 }
 export const getFriends: (userId: string) => Promise<FriendItem[]> = unstable_cache(
@@ -23,12 +24,13 @@ export const getFriends: (userId: string) => Promise<FriendItem[]> = unstable_ca
         createdAt: true,
         userAId: true,
         userBId: true,
-        userA: { select: { id: true, name: true, image: true } },
-        userB: { select: { id: true, name: true, image: true } },
+        userA: { select: { id: true, name: true, image: true, email: true } },
+        userB: { select: { id: true, name: true, image: true, email: true } },
       },
     });
 
-    return friendships.map((f) => {
+    type FriendshipRow = (typeof friendships)[number];
+    return friendships.map((f: FriendshipRow) => {
       const other = f.userAId === userId ? f.userB : f.userA;
       return {
         friendshipId: f.id,
@@ -60,8 +62,8 @@ export async function getFriendRequests(
       status: true,
       createdAt: true,
       respondedAt: true,
-      fromUser: { select: { id: true, name: true, image: true } },
-      toUser: { select: { id: true, name: true, image: true } },
+      fromUser: { select: { id: true, name: true, image: true, email: true } },
+      toUser: { select: { id: true, name: true, image: true, email: true } },
     },
   });
 
@@ -216,6 +218,7 @@ export async function searchUsers(currentUserId: string, query: string) {
       id: true,
       name: true,
       image: true,
+      email: true,
     },
     take: 20,
   });
