@@ -1,7 +1,6 @@
 import WelcomeHero from "@/components/organisms/home/WelcomeHero";
 import Posture3DCard from "@/components/organisms/home/Posture3DCard";
 import StatCard from "@/components/molecules/StatCard";
-import { Calendar } from "@/components/molecules/Calendar";
 import TodayStatusCard from "@/components/molecules/TodayStatusCard";
 import TurtleEvolutionCard from "@/components/molecules/TurtleEvolutionCard";
 import { formatMeasuredTime } from "@/utils/formatMeasuredTime";
@@ -31,6 +30,8 @@ type HomeTemplateProps = {
   isNewUser?: boolean;
   /** 누적 좋은 날 수 (칭호 카드용) */
   goodDays?: number;
+  /** 실시간 측정 중 여부 (플로팅바 표시 시 true) */
+  isMeasuring?: boolean;
   className?: string;
 };
 
@@ -41,6 +42,7 @@ export default function HomeTemplate({
   warningCount = null,
   isNewUser,
   goodDays = 0,
+  isMeasuring = false,
   className,
 }: HomeTemplateProps) {
   // 측정 시간 KPI 찾기
@@ -82,14 +84,16 @@ export default function HomeTemplate({
                         value={formatMeasuredTime(measureTimeKpi.value)}
                         unit={measureTimeKpi.unit}
                         showStatusDot
-                        subtitle="측정 중 아님"
+                        statusDotVariant={isMeasuring ? "measuring" : "idle"}
+                        subtitle={isMeasuring ? "실시간 측정" : "측정 중 아님"}
                       />
                     ) : (
                       <StatCard
                         label="측정 시간"
                         value="00:00"
                         showStatusDot
-                        subtitle="측정 중 아님"
+                        statusDotVariant={isMeasuring ? "measuring" : "idle"}
+                        subtitle={isMeasuring ? "실시간 측정 중" : "측정 중 아님"}
                       />
                     )}
                   </div>
@@ -128,7 +132,7 @@ export default function HomeTemplate({
           </div>
 
           {/* RIGHT: 측정 섹션 */}
-          <div className="flex flex-col gap-6">
+          <div>
             <Posture3DCard
               userAng={user?.avgAng}
               title={challenge?.title ?? "당신의 거북목 도전기"}
@@ -142,7 +146,6 @@ export default function HomeTemplate({
                 )
               }
             />
-            <Calendar />
           </div>
         </div>
       </div>
