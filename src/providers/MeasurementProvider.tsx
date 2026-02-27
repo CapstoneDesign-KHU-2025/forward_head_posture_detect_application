@@ -10,6 +10,7 @@ import {
   type ReactNode,
 } from "react";
 import { createPortal } from "react-dom";
+import { usePathname, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { startTransition, useActionState } from "react";
 import { getTodayHourly } from "@/lib/hourlyOps";
@@ -55,6 +56,8 @@ export function useMeasurement() {
 }
 
 export function MeasurementProvider({ children }: { children: ReactNode }) {
+  const router = useRouter();
+  const pathname = usePathname();
   const { data: session } = useSession();
   const userId = (session?.user as any)?.id as string;
 
@@ -153,8 +156,11 @@ export function MeasurementProvider({ children }: { children: ReactNode }) {
 
   const handleRecoveryRestart = useCallback(() => {
     dismissRecoveryToast();
+    if (pathname !== "/estimate") {
+      router.push("/estimate");
+    }
     startMeasurement();
-  }, [dismissRecoveryToast, startMeasurement]);
+  }, [dismissRecoveryToast, startMeasurement, pathname, router]);
 
   useEffect(() => {
     if (stopEstimating || !measurementStarted) {
