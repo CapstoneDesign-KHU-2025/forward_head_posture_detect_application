@@ -1,5 +1,9 @@
 "use client";
 
+import { X } from "lucide-react";
+import { Icon } from "@/components/atoms/Icon";
+import { IconButton } from "@/components/atoms/IconButton";
+
 type ModalHeaderProps = {
   title: string;
   subtitle?: string;
@@ -20,14 +24,18 @@ export function ModalHeader({ title, subtitle, icon, onClose }: ModalHeaderProps
         </h2>
         {subtitle && <p className="text-sm text-[#7a9585]">{subtitle}</p>}
       </div>
-      <button
-        type="button"
+      <IconButton
+        variant="outline"
+        size="sm"
+        icon={
+          <Icon size="xs">
+            <X />
+          </Icon>
+        }
         onClick={onClose}
-        className="flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-lg border border-[#d4ead9] bg-[#f4faf6] text-xs text-[#7a9585] transition-colors hover:bg-[#e8f5ec]"
-        aria-label="모달 닫기"
-      >
-        ✕
-      </button>
+        ariaLabel="모달 닫기"
+        className="h-[30px] w-[30px] shrink-0"
+      />
     </header>
   );
 }
