@@ -88,13 +88,11 @@ export function useFriendsData() {
         fetch("/api/friends/requests?type=outgoing&status=PENDING", { cache: "no-store" }),
       ]);
 
-      const [friendsJson, incomingJson, outgoingJson] = await Promise.all<
-        FriendsApiResponse | FriendRequestsApiResponse[]
-      >([
-        friendsRes.json().catch(() => ({}) as FriendsApiResponse),
-        incomingRes.json().catch(() => ({}) as FriendRequestsApiResponse),
-        outgoingRes.json().catch(() => ({}) as FriendRequestsApiResponse),
-      ] as any);
+      const [friendsJson, incomingJson, outgoingJson] = await Promise.all([
+        friendsRes.json() as Promise<FriendsApiResponse>,
+        incomingRes.json() as Promise<FriendRequestsApiResponse>,
+        outgoingRes.json() as Promise<FriendRequestsApiResponse>,
+      ]);
 
       if (!friendsRes.ok || !(friendsJson as FriendsApiResponse).ok) {
         throw new Error((friendsJson as FriendsApiResponse).error || "Failed to load friends");
