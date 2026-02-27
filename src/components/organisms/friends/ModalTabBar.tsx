@@ -1,7 +1,7 @@
 "use client";
 
 import { Search, Mail, Users } from "lucide-react";
-import { cn } from "@/utils/cn";
+import { TabButton } from "@/components/atoms/TabButton";
 
 type TabId = "search" | "requests" | "friends";
 
@@ -13,44 +13,12 @@ export type ModalTabBarProps = {
 
 export function ModalTabBar({ activeTab, incomingCount, onTabChange }: ModalTabBarProps) {
   return (
-    <div className="flex">
-      <button
-        type="button"
-        onClick={() => onTabChange("search")}
-        className={cn(
-          "flex items-center gap-1.5 px-4 pb-2.5 pt-1.5 text-[15px] font-bold transition-colors",
-          "relative cursor-pointer",
-          activeTab === "search"
-            ? "text-[#4a7c59]"
-            : "text-[#aac8b2] hover:text-[#7a9585]"
-        )}
-      >
-        {activeTab === "search" && (
-          <span
-            className="absolute bottom-0 left-0 right-0 h-[2.5px] rounded-sm bg-[#4a7c59]"
-            aria-hidden
-          />
-        )}
+    <div className="flex gap-1">
+      <TabButton isActive={activeTab === "search"} onClick={() => onTabChange("search")}>
         <Search size={12} strokeWidth={2.5} />
         검색
-      </button>
-      <button
-        type="button"
-        onClick={() => onTabChange("requests")}
-        className={cn(
-          "flex items-center gap-1.5 px-4 pb-2.5 pt-1.5 text-[15px] font-bold transition-colors",
-          "relative cursor-pointer",
-          activeTab === "requests"
-            ? "text-[#4a7c59]"
-            : "text-[#aac8b2] hover:text-[#7a9585]"
-        )}
-      >
-        {activeTab === "requests" && (
-          <span
-            className="absolute bottom-0 left-0 right-0 h-[2.5px] rounded-sm bg-[#4a7c59]"
-            aria-hidden
-          />
-        )}
+      </TabButton>
+      <TabButton isActive={activeTab === "requests"} onClick={() => onTabChange("requests")}>
         <Mail size={12} strokeWidth={2.5} />
         요청
         {incomingCount > 0 && (
@@ -58,27 +26,11 @@ export function ModalTabBar({ activeTab, incomingCount, onTabChange }: ModalTabB
             {incomingCount > 99 ? "99+" : incomingCount}
           </span>
         )}
-      </button>
-      <button
-        type="button"
-        onClick={() => onTabChange("friends")}
-        className={cn(
-          "flex items-center gap-1.5 px-4 pb-2.5 pt-1.5 text-[15px] font-bold transition-colors",
-          "relative cursor-pointer",
-          activeTab === "friends"
-            ? "text-[#4a7c59]"
-            : "text-[#aac8b2] hover:text-[#7a9585]"
-        )}
-      >
-        {activeTab === "friends" && (
-          <span
-            className="absolute bottom-0 left-0 right-0 h-[2.5px] rounded-sm bg-[#4a7c59]"
-            aria-hidden
-          />
-        )}
+      </TabButton>
+      <TabButton isActive={activeTab === "friends"} onClick={() => onTabChange("friends")}>
         <Users size={12} strokeWidth={2.5} />
         친구
-      </button>
+      </TabButton>
     </div>
   );
 }
