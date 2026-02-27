@@ -10,7 +10,34 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-  --color-orange: #ff8c6b;
+
+  /* Layout */
+  --header-height: 80px; /* 메인 헤더 높이 (fixed 헤더 전체 높이) */
+
+  /* Green palette */
+  --green-dark:   #3a6147;  /* hover, 강조 */
+  --green:        #4a7c59;  /* primary 버튼, 주요 텍스트 */
+  --green-mid:    #6aab7a;  /* 그라디언트, 보조 강조 */
+  --green-light:  #e8f5ec;  /* 버튼 hover 배경, 칩 배경 */
+  --green-pale:   #f4faf6;  /* 페이지 배경, 카드 배경 */
+  --green-border: #d4ead9;  /* 테두리, 구분선 */
+
+  /* Text */
+  --text:         #2d3b35;  /* 기본 텍스트 */
+  --text-sub:     #7a9585;  /* 보조 텍스트 */
+  --text-muted:   #aac8b2;  /* 흐린 텍스트, 레이블 */
+
+  /* Danger / warning */
+  --danger-bg:      #fff0ee; /* 측정 중단 버튼 배경 */
+  --danger-border:  #ffcfc7; /* 측정 중단 버튼 테두리 */
+  --danger-text:    #e05030; /* 경고 텍스트, 빨간 날짜 */
+  --danger-dark:    #c03020; /* 캘린더 bad-day 텍스트 */
+  --danger-soft:    #fde0d8; /* 캘린더 bad-day 배경 */
+  --danger-mid:     #ff8c6b; /* 알림 배지, 알림 dot */
+
+  --warning-text:   #ffb347; /* "ideal 대비 +2.2°" 주황 */
+  --cal-sun:        #e05030; /* 캘린더 일요일 */
+  --cal-sat:        #6b9fff; /* 캘린더 토요일 */
 }
 
 /* @media (prefers-color-scheme: dark) {
@@ -21,7 +48,7 @@
 } */
 
 body {
-  background: var(--background);
+  background: var(--green-pale);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
@@ -69,4 +96,23 @@ body[data-modal-open] header {
 
 .animate-rotate-slow {
   animation: rotate-slow 3s ease-in-out infinite;
+}
+
+/* 공통 카드 그림자 */
+.shadow-soft-card {
+  box-shadow: 0 4px 20px rgba(74, 124, 89, 0.12);
+}
+
+@keyframes glow {
+  0%,
+  100% {
+    box-shadow: 0 8px 24px rgba(74, 124, 89, 0.3);
+  }
+  50% {
+    box-shadow: 0 8px 32px rgba(74, 124, 89, 0.52);
+  }
+}
+
+.evo-badge-circle {
+  animation: glow 2.5s ease-in-out infinite;
 }

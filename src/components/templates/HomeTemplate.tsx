@@ -1,9 +1,9 @@
 import WelcomeHero from "@/components/organisms/home/WelcomeHero";
+import Posture3DCard from "@/components/organisms/home/Posture3DCard";
 import StatCard from "@/components/molecules/StatCard";
 import TodayStatusCard from "@/components/molecules/TodayStatusCard";
-import TitleCard from "@/components/molecules/TitleCard";
+import TurtleEvolutionCard from "@/components/molecules/TurtleEvolutionCard";
 import { formatMeasuredTime } from "@/utils/formatMeasuredTime";
-import GraphicModelPanel from "@/components/organisms/home/GraphicModelPanel";
 import AsyncBoundary from "@/components/molecules/AsyncBoundary";
 import LoadingSkeleton from "@/components/molecules/LoadingSkeleton";
 
@@ -47,9 +47,15 @@ export default function HomeTemplate({
     (kpi) => kpi.label === "측정 시간" || (typeof kpi.label === "string" && kpi.label.includes("측정 시간")),
   );
 
+  const todayWarningCount = warningCount ?? 0;
+  const avgAngle = user?.avgAng ?? null;
+  const idealAngle = 52;
+  const deltaFromIdeal =
+    avgAngle != null && Number.isFinite(avgAngle) ? avgAngle - idealAngle : null;
+
   return (
     <main className={["bg-[#F8FBF8] min-h-screen", className].filter(Boolean).join(" ")}>
-      <div className="max-w-[1400px] mx-auto px-8 py-8">
+      <div className="max-w-[1400px] mx-auto px-8 pb-8 pt-2">
         <WelcomeHero userName={user?.name ?? "사용자"} />
 
         {/* 본문 2열 레이아웃: 좌(KPI), 우(도전기) */}
@@ -66,23 +72,55 @@ export default function HomeTemplate({
             {/* 서브 정보 카드 */}
             <div className="flex gap-4">
               <AsyncBoundary suspenseFallback={<LoadingSkeleton />}>
-                <div className="flex-[0.7]">
-                  {/* 측정 시간 카드 */}
-                  {measureTimeKpi && typeof measureTimeKpi.value === "number" && measureTimeKpi.value > 0 ? (
+                <div className="flex-[0.7] flex flex-col gap-3">
+                  <div>
+                    {/* 측정 시간 카드 */}
+                    {measureTimeKpi && typeof measureTimeKpi.value === "number" && measureTimeKpi.value > 0 ? (
+                      <StatCard
+                        label={measureTimeKpi.label}
+                        value={formatMeasuredTime(measureTimeKpi.value)}
+                        unit={measureTimeKpi.unit}
+                        showStatusDot
+                        subtitle="측정 중 아님"
+                      />
+                    ) : (
+                      <StatCard
+                        label="측정 시간"
+                        value="00:00"
+                        showStatusDot
+                        subtitle="측정 중 아님"
+                      />
+                    )}
+                  </div>
+
+                  {/* 오늘 경고 / 누적 평균 카드 */}
+                  <div className="grid grid-cols-2 gap-3">
                     <StatCard
-                      label={measureTimeKpi.label}
-                      value={formatMeasuredTime(measureTimeKpi.value)}
-                      unit={measureTimeKpi.unit}
+                      label="오늘 경고"
+                      value={String(todayWarningCount)}
+                      unit="회"
+                      subtitle="오늘 기준"
                     />
-                  ) : (
-                    <StatCard label="측정 시간" value="측정을 시작해보세요!" />
-                  )}
+                    <StatCard
+                      label="누적 평균"
+                      value={avgAngle != null ? avgAngle.toFixed(1) : "-"}
+                      unit="°"
+                      subtitle={
+                        deltaFromIdeal != null ? (
+                          <span className="text-[var(--warning-text)]">
+                            ideal 대비 {deltaFromIdeal >= 0 ? "+" : ""}
+                            {deltaFromIdeal.toFixed(1)}°
+                          </span>
+                        ) : undefined
+                      }
+                    />
+                  </div>
                 </div>
               </AsyncBoundary>
               <AsyncBoundary suspenseFallback={<LoadingSkeleton />}>
                 <div className="flex-[1.3]">
                   {/* 칭호 카드 */}
-                  <TitleCard goodDays={goodDays} />
+                  <TurtleEvolutionCard goodDays={goodDays} />
                 </div>
               </AsyncBoundary>
             </div>
@@ -90,7 +128,7 @@ export default function HomeTemplate({
 
           {/* RIGHT: 측정 섹션 */}
           <div>
-            <GraphicModelPanel
+            <Posture3DCard
               userAng={user?.avgAng}
               title={challenge?.title ?? "당신의 거북목 도전기"}
               description={

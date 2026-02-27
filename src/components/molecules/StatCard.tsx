@@ -6,46 +6,64 @@ type StatCardProps = {
   /** 단위 (예: '°', '%', '시간', '회') */
   unit?: React.ReactNode;
 
+  /** 하단 보조 텍스트 (예: '측정 중 아님', '오늘 기준') */
+  subtitle?: React.ReactNode;
+
+  /** 하단 보조 텍스트 왼쪽에 작은 상태 점 표시 여부 */
+  showStatusDot?: boolean;
+
   /** 컨테이너 클래스 */
   className?: string;
   /** 값(value) 부분에 적용할 추가 클래스 (기본값: text-base font-bold) */
   valueClassName?: string;
 };
 
+import { Card } from "@/components/atoms/Card";
+
 /** StatCard: 라벨 + (값+단위) */
 export default function StatCard({
   label,
   value,
   unit,
+  subtitle,
+  showStatusDot = false,
   className,
-  valueClassName = "text-xl font-bold",
+  valueClassName = "font-[900] text-[27px] leading-none text-[var(--green)]",
 }: StatCardProps) {
   return (
-    <div
+    <Card
       className={[
-        "rounded-xl bg-white p-6",
-        "flex flex-col gap-1.5",
-        "border-l-4 border-[#7BC67E]",
-        "shadow-[0_2px_10px_rgba(0,0,0,0.05)]",
-        "transition-all duration-300",
-        "hover:shadow-[0_4px_20px_rgba(45,95,46,0.15)] hover:translate-x-1",
-        "items-start text-left",
-
+        "flex flex-col items-start text-left",
+        "px-[18px] py-[14px]",
         className,
       ]
         .filter(Boolean)
         .join(" ")}
     >
-      {/* 헤더: 라벨 */}
-      <div>
-        <span className="text-[0.9rem] font-medium text-[#4F4F4F]">{label}</span>
+      {/* 라벨 */}
+      <div className="mb-[5px]">
+        <span className="text-[12px] font-bold tracking-[0.03em] text-[var(--text-muted)]">
+          {label}
+        </span>
       </div>
 
-      {/* 본문: 값 + 단위 */}
+      {/* 값 + 단위 */}
       <div className="flex items-baseline gap-1">
         <span className={valueClassName}>{value}</span>
-        {unit ? <span className="text-sm text-[#4F4F4F]">{unit}</span> : null}
+        {unit ? (
+          <span className="text-[14px] text-[var(--text-sub)] ml-[2px]">{unit}</span>
+        ) : null}
       </div>
-    </div>
+
+      {/* 보조 텍스트 + 상태 점 */}
+      {subtitle ? (
+        <div className="mt-[5px] text-[12px] font-semibold text-[var(--text-muted)] flex items-center gap-[5px]">
+          {showStatusDot && (
+            <span className="inline-block h-[6px] w-[6px] rounded-full bg-[#ccc]" />
+          )}
+          {subtitle}
+        </div>
+      ) : null}
+    </Card>
   );
 }

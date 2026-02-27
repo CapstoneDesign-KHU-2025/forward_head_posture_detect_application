@@ -2,19 +2,24 @@
 import { cloneElement } from "react";
 import { cn } from "@/utils/cn";
 
+type IconSize = "xs" | "sm" | "md" | "lg" | "xl" | "2xl";
+
 type IconProps = {
   children: React.ReactElement<{ className?: string }>;
-  size?: "sm" | "md" | "lg";
+  size?: IconSize;
   className?: string;
 };
 
-const sizeClass: Record<NonNullable<IconProps["size"]>, string> = {
-  sm: "w-4 h-4", // 16px
-  md: "w-5 h-5", // 20px
-  lg: "w-6 h-6", // 24px
+const sizeClass: Record<IconSize, string> = {
+  xs: "w-4 h-4",     // 16px
+  sm: "w-5 h-5",     // 20px
+  md: "w-6 h-6",     // 24px
+  lg: "w-7 h-7",     // 28px
+  xl: "w-9 h-9",     // 36px
+  "2xl": "w-14 h-14", // 56px
 };
 
-export function Icon({ children, size = "md", className }: IconProps) {
+export function Icon({ children, size = "lg", className }: IconProps) {
   const childClass = cn(sizeClass[size], children.props?.className);
 
   return (

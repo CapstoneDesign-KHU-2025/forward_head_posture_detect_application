@@ -60,11 +60,11 @@ export default function LandingTemplate() {
               건강한 자세를 위한 가장 쉬운 방법을 경험하세요.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button variant="primary" className="w-full sm:w-auto" onClick={() => signIn()}>
+              <Button size="lg" variant="primary" className="w-full sm:w-auto" onClick={() => signIn()}>
                 시작하기
               </Button>
               <a href="#features">
-                <Button variant="secondary" className="w-full sm:w-auto">
+                <Button size="lg" variant="secondary" className="w-full sm:w-auto">
                   더 알아보기
                 </Button>
               </a>
@@ -117,7 +117,7 @@ export default function LandingTemplate() {
       <section className="py-20 px-4 bg-gradient-to-br from-[#2D5F2E] to-[#4A9D4D] text-white text-center">
         <h2 className="text-4xl font-bold mb-4">지금 바로 시작하세요</h2>
         <p className="text-xl mb-8 opacity-90">GitHub 또는 Google 계정으로 바로 시작할 수 있습니다</p>
-        <Button className="bg-white !text-[#2D5F2E] hover:bg-[#F8FBF8] font-bold" onClick={() => signIn()}>
+        <Button size="lg" className="bg-white !text-[#2D5F2E] hover:bg-[#F8FBF8] font-bold" onClick={() => signIn()}>
           시작하기
         </Button>
       </section>

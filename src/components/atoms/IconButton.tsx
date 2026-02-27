@@ -1,0 +1,46 @@
+"use client";
+
+import { forwardRef } from "react";
+import { cn } from "@/utils/cn";
+
+type IconButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
+  size?: "md" | "sm";
+  variant?: "ghost" | "outline";
+  icon: React.ReactNode;
+  ariaLabel?: string;
+};
+
+const base =
+  "inline-flex items-center justify-center rounded-[10px] transition-colors duration-200 " +
+  "focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[var(--green)] ring-offset-white " +
+  "disabled:opacity-50 disabled:cursor-not-allowed";
+
+const sizeClass: Record<NonNullable<IconButtonProps["size"]>, string> = {
+  md: "h-10 w-10",
+  sm: "h-8 w-8",
+};
+
+const variantClass: Record<NonNullable<IconButtonProps["variant"]>, string> = {
+  ghost: "text-[var(--text-sub)] hover:bg-[var(--green-light)] hover:text-[var(--green)]",
+  outline:
+    "bg-[var(--green-pale)] text-[var(--text-sub)] border border-[var(--green-border)] hover:bg-[var(--green-light)]",
+};
+
+export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
+  ({ className, size = "md", variant = "ghost", icon, ariaLabel, type, ...props }, ref) => {
+    return (
+      <button
+        ref={ref}
+        type={type ?? "button"}
+        aria-label={ariaLabel}
+        className={cn(base, sizeClass[size], variantClass[variant], className)}
+        {...props}
+      >
+        <span aria-hidden="true">{icon}</span>
+      </button>
+    );
+  },
+);
+
+IconButton.displayName = "IconButton";
+

@@ -6,7 +6,6 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { FBXLoader } from "three/examples/jsm/loaders/FBXLoader.js";
 import { logger } from "@/lib/logger";
 
-/* ========= TypeScript 타입 ========= */
 type CharacterId = "Mouse" | "Remy" | "Woman";
 
 type CharacterPreset = {
@@ -68,13 +67,15 @@ type BodyOpts = {
   groundY?: number;
   groundPadding?: number;
 };
-type PoseMode = "stand" | "upper";
+export type PoseMode = "stand" | "upper";
 
 // ★ 캐릭터별 FBX 경로를 바꾸기 위해 추가한 props 타입
 type ThreeDModelProps = {
   characterId?: string; // 선택한 캐릭터 ID (remy, jerry, jessica)
   idealAng?: number; // 기준 목 각도
   userAng?: number; // 사용자 목 각도
+  /** 상반신/전신 모드 (외부 SegmentToggle에서 제어) */
+  poseMode?: PoseMode;
 };
 
 // 공통 mixer (현재 모드에 따라 mixerUpper / mixerFull 중 하나를 가리킴)
@@ -109,8 +110,18 @@ declare global {
 }
 
 // ★ 캐릭터 ID를 받아서 해당 캐릭터의 프리셋 사용
-export default function ThreeDModel({ characterId = "remy", idealAng = 52, userAng = 52 }: ThreeDModelProps) {
+export default function ThreeDModel({
+  characterId = "remy",
+  idealAng = 52,
+  userAng = 52,
+  poseMode: poseModeProp = "upper",
+}: ThreeDModelProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const setPoseModeRef = useRef<((m: PoseMode) => void) | null>(null);
+
+  useEffect(() => {
+    setPoseModeRef.current?.(poseModeProp);
+  }, [poseModeProp]);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -317,7 +328,8 @@ export default function ThreeDModel({ characterId = "remy", idealAng = 52, userA
      * ======================= */
     function initSceneAndCamera() {
       scene = new THREE.Scene();
-      scene.background = new THREE.Color("#7BC67E"); //배경 색
+      // 앱 전체 톤과 맞는 연한 그린 배경
+      scene.background = new THREE.Color("#D8EEDE");
 
       camera = new THREE.PerspectiveCamera(
         70,
@@ -351,7 +363,8 @@ export default function ThreeDModel({ characterId = "remy", idealAng = 52, userA
     function initFloor() {
       const floor = new THREE.Mesh(
         new THREE.PlaneGeometry(40, 40),
-        new THREE.MeshStandardMaterial({ color: "#e0e0e0", metalness: 0, roughness: 1 }), //바닥 색
+        // 연한 그린 톤의 바닥 면 색
+        new THREE.MeshStandardMaterial({ color: "#eef7f1", metalness: 0, roughness: 1 }),
       );
       floor.rotation.x = -Math.PI / 2;
       floor.receiveShadow = true;
@@ -378,7 +391,8 @@ export default function ThreeDModel({ characterId = "remy", idealAng = 52, userA
       (window as any).__CONTROLS = controls;
     }
     function initHelpers() {
-      scene.add(new THREE.GridHelper(40, 40, 0x555566, 0x333344));
+      // 바닥 격자를 green-border 톤으로 맞춤
+      scene.add(new THREE.GridHelper(40, 40, 0xd4ead9, 0xd4ead9));
       const w = BOUNDS.xMax - BOUNDS.xMin;
       const depth = BOUNDS.zMax - BOUNDS.zMin;
 
@@ -573,54 +587,12 @@ export default function ThreeDModel({ characterId = "remy", idealAng = 52, userA
       upRefLine.visible = false;
       scene.add(upRefLine);
 
+      // 상단 각도 텍스트 스프라이트는 생성만 해두고 씬에는 추가하지 않아서 화면에 보이지 않도록 함
       angleSprite = makeTextSprite(`0° (ideal ${IDEAL_NECK_ANGLE_DEG}°)\nΔ 0°`);
-      angleSprite.visible = true;
-      scene.add(angleSprite);
+      angleSprite.visible = false;
     }
 
     function initUI() {
-      // 각도 패널(우하단)
-      const anglePanel = document.createElement("div");
-      Object.assign(anglePanel.style, {
-        position: "absolute",
-        bottom: "12px",
-        right: "12px",
-        zIndex: 3,
-        background: "rgba(20,22,32,0.9)",
-        color: "#fff",
-        fontFamily: "system-ui,-apple-system,Segoe UI,Roboto,Arial",
-        padding: "10px 12px",
-        border: "1px solid rgba(255,255,255,0.15)",
-        borderRadius: "10px",
-        backdropFilter: "blur(6px)",
-        boxShadow: "0 6px 16px rgba(0,0,0,0.25)",
-        minWidth: "180px",
-      });
-      const title = document.createElement("div");
-      title.textContent = "Neck Angle";
-      Object.assign(title.style, { fontWeight: "700", marginBottom: "6px", opacity: 0.9 });
-      const absLine = document.createElement("div");
-      const deltaLine = document.createElement("div");
-      const idealLine = document.createElement("div");
-      Object.assign(absLine.style, { fontSize: "14px", marginTop: "2px" });
-      Object.assign(deltaLine.style, { fontSize: "14px", marginTop: "2px" });
-      Object.assign(idealLine.style, { fontSize: "12px", marginTop: "6px", opacity: 0.8 });
-      anglePanel.append(title, absLine, deltaLine, idealLine);
-      currentContainer.appendChild(anglePanel);
-      window.__anglePanel = {
-        set(absDeg: number, deltaDeg: number, idealDeg: number) {
-          absLine.textContent = `Absolute: ${absDeg.toFixed(1)}°`;
-          deltaLine.textContent = `Δ vs Ideal: ${deltaDeg.toFixed(1)}°`;
-          idealLine.textContent = `Ideal: ${idealDeg.toFixed(1)}°`;
-          (deltaLine.style as any).color =
-            Math.abs(deltaDeg) >= 15
-              ? "rgba(255,120,120,0.9)"
-              : Math.abs(deltaDeg) >= 8
-                ? "rgba(255,200,120,0.9)"
-                : "rgba(255,255,255,0.95)";
-        },
-      };
-
       // world/landmarks 토글(지금은 숨김)
       const srcPanel = document.createElement("div");
       Object.assign(srcPanel.style, {
@@ -639,24 +611,44 @@ export default function ThreeDModel({ characterId = "remy", idealAng = 52, userA
         const b = document.createElement("button");
         b.textContent = t;
         Object.assign(b.style, {
-          marginRight: "6px",
-          padding: "6px 10px",
-          borderRadius: "8px",
-          border: "1px solid rgba(255,255,255,0.18)",
-          background: "rgba(255,255,255,0.08)",
-          color: "#fff",
+          marginRight: "4px",
+          padding: "4px 10px",
+          borderRadius: "999px",
+          border: "none",
+          background: "transparent",
+          color: "var(--text-sub)",
           cursor: "pointer",
           fontWeight: 600,
+          fontSize: "12px",
+          transition: "background 0.18s ease, color 0.18s ease",
         });
-        b.onmouseenter = () => (b.style.background = "rgba(255,255,255,0.14)");
-        b.onmouseleave = () =>
-          (b.style.background = (b as any).dataset.active === "1" ? "rgba(0,255,226,0.25)" : "rgba(255,255,255,0.08)");
+        b.onmouseenter = () => {
+          const isActive = (b as any).dataset.active === "1";
+          if (!isActive) {
+            b.style.background = "var(--green-light)";
+          }
+        };
+        b.onmouseleave = () => {
+          const isActive = (b as any).dataset.active === "1";
+          if (isActive) {
+            b.style.background = "var(--green)";
+            b.style.color = "#ffffff";
+          } else {
+            b.style.background = "transparent";
+            b.style.color = "var(--text-sub)";
+          }
+        };
         return b;
       };
       const setActive = (btn: HTMLButtonElement, on: boolean) => {
         (btn as any).dataset.active = on ? "1" : "0";
-        btn.style.background = on ? "rgba(0,255,226,0.25)" : "rgba(255,255,255,0.08)";
-        btn.style.borderColor = on ? "rgba(0,255,226,0.55)" : "rgba(255,255,255,0.18)";
+        if (on) {
+          btn.style.background = "var(--green)";
+          btn.style.color = "#ffffff";
+        } else {
+          btn.style.background = "transparent";
+          btn.style.color = "var(--text-sub)";
+        }
       };
       const btnWorld = mkBtn("worldLandmarks");
       const btnImg = mkBtn("landmarks");
@@ -690,29 +682,8 @@ export default function ThreeDModel({ characterId = "remy", idealAng = 52, userA
       btnWorld.onclick = () => applyLandmarkSource(true);
       btnImg.onclick = () => applyLandmarkSource(false);
 
-      // full/upper 토글 (좌하단) – Upper body 버튼을 앞으로
-      const modePanel = document.createElement("div");
-      Object.assign(modePanel.style, {
-        position: "absolute",
-        bottom: "12px",
-        left: "12px",
-        zIndex: 3,
-        background: "rgba(20,22,32,0.9)",
-        color: "#fff",
-        padding: "8px 10px",
-        border: "1px solid rgba(255,255,255,0.15)",
-        borderRadius: "10px",
-        backdropFilter: "blur(6px)",
-      });
-      const btnUpper = mkBtn("Upper body");
-      const btnFull = mkBtn("Full body");
-      modePanel.append(btnUpper, btnFull); // ← Upper 먼저
-      currentContainer.appendChild(modePanel);
-
       const setPoseModeUI = (mode: PoseMode) => {
         poseMode = mode;
-        setActive(btnFull, mode === "stand");
-        setActive(btnUpper, mode === "upper");
         applyVisibilityForMode(mode);
         rebuildLinesNow();
 
@@ -745,11 +716,10 @@ export default function ThreeDModel({ characterId = "remy", idealAng = 52, userA
           controls.target.copy(CAMERA_FULL_TARGET);
         }
       };
-      btnFull.onclick = () => setPoseModeUI("stand");
-      btnUpper.onclick = () => setPoseModeUI("upper");
+      setPoseModeRef.current = setPoseModeUI;
 
       // 초기 상태
-      setPoseModeUI("upper");
+      setPoseModeUI(poseModeProp);
       applyLandmarkSource(true);
     }
 
@@ -1183,54 +1153,7 @@ export default function ThreeDModel({ characterId = "remy", idealAng = 52, userA
 
         rem.updateMatrixWorld(true);
 
-        // === FBX에서 목 기준으로 기준선(흰색) + 사용자선(노란색) 표시 ===
-        const neckBone = rig.neck;
-        if (neckBone) {
-          const neckPos = new THREE.Vector3();
-          neckBone.getWorldPosition(neckPos);
-
-          const headPos = new THREE.Vector3();
-          if (rig.head) rig.head.getWorldPosition(headPos);
-
-          // 각도 텍스트는 머리 위에 띄우기
-          const headOffset = new THREE.Vector3(0, 0.9, 0);
-          angleSprite.position.copy(headPos).add(headOffset);
-
-          const makeDirFromAngle = (deg: number) => {
-            const rad = THREE.MathUtils.degToRad(deg);
-            const v = new THREE.Vector3()
-              .addScaledVector(worldFwd, Math.cos(rad)) // 0° = 앞
-              .addScaledVector(worldUp, Math.sin(rad)); // 90° = 위
-            // 어깨축 방향 성분 제거해서 어깨 평면 위로 투영
-            return v.sub(shoulderAxis.clone().multiplyScalar(v.dot(shoulderAxis))).normalize();
-          };
-
-          const idealDir = makeDirFromAngle(IDEAL_NECK_ANGLE_DEG);
-          const userDir = makeDirFromAngle(USER_NECK_ANGLE_DEG);
-
-          const yellowMaterial = new THREE.LineBasicMaterial({ color: 0xffff00 });
-          const whiteMaterial = new THREE.LineBasicMaterial({ color: 0xffffff });
-          const yellowGeo = new THREE.BufferGeometry().setFromPoints([
-            neckPos,
-            neckPos.clone().add(userDir.clone().multiplyScalar(1.0)), // 노란색 = 사용자 각도
-          ]);
-          const whiteGeo = new THREE.BufferGeometry().setFromPoints([
-            neckPos,
-            neckPos.clone().add(idealDir.clone().multiplyScalar(1.0)), // 흰색 = 기준 각도
-          ]);
-
-          // 이전에 만들어둔 목 기준선 제거
-          if (neckLines) {
-            scene.remove(neckLines.yellow);
-            scene.remove(neckLines.white);
-          }
-
-          // 현재 활성 FBX 기준으로 새 선 2개 생성
-          const yellowLine = new THREE.Line(yellowGeo, yellowMaterial);
-          const whiteLine = new THREE.Line(whiteGeo, whiteMaterial);
-          scene.add(yellowLine, whiteLine);
-          neckLines = { yellow: yellowLine, white: whiteLine };
-        }
+        // === FBX에서 목 기준으로 기준선(흰색) + 사용자선(노란색) 표시하던 부분은 디자인상 숨김 처리 ===
       }
 
       // 3) 패널/텍스트 갱신: 사용자 각도 vs 기준각
@@ -1245,7 +1168,6 @@ export default function ThreeDModel({ characterId = "remy", idealAng = 52, userA
         angleSprite,
         `${absNeckDeg.toFixed(1)}° (ideal ${IDEAL_NECK_ANGLE_DEG.toFixed(0)}°)\nΔ ${angleSmoothed!.toFixed(1)}°`,
       );
-      window.__anglePanel?.set?.(absNeckDeg, deltaWorldInstant, IDEAL_NECK_ANGLE_DEG);
 
       // 4) 포즈 라인 갱신
       rebuildLinesNow();
