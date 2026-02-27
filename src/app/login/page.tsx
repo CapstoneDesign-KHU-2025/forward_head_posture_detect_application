@@ -2,15 +2,17 @@
 
 import React from "react";
 
+import { Icon } from "@/components/atoms/Icon";
 import OauthButton from "@/components/molecules/OauthButton";
-import TurtleLogo from "@/components/molecules/TurtleLogo";
 
 export default function LoginPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#E8F5E9] to-[#F8FBF8] w-screen flex items-center justify-center p-8">
       <div className="bg-white rounded-[20px] shadow-[0_10px_40px_rgba(0,0,0,0.1)] p-12 max-w-[450px] w-full">
         <div className="text-center flex flex-col items-center mb-8 gap-2">
-          <TurtleLogo iconSize="2xl" />
+          <Icon size="2xl">
+            <img src="/icons/turtle.png" alt="거북이" className="object-contain shrink-0" />
+          </Icon>
           <h1 className="text-[1.8rem] text-[#2D5F2E] mb-2">거북목 거북거북!</h1>
           <p className="text-[#4F4F4F] text-[1.1rem]">AI 자세 교정 프로그램</p>
         </div>

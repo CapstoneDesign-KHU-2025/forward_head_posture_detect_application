@@ -3,8 +3,8 @@
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/atoms/Button";
+import { BrandLink } from "@/components/atoms/BrandLink";
 import { useSession, signIn } from "next-auth/react";
-import TurtleLogo from "@/components/molecules/TurtleLogo";
 import { FriendsButton } from "@/components/molecules/FriendsButton";
 import { UserButton } from "@/components/molecules/UserButton";
 import { FriendsModal } from "@/components/organisms/friends/FriendsModal";
@@ -30,18 +30,6 @@ export default function Header({ user: initialUser, className }: HeaderProps) {
   const isLandingPage = pathname === "/landing";
   const isLoginPage = pathname === "/login";
   const isCharacterPage = pathname === "/character";
-
-  const Brand = () => (
-    <div className="flex items-center gap-1">
-      <TurtleLogo iconSize="xl" />
-      <span
-        className="text-[20px] font-extrabold"
-        style={{ fontFamily: "Nunito, sans-serif", color: "var(--green)" }}
-      >
-        거북목 거북거북!
-      </span>
-    </div>
-  );
 
   const UserActions = () => {
     if (isLoading) {
@@ -88,7 +76,10 @@ export default function Header({ user: initialUser, className }: HeaderProps) {
         {isLandingPage ? (
           // 랜딩 페이지: 로고와 프로필만 있는 간단한 레이아웃
           <div className="flex h-[var(--header-height)] w-full items-center justify-between">
-            <Brand />
+            <BrandLink
+              icon={<img src="/icons/turtle.png" alt="" className="object-contain shrink-0" />}
+              label="거북목 거북거북!"
+            />
             <div className="flex items-center gap-2">
               <UserActions />
             </div>
@@ -97,7 +88,10 @@ export default function Header({ user: initialUser, className }: HeaderProps) {
           // 일반 페이지: 좌 로고 / 중앙 탭 / 우측 아이콘 & 프로필
           <div className="relative flex h-[var(--header-height)] w-full items-center justify-between">
             {/* Left: Logo & brand */}
-            <Brand />
+            <BrandLink
+              icon={<img src="/icons/turtle.png" alt="" className="object-contain shrink-0" />}
+              label="거북목 거북거북!"
+            />
 
             {/* Center: 네비게이션 탭 */}
             <nav className="absolute left-1/2 flex -translate-x-1/2 items-center gap-1">
