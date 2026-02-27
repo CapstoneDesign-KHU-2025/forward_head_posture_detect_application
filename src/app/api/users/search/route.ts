@@ -8,7 +8,7 @@ export const GET = withApiReq(async (req: Request) => {
   const { searchParams } = new URL(req.url);
   const query = searchParams.get("q");
 
-  if (!query) return json({ ok: true, users: [] }, 200);
+  if (!query || query.trim().length < 2) return json({ ok: true, users: [] }, 200);
 
   try {
     const users = await searchUsers(session.user.id, query);

@@ -18,16 +18,7 @@ const variantClass: Record<NonNullable<ButtonProps["variant"]>, string> = {
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant = "primary", ...props }, ref) => {
     return (
-      <button
-        ref={ref}
-        className={cn(
-          base,
-          "px-6 py-3 min-h-[48px]", // 패딩 기반 크기, 최소 높이만 설정
-          variantClass[variant],
-          className,
-        )}
-        {...props}
-      />
+      <button ref={ref} className={cn(base, "px-6 py-3 min-h-[48px]", variantClass[variant], className)} {...props} />
     );
   },
 );
