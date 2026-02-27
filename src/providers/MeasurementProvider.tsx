@@ -128,6 +128,7 @@ export function MeasurementProvider({ children }: { children: ReactNode }) {
   );
 
   const startMeasurement = useCallback(() => {
+    setShowRecoveryNotice(false);
     if (typeof window !== "undefined") {
       sessionStorage.setItem(SESSION_STORAGE_MEASUREMENT_INTERRUPTED, "1");
     }
