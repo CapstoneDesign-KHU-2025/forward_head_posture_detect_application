@@ -2,7 +2,7 @@ import { forwardRef } from "react";
 import { cn } from "@/utils/cn";
 
 type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
-  variant?: "primary" | "secondary" | "danger";
+  variant?: "primary" | "secondary" | "danger" | "ghost";
   size?: "lg" | "md" | "sm";
 };
 
@@ -24,6 +24,9 @@ const variantClass: Record<NonNullable<ButtonProps["variant"]>, string> = {
   danger:
     "bg-[var(--danger-bg)] text-[var(--danger-text)] border border-[var(--danger-border)] hover:bg-[#ffe5e0] " +
     "focus-visible:ring-[var(--danger-text)] ring-offset-white",
+  // ghost: 스타일 최소화된 버튼 (텍스트만 노출)
+  ghost:
+    "bg-transparent border-none p-0 min-h-0 shadow-none font-normal",
 };
 
 // 사이즈 스타일 (padding + font-size + radius/hover)
