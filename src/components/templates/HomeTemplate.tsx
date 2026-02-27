@@ -1,6 +1,7 @@
 import WelcomeHero from "@/components/organisms/home/WelcomeHero";
 import Posture3DCard from "@/components/organisms/home/Posture3DCard";
 import StatCard from "@/components/molecules/StatCard";
+import { Calendar } from "@/components/molecules/Calendar";
 import TodayStatusCard from "@/components/molecules/TodayStatusCard";
 import TurtleEvolutionCard from "@/components/molecules/TurtleEvolutionCard";
 import { formatMeasuredTime } from "@/utils/formatMeasuredTime";
@@ -132,7 +133,7 @@ export default function HomeTemplate({
           </div>
 
           {/* RIGHT: 측정 섹션 */}
-          <div>
+          <div className="flex flex-col gap-6">
             <Posture3DCard
               userAng={user?.avgAng}
               title={challenge?.title ?? "당신의 거북목 도전기"}
@@ -146,6 +147,7 @@ export default function HomeTemplate({
                 )
               }
             />
+            <Calendar />
           </div>
         </div>
       </div>
