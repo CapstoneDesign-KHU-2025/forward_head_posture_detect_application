@@ -1,4 +1,3 @@
-// src/components/organisms/home/Posture3DCard.tsx
 "use client";
 
 import { Card } from "@/components/atoms/Card";
@@ -8,7 +7,6 @@ import type { PoseMode } from "@/components/molecules/3DModel";
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 
-// 3DModel은 클라이언트 전용이므로 ssr: false
 const ThreeDModel = dynamic(() => import("@/components/molecules/3DModel"), {
   ssr: false,
   loading: () => <LoadingSkeleton />,
@@ -18,7 +16,6 @@ type ChallengePanelProps = {
   userAng: number | undefined;
   title?: React.ReactNode;
   description?: React.ReactNode;
-  illustration?: React.ReactNode; // 옵션
 };
 
 const idealAng = 52;
@@ -34,12 +31,10 @@ export default function Posture3DCard({
   userAng,
   title = "당신의 거북목 도전기",
   description,
-  illustration,
 }: ChallengePanelProps) {
   const [characterId, setCharacterId] = useState<string>("remy");
   const [poseMode, setPoseMode] = useState<PoseMode>("upper");
 
-  // 컴포넌트 마운트 시 선택한 캐릭터 읽기
   useEffect(() => {
     setCharacterId(getSelectedCharacter());
 
@@ -61,7 +56,7 @@ export default function Posture3DCard({
     };
 
     window.addEventListener("storage", handleStorageChange);
-    window.addEventListener("storage", handleCustomStorage); // 커스텀 이벤트도 감지
+    window.addEventListener("storage", handleCustomStorage);
     window.addEventListener("focus", handleFocus);
 
     return () => {
@@ -129,9 +124,6 @@ export default function Posture3DCard({
           </div>
         </div>
       </div>
-
-      {/* (옵션) 추가 일러스트/컨텐츠 */}
-      {illustration}
     </Card>
   );
 }

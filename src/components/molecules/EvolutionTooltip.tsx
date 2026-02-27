@@ -1,9 +1,7 @@
 "use client";
 
 type EvolutionTooltipProps = {
-  /** 툴팁에 표시할 문구 */
   text: string;
-  /** 버튼 접근성 라벨 */
   ariaLabel?: string;
 };
 
