@@ -18,10 +18,13 @@ import { useTurtleNeckMeasurement } from "@/hooks/useTurtleNeckMeasurement";
 import { createISO } from "@/utils/createISO";
 import { postDailySummaryAction } from "@/app/actions/summaryActions";
 import { FloatingBar } from "@/components/molecules/FloatingBar";
+import { RecoveryToast } from "@/components/molecules/RecoveryToast";
 import { logger } from "@/lib/logger";
 import type { StatusBannerType } from "@/hooks/useTurtleNeckMeasurement";
 
 export const MEASUREMENT_CANVAS_SLOT_ID = "measurement-canvas-slot";
+
+const SESSION_STORAGE_MEASUREMENT_INTERRUPTED = "measurement_interrupted";
 
 type MeasurementContextValue = {
   stopEstimating: boolean;
@@ -59,6 +62,7 @@ export function MeasurementProvider({ children }: { children: ReactNode }) {
   const [isProcessing, setIsProcessing] = useState(false);
   const [isInitial, setIsInitial] = useState(true);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  const [showRecoveryToast, setShowRecoveryToast] = useState(false);
 
   const [_dailySumState, dailySumAction] = useActionState(postDailySummaryAction, null);
 
@@ -111,18 +115,46 @@ export function MeasurementProvider({ children }: { children: ReactNode }) {
       } finally {
         if (!forced) setStopEstimating((prev) => !prev);
         setIsProcessing(false);
+        // 정상 종료 시 중단 플래그 제거 (새로고침 후 복구 제안 방지)
+        if (typeof window !== "undefined") {
+          sessionStorage.removeItem(SESSION_STORAGE_MEASUREMENT_INTERRUPTED);
+        }
       }
     },
     [userId, stopEstimating, angle, isTurtle, isProcessing, session?.user?.id, dailySumAction]
   );
 
   const startMeasurement = useCallback(() => {
+    if (typeof window !== "undefined") {
+      sessionStorage.setItem(SESSION_STORAGE_MEASUREMENT_INTERRUPTED, "1");
+    }
     setStopEstimating(false);
   }, []);
 
   const stopMeasurement = useCallback(() => {
     handleStopMeasurement();
   }, [handleStopMeasurement]);
+
+  // 새로고침 후 이전 측정 중단 감지 → 복구 제안 표시 (로그인된 사용자에게만)
+  useEffect(() => {
+    if (typeof window === "undefined" || !userId) return;
+    const interrupted = sessionStorage.getItem(SESSION_STORAGE_MEASUREMENT_INTERRUPTED);
+    if (interrupted === "1") {
+      setShowRecoveryToast(true);
+    }
+  }, [userId]);
+
+  const dismissRecoveryToast = useCallback(() => {
+    if (typeof window !== "undefined") {
+      sessionStorage.removeItem(SESSION_STORAGE_MEASUREMENT_INTERRUPTED);
+    }
+    setShowRecoveryToast(false);
+  }, []);
+
+  const handleRecoveryRestart = useCallback(() => {
+    dismissRecoveryToast();
+    startMeasurement();
+  }, [dismissRecoveryToast, startMeasurement]);
 
   useEffect(() => {
     if (stopEstimating || !measurementStarted) {
@@ -201,6 +233,12 @@ export function MeasurementProvider({ children }: { children: ReactNode }) {
         title="측정 중"
         elapsedSeconds={elapsedSeconds}
         onStop={stopMeasurement}
+      />
+
+      <RecoveryToast
+        isVisible={showRecoveryToast}
+        onRestart={handleRecoveryRestart}
+        onDismiss={dismissRecoveryToast}
       />
     </MeasurementContext.Provider>
   );
