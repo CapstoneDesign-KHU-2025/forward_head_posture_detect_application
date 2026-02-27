@@ -106,3 +106,4 @@ export default function SensitivitySettingsModal({ isOpen, onClose }: Sensitivit
     </Modal>
   );
 }
+

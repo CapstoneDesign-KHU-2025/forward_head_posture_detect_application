@@ -130,3 +130,4 @@ export default function CharacterSelectionModal({ isOpen, onClose }: CharacterSe
     </Modal>
   );
 }
+
