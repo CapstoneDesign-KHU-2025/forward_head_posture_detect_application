@@ -1,8 +1,9 @@
 "use client";
 
 import { SectionLabel } from "@/components/atoms/SectionLabel";
-import { Modal } from "@/components/common/Modal";
-import { ModalHeader } from "@/components/common/ModalHeader";
+import { Button } from "@/components/atoms/Button";
+import { Modal } from "@/components/atoms/Modal";
+import { ModalHeader } from "@/components/atoms/ModalHeader";
 import { cn } from "@/utils/cn";
 import { useEffect, useState } from "react";
 
@@ -68,11 +69,7 @@ export default function CharacterSelectionModal({ isOpen, onClose }: CharacterSe
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} contentClassName="max-w-[440px] w-full">
-      <ModalHeader
-        title="캐릭터 변경"
-        subtitle="나를 대표할 캐릭터를 골라보세요"
-        onClose={onClose}
-      />
+      <ModalHeader title="캐릭터 변경" subtitle="나를 대표할 캐릭터를 골라보세요" onClose={onClose} />
       <div className="flex flex-1 flex-col overflow-y-auto px-6 py-[22px]">
         <div className="mb-5">
           <SectionLabel>현재 캐릭터</SectionLabel>
@@ -82,9 +79,7 @@ export default function CharacterSelectionModal({ isOpen, onClose }: CharacterSe
               alt=""
               className="h-5 w-5 object-contain"
             />
-            <span className="text-[14px] font-semibold text-[#4a7c59]">
-              {getCharacterName(currentCharacter)}
-            </span>
+            <span className="text-[14px] font-semibold text-[#4a7c59]">{getCharacterName(currentCharacter)}</span>
           </div>
         </div>
 
@@ -101,33 +96,23 @@ export default function CharacterSelectionModal({ isOpen, onClose }: CharacterSe
                   "hover:border-[#6aab7a] hover:bg-[#f9fdf9]",
                   selectedCharacter === character.id
                     ? "border-[#4a7c59] bg-[#f0f9f3] shadow-[0_2px_10px_rgba(74,124,89,0.12)]"
-                    : "border-[#e4f0e8]"
+                    : "border-[#e4f0e8]",
                 )}
               >
                 <div className="flex h-[52px] w-[52px] shrink-0 items-center justify-center overflow-hidden rounded-xl bg-[#e8f5ec]">
-                  <img
-                    src={character.icon}
-                    alt={character.name}
-                    className="h-full w-full object-cover"
-                  />
+                  <img src={character.icon} alt={character.name} className="h-full w-full object-cover" />
                 </div>
                 <div className="flex-1 text-left">
                   <div className="mb-0.5 text-base font-semibold text-[#2d3b35]">{character.name}</div>
-                  <div className="text-sm leading-relaxed text-[#7a9585]">
-                    {character.description}
-                  </div>
+                  <div className="text-sm leading-relaxed text-[#7a9585]">{character.description}</div>
                 </div>
                 <div
                   className={cn(
                     "flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-all duration-[180ms]",
-                    selectedCharacter === character.id
-                      ? "border-[#4a7c59] bg-[#4a7c59]"
-                      : "border-[#d4ead9]"
+                    selectedCharacter === character.id ? "border-[#4a7c59] bg-[#4a7c59]" : "border-[#d4ead9]",
                   )}
                 >
-                  {selectedCharacter === character.id && (
-                    <div className="h-2 w-2 rounded-full bg-white" />
-                  )}
+                  {selectedCharacter === character.id && <div className="h-2 w-2 rounded-full bg-white" />}
                 </div>
               </button>
             ))}
@@ -135,20 +120,12 @@ export default function CharacterSelectionModal({ isOpen, onClose }: CharacterSe
         </div>
       </div>
       <div className="flex shrink-0 gap-2.5 px-6 pb-[22px]">
-        <button
-          type="button"
-          onClick={onClose}
-          className="flex-1 rounded-[14px] border-[1.5px] border-[#d4ead9] bg-white px-3 py-3 text-[14px] font-semibold text-[#7a9585] transition-colors hover:border-[#6aab7a] hover:bg-[#f4faf6] hover:text-[#4a7c59]"
-        >
+        <Button type="button" variant="secondary" className="flex-1 text-[14px] py-3" onClick={onClose}>
           닫기
-        </button>
-        <button
-          type="button"
-          onClick={handleConfirm}
-          className="flex-1 rounded-[14px] border-none bg-[#4a7c59] px-3 py-3 text-[14px] font-bold text-white transition-all hover:translate-y-[-1px] hover:bg-[#3a6147] hover:shadow-[0_4px_12px_rgba(74,124,89,0.25)]"
-        >
+        </Button>
+        <Button type="button" variant="primary" className="flex-1 text-[14px] py-3" onClick={handleConfirm}>
           확인
-        </button>
+        </Button>
       </div>
     </Modal>
   );

@@ -9,7 +9,7 @@ const SIZE_MAP = {
   },
 } as const;
 
-export default function AvatarLogo({ size }: { size: "s" | "m" }) {
+export default function TurtleLogo({ size }: { size: "s" | "m" }) {
   const styles = SIZE_MAP[size];
 
   return (

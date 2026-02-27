@@ -2,6 +2,7 @@
 
 import { UserRow } from "@/components/molecules/UserRow";
 import { EmptyState } from "@/components/atoms/EmptyState";
+import { Button } from "@/components/atoms/Button";
 import type { Friend } from "@/types/friends";
 import { cn } from "@/utils/cn";
 
@@ -26,10 +27,7 @@ export function FriendList({ friends, onDelete }: FriendListProps) {
   return (
     <div className="space-y-0">
       {friends.length === 0 ? (
-        <EmptyState
-          icon={<span>🐢</span>}
-          message="친구가 없어요. 검색에서 친구를 추가해보세요!"
-        />
+        <EmptyState icon={<span>🐢</span>} message="친구가 없어요. 검색에서 친구를 추가해보세요!" />
       ) : (
         friends.map((f) => (
           <UserRow
@@ -39,18 +37,19 @@ export function FriendList({ friends, onDelete }: FriendListProps) {
             initial={getInitial(f.user.name, f.user.id)}
             bgColor={getAvatarStyle(f.user.id)}
             actions={
-              <button
+              <Button
                 type="button"
+                variant="icon"
                 onClick={() => onDelete(f.friendshipId, f.user)}
                 title="친구 삭제"
                 className={cn(
-                  "flex h-7 w-7 items-center justify-center rounded-lg",
+                  "h-7 w-7 px-0 rounded-lg",
                   "border-none bg-transparent text-[16px] text-[#d0d0d0]",
-                  "transition-colors hover:bg-[#fff0f0] hover:text-[#ff8c8c]"
+                  "transition-colors hover:bg-[#fff0f0] hover:text-[#ff8c8c]",
                 )}
               >
                 ✕
-              </button>
+              </Button>
             }
           />
         ))

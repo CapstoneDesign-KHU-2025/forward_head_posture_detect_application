@@ -1,13 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { Modal } from "@/components/common/Modal";
-import { Toast } from "@/components/common/Toast";
-import { FriendsModalHeader } from "./FriendsModalHeader";
-import { SearchResultList } from "./SearchResultList";
-import { IncomingRequestList } from "./IncomingRequestList";
-import { OutgoingRequestList } from "./OutgoingRequestList";
-import { FriendList } from "./FriendList";
+import { Modal } from "@/components/atoms/Modal";
+import { Toast } from "@/components/atoms/Toast";
+import { FriendsModalHeader } from "@/components/organisms/friends/FriendsModalHeader";
+import { SearchResultList } from "@/components/organisms/friends/SearchResultList";
+import { IncomingRequestList } from "@/components/organisms/friends/IncomingRequestList";
+import { OutgoingRequestList } from "@/components/organisms/friends/OutgoingRequestList";
+import { FriendList } from "@/components/organisms/friends/FriendList";
 import { useFriendsData } from "@/hooks/useFriendsData";
 
 type TabId = "search" | "requests" | "friends";
@@ -52,19 +52,12 @@ export function FriendsModal({ isOpen, onClose, friendsData: externalData }: Fri
         />
 
         {activeTab === "search" ? (
-          <SearchResultList
-            searchResults={searchResults}
-            onSendRequest={sendRequest}
-          />
+          <SearchResultList searchResults={searchResults} onSendRequest={sendRequest} />
         ) : (
           <div className="flex flex-1 flex-col overflow-y-auto px-6 pb-6 pt-3 [scrollbar-color:#d4ead9_transparent] [scrollbar-width:thin]">
             {activeTab === "requests" ? (
               <>
-                <IncomingRequestList
-                  items={incoming}
-                  onAccept={acceptRequest}
-                  onDecline={declineRequest}
-                />
+                <IncomingRequestList items={incoming} onAccept={acceptRequest} onDecline={declineRequest} />
                 <div className="mt-5">
                   <OutgoingRequestList items={outgoing} onCancel={cancelRequest} />
                 </div>

@@ -6,7 +6,7 @@ import { Button } from "@/components/atoms/Button";
 import { Home, Play } from "lucide-react";
 import { useSession, signIn } from "next-auth/react";
 import UserMenuDropdown from "@/components/molecules/UserMenuDropdown";
-import AvatarLogo from "@/components/molecules/AvatarLogo";
+import TurtleLogo from "@/components/molecules/TurtleLogo";
 import { FriendRequestIndicator } from "@/components/molecules/FriendRequestIndicator";
 import { FriendsModal } from "@/components/organisms/friends/FriendsModal";
 import { useFriendsData } from "@/hooks/useFriendsData";
@@ -51,7 +51,7 @@ export default function Header({ user: initialUser, className }: HeaderProps) {
               className="flex items-center gap-2 text-xl font-bold"
               style={{ color: "#2D5F2E", textDecoration: "none" }}
             >
-              <AvatarLogo size="s" />
+              <TurtleLogo size="s" />
               <span>거북목 거북거북!</span>
             </Link>
             <div className="flex items-center gap-2">
@@ -60,7 +60,7 @@ export default function Header({ user: initialUser, className }: HeaderProps) {
               ) : user ? (
                 <>
                   <FriendRequestIndicator
-                    requestCount={friendsData?.incomingCount ?? 0}
+                    requestCount={friendsData?.incomingCount || 0}
                     onClick={() => setIsFriendsModalOpen(true)}
                   />
                   <div className="relative" ref={userMenuAnchorRef}>
@@ -82,7 +82,7 @@ export default function Header({ user: initialUser, className }: HeaderProps) {
                   <FriendsModal
                     isOpen={isFriendsModalOpen}
                     onClose={() => setIsFriendsModalOpen(false)}
-                    friendsData={friendsData ?? undefined}
+                    friendsData={friendsData || undefined}
                   />
                 </>
               ) : (
@@ -137,7 +137,7 @@ export default function Header({ user: initialUser, className }: HeaderProps) {
               ) : user ? (
                 <>
                   <FriendRequestIndicator
-                    requestCount={friendsData?.incomingCount ?? 0}
+                    requestCount={friendsData?.incomingCount || 0}
                     onClick={() => setIsFriendsModalOpen(true)}
                   />
                   <div className="relative" ref={userMenuAnchorRef}>
@@ -159,7 +159,7 @@ export default function Header({ user: initialUser, className }: HeaderProps) {
                   <FriendsModal
                     isOpen={isFriendsModalOpen}
                     onClose={() => setIsFriendsModalOpen(false)}
-                    friendsData={friendsData ?? undefined}
+                    friendsData={friendsData || undefined}
                   />
                 </>
               ) : (
