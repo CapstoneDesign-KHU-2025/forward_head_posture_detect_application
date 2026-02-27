@@ -3,6 +3,7 @@
 import { useState, useMemo } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Card } from "@/components/atoms/Card";
+import { IconButton } from "@/components/atoms/IconButton";
 import { cn } from "@/utils/cn";
 
 const MONTHS_KO = [
@@ -21,12 +22,10 @@ export type DayStatus = "good" | "bad";
 export type CalendarProps = {
   /** 날짜별 상태 (YYYY-MM-DD) */
   dayStatusMap?: Record<string, DayStatus>;
-  /** 날짜 클릭 시 */
-  onDayClick?: (date: Date) => void;
   className?: string;
 };
 
-export function Calendar({ dayStatusMap = {}, onDayClick, className }: CalendarProps) {
+export function Calendar({ dayStatusMap = {}, className }: CalendarProps) {
   const today = new Date();
   const [viewYear, setViewYear] = useState(today.getFullYear());
   const [viewMonth, setViewMonth] = useState(today.getMonth());
@@ -50,40 +49,38 @@ export function Calendar({ dayStatusMap = {}, onDayClick, className }: CalendarP
     const firstDay = new Date(viewYear, viewMonth, 1).getDay();
     const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
     const prevMonthDays = new Date(viewYear, viewMonth, 0).getDate();
-    const days: { day: number; isCurrentMonth: boolean; date: Date }[] = [];
+    const days: { day: number; isCurrentMonth: boolean; date: Date; key: string }[] = [];
+
+    const push = (year: number, month: number, day: number, isCurrentMonth: boolean) => {
+      const date = new Date(year, month, day);
+      days.push({
+        day,
+        isCurrentMonth,
+        date,
+        key: formatDateKey(year, month, day),
+      });
+    };
 
     // 이전 달 날짜
     for (let i = 0; i < firstDay; i++) {
       const d = prevMonthDays - firstDay + i + 1;
       const prevMonth = viewMonth === 0 ? 11 : viewMonth - 1;
       const prevYear = viewMonth === 0 ? viewYear - 1 : viewYear;
-      days.push({
-        day: d,
-        isCurrentMonth: false,
-        date: new Date(prevYear, prevMonth, d),
-      });
+      push(prevYear, prevMonth, d, false);
     }
 
     // 현재 달 날짜
     for (let i = 1; i <= daysInMonth; i++) {
-      days.push({
-        day: i,
-        isCurrentMonth: true,
-        date: new Date(viewYear, viewMonth, i),
-      });
+      push(viewYear, viewMonth, i, true);
     }
 
     // 다음 달 날짜 (그리드 채우기)
     const total = days.length;
     const remaining = total % 7 === 0 ? 0 : 7 - (total % 7);
+    const nextMonth = viewMonth === 11 ? 0 : viewMonth + 1;
+    const nextYear = viewMonth === 11 ? viewYear + 1 : viewYear;
     for (let i = 1; i <= remaining; i++) {
-      const nextMonth = viewMonth === 11 ? 0 : viewMonth + 1;
-      const nextYear = viewMonth === 11 ? viewYear + 1 : viewYear;
-      days.push({
-        day: i,
-        isCurrentMonth: false,
-        date: new Date(nextYear, nextMonth, i),
-      });
+      push(nextYear, nextMonth, i, false);
     }
 
     return days;
@@ -113,22 +110,20 @@ export function Calendar({ dayStatusMap = {}, onDayClick, className }: CalendarP
           {MONTHS_KO[viewMonth]} {viewYear}
         </div>
         <div className="flex gap-1">
-          <button
-            type="button"
+          <IconButton
+            variant="calendar"
+            size="xs"
+            icon={<ChevronLeft size={12} strokeWidth={2.5} />}
+            ariaLabel="이전 달"
             onClick={() => moveMonth(-1)}
-            className="flex h-[22px] w-[22px] items-center justify-center rounded-full bg-[#e8f5ec] font-bold text-[#4a7c59] transition-colors hover:bg-[#d4ead9]"
-            aria-label="이전 달"
-          >
-            <ChevronLeft size={12} strokeWidth={2.5} />
-          </button>
-          <button
-            type="button"
+          />
+          <IconButton
+            variant="calendar"
+            size="xs"
+            icon={<ChevronRight size={12} strokeWidth={2.5} />}
+            ariaLabel="다음 달"
             onClick={() => moveMonth(1)}
-            className="flex h-[22px] w-[22px] items-center justify-center rounded-full bg-[#e8f5ec] font-bold text-[#4a7c59] transition-colors hover:bg-[#d4ead9]"
-            aria-label="다음 달"
-          >
-            <ChevronRight size={12} strokeWidth={2.5} />
-          </button>
+          />
         </div>
       </div>
 
@@ -145,25 +140,23 @@ export function Calendar({ dayStatusMap = {}, onDayClick, className }: CalendarP
             {label}
           </div>
         ))}
-        {gridDays.map(({ day, isCurrentMonth, date }, idx) => {
+        {gridDays.map(({ day, isCurrentMonth, date, key }) => {
           const status = getDayStatus(date, isCurrentMonth);
           const todayClass = isToday(date);
           return (
-            <button
-              key={`${date.toISOString()}-${idx}`}
-              type="button"
-              onClick={() => onDayClick?.(date)}
+            <div
+              key={key}
               className={cn(
                 "flex items-center justify-center rounded-md text-[11px] font-semibold transition-colors",
                 !isCurrentMonth && "text-[#aac8b2] opacity-40",
-                isCurrentMonth && "text-[#2d3b35] hover:bg-[#e8f5ec]",
+                isCurrentMonth && "text-[#2d3b35]",
                 todayClass && "rounded-lg bg-[#4a7c59] font-extrabold text-white",
                 !todayClass && status === "good" && "bg-[#d6f0df] text-[#3a6147] font-bold",
                 !todayClass && status === "bad" && "bg-[#fde0d8] text-[#c03020] font-bold"
               )}
             >
               {day}
-            </button>
+            </div>
           );
         })}
       </div>

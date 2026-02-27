@@ -3,8 +3,8 @@
 import { Modal } from "@/components/atoms/Modal";
 import { ModalHeader } from "@/components/atoms/ModalHeader";
 import { Button } from "@/components/atoms/Button";
+import { SelectableOptionCard } from "@/components/molecules/SelectableOptionCard";
 import { getSensitivity, setSensitivity, type Sensitivity } from "@/utils/sensitivity";
-import { cn } from "@/utils/cn";
 import { useEffect, useState } from "react";
 
 type SensitivitySettingsModalProps = {
@@ -51,49 +51,27 @@ export default function SensitivitySettingsModal({ isOpen, onClose }: Sensitivit
       />
 
       <div className="flex flex-1 flex-col overflow-y-auto px-6 py-5">
-        <div className="flex flex-col gap-[10px]">
-          {SENS_OPTIONS.map((opt) => {
-            const isActive = selectedSensitivity === opt.id;
-            return (
-              <button
-                key={opt.id}
-                type="button"
-                onClick={() => setSelectedSensitivity(opt.id)}
-                className={cn(
-                  "flex cursor-pointer items-center justify-between rounded-[14px] border-[1.5px] px-4 py-3.5 transition-all duration-150",
-                  isActive
-                    ? "border-[#4a7c59] bg-[#f4faf6]"
-                    : "border-[#d4ead9] bg-white hover:border-[#6aab7a] hover:bg-[#f4faf6]",
-                )}
-              >
-                <div className="flex items-center gap-3">
-                  <div
-                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px]"
-                    style={{ background: opt.dotBoxBg }}
-                  >
-                    <span
-                      className="inline-block h-2.5 w-2.5 rounded-full"
-                      style={{ background: opt.dotColor }}
-                    />
-                  </div>
-                  <div className="text-left">
-                    <div className="mb-0.5 text-[14px] font-bold leading-tight text-[#7a9585]">
-                      {opt.name}
-                    </div>
-                    <div className="text-xs text-[#7a9585]">{opt.desc}</div>
-                  </div>
-                </div>
+        <div className="flex flex-col gap-2">
+          {SENS_OPTIONS.map((opt) => (
+            <SelectableOptionCard
+              key={opt.id}
+              icon={
                 <div
-                  className={cn(
-                    "flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-all duration-150",
-                    isActive ? "border-[#4a7c59] bg-[#4a7c59]" : "border-[#d4ead9]",
-                  )}
+                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px]"
+                  style={{ background: opt.dotBoxBg }}
                 >
-                  {isActive && <span className="h-[7px] w-[7px] rounded-full bg-white" />}
+                  <span
+                    className="inline-block h-2.5 w-2.5 rounded-full"
+                    style={{ background: opt.dotColor }}
+                  />
                 </div>
-              </button>
-            );
-          })}
+              }
+              title={opt.name}
+              description={opt.desc}
+              isSelected={selectedSensitivity === opt.id}
+              onClick={() => setSelectedSensitivity(opt.id)}
+            />
+          ))}
         </div>
       </div>
 
