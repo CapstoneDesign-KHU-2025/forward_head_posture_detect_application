@@ -3,8 +3,8 @@
 import { Icon } from "@/components/atoms/Icon";
 import { Settings, LogOut, UserCircle } from "lucide-react";
 import { signOut } from "next-auth/react";
-import SensitivitySettingsModal from "./SensitivitySettingsModal";
-import CharacterSelectionModal from "./CharacterSelectionModal";
+import SensitivitySettingsModal from "@/components/organisms/home/SensitivitySettingsModal";
+import CharacterSelectionModal from "@/components/organisms/home/CharacterSelectionModal";
 import { useEffect, useRef, useState } from "react";
 
 type UserMenuDropdownProps = {

@@ -1,9 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { Users } from "lucide-react";
 import { Modal } from "@/components/atoms/Modal";
+import { ModalHeader } from "@/components/atoms/ModalHeader";
+import { ModalTabBar } from "@/components/organisms/friends/ModalTabBar";
 import { Toast } from "@/components/atoms/Toast";
-import { FriendsModalHeader } from "@/components/organisms/friends/FriendsModalHeader";
 import { SearchResultList } from "@/components/organisms/friends/SearchResultList";
 import { IncomingRequestList } from "@/components/organisms/friends/IncomingRequestList";
 import { OutgoingRequestList } from "@/components/organisms/friends/OutgoingRequestList";
@@ -44,12 +46,21 @@ export function FriendsModal({ isOpen, onClose, friendsData: externalData }: Fri
   return (
     <>
       <Modal isOpen={isOpen} onClose={onClose} contentClassName="h-[500px] max-w-[480px]">
-        <FriendsModalHeader
-          activeTab={activeTab}
-          incomingCount={incomingCount}
-          onTabChange={setActiveTab}
-          onClose={onClose}
-        />
+        <div className="flex shrink-0 flex-col border-b border-[#d4ead9] bg-white">
+          <ModalHeader
+            title="친구 관리"
+            subtitle="친구와 함께 거북목 탈출!"
+            icon={<Users size={18} className="text-[#4a7c59]" strokeWidth={2.2} />}
+            onClose={onClose}
+          />
+          <div className="px-6">
+            <ModalTabBar
+              activeTab={activeTab}
+              incomingCount={incomingCount}
+              onTabChange={setActiveTab}
+            />
+          </div>
+        </div>
 
         {activeTab === "search" ? (
           <SearchResultList searchResults={searchResults} onSendRequest={sendRequest} />

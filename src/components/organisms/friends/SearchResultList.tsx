@@ -50,7 +50,7 @@ export function SearchResultList({ searchResults, onSendRequest }: SearchResultL
               <UserRow
                 key={u.id}
                 name={u.name ?? "알 수 없음"}
-                email={u.id}
+                email={u.email ?? ""}
                 initial={u.initial}
                 bgColor={u.color}
                 actions={

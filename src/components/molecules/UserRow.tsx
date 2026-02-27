@@ -18,7 +18,7 @@ export function UserRow({ name, email, initial, actions, className, bgColor = "#
       <UserAvatar initial={initial} bgColor={bgColor} />
       <div className="min-w-0 flex-1">
         <div className="text-base font-semibold text-[#2d3b35]">{name}</div>
-        <div className="text-sm text-[#7a9585]">{email}</div>
+        {email ? <div className="text-sm text-[#7a9585]">{email}</div> : null}
       </div>
       {actions && <div className="flex flex-shrink-0 items-center gap-1.5">{actions}</div>}
     </article>

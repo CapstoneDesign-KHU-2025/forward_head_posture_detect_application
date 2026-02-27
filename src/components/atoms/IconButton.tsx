@@ -23,7 +23,7 @@ const sizeClass: Record<NonNullable<IconButtonProps["size"]>, string> = {
 const variantClass: Record<NonNullable<IconButtonProps["variant"]>, string> = {
   ghost: "text-[var(--text-sub)] hover:bg-[var(--green-light)] hover:text-[var(--green)]",
   outline:
-    "bg-[var(--green-pale)] text-[var(--text-sub)] border border-[var(--green-border)] hover:bg-[var(--green-light)]",
+    "rounded-lg border border-[#d4ead9] bg-[#f4faf6] text-xs text-[#7a9585] transition-colors hover:bg-[#e8f5ec]",
 };
 
 export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
@@ -36,7 +36,9 @@ export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
         className={cn(base, sizeClass[size], variantClass[variant], className)}
         {...props}
       >
-        <span aria-hidden="true">{icon}</span>
+        <span aria-hidden="true" className="flex size-full items-center justify-center leading-none [&_svg]:block">
+          {icon}
+        </span>
       </button>
     );
   },

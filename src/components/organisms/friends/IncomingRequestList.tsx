@@ -41,7 +41,7 @@ export function IncomingRequestList({ items, onAccept, onDecline }: IncomingRequ
             <li key={r.id}>
               <UserRow
                 name={r.fromUser.name ?? "알 수 없음"}
-                email={r.fromUser.id}
+                email={r.fromUser.email ?? ""}
                 initial={getInitial(r.fromUser.name, r.fromUser.id)}
                 bgColor={getAvatarStyle(r.fromUser.id)}
                 actions={

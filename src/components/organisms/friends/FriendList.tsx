@@ -35,7 +35,7 @@ export function FriendList({ friends, onDelete }: FriendListProps) {
           <UserRow
             key={f.friendshipId}
             name={f.user.name ?? "알 수 없음"}
-            email={f.user.id}
+            email={f.user.email ?? ""}
             initial={getInitial(f.user.name, f.user.id)}
             bgColor={getAvatarStyle(f.user.id)}
             actions={
