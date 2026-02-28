@@ -12,7 +12,7 @@
   --font-mono: var(--font-geist-mono);
 
   /* Layout */
-  --header-height: 80px; /* 메인 헤더 높이 (fixed 헤더 전체 높이) */
+  --header-height: 75px; /* 메인 헤더 높이 (fixed 헤더 전체 높이) */
 
   /* Green palette */
   --green-dark:   #3a6147;  /* hover, 강조 */
