@@ -4,6 +4,7 @@ import { useEffect, useState, useMemo } from "react";
 import HomeTemplate from "@/components/templates/HomeTemplate";
 import ErrorBanner from "@/components/atoms/ErrorBanner";
 
+import { apiRequest } from "@/lib/api/client";
 import { computeTodaySoFarAverage } from "@/lib/hourlyOps";
 import { computeDayStatusMap } from "@/utils/computeDayStatusMap";
 import { getTodayCount, getTodayMeasuredSeconds } from "@/lib/postureLocal";
@@ -76,10 +77,9 @@ export default function HomeClient({ weeklyData, user }: HomeClientProps) {
 
   useEffect(() => {
     let cancelled = false;
-    fetch(`/api/summaries/daily?days=90`)
-      .then((res) => res.json())
-      .then((data) => {
-        if (!cancelled && data?.safeRows) setCalendarRows(data.safeRows);
+    apiRequest<{ safeRows: WeeklySummaryRow[] }>({ requestPath: "/summaries/daily?days=90" })
+      .then((result) => {
+        if (!cancelled && result.ok && result.data?.safeRows) setCalendarRows(result.data.safeRows);
       })
       .catch(() => {});
     return () => {
