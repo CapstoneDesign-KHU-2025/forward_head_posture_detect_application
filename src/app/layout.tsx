@@ -8,6 +8,7 @@ import { auth } from "@/auth";
 
 import Providers from "./providers";
 import { MeasurementProvider } from "@/providers/MeasurementProvider";
+import LoadingScreen from "@/components/molecules/LoadingScreen";
 
 export const metadata: Metadata = {
   title: "거북목 거북거북!",
@@ -32,7 +33,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           rel="stylesheet"
         />
       </head>
-      <body className="min-h-dvh bg-neutral-50 text-black antialiased">
+      <body className="flex h-dvh flex-col overflow-hidden bg-[var(--green-pale)] text-black antialiased">
+        <LoadingScreen />
         <Providers session={session}>
           <MeasurementProvider>
             <Header user={user} />
