@@ -45,7 +45,7 @@ export default function Estimate() {
                 측정을 시작해주세요!
               </div>
               <div className="relative w-full min-w-0 rounded-none overflow-hidden bg-[#2C3E50]" style={{ aspectRatio: "4/3" }}>
-                <LoadingSkeleton />
+                <LoadingSkeleton/>
               </div>
             </section>
           }

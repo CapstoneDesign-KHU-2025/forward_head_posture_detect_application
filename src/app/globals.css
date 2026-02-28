@@ -149,3 +149,21 @@ body[data-modal-open] header {
 .animate-float {
   animation: float-gentle 3s ease-in-out infinite;
 }
+
+/* 로딩 스켈레톤 점 애니메이션 */
+@keyframes dotBounce {
+  0%,
+  80%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.4;
+  }
+  40% {
+    transform: translateY(-6px);
+    opacity: 1;
+  }
+}
+
+.animate-dot-bounce {
+  animation: dotBounce 1.2s ease-in-out infinite;
+}

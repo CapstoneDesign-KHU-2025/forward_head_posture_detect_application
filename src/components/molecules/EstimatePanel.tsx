@@ -69,7 +69,7 @@ export default function EstimatePanel({
             <>
               {isCameraLoading && (
                 <div className="absolute inset-0 z-10 w-full h-full">
-                  <LoadingSkeleton />
+                  <LoadingSkeleton variant="camera" />
                 </div>
               )}
 

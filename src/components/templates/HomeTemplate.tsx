@@ -6,7 +6,6 @@ import TodayStatusCard from "@/components/molecules/TodayStatusCard";
 import TurtleEvolutionCard from "@/components/molecules/TurtleEvolutionCard";
 import { formatMeasuredTime } from "@/utils/formatMeasuredTime";
 import AsyncBoundary from "@/components/molecules/AsyncBoundary";
-import LoadingSkeleton from "@/components/molecules/LoadingSkeleton";
 
 type KPIItem = {
   label: string;
@@ -71,14 +70,14 @@ export default function HomeTemplate({
           <div className="flex flex-col gap-6">
             {/* 섹션 타이틀 */}
             <h2 className="text-[1.5rem] font-bold text-[#2D5F2E] mb-2">오늘의 거북목</h2>
-            <AsyncBoundary suspenseFallback={<LoadingSkeleton />}>
+            <AsyncBoundary suspenseFallback={null}>
               {/* 상태 카드 - 메인 */}
               <TodayStatusCard warningCount={warningCount} isNewUser={isNewUser} />
             </AsyncBoundary>
 
             {/* 서브 정보 카드 */}
             <div className="flex gap-4">
-              <AsyncBoundary suspenseFallback={<LoadingSkeleton />}>
+              <AsyncBoundary suspenseFallback={null}>
                 <div className="flex-[0.7] flex flex-col gap-3">
                   <div>
                     {/* 측정 시간 카드 */}
@@ -126,7 +125,7 @@ export default function HomeTemplate({
                   </div>
                 </div>
               </AsyncBoundary>
-              <AsyncBoundary suspenseFallback={<LoadingSkeleton />}>
+              <AsyncBoundary suspenseFallback={null}>
                 <div className="flex-[1.3]">
                   {/* 칭호 카드 */}
                   <TurtleEvolutionCard goodDays={goodDays} />
