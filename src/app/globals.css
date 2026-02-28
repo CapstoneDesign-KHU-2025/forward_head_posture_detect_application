@@ -116,3 +116,18 @@ body[data-modal-open] header {
 .evo-badge-circle {
   animation: glow 2.5s ease-in-out infinite;
 }
+
+@keyframes pulse-dot {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(0.85);
+  }
+}
+
+.animate-pulse-dot {
+  animation: pulse-dot 1.2s infinite;
+}

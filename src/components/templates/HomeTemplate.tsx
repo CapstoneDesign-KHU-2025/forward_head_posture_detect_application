@@ -85,14 +85,16 @@ export default function HomeTemplate({
                         value={formatMeasuredTime(measureTimeKpi.value)}
                         unit={measureTimeKpi.unit}
                         showStatusDot
-                        subtitle="측정 중 아님"
+                        statusDotVariant={isMeasuring ? "measuring" : "idle"}
+                        subtitle={isMeasuring ? "실시간 측정" : "측정 중 아님"}
                       />
                     ) : (
                       <StatCard
                         label="측정 시간"
                         value="00:00"
                         showStatusDot
-                        subtitle="측정 중 아님"
+                        statusDotVariant={isMeasuring ? "measuring" : "idle"}
+                        subtitle={isMeasuring ? "실시간 측정 중" : "측정 중 아님"}
                       />
                     )}
                   </div>

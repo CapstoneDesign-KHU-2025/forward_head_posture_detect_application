@@ -162,6 +162,8 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating, isInitial }: 
 
     (async () => {
       try {
+        if (stopEstimating) return;
+
         const video = videoRef.current;
         if (!video) return;
 

@@ -11,6 +11,8 @@ type StatCardProps = {
 
   /** 하단 보조 텍스트 왼쪽에 작은 상태 점 표시 여부 */
   showStatusDot?: boolean;
+  /** 상태 점 스타일: idle(회색) | measuring(빨간 점, 애니메이션) */
+  statusDotVariant?: "idle" | "measuring";
 
   /** 컨테이너 클래스 */
   className?: string;
@@ -27,6 +29,7 @@ export default function StatCard({
   unit,
   subtitle,
   showStatusDot = false,
+  statusDotVariant = "idle",
   className,
   valueClassName = "font-[900] text-[27px] leading-none text-[var(--green)]",
 }: StatCardProps) {
@@ -59,7 +62,13 @@ export default function StatCard({
       {subtitle ? (
         <div className="mt-[5px] text-[12px] font-semibold text-[var(--text-muted)] flex items-center gap-[5px]">
           {showStatusDot && (
-            <span className="inline-block h-[6px] w-[6px] rounded-full bg-[#ccc]" />
+            <span
+              className={
+                statusDotVariant === "measuring"
+                  ? "inline-block h-[6px] w-[6px] flex-shrink-0 rounded-full bg-[#ff5c5c] animate-pulse-dot"
+                  : "inline-block h-[6px] w-[6px] flex-shrink-0 rounded-full bg-[#ccc]"
+              }
+            />
           )}
           {subtitle}
         </div>

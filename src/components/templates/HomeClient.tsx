@@ -3,6 +3,7 @@
 import { useEffect, useState, useMemo } from "react";
 import HomeTemplate from "@/components/templates/HomeTemplate";
 import ErrorBanner from "@/components/atoms/ErrorBanner";
+import { useMeasurement } from "@/providers/MeasurementProvider";
 
 import { apiRequest } from "@/lib/api/client";
 import { computeTodaySoFarAverage } from "@/lib/hourlyOps";
@@ -63,6 +64,9 @@ type HomeData = {
 };
 
 export default function HomeClient({ weeklyData, user }: HomeClientProps) {
+  const { stopEstimating, measurementStarted } = useMeasurement();
+  const isMeasuring = !stopEstimating && measurementStarted;
+
   const [todayAvg, setTodayAvg] = useState<number | null>(null);
   const [todayHour, setTodayHour] = useState<number | null>(null);
   const [todayCount, setTodayCount] = useState<number | null>(0);
