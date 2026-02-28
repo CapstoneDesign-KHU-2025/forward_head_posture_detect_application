@@ -13,13 +13,13 @@ export default function Estimate() {
     stopEstimating,
     startMeasurement,
     stopMeasurement,
-    videoRef,
     countdownRemain,
     measurementStarted,
     showMeasurementStartedToast,
     error,
     getStatusBannerType,
     statusBannerMessage,
+    isFirstFrameDrawn,
   } = useMeasurement();
 
   const bannerType = getStatusBannerType();
@@ -53,12 +53,12 @@ export default function Estimate() {
           <EstimatePanel
             bannerType={bannerType}
             bannerMessage={bannerMessage}
-            videoRef={videoRef}
             canvasSlotId={MEASUREMENT_CANVAS_SLOT_ID}
             showMeasurementStartedToast={showMeasurementStartedToast}
             countdownRemain={countdownRemain}
             measurementStarted={measurementStarted}
             stopEstimating={stopEstimating}
+            isFirstFrameDrawn={isFirstFrameDrawn}
           />
         </AsyncBoundary>
         {error && <ErrorBanner error={error} />}

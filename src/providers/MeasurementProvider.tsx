@@ -37,6 +37,7 @@ type MeasurementContextValue = {
   isProcessing: boolean;
   isInitial: boolean;
   canvasSlotId: string;
+  isFirstFrameDrawn: boolean;
 };
 
 const MeasurementContext = createContext<MeasurementContextValue | null>(null);
@@ -77,6 +78,7 @@ export function MeasurementProvider({ children }: { children: ReactNode }) {
     statusBannerMessage,
     isTurtle,
     angle,
+    isFirstFrameDrawn,
   } = useTurtleNeckMeasurement({ userId, stopEstimating, isInitial });
 
   const handleStopMeasurement = useCallback(
@@ -188,6 +190,7 @@ export function MeasurementProvider({ children }: { children: ReactNode }) {
       isProcessing,
       isInitial,
       canvasSlotId: MEASUREMENT_CANVAS_SLOT_ID,
+      isFirstFrameDrawn,
     }),
     [
       stopEstimating,
@@ -206,6 +209,7 @@ export function MeasurementProvider({ children }: { children: ReactNode }) {
       elapsedSeconds,
       isProcessing,
       isInitial,
+      isFirstFrameDrawn,
     ],
   );
   useEffect(() => {
