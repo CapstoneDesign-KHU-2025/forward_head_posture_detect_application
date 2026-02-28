@@ -64,7 +64,9 @@ export default function HomeTemplate({
     <main
       className={[
         "w-full bg-[var(--green-pale)]",
+        // lg 기준 큰 화면: 화면 꽉 채우고 스크롤 없음
         "lg:flex lg:flex-col lg:flex-1 lg:min-h-0 lg:overflow-hidden",
+        // lg 미만 작은 화면: 자연스럽게 스크롤
         "overflow-y-auto",
         className,
       ]
@@ -74,7 +76,9 @@ export default function HomeTemplate({
       <div
         className={[
           "mx-auto w-full max-w-[1400px] gap-3.5 px-4 pb-[100px] pt-1.5 sm:px-7",
+          // lg 기준 큰 화면: flex로 꽉 채움
           "lg:flex lg:flex-row lg:flex-1 lg:min-h-0",
+          // lg 미만 작은 화면: 블록으로 쌓임
           "flex flex-col",
         ].join(" ")}
       >
