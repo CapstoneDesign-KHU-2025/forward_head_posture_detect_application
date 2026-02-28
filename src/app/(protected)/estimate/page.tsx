@@ -13,6 +13,7 @@ import ErrorBanner from "@/components/atoms/ErrorBanner";
 import AsyncBoundary from "@/components/molecules/AsyncBoundary";
 import LoadingSkeleton from "@/components/molecules/LoadingSkeleton";
 import { logger } from "@/lib/logger";
+import { useClearPostureDBOnLoad } from "@/hooks/useClearDBOnload";
 
 export default function Estimate() {
   const { data: session } = useSession();
@@ -91,6 +92,7 @@ export default function Estimate() {
     } finally {
       if (!forced) {
         setStopEstimating((prev) => !prev);
+        useClearPostureDBOnLoad();
       }
       setIsProcessing(false);
     }
@@ -102,11 +104,7 @@ export default function Estimate() {
     <div className="min-h-screen bg-[#F8FBF8]">
       <div className="max-w-[1200px] mx-auto px-70 py-8">
         <div className="flex justify-center mb-8">
-          <Button
-            size="lg"
-            variant={stopEstimating ? "primary" : "danger"}
-            onClick={() => handleStopEstimating()}
-          >
+          <Button size="lg" variant={stopEstimating ? "primary" : "danger"} onClick={() => handleStopEstimating()}>
             {stopEstimating ? "측정 시작하기" : "오늘의 측정 중단하기"}
           </Button>
         </div>

@@ -1,4 +1,3 @@
-// src/hooks/useClearPostureDBOnLoad.ts
 "use client";
 
 import { useEffect } from "react";
