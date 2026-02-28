@@ -63,15 +63,15 @@ export default function HomeTemplate({
   return (
     <main className={["flex min-h-0 w-full flex-1 flex-col overflow-hidden bg-[#F8FBF8]", className].filter(Boolean).join(" ")}>
       <div className="mx-auto flex min-h-0 w-full max-w-[1400px] flex-1 flex-col gap-3.5 px-4 pb-[100px] pt-4 sm:px-7 lg:flex-row">
-        {/* 좌측: 인사말 + 배너/스탯 + 도전기 */}
-        <div className="flex-1 min-w-0 flex flex-col gap-3.5 min-h-0">
-          {/* 인사말 카드 */}
-          <WelcomeHero userName={user?.name ?? "사용자"} />
+        {/* 좌측: 인사말 + 배너/스탯 + 도전기 (히어로 너비 = 배너+도전기 반반) */}
+        <div className="flex-1 min-w-0 grid grid-cols-1 md:grid-cols-2 md:grid-rows-[auto_1fr] gap-3.5 min-h-0">
+          {/* 인사말 카드: 배너+도전기 전체 너비 */}
+          <div className="md:col-span-2">
+            <WelcomeHero userName={user?.name ?? "사용자"} />
+          </div>
 
-          {/* 배너 + 스탯 | 도전기 */}
-          <div className="flex flex-col md:flex-row gap-3.5 flex-1 min-h-0">
-            {/* 배너 컬럼: 오늘도 화이팅 + StatCards */}
-            <div className="flex-1 min-w-0 flex flex-col gap-3.5 min-h-0">
+          {/* 배너 컬럼: 오늘도 화이팅 + StatCards */}
+          <div className="min-w-0 flex flex-col gap-3.5 min-h-0">
               <AsyncBoundary suspenseFallback={<LoadingSkeleton />}>
                 <TodayStatusCard warningCount={warningCount} isNewUser={isNewUser} />
               </AsyncBoundary>
@@ -122,11 +122,12 @@ export default function HomeTemplate({
                   </div>
                 </div>
               </AsyncBoundary>
-            </div>
+          </div>
 
-            {/* 도전기 컬럼 */}
-            <div className="flex-1 min-w-0 flex min-h-0 overflow-hidden w-full">
-              <Posture3DCard
+          {/* 도전기 컬럼 */}
+          <div className="min-w-0 flex flex-1 min-h-0 h-full overflow-hidden">
+            <Posture3DCard
+                className="flex-1 w-full"
                 userAng={user?.avgAng}
                 title={challenge?.title ?? "당신의 거북목 도전기"}
                 description={
@@ -139,7 +140,6 @@ export default function HomeTemplate({
                   )
                 }
               />
-            </div>
           </div>
         </div>
 
