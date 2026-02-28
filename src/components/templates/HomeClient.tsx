@@ -224,6 +224,7 @@ export default function HomeClient({ weeklyData, user }: HomeClientProps) {
       isNewUser={isNewUser}
       goodDays={goodDays}
       dayStatusMap={dayStatusMap}
+      isMeasuring={isMeasuring}
     />
   );
 }
