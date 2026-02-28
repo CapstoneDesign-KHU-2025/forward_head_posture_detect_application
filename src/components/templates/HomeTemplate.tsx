@@ -1,7 +1,7 @@
 import WelcomeHero from "@/components/organisms/home/WelcomeHero";
 import Posture3DCard from "@/components/organisms/home/Posture3DCard";
 import StatCard from "@/components/molecules/StatCard";
-import { Calendar } from "@/components/molecules/Calendar";
+import { Calendar, type DayStatus } from "@/components/molecules/Calendar";
 import TodayStatusCard from "@/components/molecules/TodayStatusCard";
 import TurtleEvolutionCard from "@/components/molecules/TurtleEvolutionCard";
 import { formatMeasuredTime } from "@/utils/formatMeasuredTime";
@@ -31,8 +31,8 @@ type HomeTemplateProps = {
   isNewUser?: boolean;
   /** 누적 좋은 날 수 (칭호 카드용) */
   goodDays?: number;
-  /** 실시간 측정 중 여부 (플로팅바 표시 시 true) */
-  isMeasuring?: boolean;
+  /** 캘린더 날짜별 상태 (YYYY-MM-DD -> good | bad) */
+  dayStatusMap?: Record<string, DayStatus>;
   className?: string;
 };
 
@@ -43,7 +43,7 @@ export default function HomeTemplate({
   warningCount = null,
   isNewUser,
   goodDays = 0,
-  isMeasuring = false,
+  dayStatusMap = {},
   className,
 }: HomeTemplateProps) {
   // 측정 시간 KPI 찾기
@@ -147,7 +147,7 @@ export default function HomeTemplate({
                 )
               }
             />
-            <Calendar />
+            <Calendar dayStatusMap={dayStatusMap} />
           </div>
         </div>
       </div>

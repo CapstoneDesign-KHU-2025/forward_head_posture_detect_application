@@ -1,11 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import HomeTemplate from "@/components/templates/HomeTemplate";
 import ErrorBanner from "@/components/atoms/ErrorBanner";
 import { useMeasurement } from "@/providers/MeasurementProvider";
 
+import { apiRequest } from "@/lib/api/client";
 import { computeTodaySoFarAverage } from "@/lib/hourlyOps";
+import { computeDayStatusMap } from "@/utils/computeDayStatusMap";
 import { getTodayCount, getTodayMeasuredSeconds } from "@/lib/postureLocal";
 import { computeImprovementPercent } from "@/utils/computeImprovementPercent";
 
@@ -74,6 +76,22 @@ export default function HomeClient({ weeklyData, user }: HomeClientProps) {
 
   const weeklyAvg = weeklyData?.weightedAvg ?? null;
   const goodDays = weeklyData?.goodDays ?? 0;
+
+  const [calendarRows, setCalendarRows] = useState<WeeklySummaryRow[]>([]);
+
+  useEffect(() => {
+    let cancelled = false;
+    apiRequest<{ safeRows: WeeklySummaryRow[] }>({ requestPath: "/summaries/daily?days=90" })
+      .then((result) => {
+        if (!cancelled && result.ok && result.data?.safeRows) setCalendarRows(result.data.safeRows);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const dayStatusMap = useMemo(() => computeDayStatusMap(calendarRows), [calendarRows]);
 
   const [isNewUser, setIsNewUser] = useState<boolean>(() => {
     if (typeof window === "undefined") return false;
@@ -205,7 +223,7 @@ export default function HomeClient({ weeklyData, user }: HomeClientProps) {
       warningCount={warningCount}
       isNewUser={isNewUser}
       goodDays={goodDays}
-      isMeasuring={isMeasuring}
+      dayStatusMap={dayStatusMap}
     />
   );
 }
