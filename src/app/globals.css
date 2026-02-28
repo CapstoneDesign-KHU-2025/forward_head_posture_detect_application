@@ -47,6 +47,10 @@
   }
 } */
 
+html {
+  scrollbar-gutter: stable;
+}
+
 body {
   background: var(--green-pale);
   color: var(--foreground);
@@ -117,7 +121,7 @@ body[data-modal-open] header {
   animation: glow 2.5s ease-in-out infinite;
 }
 
-@keyframes fadeUp {
+@keyframes fade-up {
   from {
     opacity: 0;
     transform: translateY(24px);
@@ -128,7 +132,7 @@ body[data-modal-open] header {
   }
 }
 
-@keyframes float404 {
+@keyframes float-gentle {
   0%,
   100% {
     transform: translateY(0) rotate(-5deg);
@@ -139,12 +143,9 @@ body[data-modal-open] header {
 }
 
 .animate-fade-up {
-  animation: fadeUp 0.7s both;
+  animation: fade-up 0.7s both;
 }
 
-.turtle {
-  font-size: 120px;
-  animation: float404 3s ease-in-out infinite;
-  filter: drop-shadow(0 8px 20px rgba(74, 124, 89, 0.25));
-  margin: 0 4px;
+.animate-float {
+  animation: float-gentle 3s ease-in-out infinite;
 }

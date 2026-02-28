@@ -15,7 +15,9 @@ export default function NotFound() {
         >
           4
         </span>
-        <span className="turtle">🐢</span>
+        <span className="animate-float mx-1 text-[120px] drop-shadow-[0_8px_20px_rgba(74,124,89,0.25)]">
+          🐢
+        </span>
         <span
           className="font-black text-[180px] tracking-[-8px] text-[var(--green)]"
           style={{ fontFamily: "Nunito, sans-serif", textShadow: "0 8px 32px rgba(74, 124, 89, 0.2)" }}
