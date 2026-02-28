@@ -31,6 +31,8 @@ type HomeTemplateProps = {
   isNewUser?: boolean;
   /** 누적 좋은 날 수 (칭호 카드용) */
   goodDays?: number;
+  /** 실시간 측정 중 여부 (플로팅바 표시 시 true) */
+  isMeasuring?: boolean;
   className?: string;
 };
 
@@ -41,6 +43,7 @@ export default function HomeTemplate({
   warningCount = null,
   isNewUser,
   goodDays = 0,
+  isMeasuring = false,
   className,
 }: HomeTemplateProps) {
   // 측정 시간 KPI 찾기
@@ -82,14 +85,16 @@ export default function HomeTemplate({
                         value={formatMeasuredTime(measureTimeKpi.value)}
                         unit={measureTimeKpi.unit}
                         showStatusDot
-                        subtitle="측정 중 아님"
+                        statusDotVariant={isMeasuring ? "measuring" : "idle"}
+                        subtitle={isMeasuring ? "실시간 측정" : "측정 중 아님"}
                       />
                     ) : (
                       <StatCard
                         label="측정 시간"
                         value="00:00"
                         showStatusDot
-                        subtitle="측정 중 아님"
+                        statusDotVariant={isMeasuring ? "measuring" : "idle"}
+                        subtitle={isMeasuring ? "실시간 측정 중" : "측정 중 아님"}
                       />
                     )}
                   </div>
