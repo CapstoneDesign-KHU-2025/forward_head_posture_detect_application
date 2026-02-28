@@ -25,6 +25,12 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 
   return (
     <html lang="ko">
+      <head>
+        <link
+          href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900;1000&display=swap"
+          rel="stylesheet"
+        />
+      </head>
       <body className="min-h-dvh bg-neutral-50 text-black antialiased">
         <Providers session={session}>
           <Header user={user} />
