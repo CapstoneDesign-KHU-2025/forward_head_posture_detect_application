@@ -71,7 +71,7 @@ export default function HomeTemplate({
           </div>
 
           {/* 배너 컬럼: 오늘도 화이팅 + StatCards */}
-          <div className="min-w-0 flex flex-col gap-3.5 min-h-0">
+          <div className="min-w-0 flex h-full flex-col gap-3.5 min-h-0">
               <AsyncBoundary suspenseFallback={<LoadingSkeleton />}>
                 <TodayStatusCard warningCount={warningCount} isNewUser={isNewUser} />
               </AsyncBoundary>

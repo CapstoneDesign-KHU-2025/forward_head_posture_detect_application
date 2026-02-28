@@ -113,7 +113,7 @@ export default function TodayStatusCard({ warningCount, isNewUser }: TodayStatus
 
   return (
     <Card
-      className="status-card flex flex-col items-center justify-center px-6 py-5"
+      className="status-card flex flex-1 min-h-0 flex-col items-center justify-center px-6 py-5"
       style={{
         background: style.background,
         border: style.borderColor ? `2px solid ${style.borderColor}` : "none",
