@@ -34,7 +34,7 @@ export function FloatingBar({
       role="status"
       aria-live="polite"
       className={cn(
-        "fixed bottom-6 left-1/2 z-[200] flex w-[min(480px,calc(100vw-32px))] items-center gap-3.5 rounded-[20px] border border-white/[0.08] bg-[#2d3b35] px-5 py-3.5 shadow-[0_8px_32px_rgba(45,59,53,0.35)] transition-transform duration-[400ms]",
+        "fixed bottom-3.5 left-1/2 z-[200] flex w-[min(480px,calc(100vw-32px))] items-center gap-3.5 rounded-[20px] border border-white/[0.08] bg-[#2d3b35] px-5 py-3.5 shadow-[0_8px_32px_rgba(45,59,53,0.35)] transition-transform duration-[400ms]",
         visible ? "translate-x-[-50%] translate-y-0" : "translate-x-[-50%] translate-y-[80px]",
         className
       )}
