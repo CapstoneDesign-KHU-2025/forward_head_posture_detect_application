@@ -45,8 +45,8 @@ const introducingCards = [
 ];
 export default function LandingTemplate() {
   return (
-    <div className="min-h-screen bg-[#F8FBF8] w-screen pt-16">
-      <section className="min-h-screen bg-gradient-to-br from-[#E8F5E9] to-[#F8FBF8] flex items-center py-16 px-4">
+    <div className="min-h-screen bg-[var(--green-pale)] w-screen pt-16">
+      <section className="min-h-screen bg-gradient-to-br from-[#E8F5E9] to-[var(--green-pale)] flex items-center py-16 px-4">
         <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-16 items-center">
           <div className="hero-content">
             <h1 className="text-4xl md:text-4xl font-bold text-[#2D5F2E] mb-6 leading-normal">
@@ -117,7 +117,7 @@ export default function LandingTemplate() {
       <section className="py-20 px-4 bg-gradient-to-br from-[#2D5F2E] to-[#4A9D4D] text-white text-center">
         <h2 className="text-4xl font-bold mb-4">지금 바로 시작하세요</h2>
         <p className="text-xl mb-8 opacity-90">GitHub 또는 Google 계정으로 바로 시작할 수 있습니다</p>
-        <Button size="lg" className="bg-white !text-[#2D5F2E] hover:bg-[#F8FBF8] font-bold" onClick={() => signIn()}>
+        <Button size="lg" className="bg-white !text-[#2D5F2E] hover:bg-[var(--green-pale)] font-bold" onClick={() => signIn()}>
           시작하기
         </Button>
       </section>

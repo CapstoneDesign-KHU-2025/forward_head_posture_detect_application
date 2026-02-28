@@ -24,7 +24,7 @@ const sizeClass: Record<NonNullable<IconButtonProps["size"]>, string> = {
 const variantClass: Record<NonNullable<IconButtonProps["variant"]>, string> = {
   ghost: "text-[var(--text-sub)] hover:bg-[var(--green-light)] hover:text-[var(--green)]",
   outline:
-    "rounded-lg border border-[#d4ead9] bg-[#f4faf6] text-xs text-[#7a9585] transition-colors hover:bg-[#e8f5ec]",
+    "rounded-lg border border-[#d4ead9] bg-[var(--green-pale)] text-xs text-[#7a9585] transition-colors hover:bg-[#e8f5ec]",
   calendar:
     "rounded-full bg-[#e8f5ec] font-bold text-[#4a7c59] transition-colors hover:bg-[#d4ead9]",
 };

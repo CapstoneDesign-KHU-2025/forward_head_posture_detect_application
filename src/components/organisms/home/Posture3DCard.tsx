@@ -103,7 +103,7 @@ export default function Posture3DCard({
 
       {/* 3D 모델 영역 */}
       <div className="flex-1 min-h-[260px] flex flex-col relative">
-        <div className="w-full h-full min-h-[200px] rounded-[22px] bg-[linear-gradient(180deg,#e8f5ec_0%,#f4faf6_70%,#e0f0e5_100%)] flex items-center justify-center relative overflow-hidden">
+        <div className="w-full h-full min-h-[200px] rounded-[22px] bg-[linear-gradient(180deg,#e8f5ec_0%,var(--green-pale)_70%,#e0f0e5_100%)] flex items-center justify-center relative overflow-hidden">
           {/* 바닥 그라디언트 느낌 */}
           <div className="absolute inset-x-0 bottom-0 h-10 bg-[linear-gradient(0deg,rgba(74,124,89,0.12)_0%,transparent_100%)]" />
 

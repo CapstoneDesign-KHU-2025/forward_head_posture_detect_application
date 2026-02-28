@@ -31,9 +31,9 @@ export function SelectableOptionCard({
       onClick={onClick}
       className={cn(
         "flex cursor-pointer items-center justify-between rounded-2xl border-[1.5px] px-4 py-3 transition-all duration-150",
-        "hover:border-[#6aab7a] hover:bg-[#f4faf6]",
+        "hover:border-[#6aab7a] hover:bg-[var(--green-pale)]",
         isSelected
-          ? "border-[#4a7c59] bg-[#f4faf6] shadow-[0_2px_10px_rgba(74,124,89,0.12)]"
+          ? "border-[#4a7c59] bg-[var(--green-pale)] shadow-[0_2px_10px_rgba(74,124,89,0.12)]"
           : "border-[#d4ead9] bg-white",
         className
       )}

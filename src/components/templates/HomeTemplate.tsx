@@ -61,7 +61,7 @@ export default function HomeTemplate({
     avgAngle != null && Number.isFinite(avgAngle) ? avgAngle - idealAngle : null;
 
   return (
-    <main className={["flex min-h-0 w-full min-h-min flex-1 flex-col overflow-y-auto bg-[#F8FBF8]", className].filter(Boolean).join(" ")}>
+    <main className={["flex min-h-0 w-full min-h-min flex-1 flex-col overflow-y-auto bg-[var(--green-pale)]", className].filter(Boolean).join(" ")}>
       <div className="mx-auto flex min-h-0 w-full max-w-[1400px] flex-1 flex-col gap-3.5 px-4 pb-[100px] pt-4 sm:px-7 lg:flex-row">
         {/* 좌측: 인사말 + 배너/스탯 + 도전기 (히어로 너비 = 배너+도전기 반반) */}
         <div className="flex-1 min-w-0 grid grid-cols-1 md:grid-cols-2 md:grid-rows-[auto_1fr] gap-3.5 min-h-0">

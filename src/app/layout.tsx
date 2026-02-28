@@ -32,7 +32,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           rel="stylesheet"
         />
       </head>
-      <body className="flex h-dvh flex-col overflow-hidden bg-neutral-50 text-black antialiased">
+      <body className="flex h-dvh flex-col overflow-hidden bg-[var(--green-pale)] text-black antialiased">
         <div className="flex min-h-0 w-full flex-1 flex-col overflow-hidden">
           <Providers session={session}>
             <MeasurementProvider>
