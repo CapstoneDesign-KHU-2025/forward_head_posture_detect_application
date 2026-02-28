@@ -7,6 +7,7 @@ import PageContainer from "@/components/organisms/layout/PageContainer";
 import { auth } from "@/auth";
 
 import Providers from "./providers";
+import { MeasurementProvider } from "@/providers/MeasurementProvider";
 
 export const metadata: Metadata = {
   title: "거북목 거북거북!",
@@ -33,15 +34,17 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       </head>
       <body className="min-h-dvh bg-neutral-50 text-black antialiased">
         <Providers session={session}>
-          <Header user={user} />
-          <PageContainer>{children}</PageContainer>
-          <Footer
-            links={[
-              { label: "Privacy Policy", href: "/privacy" },
-              { label: "Terms of Service", href: "/terms" },
-              { label: "Contact Us", href: "/contact" },
-            ]}
-          />
+          <MeasurementProvider>
+            <Header user={user} />
+            <PageContainer>{children}</PageContainer>
+            <Footer
+              links={[
+                { label: "Privacy Policy", href: "/privacy" },
+                { label: "Terms of Service", href: "/terms" },
+                { label: "Contact Us", href: "/contact" },
+              ]}
+            />
+          </MeasurementProvider>
         </Providers>
       </body>
     </html>

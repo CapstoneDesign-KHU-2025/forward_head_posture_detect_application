@@ -27,20 +27,14 @@ export type CalendarProps = {
 
 export function Calendar({ dayStatusMap = {}, className }: CalendarProps) {
   const today = new Date();
-  const [viewYear, setViewYear] = useState(today.getFullYear());
-  const [viewMonth, setViewMonth] = useState(today.getMonth());
+  const [viewDate, setViewDate] = useState(() => new Date(today.getFullYear(), today.getMonth(), 1));
+
+  const viewYear = viewDate.getFullYear();
+  const viewMonth = viewDate.getMonth();
 
   const moveMonth = (dir: number) => {
-    setViewMonth((prev) => {
-      const next = prev + dir;
-      if (next > 11) {
-        setViewYear((y) => y + 1);
-        return 0;
-      }
-      if (next < 0) {
-        setViewYear((y) => y - 1);
-        return 11;
-      }
+    setViewDate((prev) => {
+      const next = new Date(prev.getFullYear(), prev.getMonth() + dir, 1);
       return next;
     });
   };
