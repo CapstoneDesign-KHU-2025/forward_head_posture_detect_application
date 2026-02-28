@@ -1,14 +1,6 @@
 "use client";
 
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-  type ReactNode,
-} from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { usePathname, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
@@ -66,8 +58,13 @@ export function MeasurementProvider({ children }: { children: ReactNode }) {
   const [isInitial, setIsInitial] = useState(true);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [showRecoveryNotice, setShowRecoveryNotice] = useState(false);
-
+  const [mounted, setMounted] = useState(false);
   const [_dailySumState, dailySumAction] = useActionState(postDailySummaryAction, null);
+  const [slotEl, setSlotEl] = useState<HTMLElement | null>(null);
+  const [portalTarget, setPortalTarget] = useState<HTMLElement | null>(null);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const {
     videoRef,
@@ -124,7 +121,7 @@ export function MeasurementProvider({ children }: { children: ReactNode }) {
         }
       }
     },
-    [userId, stopEstimating, angle, isTurtle, isProcessing, session?.user?.id, dailySumAction]
+    [userId, stopEstimating, angle, isTurtle, isProcessing, session?.user?.id, dailySumAction],
   );
 
   const startMeasurement = useCallback(() => {
@@ -209,12 +206,16 @@ export function MeasurementProvider({ children }: { children: ReactNode }) {
       elapsedSeconds,
       isProcessing,
       isInitial,
-    ]
+    ],
   );
-
-  const slotEl =
-    typeof document !== "undefined" ? document.getElementById(MEASUREMENT_CANVAS_SLOT_ID) : null;
-  const portalTarget = slotEl || (typeof document !== "undefined" ? document.body : null);
+  useEffect(() => {
+    if (!mounted) return;
+    const slotEl = typeof document !== "undefined" ? document.getElementById(MEASUREMENT_CANVAS_SLOT_ID) : null;
+    setSlotEl(slotEl);
+    const portalTarget = slotEl || (typeof document !== "undefined" ? document.body : null);
+    console.log(slotEl);
+    setPortalTarget(portalTarget);
+  }, [mounted, pathname]);
 
   return (
     <MeasurementContext.Provider value={value}>
@@ -229,7 +230,7 @@ export function MeasurementProvider({ children }: { children: ReactNode }) {
             className={slotEl ? "h-full w-full block bg-[#2C3E50]" : "absolute -left-[9999px]"}
             style={slotEl ? undefined : { visibility: "hidden" }}
           />,
-          portalTarget
+          portalTarget,
         )}
 
       {/* 비디오 - 항상 숨김 */}
