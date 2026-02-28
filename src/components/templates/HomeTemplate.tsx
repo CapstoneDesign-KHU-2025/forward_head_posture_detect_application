@@ -33,6 +33,8 @@ type HomeTemplateProps = {
   goodDays?: number;
   /** 캘린더 날짜별 상태 (YYYY-MM-DD -> good | bad) */
   dayStatusMap?: Record<string, DayStatus>;
+  /** 실시간 측정 중 여부 (측정 시간 카드 상태 점 표시용) */
+  isMeasuring?: boolean;
   className?: string;
 };
 
@@ -44,6 +46,7 @@ export default function HomeTemplate({
   isNewUser,
   goodDays = 0,
   dayStatusMap = {},
+  isMeasuring = false,
   className,
 }: HomeTemplateProps) {
   // 측정 시간 KPI 찾기
