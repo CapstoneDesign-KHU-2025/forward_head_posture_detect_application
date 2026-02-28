@@ -213,9 +213,8 @@ export function MeasurementProvider({ children }: { children: ReactNode }) {
     const slotEl = typeof document !== "undefined" ? document.getElementById(MEASUREMENT_CANVAS_SLOT_ID) : null;
     setSlotEl(slotEl);
     const portalTarget = slotEl || (typeof document !== "undefined" ? document.body : null);
-    console.log(slotEl);
     setPortalTarget(portalTarget);
-  }, [mounted, pathname]);
+  }, [mounted, pathname, stopEstimating]);
 
   return (
     <MeasurementContext.Provider value={value}>
