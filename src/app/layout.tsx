@@ -32,20 +32,22 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           rel="stylesheet"
         />
       </head>
-      <body className="min-h-dvh bg-neutral-50 text-black antialiased">
-        <Providers session={session}>
-          <MeasurementProvider>
-            <Header user={user} />
-            <PageContainer>{children}</PageContainer>
-            <Footer
-              links={[
-                { label: "Privacy Policy", href: "/privacy" },
-                { label: "Terms of Service", href: "/terms" },
-                { label: "Contact Us", href: "/contact" },
-              ]}
-            />
-          </MeasurementProvider>
-        </Providers>
+      <body className="flex h-dvh flex-col overflow-hidden bg-neutral-50 text-black antialiased">
+        <div className="flex min-h-0 w-full flex-1 flex-col overflow-hidden">
+          <Providers session={session}>
+            <MeasurementProvider>
+              <Header user={user} />
+              <PageContainer>{children}</PageContainer>
+              <Footer
+                links={[
+                  { label: "Privacy Policy", href: "/privacy" },
+                  { label: "Terms of Service", href: "/terms" },
+                  { label: "Contact Us", href: "/contact" },
+                ]}
+              />
+            </MeasurementProvider>
+          </Providers>
+        </div>
       </body>
     </html>
   );

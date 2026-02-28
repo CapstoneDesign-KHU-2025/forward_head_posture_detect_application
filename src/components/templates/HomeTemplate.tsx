@@ -61,97 +61,94 @@ export default function HomeTemplate({
     avgAngle != null && Number.isFinite(avgAngle) ? avgAngle - idealAngle : null;
 
   return (
-    <main className={["bg-[#F8FBF8] min-h-screen", className].filter(Boolean).join(" ")}>
-      <div className="max-w-[1400px] mx-auto px-8 pb-8 pt-2">
-        <WelcomeHero userName={user?.name ?? "사용자"} />
+    <main className={["flex min-h-0 w-full flex-1 flex-col overflow-hidden bg-[#F8FBF8]", className].filter(Boolean).join(" ")}>
+      <div className="mx-auto flex min-h-0 w-full max-w-[1400px] flex-1 flex-col gap-3.5 px-4 pb-[100px] pt-4 sm:px-7 lg:flex-row">
+        {/* 좌측: 인사말 + 배너/스탯 + 도전기 */}
+        <div className="flex-1 min-w-0 flex flex-col gap-3.5 min-h-0">
+          {/* 인사말 카드 */}
+          <WelcomeHero userName={user?.name ?? "사용자"} />
 
-        {/* 본문 2열 레이아웃: 좌(KPI), 우(도전기) */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
-          {/* LEFT: 오늘의 거북목 섹션 */}
-          <div className="flex flex-col gap-6">
-            {/* 섹션 타이틀 */}
-            <h2 className="text-[1.5rem] font-bold text-[#2D5F2E] mb-2">오늘의 거북목</h2>
-            <AsyncBoundary suspenseFallback={<LoadingSkeleton />}>
-              {/* 상태 카드 - 메인 */}
-              <TodayStatusCard warningCount={warningCount} isNewUser={isNewUser} />
-            </AsyncBoundary>
-
-            {/* 서브 정보 카드 */}
-            <div className="flex gap-4">
+          {/* 배너 + 스탯 | 도전기 */}
+          <div className="flex flex-col md:flex-row gap-3.5 flex-1 min-h-0">
+            {/* 배너 컬럼: 오늘도 화이팅 + StatCards */}
+            <div className="flex-1 min-w-0 flex flex-col gap-3.5 min-h-0">
               <AsyncBoundary suspenseFallback={<LoadingSkeleton />}>
-                <div className="flex-[0.7] flex flex-col gap-3">
-                  <div>
-                    {/* 측정 시간 카드 */}
-                    {measureTimeKpi && typeof measureTimeKpi.value === "number" && measureTimeKpi.value > 0 ? (
-                      <StatCard
-                        label={measureTimeKpi.label}
-                        value={formatMeasuredTime(measureTimeKpi.value)}
-                        unit={measureTimeKpi.unit}
-                        showStatusDot
-                        statusDotVariant={isMeasuring ? "measuring" : "idle"}
-                        subtitle={isMeasuring ? "실시간 측정" : "측정 중 아님"}
-                      />
-                    ) : (
-                      <StatCard
-                        label="측정 시간"
-                        value="00:00"
-                        showStatusDot
-                        statusDotVariant={isMeasuring ? "measuring" : "idle"}
-                        subtitle={isMeasuring ? "실시간 측정 중" : "측정 중 아님"}
-                      />
-                    )}
-                  </div>
-
-                  {/* 오늘 경고 / 누적 평균 카드 */}
-                  <div className="grid grid-cols-2 gap-3">
-                    <StatCard
-                      label="오늘 경고"
-                      value={String(todayWarningCount)}
-                      unit="회"
-                      subtitle="오늘 기준"
-                    />
-                    <StatCard
-                      label="누적 평균"
-                      value={avgAngle != null ? avgAngle.toFixed(1) : "-"}
-                      unit="°"
-                      subtitle={
-                        deltaFromIdeal != null ? (
-                          <span className="text-[var(--warning-text)]">
-                            ideal 대비 {deltaFromIdeal >= 0 ? "+" : ""}
-                            {deltaFromIdeal.toFixed(1)}°
-                          </span>
-                        ) : undefined
-                      }
-                    />
-                  </div>
-                </div>
+                <TodayStatusCard warningCount={warningCount} isNewUser={isNewUser} />
               </AsyncBoundary>
               <AsyncBoundary suspenseFallback={<LoadingSkeleton />}>
-                <div className="flex-[1.3]">
-                  {/* 칭호 카드 */}
-                  <TurtleEvolutionCard goodDays={goodDays} />
+                <div className="flex flex-wrap gap-3.5 flex-shrink-0">
+                  <div className="flex-1 min-w-[140px]">
+                  {measureTimeKpi && typeof measureTimeKpi.value === "number" && measureTimeKpi.value > 0 ? (
+                    <StatCard
+                      label={measureTimeKpi.label}
+                      value={formatMeasuredTime(measureTimeKpi.value)}
+                      unit={measureTimeKpi.unit}
+                      showStatusDot
+                      statusDotVariant={isMeasuring ? "measuring" : "idle"}
+                      subtitle={isMeasuring ? "실시간 측정" : "측정 중 아님"}
+                    />
+                  ) : (
+                    <StatCard
+                      label="측정 시간"
+                      value="00:00"
+                      showStatusDot
+                      statusDotVariant={isMeasuring ? "measuring" : "idle"}
+                      subtitle={isMeasuring ? "실시간 측정 중" : "측정 중 아님"}
+                    />
+                  )}
+                  </div>
+                  <div className="flex-1 min-w-[140px]">
+                  <StatCard
+                    label="오늘 경고"
+                    value={String(todayWarningCount)}
+                    unit="회"
+                    subtitle="오늘 기준"
+                  />
+                  </div>
+                  <div className="flex-1 min-w-[140px]">
+                  <StatCard
+                    label="누적 평균"
+                    value={avgAngle != null ? avgAngle.toFixed(1) : "-"}
+                    unit="°"
+                    subtitle={
+                      deltaFromIdeal != null ? (
+                        <span className="text-[var(--warning-text)]">
+                          ideal 대비 {deltaFromIdeal >= 0 ? "+" : ""}
+                          {deltaFromIdeal.toFixed(1)}°
+                        </span>
+                      ) : undefined
+                    }
+                  />
+                  </div>
                 </div>
               </AsyncBoundary>
             </div>
-          </div>
 
-          {/* RIGHT: 측정 섹션 */}
-          <div className="flex flex-col gap-6">
-            <Posture3DCard
-              userAng={user?.avgAng}
-              title={challenge?.title ?? "당신의 거북목 도전기"}
-              description={
-                challenge?.description ?? (
-                  <>
-                    측정을 시작하면 오늘의 평균 목 각도와
-                    <br />
-                    도전 현황이 여기에 표시됩니다.
-                  </>
-                )
-              }
-            />
-            <Calendar dayStatusMap={dayStatusMap} />
+            {/* 도전기 컬럼 */}
+            <div className="flex-1 min-w-0 flex min-h-0 overflow-hidden w-full">
+              <Posture3DCard
+                userAng={user?.avgAng}
+                title={challenge?.title ?? "당신의 거북목 도전기"}
+                description={
+                  challenge?.description ?? (
+                    <>
+                      측정을 시작하면 오늘의 평균 목 각도와
+                      <br />
+                      도전 현황이 여기에 표시됩니다.
+                    </>
+                  )
+                }
+              />
+            </div>
           </div>
+        </div>
+
+        {/* 우측 패널: 캘린더 + 진화 카드 */}
+        <div className="w-full lg:w-[340px] flex-shrink-0 flex flex-col gap-3.5 min-h-0">
+          <Calendar dayStatusMap={dayStatusMap} />
+          <AsyncBoundary suspenseFallback={<LoadingSkeleton />}>
+            <TurtleEvolutionCard goodDays={goodDays} />
+          </AsyncBoundary>
         </div>
       </div>
     </main>
