@@ -164,7 +164,10 @@ export default function HomeTemplate({
 
         {/* 우측 패널: 캘린더 + 진화 카드 */}
         <div className="w-full lg:w-[340px] flex-shrink-0 flex flex-col gap-3.5 min-h-0">
-          <Calendar dayStatusMap={dayStatusMap} />
+          <AsyncBoundary suspenseFallback={null}>
+            <Calendar dayStatusMap={dayStatusMap} />
+          </AsyncBoundary>
+          
           <AsyncBoundary suspenseFallback={null}>
             <TurtleEvolutionCard goodDays={goodDays} />
           </AsyncBoundary>
