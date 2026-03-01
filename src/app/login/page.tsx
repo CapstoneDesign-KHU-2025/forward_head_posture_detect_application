@@ -7,7 +7,7 @@ import OauthButton from "@/components/molecules/OauthButton";
 
 export default function LoginPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#E8F5E9] to-[#F8FBF8] w-screen flex items-center justify-center p-8">
+    <div className="min-h-screen bg-gradient-to-br from-[#E8F5E9] to-[var(--green-pale)] w-screen flex items-center justify-center p-8">
       <div className="bg-white rounded-[20px] shadow-[0_10px_40px_rgba(0,0,0,0.1)] p-12 max-w-[450px] w-full">
         <div className="text-center flex flex-col items-center mb-8 gap-2">
           <Icon size="2xl">
