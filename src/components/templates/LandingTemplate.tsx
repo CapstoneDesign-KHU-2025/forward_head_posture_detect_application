@@ -5,6 +5,7 @@ import { signIn } from "next-auth/react";
 import { Button } from "@/components/atoms/Button";
 import { Card } from "@/components/atoms/Card";
 import DashboardMockupCard from "@/components/molecules/DashboardMockupCard";
+import Footer from "@/components/organisms/layout/Footer";
 import TurtleLogo from "@/components/atoms/TurtleLogo";
 
 const FEATURES = [
@@ -216,7 +217,7 @@ export default function LandingTemplate() {
           {[
             { icon: "📸", title: "카메라 켜기", desc: "측정하기 버튼을 누르면\n웹캠이 자동으로 활성화돼요." },
             { icon: "🤖", title: "AI가 분석해요", desc: "MediaPipe AI가 실시간으로\n목 각도를 측정하고 기록해요." },
-            { icon: "📈", title: "결과 확인", desc: "통계 탭에서 오늘의 자세 데이터를\n한눈에 확인할 수 있어요." },
+            { icon: "📈", title: "결과 확인", desc: "대시보드에서 오늘의 자세 데이터를\n한눈에 확인할 수 있어요." },
           ].map((s, i) => (
             <div key={s.title} className={`reveal ${["reveal-delay-1", "reveal-delay-2", "reveal-delay-3"][i]} flex flex-col items-center py-0 px-6 relative z-10`}>
               <div className="w-20 h-20 bg-white border-2 border-[var(--green-border)] rounded-full flex items-center justify-center text-[32px] mb-5 shadow-[0_4px_20px_rgba(74,124,89,0.1)] transition-all duration-250 hover:border-[var(--green)] hover:scale-110 hover:shadow-[0_8px_28px_rgba(74,124,89,0.2)]">
@@ -253,18 +254,7 @@ export default function LandingTemplate() {
         </button>
       </div>
 
-      {/* 푸터 - 콘텐츠 맨 아래에 배치 */}
-      <footer className="w-full border-t border-[var(--green-border)] py-8 px-6 md:px-12 flex flex-col sm:flex-row items-center justify-between gap-4 flex-shrink-0">
-        <div
-          className="font-[Nunito] font-extrabold text-base text-[var(--green)]"
-          style={{ fontFamily: "Nunito, sans-serif" }}
-        >
-          🐢 거북목 거북거북!
-        </div>
-        <div className="text-xs text-[var(--text-muted)]">
-          © 2026 거북목 거북거북! Team. All rights reserved.
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }
