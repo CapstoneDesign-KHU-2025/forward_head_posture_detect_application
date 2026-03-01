@@ -2,7 +2,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import Header from "@/components/organisms/layout/Header";
-import Footer from "@/components/organisms/layout/Footer";
 import PageContainer from "@/components/organisms/layout/PageContainer";
 import { auth } from "@/auth";
 
@@ -38,13 +37,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <MeasurementProvider>
               <Header user={user} />
               <PageContainer>{children}</PageContainer>
-              <Footer
-                links={[
-                  { label: "Privacy Policy", href: "/privacy" },
-                  { label: "Terms of Service", href: "/terms" },
-                  { label: "Contact Us", href: "/contact" },
-                ]}
-              />
             </MeasurementProvider>
           </Providers>
         </div>

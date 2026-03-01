@@ -37,7 +37,7 @@ export default function Header({ user: initialUser, className }: HeaderProps) {
     }
 
     if (!user) {
-      return <Button onClick={() => signIn()}>로그인</Button>;
+      return <Button onClick={() => signIn()}>시작하기</Button>;
     }
 
     return (
@@ -63,7 +63,7 @@ export default function Header({ user: initialUser, className }: HeaderProps) {
     );
   };
 
-  // 로그인 페이지와 캐릭터 선택 페이지에서는 헤더 숨김
+  // 로그인, 캐릭터 선택 페이지에서는 헤더 숨김 (각 페이지에서 자체 네비게이션 사용)
   if (isLoginPage || isCharacterPage) return null;
 
   return (
