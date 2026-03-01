@@ -1,26 +1,26 @@
 {
   "Basic": {
-    "title": "boogiboogi",
+    "title": "BoogiBoogi",
     "user": "User",
-    "description": "Improve forward head posture with measurements and metrics",
-    "usermenu": "User menu"
+    "description": "Improve turtle neck posture with AI metrics",
+    "usermenu": "User Menu"
   },
   "Characters": {
     "remy": {
       "name": "Remy",
-      "description": "Soft, warm, and\nfriendly character"
+      "description": "A soft, warm,\nand friendly character"
     },
     "jerry": {
       "name": "Jerry",
-      "description": "Active, cute, and\nlovely character"
+      "description": "A lively, cute,\nand lovely character"
     },
     "jessica": {
       "name": "Jessica",
-      "description": "Elegant, sophisticated,\nand cool character"
+      "description": "An elegant, sleek,\nand cool character"
     },
     "header": {
-      "title": "Choose your own 3D avatar!",
-      "description": "Pick the character that will appear during measurement"
+      "title": "Choose your 3D character!",
+      "description": "Select a character to be displayed during measurement"
     },
     "buttons": {
       "skip": "Skip",
@@ -29,44 +29,40 @@
   },
   "Estimate": {
     "buttons": {
-      "start": "Start measurement",
-      "stop": "Stop today's measurement"
+      "start": "Start Measuring",
+      "stop": "Stop Today's Measurement"
     },
-    "async": {
-      "suspense": "Tap to start measuring!"
-    }
+    "async": { "suspense": "Please start the measurement!" }
   },
   "Login": {
     "alt": {
       "icon": "Turtle"
     },
     "header": {
-      "title": "boogiboogi",
-      "description": "AI posture correction program"
+      "title": "BoogiBoogi",
+      "description": "AI Posture Correction Program"
     },
-    "body": {
-      "recommendation": "Take the first step toward improving your forward head posture."
-    }
+    "body": { "recommendation": "Start managing your posture now" }
   },
   "NotFound": {
-    "description": "We can't find that page",
-    "message": "Even the turtle got lost. Let's head back together.",
-    "button": "Back to home"
+    "description": "Page Not Found",
+    "message": "Even the turtle is lost. Let's go back together.",
+    "button": "Back to Home"
   },
   "Calendar": {
     "month": {
-      "1": "January",
-      "2": "February",
-      "3": "March",
-      "4": "April",
+      "1": "Jan",
+      "2": "Feb",
+      "3": "Mar",
+      "4": "Apr",
       "5": "May",
-      "6": "June",
-      "7": "July",
-      "8": "August",
-      "9": "September",
-      "10": "October",
-      "11": "November",
-      "12": "December"
+      "6": "Jun",
+      "7": "Jul",
+      "8": "Aug",
+      "9": "Sep",
+      "10": "Oct",
+      "11": "Nov",
+      "12": "Dec"
     },
     "day": {
       "1": "Sun",
@@ -78,24 +74,24 @@
       "7": "Sat"
     },
     "buttons": {
-      "previous": "Previous month",
-      "next": "Next month"
+      "previous": "Prev",
+      "next": "Next"
     },
-    "good": "Good day",
-    "bad": "High warning day"
+    "good": "Good Posture",
+    "bad": "Many Warnings"
   },
   "ErrorFallback": {
-    "title": "Something went wrong",
-    "message": "An unexpected error occurred.",
+    "title": "An error occurred",
+    "message": "An unknown error has occurred.",
     "button": "Refresh",
-    "tryAgain": "Try again"
+    "tryAgain": "Try Again"
   },
   "EstimatePanel": {
-    "message": "Press Start Measurement\nand turn on your camera",
+    "message": "Press the start button\nto turn on the camera",
     "startMeasurementToast": "Starting posture measurement"
   },
   "EvolutionTooltip": {
-    "ariaLabel": "Evolution requirements info"
+    "ariaLabel": "Evolution Requirements"
   },
   "FloatingBar": {
     "title": "Measuring",
@@ -103,7 +99,7 @@
     "stop": "Stop"
   },
   "FriendsButton": {
-    "ariaLabel": "Manage friends"
+    "ariaLabel": "Manage Friends"
   },
   "LoadingSkeleton": {
     "message": "Turning on the camera...",
@@ -114,10 +110,10 @@
     "github": "Continue with GitHub"
   },
   "RecoveryNotice": {
-    "message": "Your last measurement was interrupted",
-    "restart": "Want to restart?",
+    "message": "Previous measurement was interrupted",
+    "restart": "Would you like to resume?",
     "button": {
-      "yes": "Restart",
+      "yes": "Resume",
       "no": "No thanks"
     }
   },
@@ -127,36 +123,322 @@
   "TodayStatusCard": {
     "first_empty": {
       "title": "Welcome!",
-      "message": "Start your first measurement\nand build a healthy posture habit!"
+      "message": "Start your first measurement\nto build healthy posture habits!"
     },
-    "empty": {
-      "title": "You got this!",
-      "message": "Start today's measurement\nand keep a great streak going!"
-    },
-    "excellent": {
-      "title": "You're amazing today!",
-      "message": "Your neck must feel so relieved!"
-    },
-    "normal": {
-      "title": "Almost there—just a bit more!",
-      "message": "Try lifting your chin a little."
-    },
-    "bad": {
-      "title": "That sounds like a tough day",
-      "message": "Give your neck a break today."
-    }
+    "empty": { "title": "Keep it up!", "message": "Start measuring today\nto create a great record!" },
+    "excellent": { "title": "Excellent today!", "message": "Your neck must feel great!" },
+    "normal": { "title": "Need a bit more focus?", "message": "Try to straighten your neck!" },
+    "bad": { "title": "Tough day for your neck", "message": "Please give your neck a rest!" }
   },
   "TurtleEvolutionCard": {
     "stages": {
-      "1st": "Hatchling turtle",
-      "2nd": "Baby turtle",
-      "3rd": "Adult turtle",
+      "1st": "Hatched Turtle",
+      "2nd": "Baby Turtle",
+      "3rd": "Adult Turtle",
       "4th": "Turtle King"
     },
     "message": {
-      "next_stage": "Until the next stage",
+      "next_stage": "Next stage in",
       "day": " day(s) ",
       "left": "left!"
+    }
+  },
+  "FriendList": {
+    "EmptyState": {
+      "message": "No friends yet. Try adding some from search!"
+    },
+    "UserRow": {
+      "unknown": "Unknown"
+    },
+    "IconButton": {
+      "title": "Delete Friend"
+    }
+  },
+  "FriendsModal": {
+    "ModalHeader": {
+      "title": "Manage Friends",
+      "subtitle": "Beat turtle neck with friends!"
+    }
+  },
+  "IncomingRequestList": {
+    "SectionLabel": "Incoming Requests",
+    "EmptyState": {
+      "message": "No incoming requests"
+    },
+    "UserRow": {
+      "name": "Unknown"
+    },
+    "Button": {
+      "yes": "Accept",
+      "no": "Decline"
+    }
+  },
+  "ModalTabBar": {
+    "TabButton": {
+      "search": "Search",
+      "request": "Requests",
+      "friend": "Friends"
+    }
+  },
+  "OutgoingRequestList": {
+    "SectionLabel": "Sent Requests",
+    "EmptyState": {
+      "message": "No sent requests"
+    },
+    "UserRow": {
+      "name": "Unknown"
+    },
+    "Chip": "Pending",
+    "Button": "Cancel"
+  },
+  "SearchResultList": {
+    "SectionLabel": "Search Results",
+    "EmptyState": {
+      "message_find_friends": "Enter an email to find friends",
+      "message_no_result": "No users found"
+    },
+    "UserRow": {
+      "name": "Unknown",
+      "actions_outgoing": "✓ Requested",
+      "actions_adding": "+ Add"
+    }
+  },
+  "CharacterSelectionModal": {
+    "ModalHeader": {
+      "title": "Change Character",
+      "subtitle": "Select a character to represent you"
+    },
+    "button": {
+      "close": "Close",
+      "confirm": "Confirm"
+    }
+  },
+  "Posture3DCard": {
+    "title": "Your Posture Journey",
+    "statusText": {
+      "good": "Maintaining good posture 👍",
+      "bad": "Give your neck a rest!",
+      "middle": "Need a bit more focus?"
+    },
+    "fivemins_average": "5-min Average Neck Angle"
+  },
+  "SensitivitySettingsModal": {
+    "sens_options": {
+      "low": { "name": "Low", "description": "Alert only for severe slouching" },
+      "normal": { "name": "Normal", "description": "Alert at a moderate level (Recommended)" },
+      "high": {
+        "name": "High",
+        "desc": "Alert even for slight slouching"
+      }
+    },
+    "ModalHeader": {
+      "title": "Sensitivity Settings",
+      "subtitle": "Adjust the posture detection sensitivity"
+    },
+    "button": {
+      "close": "Close",
+      "confirm": "Confirm"
+    }
+  },
+  "WelcomeHero": {
+    "hello": "Hello, {name}!",
+    "title": "Start your day with good posture 🐢",
+    "button": "Start Measurement"
+  },
+  "Header": {
+    "login_button": "Login",
+    "UserButton": {
+      "name": "User"
+    }
+  },
+  "HomeClient": {
+    "HomeData": {
+      "empty": {
+        "label": "No measurement records yet",
+        "value": "Try your first measurement!",
+        "caption": "Your average neck angle will appear here once you start."
+      },
+      "kpi": {
+        "avgAngle": {
+          "label": "Average neck angle today?",
+          "loading": "Loading...",
+          "caption": "Change compared to last 7 days"
+        },
+        "warningCount": {
+          "label": "Posture warnings today",
+          "unit": "times",
+          "caption": "Fewer warnings are better!"
+        },
+        "measurementTime": {
+          "label": "Measurement Time",
+          "emptyValue": "Start measuring now!"
+        },
+        "improvement": {
+          "label": "Improvement Rate"
+        }
+      },
+      "challenge": {
+        "emptyTitle": "Shall we start the first measurement?",
+        "title": "Your Posture Challenge",
+        "description": "Start measuring to see your progress and average angle here.",
+        "cta": "Continue Challenge"
+      }
+    },
+    "improvementText": {
+      "lack_of_data": "Insufficient data",
+      "improve": "Improved",
+      "worse": "Declined"
+    }
+  },
+  "HomeTemplate": {
+    "sections": {
+      "todayStatus": "Today's Status",
+      "measurement": "Measurement"
+    },
+    "kpi": {
+      "measureTime": {
+        "label": "Measurement Time",
+        "defaultTime": "00:00",
+        "status": {
+          "measuring": "Live",
+          "measuring_long": "Currently Measuring",
+          "idle": "Not Measuring"
+        }
+      },
+      "todayWarning": {
+        "label": "Today's Warnings",
+        "unit": "times",
+        "subtitle": "Today"
+      },
+      "cumulativeAvg": {
+        "label": "Total Average",
+        "unit": "°",
+        "idealCompare": "vs Ideal"
+      }
+    },
+    "challenge": {
+      "defaultTitle": "Your Posture Challenge",
+      "defaultDescription": "Start measuring to see your progress\nand average angle here."
+    }
+  },
+  "Landing": {
+    "hero": {
+      "title_line1": "Posture,",
+      "title_highlight": "AI managed",
+      "title_line2": "for you",
+      "description": "Real-time posture measurement and stats with just a webcam.\nExperience the easiest way to maintain a healthy posture.",
+      "buttons": {
+        "start": "Get Started",
+        "more": "Learn More"
+      }
+    },
+    "problem": {
+      "title": "Modern health is threatened\nby frequent computer use",
+      "question": "How can we maintain\ngood posture while working?",
+      "metrics": {
+        "usage": {
+          "title": "5hrs+",
+          "desc": "Avg. daily computer use",
+          "source": "Source: KCC Smartphone & PC Usage Survey"
+        },
+        "prevalence": {
+          "title": "70%",
+          "desc": "Turtle neck prevalence",
+          "source": "Source: KDCA"
+        },
+        "burden": {
+          "title": "15kg+",
+          "desc": "Neck strain from bad posture",
+          "source": "Source: KDCA"
+        }
+      }
+    },
+    "features": {
+      "title": "BoogiBoogi solves it for you",
+      "items": {
+        "webcam": {
+          "title": "Webcam is all you need",
+          "desc": "Real-time measurement with just a front-facing webcam, no extra equipment needed."
+        },
+        "ai": {
+          "title": "AI Real-time Analysis",
+          "desc": "Provides accurate detection by tracking 33 body landmarks via MediaPipe AI."
+        },
+        "stats": {
+          "title": "Stat-based Management",
+          "desc": "Immediately notifies you via sound and alerts when slouching is detected."
+        },
+        "alert": {
+          "title": "Instant Notifications",
+          "desc": "Analyze daily/weekly average neck angles to track changes at a glance."
+        },
+        "privacy": {
+          "title": "Privacy Protected",
+          "desc": "Secure as video data is processed on the client side and never sent to a server."
+        },
+        "platform": {
+          "title": "Platform Independent",
+          "desc": "A web-based solution usable anywhere, anytime, as long as you have a browser."
+        }
+      }
+    },
+    "cta": {
+      "title": "Start right now",
+      "description": "You can start immediately with GitHub or Google",
+      "button": "Get Started"
+    }
+  },
+
+  "Friends": {
+    "Messages": {
+      "loadError": "Failed to load friend data. Please try again in a moment.",
+      "searchError": "Failed to search for users. Please try again in a moment.",
+      "searchProblem": "A problem occurred during user search. Please try again in a moment.",
+      "sendRequestSuccess": " sent a friend request! 🐢",
+      "sendRequestError": "Failed to send friend request.",
+      "sendRequestProblem": "A problem occurred while sending a friend request. Please try again in a moment.",
+      "cancelSuccess": " cancelled the request sent",
+      "cancelError": "Failed to cancel friend request.",
+      "cancelProblem": "A problem occurred while cancelling the friend request. Please try again in a moment.",
+      "acceptSuccess": " is now your friend! 🎉",
+      "acceptError": "Failed to accept friend request.",
+      "acceptProblem": "A problem occurred while accepting the friend request. Please try again in a moment.",
+      "declineSuccess": "Declined the request",
+      "declineError": "Failed to decline friend request.",
+      "declineProblem": "A problem occurred while declining the friend request. Please try again in a moment.",
+      "deleteSuccess": " removed from the friends list",
+      "deleteError": "Failed to delete friend.",
+      "deleteProblem": "A problem occurred while deleting the friend. Please try again in a moment.",
+      "defaultName": "Friend"
+    }
+  },
+  "Measurement": {
+    "Guide": {
+      "initial": "Please move into the guidelines",
+      "tooClose": "You are too close",
+      "tooFar": "You are too far",
+      "good": "Good!",
+      "keepPose": "seconds hold please"
+    },
+    "Status": {
+      "measuring": "Measuring",
+      "warning": "Pull your neck back!",
+      "good": "Maintaining good posture",
+      "stopped": "Measurement stopped"
+    },
+    "Toast": {
+      "started": "Starting posture measurement"
+    },
+    "Error": {
+      "cameraInit": "Error initializing camera.",
+      "noUser": "User information not found."
+    }
+  },
+  "useTurtleNeckTracker": {
+    "distanceMessage": {
+      "close": "Too close. Please step back.",
+      "far": "Too far. Please move forward.",
+      "good": "Perfect distance."
     }
   }
 }
