@@ -63,8 +63,8 @@ export default function Header({ user: initialUser, className }: HeaderProps) {
     );
   };
 
-  // 로그인, 캐릭터 선택, 랜딩 페이지에서는 헤더 숨김 (각 페이지에서 자체 네비게이션 사용)
-  if (isLoginPage || isCharacterPage || isLandingPage) return null;
+  // 로그인, 캐릭터 선택 페이지에서는 헤더 숨김 (각 페이지에서 자체 네비게이션 사용)
+  if (isLoginPage || isCharacterPage) return null;
 
   return (
     <header

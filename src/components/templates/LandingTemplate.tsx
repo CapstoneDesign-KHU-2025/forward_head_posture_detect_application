@@ -51,35 +51,17 @@ export default function LandingTemplate() {
     return () => observer.disconnect();
   }, []);
 
-  const scrollToCta = () => {
-    document.getElementById("cta")?.scrollIntoView({ behavior: "smooth" });
-  };
-
   const scrollToHow = () => {
     document.getElementById("how")?.scrollIntoView({ behavior: "smooth" });
   };
 
   return (
     <div className="min-h-screen bg-[var(--green-pale)] text-[var(--text)] overflow-x-clip">
-      {/* NAVBAR */}
-      <nav className="fixed top-0 left-0 right-0 z-[100] flex items-center justify-between px-6 md:px-12 h-16 bg-[rgba(244,250,246,0.85)] backdrop-blur-[12px] border-b border-[var(--green-border)]">
-        <div
-          className="font-[Nunito] font-black text-xl bg-gradient-to-br from-[var(--green-dark)] to-[var(--green-mid)] bg-clip-text text-transparent"
-          style={{ fontFamily: "Nunito, sans-serif" }}
-        >
-          🐢 거북목 거북거북!
-        </div>
-        <button
-          type="button"
-          onClick={scrollToCta}
-          className="bg-[var(--green)] text-white border-none rounded-xl py-2 px-5 text-sm font-bold cursor-pointer transition-all duration-200 hover:bg-[var(--green-dark)] hover:-translate-y-0.5"
-        >
-          시작하기 →
-        </button>
-      </nav>
-
       {/* HERO */}
-      <section className="min-h-screen flex items-center justify-center pt-16 relative overflow-hidden">
+      <section
+        className="flex items-center justify-center relative overflow-hidden"
+        style={{ minHeight: "calc(100vh - var(--header-height))" }}
+      >
         <div className="max-w-[1080px] mx-auto grid grid-cols-1 lg:grid-cols-2 items-center gap-12 lg:gap-16 px-6 relative z-10">
           <div>
             <h1

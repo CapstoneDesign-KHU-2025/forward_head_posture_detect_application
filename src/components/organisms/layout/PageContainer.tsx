@@ -11,11 +11,9 @@ export default function PageContainer({ children }: PageContainerProps) {
   const pathname = usePathname();
   const isLoginPage = pathname === "/login";
   const isCharacterPage = pathname === "/character";
-  const isLandingPage = pathname === "/landing";
 
-  // 로그인 페이지, 캐릭터 선택 페이지, 랜딩 페이지를 제외한 모든 페이지에
-  // fixed 헤더 높이만큼 상단 패딩을 준다.
-  if (isLoginPage || isCharacterPage || isLandingPage) {
+  // 로그인 페이지, 캐릭터 선택 페이지를 제외한 모든 페이지에 fixed 헤더 높이만큼 상단 패딩을 준다.
+  if (isLoginPage || isCharacterPage) {
     return <div className="flex min-h-0 w-full flex-1 flex-col overflow-y-auto">{children}</div>;
   }
 
