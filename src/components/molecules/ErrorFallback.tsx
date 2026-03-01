@@ -1,14 +1,14 @@
 "use client";
 
 import { FallbackProps } from "react-error-boundary";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/navigation";
 import { startTransition } from "react";
 
 export default function ErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
   const router = useRouter();
 
   return (
-    <div 
+    <div
       className="w-full h-full flex flex-col items-center justify-center bg-[#2C3E50] text-white p-6 rounded-[20px]"
       style={{ aspectRatio: "4/3" }}
     >
@@ -17,7 +17,7 @@ export default function ErrorFallback({ error, resetErrorBoundary }: FallbackPro
       <p className="text-sm text-gray-300 mb-6 text-center max-w-[80%] break-keep">
         {(error as Error)?.message || "알 수 없는 오류가 발생했습니다."}
       </p>
-      
+
       <div className="flex gap-3">
         <button
           onClick={() => {

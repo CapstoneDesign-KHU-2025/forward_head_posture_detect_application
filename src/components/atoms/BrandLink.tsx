@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@/navigation";
 import { usePathname } from "next/navigation";
 import { Icon } from "@/components/atoms/Icon";
 import { cn } from "@/utils/cn";
@@ -12,12 +12,7 @@ type BrandLinkProps = {
   className?: string;
 };
 
-export function BrandLink({
-  href = "/",
-  icon,
-  label,
-  className,
-}: BrandLinkProps) {
+export function BrandLink({ href = "/", icon, label, className }: BrandLinkProps) {
   const pathname = usePathname();
 
   const handleClick = (e: React.MouseEvent) => {
@@ -34,19 +29,14 @@ export function BrandLink({
       className={cn(
         "inline-flex items-center gap-2 select-none",
         "focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--green)] focus-visible:ring-offset-2 ring-offset-white",
-        className
+        className,
       )}
       aria-label={`${label} home`}
       style={{ textDecoration: "none" }}
     >
-      <Icon size="lg">
-        {icon}
-      </Icon>
+      <Icon size="lg">{icon}</Icon>
 
-      <span
-        className="text-[20px] font-extrabold text-[var(--green)]"
-        style={{ fontFamily: "Nunito, sans-serif" }}
-      >
+      <span className="text-[20px] font-extrabold text-[var(--green)]" style={{ fontFamily: "Nunito, sans-serif" }}>
         {label}
       </span>
     </Link>
