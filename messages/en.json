@@ -1,0 +1,24 @@
+{
+  "Characters": {
+    "remy": {
+      "name": "Remy",
+      "description": "Soft, warm, and\nfriendly character"
+    },
+    "jerry": {
+      "name": "Jerry",
+      "description": "Active, cute, and\nlovely character"
+    },
+    "jessica": {
+      "name": "Jessica",
+      "description": "Elegant, sophisticated,\nand cool character"
+    },
+    "header": {
+      "title": "Choose your own 3D avatar!",
+      "description": "Pick the character that will show your posture"
+    },
+    "buttons": {
+      "skip": "skip",
+      "done": "next"
+    }
+  }
+}

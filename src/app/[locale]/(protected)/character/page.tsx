@@ -4,27 +4,15 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/atoms/Button";
 import CharacterGrid from "@/components/molecules/CharacterGrid";
-const characters = [
-  {
-    id: "remy",
-    icon: "/icons/remy.png",
-    name: "래미",
-    description: "부드럽고 따뜻한\n친근한 캐릭터",
-  },
-  {
-    id: "jerry",
-    icon: "/icons/cat.png",
-    name: "제리",
-    description: "활발하고 귀여운\n사랑스러운 캐릭터",
-  },
-  {
-    id: "jessica",
-    icon: "/icons/girl.png",
-    name: "제시카",
-    description: "우아하고 세련된\n멋진 캐릭터",
-  },
+import { useTranslations } from "next-intl";
+
+const CHARACTER_ASSETS = [
+  { id: "remy", icon: "/icons/remy.png" },
+  { id: "jerry", icon: "/icons/cat.png" },
+  { id: "jessica", icon: "/icons/girl.png" },
 ];
 export default function CharacterSelectionPage() {
+  const t = useTranslations("Characters");
   const [selectedCharacter, setSelectedCharacter] = useState<string | null>(null);
   const router = useRouter();
 
@@ -67,15 +55,19 @@ export default function CharacterSelectionPage() {
         {/* 헤더 */}
         <div className="text-center mb-12">
           <div className="text-[3rem] mb-4 animate-bounce">🐢</div>
-          <h1 className="text-[2rem] text-[#2D5F2E] mb-2 font-bold">나만의 3D 캐릭터를 선택하세요!</h1>
-          <p className="text-[1.1rem] text-[#4F4F4F]">측정 중 화면에 표시될 캐릭터를 골라주세요</p>
+          <h1 className="text-[2rem] text-[#2D5F2E] mb-2 font-bold">{t("header.title")}</h1>
+          <p className="text-[1.1rem] text-[#4F4F4F]">{t("header.description")}</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12 max-w-[900px] mx-auto">
-          {characters.map((character) => (
+          {CHARACTER_ASSETS.map((character) => (
             <CharacterGrid
               key={character.id}
-              characterObject={character}
+              characterObject={{
+                ...character,
+                name: t(`${character.id}.name`),
+                description: t(`${character.id}.description`),
+              }}
               handleGridClick={() => handleCharacterSelect(character.id)}
               selectedCharacterId={selectedCharacter}
             />
@@ -88,7 +80,7 @@ export default function CharacterSelectionPage() {
             onClick={handleSkip}
             className="px-12 py-4 text-[1.1rem] font-semibold border-2 border-[#2D5F2E]"
           >
-            건너뛰기
+            {t("buttons.skip")}
           </Button>
           <Button
             variant="primary"
@@ -97,7 +89,7 @@ export default function CharacterSelectionPage() {
             className="px-12 py-4 text-[1.1rem] font-semibold disabled:bg-[#9CA3AF] disabled:cursor-not-allowed disabled:hover:bg-[#9CA3AF] disabled:hover:transform-none disabled:shadow-none"
             style={!selectedCharacter ? {} : { boxShadow: "0 4px 15px rgba(45, 95, 46, 0.3)" }}
           >
-            선택 완료
+            {t("buttons.done")}
           </Button>
         </div>
       </div>

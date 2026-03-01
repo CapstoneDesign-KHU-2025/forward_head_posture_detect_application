@@ -1,0 +1,24 @@
+{
+  "Characters": {
+    "remy": {
+      "name": "래미",
+      "description": "부드럽고 따뜻한\n친근한 캐릭터"
+    },
+    "jerry": {
+      "name": "제리",
+      "description": "활발하고 귀여운\n사랑스러운 캐릭터"
+    },
+    "jessica": {
+      "name": "제시카",
+      "description": "우아하고 세련된\n멋진 캐릭터"
+    },
+    "header": {
+      "title": "나만의 3D 캐릭터를 선택하세요!",
+      "description": "측정 중 화면에 표시될 캐릭터를 골라주세요"
+    },
+    "buttons": {
+      "skip": "건너뛰기",
+      "done": "선택 완료"
+    }
+  }
+}

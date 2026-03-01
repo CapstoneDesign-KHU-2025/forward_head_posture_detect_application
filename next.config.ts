@@ -1,6 +1,8 @@
 import { withSentryConfig } from "@sentry/nextjs";
 import type { NextConfig } from "next";
+import createNextIntlPlugin from "next-intl/plugin";
 
+const withNextIntl = createNextIntlPlugin();
 const nextConfig: NextConfig = {
   webpack: (config) => {
     // 일부 Node.js 내장 모듈 참조 막기
@@ -10,8 +12,8 @@ const nextConfig: NextConfig = {
     return config;
   },
 };
-
-export default withSentryConfig(nextConfig, {
+const nextConfigWithIntl = withNextIntl(nextConfig);
+export default withSentryConfig(nextConfigWithIntl, {
   // For all available options, see:
   // https://www.npmjs.com/package/@sentry/webpack-plugin#options
 
