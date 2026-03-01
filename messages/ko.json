@@ -2,7 +2,8 @@
   "Basic": {
     "title": "부기부기",
     "user": "사용자",
-    "description": "자세 측정/지표로 거북목 개선하기"
+    "description": "자세 측정/지표로 거북목 개선하기",
+    "usermenu": "사용자 메뉴"
   },
   "Characters": {
     "remy": {
@@ -47,5 +48,99 @@
     "description": "페이지를 찾을 수 없어요",
     "message": "거북이도 길을 잃었어요. 함께 돌아가요.",
     "button": "홈으로 돌아가기"
+  },
+  "Calendar": {
+    "month": {
+      "1": "1월",
+      "2": "2월",
+      "3": "3월",
+      "4": "4월",
+      "5": "5월",
+      "6": "6월",
+      "7": "7월",
+      "8": "8월",
+      "9": "9월",
+      "10": "10월",
+      "11": "11월",
+      "12": "12월"
+    },
+    "day": {
+      "1": "일",
+      "2": "월",
+      "3": "화",
+      "4": "수",
+      "5": "목",
+      "6": "금",
+      "7": "토"
+    },
+    "buttons": {
+      "previous": "이전 달",
+      "next": "다음 달"
+    },
+    "good": "양호한 날",
+    "bad": "경고 많은 날"
+  },
+  "ErrorFallback": {
+    "title": "오류가 발생했습니다",
+    "message": "알 수 없는 오류가 발생했습니다.",
+    "button": "새로고침",
+    "tryAgain": "다시 시도"
+  },
+  "EstimatePanel": {
+    "message": "측정 시작하기 버튼을 눌러\n카메라를 켜주세요",
+    "startMeasurementToast": "거북목 측정을 시작합니다"
+  },
+  "EvolutionTooltip": {
+    "ariaLabel": "진화 조건 안내"
+  },
+  "FloatingBar": {
+    "title": "측정 중",
+    "elapsedTime": "경과",
+    "stop": "중단"
+  },
+  "FriendsButton": {
+    "ariaLabel": "친구 관리"
+  },
+  "LoadingSkeleton": {
+    "message": "카메라를 켜고 있습니다...",
+    "description": "잠시만 기다려주세요"
+  },
+  "OauthButton": {
+    "google": "Google로 시작하기",
+    "github": "GitHub로 시작하기"
+  },
+  "RecoveryNotice": {
+    "message": "이전 측정이 중단됐어요",
+    "restart": "다시 시작할까요?",
+    "button": {
+      "yes": "다시 시작",
+      "no": "괜찮아요"
+    }
+  },
+  "SearchInput": {
+    "placeholder": "이메일로 친구를 검색해보세요..."
+  },
+  "TodayStatusCard": {
+    "first_empty": {
+      "title": "환영합니다!",
+      "message": "첫 측정을 시작해서\n건강한 자세 습관을 만들어보세요!"
+    },
+    "empty": { "title": "오늘도 화이팅!", "message": "오늘의 측정을 시작해서\n좋은 기록을 만들어보세요!" },
+    "excellent": { "title": "오늘은 최고예요!", "message": "목이 시원하시겠어요!" },
+    "normal": { "title": "조금만 더 신경 써볼까요?", "message": "목을 좀 펴주세요!" },
+    "bad": { "title": "오늘은 많이 힘드시겠어요", "message": "목을 쉬게 해주세요!" }
+  },
+  "TurtleEvolutionCard": {
+    "stages": {
+      "1st": "알에서 깬 거북이",
+      "2nd": "아기 거북이",
+      "3rd": "성인 거북이",
+      "4th": "거북왕"
+    },
+    "message": {
+      "next_stage": "다음 단계까지",
+      "day": "일 ",
+      "left": "남았어요!"
+    }
   }
 }

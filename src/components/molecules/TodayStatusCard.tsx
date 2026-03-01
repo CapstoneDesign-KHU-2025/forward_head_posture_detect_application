@@ -1,12 +1,11 @@
-"use client";
-
 import { Card } from "@/components/atoms/Card";
-
+import { getTranslations } from "next-intl/server";
 type StatusType = "excellent" | "normal" | "bad" | "empty";
 
+const t = await getTranslations("TodayStatusCard");
 type TodayStatusCardProps = {
-  warningCount?: number | null; // null이면 데이터 없음
-  isNewUser?: boolean; // true: 완전 신규, false: 오늘 첫 방문 (기존 사용자)
+  warningCount?: number | null;
+  isNewUser?: boolean;
 };
 
 type StatusInfo = {
@@ -17,47 +16,43 @@ type StatusInfo = {
 };
 
 function getStatusInfo(warningCount: number | null | undefined, isNewUser: boolean = false): StatusInfo {
-  // warningCount가 null이거나 undefined면 오늘 데이터 없음
   if (warningCount === null || warningCount === undefined) {
     if (isNewUser === true) {
-      // 완전 신규 사용자 (localStorage에 hasEverMeasured가 없음)
       return {
         emoji: "👋",
-        title: "환영합니다!",
-        message: '"첫 측정을 시작해서\n건강한 자세 습관을 만들어보세요!"',
+        title: t("first_empty.title"),
+        message: t("first_empty.message"),
         statusClass: "empty",
       };
     } else {
-      // 오늘 첫 방문 (기존 사용자지만 오늘은 아직 측정 안 함)
       return {
         emoji: "☀️",
-        title: "오늘도 화이팅!",
-        message: '"오늘의 측정을 시작해서\n좋은 기록을 만들어보세요!"',
+        title: t("empty.title"),
+        message: t("empty.message"),
         statusClass: "empty",
       };
     }
   }
 
-  // 경고 횟수에 따른 상태 분류
   if (warningCount <= 10) {
     return {
       emoji: "🎉",
-      title: "오늘은 최고예요!",
-      message: '"목이 시원하시겠어요!"',
+      title: t("excellent.title"),
+      message: t("excellent.message"),
       statusClass: "excellent",
     };
   } else if (warningCount <= 20) {
     return {
       emoji: "😐",
-      title: "조금만 더 신경 써볼까요?",
-      message: '"목을 좀 펴주세요!"',
+      title: t("normal.title"),
+      message: t("normal.message"),
       statusClass: "normal",
     };
   } else {
     return {
       emoji: "😰",
-      title: "오늘은 많이 힘드시겠어요",
-      message: '"목을 쉬게 해주세요!"',
+      title: t("bad.title"),
+      message: t("bad.message"),
       statusClass: "bad",
     };
   }

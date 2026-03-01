@@ -1,6 +1,8 @@
-export default function LoadingSkeleton() {
+import { getTranslations } from "next-intl/server";
+export default async function LoadingSkeleton() {
+  const t = await getTranslations("LoadingSkeleton");
   return (
-    <div 
+    <div
       role="status"
       aria-live="polite"
       className="w-full h-full flex flex-col items-center justify-center bg-[#2C3E50] text-white rounded-[20px]"
@@ -8,11 +10,11 @@ export default function LoadingSkeleton() {
     >
       {/* 뱅글뱅글 도는 스피너 */}
       <div className="animate-spin rounded-full h-12 w-12 border-4 border-white/20 border-t-[#4A9D4D] mb-6"></div>
-      
+
       {/* 텍스트 */}
       <div className="flex flex-col items-center">
-        <p className="text-lg font-bold">📷 카메라를 켜고 있습니다...</p>
-        <p className="text-sm text-gray-400 mt-2">잠시만 기다려주세요</p>
+        <p className="text-lg font-bold">📷 {t("LoadingSkeleton.message")}</p>
+        <p className="text-sm text-gray-400 mt-2"> </p>
       </div>
     </div>
   );

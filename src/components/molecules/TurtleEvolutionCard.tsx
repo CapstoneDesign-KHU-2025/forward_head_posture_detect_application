@@ -1,18 +1,16 @@
-"use client";
-
 import { Card } from "@/components/atoms/Card";
 import EvolutionTooltip from "@/components/molecules/EvolutionTooltip";
 import { cn } from "@/utils/cn";
-
+import { getTranslations } from "next-intl/server";
 type TurtleEvolutionCardProps = {
   goodDays: number;
 };
-
+const t = await getTranslations("TurtleEvolutionCard");
 const STAGES = [
-  { emoji: "🥚", label: "알에서 깬 거북이" },
-  { emoji: "🐣", label: "아기 거북이" },
-  { emoji: "🐢", label: "성인 거북이" },
-  { emoji: "👑", label: "거북왕" },
+  { emoji: "🥚", label: t("stages.1st") },
+  { emoji: "🐣", label: t("stages.2nd") },
+  { emoji: "🐢", label: t("stages.3rd") },
+  { emoji: "👑", label: t("stages.4th") },
 ] as const;
 
 const DAYS_PER_STAGE = 10;
@@ -27,10 +25,7 @@ export default function TurtleEvolutionCard({ goodDays }: TurtleEvolutionCardPro
     <Card className="flex flex-1 min-h-0 flex-col px-6 py-4">
       {/* 헤더: 제목 + 툴팁 */}
       <div className="flex items-center gap-2 flex-shrink-0">
-        <h2
-          className="text-[18px] font-extrabold text-[var(--text)]"
-          style={{ fontFamily: "Nunito, sans-serif" }}
-        >
+        <h2 className="text-[18px] font-extrabold text-[var(--text)]" style={{ fontFamily: "Nunito, sans-serif" }}>
           거북이 진화
         </h2>
         <EvolutionTooltip text="경고 10회 이하인 날 10일마다 진화!" />
@@ -49,23 +44,18 @@ export default function TurtleEvolutionCard({ goodDays }: TurtleEvolutionCardPro
           {STAGES.map((stage, i) => {
             const isActive = i === currentStageIndex;
             const isLocked = i > currentStageIndex;
-            const progressPct = i < currentStageIndex ? 100 : i === currentStageIndex ? (daysInCurrentStage / DAYS_PER_STAGE) * 100 : 0;
+            const progressPct =
+              i < currentStageIndex ? 100 : i === currentStageIndex ? (daysInCurrentStage / DAYS_PER_STAGE) * 100 : 0;
             return (
               <div key={i} className="flex items-center gap-0">
                 <div
                   className={cn(
                     "w-8 h-8 rounded-full flex items-center justify-center text-base border-2 transition-all",
-                    isActive &&
-                      "bg-[var(--green)] border-[var(--green)] text-white",
+                    isActive && "bg-[var(--green)] border-[var(--green)] text-white",
                     isLocked && "opacity-35 grayscale bg-[var(--green-light)] border-[var(--green-border)]",
-                    !isActive && !isLocked &&
-                      "bg-[var(--green-light)] border-[var(--green-border)]"
+                    !isActive && !isLocked && "bg-[var(--green-light)] border-[var(--green-border)]",
                   )}
-                  style={
-                    isActive
-                      ? { boxShadow: "0 4px 10px rgba(74,124,89,0.35)" }
-                      : undefined
-                  }
+                  style={isActive ? { boxShadow: "0 4px 10px rgba(74,124,89,0.35)" } : undefined}
                   title={stage.label}
                 >
                   {stage.emoji}
@@ -77,9 +67,7 @@ export default function TurtleEvolutionCard({ goodDays }: TurtleEvolutionCardPro
                       style={{
                         width: `${progressPct}%`,
                         background:
-                          progressPct > 0
-                            ? "linear-gradient(90deg, var(--green-mid), var(--green))"
-                            : undefined,
+                          progressPct > 0 ? "linear-gradient(90deg, var(--green-mid), var(--green))" : undefined,
                       }}
                     />
                   </div>
@@ -90,7 +78,11 @@ export default function TurtleEvolutionCard({ goodDays }: TurtleEvolutionCardPro
         </div>
         {currentStageIndex < 3 && (
           <p className="text-[12px] font-semibold text-[var(--text-muted)] mt-2 flex-shrink-0">
-            다음 단계까지 <strong className="text-[var(--green)]">{daysToNext}일</strong> 남았어요! · {daysInCurrentStage} / {DAYS_PER_STAGE}일
+            {t("message.next_stage")}{" "}
+            <strong className="text-[var(--green)]">
+              {daysToNext} {t("message.day")}
+            </strong>
+            {t("message.left")}· {daysInCurrentStage} / {DAYS_PER_STAGE} {t("message.day")}
           </p>
         )}
       </div>

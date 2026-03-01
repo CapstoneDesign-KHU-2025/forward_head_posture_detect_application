@@ -4,7 +4,7 @@ import { getDailySummaryAction } from "../actions/summaryActions";
 import HomeClient, { WeeklySummaryData } from "@/components/templates/HomeClient";
 import { getTranslations } from "next-intl/server";
 type Props = {
-  params: Promise<{ locale: string }>;
+  params: { locale: string };
 };
 
 export default async function Page({ params }: Props) {

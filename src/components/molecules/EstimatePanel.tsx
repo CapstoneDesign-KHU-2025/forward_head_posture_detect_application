@@ -3,6 +3,7 @@
 import { StatusBannerType } from "@/hooks/useTurtleNeckMeasurement";
 import { useEffect, useState } from "react";
 import LoadingSkeleton from "@/components/molecules/LoadingSkeleton";
+import { useTranslations } from "next-intl";
 
 type EstimatePanelProps = {
   bannerType: StatusBannerType;
@@ -26,7 +27,7 @@ export default function EstimatePanel({
   stopEstimating,
 }: EstimatePanelProps) {
   const [isCameraLoading, setIsCameraLoading] = useState(true);
-
+  const t = useTranslations("EstimatePanel");
   useEffect(() => {
     if (stopEstimating) {
       setIsCameraLoading(true);
@@ -56,14 +57,13 @@ export default function EstimatePanel({
           {bannerMessage}
         </div>
 
-        <div className="relative w-full min-w-0 m-0 rounded-none overflow-hidden bg-[#2C3E50]" style={{ aspectRatio: "4/3" }}>
+        <div
+          className="relative w-full min-w-0 m-0 rounded-none overflow-hidden bg-[#2C3E50]"
+          style={{ aspectRatio: "4/3" }}
+        >
           {stopEstimating ? (
             <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 p-8 text-center">
-              <p className="text-[#aac8b2] text-sm font-medium">
-                측정 시작하기 버튼을 눌러
-                <br />
-                카메라를 켜주세요
-              </p>
+              <p className="text-[#aac8b2] text-sm font-medium">{t("EstimatePanel.message")}</p>
             </div>
           ) : (
             <>
@@ -77,7 +77,7 @@ export default function EstimatePanel({
 
               {showMeasurementStartedToast && (
                 <div className="pointer-events-none absolute left-1/2 top-1/2 z-[1000] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[rgba(64,64,64,0.85)] px-7 py-4 text-center text-[20px] font-bold text-white shadow-[0_10px_30px_rgba(0,0,0,0.35)]">
-                  거북목 측정을 시작합니다
+                  {t("EstimatePanel.startMeasurementToast")}
                 </div>
               )}
 

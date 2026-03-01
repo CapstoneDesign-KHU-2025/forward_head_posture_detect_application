@@ -5,13 +5,34 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Card } from "@/components/atoms/Card";
 import { IconButton } from "@/components/atoms/IconButton";
 import { cn } from "@/utils/cn";
+import { useTranslations } from "next-intl";
+
+const t = useTranslations("Calendar");
 
 const MONTHS_KO = [
-  "1월", "2월", "3월", "4월", "5월", "6월",
-  "7월", "8월", "9월", "10월", "11월", "12월",
+  t("Calendar.month.1"),
+  t("Calendar.month.2"),
+  t("Calendar.month.3"),
+  t("Calendar.month.4"),
+  t("Calendar.month.5"),
+  t("Calendar.month.6"),
+  t("Calendar.month.7"),
+  t("Calendar.month.8"),
+  t("Calendar.month.9"),
+  t("Calendar.month.10"),
+  t("Calendar.month.11"),
+  t("Calendar.month.12"),
 ];
 
-const DAY_LABELS = ["일", "월", "화", "수", "목", "금", "토"];
+const DAY_LABELS = [
+  t("Calendar.day.1"),
+  t("Calendar.day.2"),
+  t("Calendar.day.3"),
+  t("Calendar.day.4"),
+  t("Calendar.day.5"),
+  t("Calendar.day.6"),
+  t("Calendar.day.7"),
+];
 
 function formatDateKey(year: number, month: number, day: number): string {
   return `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
@@ -97,10 +118,7 @@ export function Calendar({ dayStatusMap = {}, className }: CalendarProps) {
   return (
     <Card className={cn("flex h-[270px] flex-shrink-0 flex-col p-[18px] pb-3.5", className)}>
       <div className="mb-3 flex items-center justify-between">
-        <div
-          className="font-extrabold text-[#2d3b35]"
-          style={{ fontFamily: "Nunito, sans-serif", fontSize: "15px" }}
-        >
+        <div className="font-extrabold text-[#2d3b35]" style={{ fontFamily: "Nunito, sans-serif", fontSize: "15px" }}>
           {MONTHS_KO[viewMonth]} {viewYear}
         </div>
         <div className="flex gap-1">
@@ -108,14 +126,14 @@ export function Calendar({ dayStatusMap = {}, className }: CalendarProps) {
             variant="calendar"
             size="xs"
             icon={<ChevronLeft size={12} strokeWidth={2.5} />}
-            ariaLabel="이전 달"
+            ariaLabel={t("Calendar.buttons.previous")}
             onClick={() => moveMonth(-1)}
           />
           <IconButton
             variant="calendar"
             size="xs"
             icon={<ChevronRight size={12} strokeWidth={2.5} />}
-            ariaLabel="다음 달"
+            ariaLabel={t("Calendar.buttons.next")}
             onClick={() => moveMonth(1)}
           />
         </div>
@@ -128,7 +146,7 @@ export function Calendar({ dayStatusMap = {}, className }: CalendarProps) {
             className={cn(
               "flex items-center justify-center py-0.5 text-[9px] font-bold",
               i === 0 && "text-[#e05030]",
-              i !== 0 && "text-[#aac8b2]"
+              i !== 0 && "text-[#aac8b2]",
             )}
           >
             {label}
@@ -146,7 +164,7 @@ export function Calendar({ dayStatusMap = {}, className }: CalendarProps) {
                 isCurrentMonth && "text-[#2d3b35]",
                 todayClass && "rounded-lg bg-[#4a7c59] font-extrabold text-white",
                 !todayClass && status === "good" && "bg-[#d6f0df] text-[#3a6147] font-bold",
-                !todayClass && status === "bad" && "bg-[#fde0d8] text-[#c03020] font-bold"
+                !todayClass && status === "bad" && "bg-[#fde0d8] text-[#c03020] font-bold",
               )}
             >
               {day}
@@ -158,11 +176,11 @@ export function Calendar({ dayStatusMap = {}, className }: CalendarProps) {
       <div className="mt-2 flex gap-3 border-t border-[#d4ead9] pt-2">
         <div className="flex items-center gap-1 text-[10px] text-[#aac8b2]">
           <div className="h-2.5 w-2.5 rounded-[3px] bg-[#d6f0df]" />
-          양호한 날
+          {t("Calendar.good")}
         </div>
         <div className="flex items-center gap-1 text-[10px] text-[#aac8b2]">
           <div className="h-2.5 w-2.5 rounded-[3px] bg-[#fde0d8]" />
-          경고 많은 날
+          {t("Calendar.bad")}
         </div>
       </div>
     </Card>

@@ -1,11 +1,13 @@
+"use client";
 import { logger } from "@/lib/logger";
 import { signIn } from "next-auth/react";
-
+import { useTranslations } from "next-intl";
 type OauthButtonProps = {
   provider: "google" | "github";
 };
 
-export default function OauthButton({ provider }: OauthButtonProps) {
+export default async function OauthButton({ provider }: OauthButtonProps) {
+  const t = useTranslations("OauthButton");
   const handleSignIn = async (provider: "github" | "google") => {
     try {
       await signIn(provider, {
@@ -47,7 +49,7 @@ export default function OauthButton({ provider }: OauthButtonProps) {
       </svg>
     );
 
-  const buttonTitle = provider === "google" ? "Google로 시작하기" : "GitHub로 시작하기";
+  const buttonTitle = provider === "google" ? t("OauthButton.google") : t("OauthButton.github");
   return (
     <button
       onClick={provider === "google" ? () => handleSignIn("google") : () => handleSignIn("github")}

@@ -1,16 +1,18 @@
 "use client";
-
+import { useTranslations } from "next-intl";
 type EvolutionTooltipProps = {
   text: string;
   ariaLabel?: string;
 };
 
-export default function EvolutionTooltip({ text, ariaLabel = "진화 조건 안내" }: EvolutionTooltipProps) {
+export default function EvolutionTooltip({ text, ariaLabel }: EvolutionTooltipProps) {
+  const t = useTranslations("EvolutionTooltip");
+  const ariaLabelText = ariaLabel || t("EvolutionTooltip.ariaLabel");
   return (
     <div className="group relative inline-flex items-center self-center">
       <div
         className="w-4 h-4 rounded-full bg-[var(--green-light)] text-[var(--green)] text-[10px] font-extrabold flex items-center justify-center cursor-default border border-[var(--green-border)]"
-        aria-label={ariaLabel}
+        aria-label={ariaLabelText}
       >
         ?
       </div>
