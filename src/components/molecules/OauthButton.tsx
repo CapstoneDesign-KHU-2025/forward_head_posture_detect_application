@@ -4,7 +4,6 @@ import { signIn } from "next-auth/react";
 
 type OauthButtonProps = {
   provider: "google" | "github";
-  /** 로그인 페이지용 그린 테마 스타일 */
   variant?: "default" | "login";
 };
 
