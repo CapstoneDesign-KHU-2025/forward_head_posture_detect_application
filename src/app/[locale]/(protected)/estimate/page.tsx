@@ -44,7 +44,7 @@ export default function Estimate() {
           suspenseFallback={
             <section className="bg-white rounded-[20px] overflow-hidden shadow-[0_4px_30px_rgba(45,95,46,0.1)] w-full max-w-[600px] min-w-0 mx-auto">
               <div className="w-full px-8 py-4 text-center text-[1.1rem] font-semibold rounded-t-[20px] bg-gradient-to-r from-[#6B7280] to-[#9CA3AF] text-white">
-                t("async.suspense")
+                {t("async.suspense")}
               </div>
               <div
                 className="relative w-full min-w-0 rounded-none overflow-hidden bg-[#2C3E50]"

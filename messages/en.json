@@ -20,5 +20,12 @@
       "skip": "skip",
       "done": "next"
     }
+  },
+  "Estimate": {
+    "buttons": {
+      "start": "start estimating",
+      "stop": "stop estimating"
+    },
+    "async": { "suspense": "please start estimating!" }
   }
 }

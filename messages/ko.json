@@ -27,5 +27,15 @@
       "stop": "오늘의 측정 중단하기"
     },
     "async": { "suspense": "측정을 시작해주세요!" }
+  },
+  "Login": {
+    "alt": {
+      "icon": "거북이"
+    },
+    "header": {
+      "title": "부기부기",
+      "description": "AI 자세 교정 프로그램"
+    },
+    "body": { "recommendation": "거북목 관리를 시작해보세요" }
   }
 }
