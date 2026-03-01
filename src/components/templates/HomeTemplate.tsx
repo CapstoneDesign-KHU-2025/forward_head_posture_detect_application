@@ -6,6 +6,7 @@ import TodayStatusCard from "@/components/molecules/TodayStatusCard";
 import TurtleEvolutionCard from "@/components/molecules/TurtleEvolutionCard";
 import { formatMeasuredTime } from "@/utils/formatMeasuredTime";
 import AsyncBoundary from "@/components/molecules/AsyncBoundary";
+import LoadingSkeleton from "../molecules/LoadingSkeleton";
 
 type KPIItem = {
   label: string;
@@ -90,10 +91,10 @@ export default function HomeTemplate({
 
           {/* 배너 컬럼: 오늘도 화이팅 + StatCards */}
           <div className="min-w-0 flex h-full flex-col gap-3.5 min-h-0">
-              <AsyncBoundary suspenseFallback={<LoadingSkeleton />}>
+              <AsyncBoundary suspenseFallback={null}>
                 <TodayStatusCard warningCount={warningCount} isNewUser={isNewUser} />
               </AsyncBoundary>
-              <AsyncBoundary suspenseFallback={<LoadingSkeleton />}>
+              <AsyncBoundary suspenseFallback={null}>
                 <div className="flex flex-wrap gap-3.5 flex-shrink-0">
                   <div className="flex-1 min-w-[140px]">
                   {measureTimeKpi && typeof measureTimeKpi.value === "number" && measureTimeKpi.value > 0 ? (
@@ -164,7 +165,7 @@ export default function HomeTemplate({
         {/* 우측 패널: 캘린더 + 진화 카드 */}
         <div className="w-full lg:w-[340px] flex-shrink-0 flex flex-col gap-3.5 min-h-0">
           <Calendar dayStatusMap={dayStatusMap} />
-          <AsyncBoundary suspenseFallback={<LoadingSkeleton />}>
+          <AsyncBoundary suspenseFallback={null}>
             <TurtleEvolutionCard goodDays={goodDays} />
           </AsyncBoundary>
         </div>
