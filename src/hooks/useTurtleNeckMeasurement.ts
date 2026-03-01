@@ -10,6 +10,7 @@ import { getStatusBannerMessageCore, getStatusBannerTypeCore } from "@/utils/get
 import { checkGuidelinesAndDistance, Pose } from "@/utils/checkGuidelinesAndDistance";
 import { drawGuidelines } from "@/utils/drawGuidelines";
 import { startBeep, stopBeep } from "@/utils/manageBeep";
+import { useTranslations } from "next-intl";
 type GuideColor = "green" | "red" | "orange";
 export type StatusBannerType = "success" | "warning" | "info";
 
@@ -23,7 +24,7 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating, isInitial }: 
   // === DOM refs (외부에서 써야 해서 반환 예정) ===
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-
+  const t = useTranslations("Measurement");
   // === 내부 제어용 refs (훅 안에 숨김) ===
   const landmarkerRef = useRef<PoseLandmarker | null>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -291,15 +292,15 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating, isInitial }: 
 
           // --- 측정 시작 전: 가이드 + 카운트다운 ---
           if (!measuringRef.current) {
-            nextGuideMessage = "가이드라인 안으로 들어오세요";
+            nextGuideMessage = t("Guide.initial");
             nextGuideColor = "red";
 
             if (!isDistanceOk) {
               if (distanceRatio >= tooCloseThreshold) {
-                nextGuideMessage = "너무 가까워요";
+                nextGuideMessage = t("Guide.tooClose");
                 nextGuideColor = "orange";
               } else if (distanceRatio <= tooFarThreshold) {
-                nextGuideMessage = "너무 멀어요";
+                nextGuideMessage = t("Guide.tooFar");
                 nextGuideColor = "orange";
               }
               countdownStartRef.current = null;
@@ -365,7 +366,7 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating, isInitial }: 
                   baselineBufferRef.current = [];
                 }
               } else {
-                nextGuideMessage = `좋아요! ${nextCountdownRemain}초 유지하세요`;
+                nextGuideMessage = `${t("Guide.good")} ${nextCountdownRemain}${t("Guide.keepPose")}`;
                 nextGuideColor = "green";
               }
             } else {
@@ -423,7 +424,7 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating, isInitial }: 
         // 초기 루프 시작
         intervalRef.current = setInterval(loop, getInterval());
       } catch (e: any) {
-        setError(e?.message ?? "카메라 초기화 중 오류가 발생했습니다.");
+        setError(e?.message ?? t("Error.cameraInit"));
       }
     })();
 
@@ -460,7 +461,7 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating, isInitial }: 
     measuringRef.current = false;
     countdownStartRef.current = null;
     lastGuideMessageRef.current = null;
-    setGuideMessage("가이드라인 안으로 들어오세요");
+    setGuideMessage(t("Guide.initial"));
     setGuideColor("red");
     setMeasurementStarted(false);
     setCountdownRemain(null);

@@ -391,5 +391,58 @@
       "description": "GitHub 또는 Google 계정으로 바로 시작할 수 있습니다",
       "button": "시작하기"
     }
+  },
+
+  "Friends": {
+    "Messages": {
+      "loadError": "친구 데이터를 불러오지 못했어요. 잠시 후 다시 시도해주세요.",
+      "searchError": "사용자 검색에 실패했어요. 잠시 후 다시 시도해주세요.",
+      "searchProblem": "사용자 검색 중 문제가 발생했어요. 잠시 후 다시 시도해주세요.",
+      "sendRequestSuccess": "님께 친구 요청을 보냈어요! 🐢",
+      "sendRequestError": "친구 요청을 보내지 못했어요.",
+      "sendRequestProblem": "친구 요청 중 문제가 발생했어요. 잠시 후 다시 시도해주세요.",
+      "cancelSuccess": "님께 보낸 요청을 취소했어요",
+      "cancelError": "친구 요청을 취소하지 못했어요.",
+      "cancelProblem": "친구 요청을 취소하는 중 문제가 발생했어요. 잠시 후 다시 시도해주세요.",
+      "acceptSuccess": "님과 친구가 됐어요! 🎉",
+      "acceptError": "친구 요청 수락에 실패했어요.",
+      "acceptProblem": "친구 요청을 수락하는 중 문제가 발생했어요. 잠시 후 다시 시도해주세요.",
+      "declineSuccess": "요청을 거절했어요",
+      "declineError": "친구 요청 거절에 실패했어요.",
+      "declineProblem": "친구 요청을 거절하는 중 문제가 발생했어요. 잠시 후 다시 시도해주세요.",
+      "deleteSuccess": "님을 친구 목록에서 삭제했어요",
+      "deleteError": "친구 삭제에 실패했어요.",
+      "deleteProblem": "친구를 삭제하는 중 문제가 발생했어요. 잠시 후 다시 시도해주세요.",
+      "defaultName": "친구"
+    }
+  },
+  "Measurement": {
+    "Guide": {
+      "initial": "가이드라인 안으로 들어오세요",
+      "tooClose": "너무 가까워요",
+      "tooFar": "너무 멀어요",
+      "good": "좋아요!",
+      "keepPose": "초 유지하세요"
+    },
+    "Status": {
+      "measuring": "측정 중",
+      "warning": "목을 뒤로 당겨주세요!",
+      "good": "바른 자세 유지 중",
+      "stopped": "측정이 중단되었습니다"
+    },
+    "Toast": {
+      "started": "거북목 측정을 시작합니다"
+    },
+    "Error": {
+      "cameraInit": "카메라 초기화 중 오류가 발생했습니다.",
+      "noUser": "사용자 정보가 없습니다."
+    }
+  },
+  "useTurtleNeckTracker": {
+    "distanceMessage": {
+      "close": "너무 가깝습니다. 뒤로 물러나세요.",
+      "far": "너무 멉니다. 앞으로 이동하세요.",
+      "good": "적절한 거리입니다."
+    }
   }
 }

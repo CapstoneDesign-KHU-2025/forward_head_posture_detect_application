@@ -3,7 +3,7 @@
 import { useState, useCallback, useEffect, useMemo, useRef, useActionState } from "react";
 import type { Friend, FriendRequestRow, RelationStatus, SearchUser } from "@/types/friends";
 import { searchUsersAction } from "@/app/actions/friendsActions";
-
+import { useTranslations } from "next-intl";
 export type SearchResultItem = {
   id: string;
   name: string | null;
@@ -72,6 +72,7 @@ export function useFriendsData() {
   const [toastMessage, setToastMessage] = useState("");
   const [isToastVisible, setIsToastVisible] = useState(false);
   const [searchState, searchAction, isSearching] = useActionState(searchUsersAction, null);
+  const t = useTranslations("Friends");
   const showToast = useCallback((msg: string) => {
     setToastMessage(msg);
     setIsToastVisible(true);
@@ -116,7 +117,7 @@ export function useFriendsData() {
       setOutgoing(outgoingRows);
       setRelation(buildRelationMap(friendsData, incomingRows, outgoingRows));
     } catch (error) {
-      showToast("친구 데이터를 불러오지 못했어요. 잠시 후 다시 시도해주세요.");
+      showToast(t("Messages.loadError"));
     }
   }, [showToast]);
 
@@ -143,14 +144,14 @@ export function useFriendsData() {
         const json = (await res.json().catch(() => ({}))) as SearchUsersApiResponse;
 
         if (!res.ok || !json.ok) {
-          showToast("사용자 검색에 실패했어요. 잠시 후 다시 시도해주세요.");
+          showToast(t("Messages.searchError"));
           setSearchUsers([]);
           return;
         }
 
         setSearchUsers(json.users ?? []);
       } catch {
-        showToast("사용자 검색 중 문제가 발생했어요. 잠시 후 다시 시도해주세요.");
+        showToast(t("Messages.searchProblem"));
         setSearchUsers([]);
       }
     },
@@ -218,15 +219,15 @@ export function useFriendsData() {
         const json = await res.json().catch(() => ({}));
 
         if (!res.ok || !json?.ok) {
-          const message = json?.error || "친구 요청을 보내지 못했어요.";
+          const message = json?.error || t("Messages.sendRequestError");
           showToast(message);
           return;
         }
 
         await refreshAll();
-        showToast(`${user.name ?? "친구"}님께 친구 요청을 보냈어요! 🐢`);
+        showToast(`${user.name ?? t("Messages.defaultName")}${t("Messages.sendRequestSuccess")}`);
       } catch {
-        showToast("친구 요청 중 문제가 발생했어요. 잠시 후 다시 시도해주세요.");
+        showToast(t("Messages.sendREquestProblem"));
       }
     },
     [refreshAll, showToast],
@@ -242,16 +243,16 @@ export function useFriendsData() {
         const json = await res.json().catch(() => ({}));
 
         if (!res.ok || !json?.ok) {
-          const message = json?.error || "친구 요청을 취소하지 못했어요.";
+          const message = json?.error || t("Messages.cancelError");
           showToast(message);
           return;
         }
 
         await refreshAll();
         setRelation((prev) => ({ ...prev, [toUserId]: "NONE" }));
-        showToast(`${toUserName ?? "친구"}님께 보낸 요청을 취소했어요`);
+        showToast(`${toUserName ?? t("Messages.defaultName")}${t("Messages.cancelSuccess")}`);
       } catch {
-        showToast("친구 요청을 취소하는 중 문제가 발생했어요. 잠시 후 다시 시도해주세요.");
+        showToast(t("Messages.cancelProblem"));
       }
     },
     [refreshAll, showToast],
@@ -269,15 +270,15 @@ export function useFriendsData() {
         const json = await res.json().catch(() => ({}));
 
         if (!res.ok || !json?.ok) {
-          const message = json?.error || "친구 요청 수락에 실패했어요.";
+          const message = json?.error || t("Messages.acceptError");
           showToast(message);
           return;
         }
 
         await refreshAll();
-        showToast(`${fromUser.name ?? "친구"}님과 친구가 됐어요! 🎉`);
+        showToast(`${fromUser.name ?? t("Messages.defaultName")}${t("Messages.acceptSuccess")}`);
       } catch {
-        showToast("친구 요청을 수락하는 중 문제가 발생했어요. 잠시 후 다시 시도해주세요.");
+        showToast(t("Messages.acceptProblem"));
       }
     },
     [refreshAll, showToast],
@@ -295,16 +296,16 @@ export function useFriendsData() {
         const json = await res.json().catch(() => ({}));
 
         if (!res.ok || !json?.ok) {
-          const message = json?.error || "친구 요청 거절에 실패했어요.";
+          const message = json?.error || t("Messages.declineError");
           showToast(message);
           return;
         }
 
         await refreshAll();
         setRelation((prev) => ({ ...prev, [fromUserId]: "NONE" }));
-        showToast("요청을 거절했어요");
+        showToast(t("Messages.declineSuccess"));
       } catch {
-        showToast("친구 요청을 거절하는 중 문제가 발생했어요. 잠시 후 다시 시도해주세요.");
+        showToast(t("Messages.declineProblem"));
       }
     },
     [refreshAll, showToast],
@@ -320,16 +321,16 @@ export function useFriendsData() {
         const json = await res.json().catch(() => ({}));
 
         if (!res.ok || !json?.ok) {
-          const message = json?.error || "친구 삭제에 실패했어요.";
+          const message = json?.error || t("Messages.deleteError");
           showToast(message);
           return;
         }
 
         await refreshAll();
         setRelation((prev) => ({ ...prev, [user.id]: "NONE" }));
-        showToast(`${user.name ?? "친구"}님을 친구 목록에서 삭제했어요`);
+        showToast(`${user.name ?? t("Messages.defaultName")}${t("Messages.deleteSuccess")}`);
       } catch {
-        showToast("친구를 삭제하는 중 문제가 발생했어요. 잠시 후 다시 시도해주세요.");
+        showToast(t("Messages.deleteProblem"));
       }
     },
     [refreshAll, showToast],
