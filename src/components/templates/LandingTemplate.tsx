@@ -60,7 +60,7 @@ export default function LandingTemplate() {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--green-pale)] text-[var(--text)] overflow-x-hidden">
+    <div className="min-h-screen bg-[var(--green-pale)] text-[var(--text)] overflow-x-clip">
       {/* NAVBAR */}
       <nav className="fixed top-0 left-0 right-0 z-[100] flex items-center justify-between px-6 md:px-12 h-16 bg-[rgba(244,250,246,0.85)] backdrop-blur-[12px] border-b border-[var(--green-border)]">
         <div
