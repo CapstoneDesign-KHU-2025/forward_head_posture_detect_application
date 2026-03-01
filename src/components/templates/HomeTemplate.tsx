@@ -7,6 +7,7 @@ import TurtleEvolutionCard from "@/components/molecules/TurtleEvolutionCard";
 import { formatMeasuredTime } from "@/utils/formatMeasuredTime";
 import AsyncBoundary from "@/components/molecules/AsyncBoundary";
 import LoadingSkeleton from "@/components/molecules/LoadingSkeleton";
+import { getTranslations } from "next-intl/server";
 
 type KPIItem = {
   label: string;
@@ -38,7 +39,7 @@ type HomeTemplateProps = {
   className?: string;
 };
 
-export default function HomeTemplate({
+export default async function HomeTemplate({
   user,
   kpis,
   challenge,
@@ -49,28 +50,36 @@ export default function HomeTemplate({
   isMeasuring = false,
   className,
 }: HomeTemplateProps) {
-  // 측정 시간 KPI 찾기
+  // 다국어 훅 호출
+  const t = await getTranslations("HomeTemplate");
+  const tBasic = await getTranslations("Basic");
+
+  // 측정 시간 KPI 찾기 (라벨 검색 시에도 다국어 키워드 대응)
+  const measureTimeLabel = t("kpi.measureTime.label");
   const measureTimeKpi = kpis?.find(
-    (kpi) => kpi.label === "측정 시간" || (typeof kpi.label === "string" && kpi.label.includes("측정 시간")),
+    (kpi) =>
+      kpi.label === "측정 시간" ||
+      kpi.label === measureTimeLabel ||
+      (typeof kpi.label === "string" && kpi.label.includes(measureTimeLabel)),
   );
 
   const todayWarningCount = warningCount ?? 0;
   const avgAngle = user?.avgAng ?? null;
   const idealAngle = 52;
-  const deltaFromIdeal =
-    avgAngle != null && Number.isFinite(avgAngle) ? avgAngle - idealAngle : null;
+  const deltaFromIdeal = avgAngle != null && Number.isFinite(avgAngle) ? avgAngle - idealAngle : null;
 
   return (
     <main className={["bg-[#F8FBF8] min-h-screen", className].filter(Boolean).join(" ")}>
       <div className="max-w-[1400px] mx-auto px-8 pb-8 pt-2">
-        <WelcomeHero userName={user?.name ?? "사용자"} />
+        <WelcomeHero userName={user?.name ?? tBasic("user")} />
 
         {/* 본문 2열 레이아웃: 좌(KPI), 우(도전기) */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
           {/* LEFT: 오늘의 거북목 섹션 */}
           <div className="flex flex-col gap-6">
             {/* 섹션 타이틀 */}
-            <h2 className="text-[1.5rem] font-bold text-[#2D5F2E] mb-2">오늘의 거북목</h2>
+            <h2 className="text-[1.5rem] font-bold text-[#2D5F2E] mb-2">{t("sections.todayStatus")}</h2>
+
             <AsyncBoundary suspenseFallback={<LoadingSkeleton />}>
               {/* 상태 카드 - 메인 */}
               <TodayStatusCard warningCount={warningCount} isNewUser={isNewUser} />
@@ -89,15 +98,19 @@ export default function HomeTemplate({
                         unit={measureTimeKpi.unit}
                         showStatusDot
                         statusDotVariant={isMeasuring ? "measuring" : "idle"}
-                        subtitle={isMeasuring ? "실시간 측정" : "측정 중 아님"}
+                        subtitle={
+                          isMeasuring ? t("kpi.measureTime.status.measuring") : t("kpi.measureTime.status.idle")
+                        }
                       />
                     ) : (
                       <StatCard
-                        label="측정 시간"
-                        value="00:00"
+                        label={t("kpi.measureTime.label")}
+                        value={t("kpi.measureTime.defaultTime")}
                         showStatusDot
                         statusDotVariant={isMeasuring ? "measuring" : "idle"}
-                        subtitle={isMeasuring ? "실시간 측정 중" : "측정 중 아님"}
+                        subtitle={
+                          isMeasuring ? t("kpi.measureTime.status.measuring_long") : t("kpi.measureTime.status.idle")
+                        }
                       />
                     )}
                   </div>
@@ -105,19 +118,19 @@ export default function HomeTemplate({
                   {/* 오늘 경고 / 누적 평균 카드 */}
                   <div className="grid grid-cols-2 gap-3">
                     <StatCard
-                      label="오늘 경고"
+                      label={t("kpi.todayWarning.label")}
                       value={String(todayWarningCount)}
-                      unit="회"
-                      subtitle="오늘 기준"
+                      unit={t("kpi.todayWarning.unit")}
+                      subtitle={t("kpi.todayWarning.subtitle")}
                     />
                     <StatCard
-                      label="누적 평균"
+                      label={t("kpi.cumulativeAvg.label")}
                       value={avgAngle != null ? avgAngle.toFixed(1) : "-"}
-                      unit="°"
+                      unit={t("kpi.cumulativeAvg.unit")}
                       subtitle={
                         deltaFromIdeal != null ? (
                           <span className="text-[var(--warning-text)]">
-                            ideal 대비 {deltaFromIdeal >= 0 ? "+" : ""}
+                            {t("kpi.cumulativeAvg.idealCompare")} {deltaFromIdeal >= 0 ? "+" : ""}
                             {deltaFromIdeal.toFixed(1)}°
                           </span>
                         ) : undefined
@@ -139,13 +152,18 @@ export default function HomeTemplate({
           <div className="flex flex-col gap-6">
             <Posture3DCard
               userAng={user?.avgAng}
-              title={challenge?.title ?? "당신의 거북목 도전기"}
+              title={challenge?.title ?? t("challenge.defaultTitle")}
               description={
                 challenge?.description ?? (
                   <>
-                    측정을 시작하면 오늘의 평균 목 각도와
-                    <br />
-                    도전 현황이 여기에 표시됩니다.
+                    {t("challenge.defaultDescription")
+                      .split("\n")
+                      .map((line, i) => (
+                        <span key={i}>
+                          {line}
+                          {i === 0 && <br />}
+                        </span>
+                      ))}
                   </>
                 )
               }
