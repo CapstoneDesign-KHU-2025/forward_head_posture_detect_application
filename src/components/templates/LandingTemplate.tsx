@@ -332,13 +332,14 @@ export default function LandingTemplate() {
           <br />
           무료로 시작할 수 있어요.
         </p>
-        <Button
-          size="lg"
-          className="bg-white text-[var(--green)] border-none rounded-[14px] py-4 px-9 text-base font-bold shadow-[0_8px_24px_rgba(0,0,0,0.15)] hover:-translate-y-1 hover:shadow-[0_14px_36px_rgba(0,0,0,0.2)]"
+        <button
+          type="button"
           onClick={() => signIn("github")}
+          className="bg-white text-[var(--green)] border-none rounded-[14px] py-[15px] px-9 text-base font-bold cursor-pointer transition-all duration-200 shadow-[0_8px_24px_rgba(0,0,0,0.15)] hover:-translate-y-[3px] hover:shadow-[0_14px_36px_rgba(0,0,0,0.2)]"
+          style={{ fontFamily: "inherit" }}
         >
           GitHub로 무료 시작하기
-        </Button>
+        </button>
       </div>
 
       {/* 푸터 - 콘텐츠 맨 아래에 배치 */}
