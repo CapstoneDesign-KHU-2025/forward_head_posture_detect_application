@@ -15,7 +15,7 @@ export default function CharacterGrid({ characterObject, handleGridClick, select
     <div
       onClick={handleGridClick}
       className={`
-                bg-[#F8FBF8] rounded-2xl py-8 px-6 text-center cursor-pointer transition-all duration-300
+                bg-[var(--green-pale)] rounded-2xl py-8 px-6 text-center cursor-pointer transition-all duration-300
                 border-[3px] border-transparent relative
                 hover:-translate-y-2 hover:shadow-[0_8px_25px_rgba(45,95,46,0.2)] hover:border-[#7BC67E]
                 ${
