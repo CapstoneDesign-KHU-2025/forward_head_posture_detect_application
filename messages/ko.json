@@ -245,5 +245,11 @@
     "hello": "님, 안녕하세요!",
     "title": "오늘도 바른 자세로 하루를 시작해봐요 🐢",
     "button": "측정하기"
+  },
+  "Header": {
+    "login_button": "로그인",
+    "UserButton": {
+      "name": "사용자"
+    }
   }
 }

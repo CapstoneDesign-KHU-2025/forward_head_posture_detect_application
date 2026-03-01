@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import { usePathname } from "@/navigation";
 import { ReactNode } from "react";
 
 type PageContainerProps = {
@@ -21,4 +21,3 @@ export default function PageContainer({ children }: PageContainerProps) {
 
   return <div className="w-full pt-[var(--header-height)]">{children}</div>;
 }
-

@@ -10,11 +10,14 @@ import { UserButton } from "@/components/molecules/UserButton";
 import { FriendsModal } from "@/components/organisms/friends/FriendsModal";
 import { useFriendsData } from "@/hooks/useFriendsData";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 type HeaderProps = {
   user?: { name: string; avatarSrc?: string } | null;
   className?: string;
 };
 export default function Header({ user: initialUser, className }: HeaderProps) {
+  const t = useTranslations("Header");
+  const t_basic = useTranslations("Basic");
   const pathname = usePathname();
   const { data: session, status } = useSession();
   const [isFriendsModalOpen, setIsFriendsModalOpen] = useState(false);
@@ -37,18 +40,15 @@ export default function Header({ user: initialUser, className }: HeaderProps) {
     }
 
     if (!user) {
-      return <Button onClick={() => signIn()}>로그인</Button>;
+      return <Button onClick={() => signIn()}>{t("login_button")}</Button>;
     }
 
     return (
       <>
-        <FriendsButton
-          requestCount={friendsData?.incomingCount || 0}
-          onClick={() => setIsFriendsModalOpen(true)}
-        />
+        <FriendsButton requestCount={friendsData?.incomingCount || 0} onClick={() => setIsFriendsModalOpen(true)} />
         <UserButton
           user={{
-            name: user.name ?? "사용자",
+            name: user.name ?? t("UserButton.name"),
             email: (user as any)?.email,
             image: (user as any)?.image,
             avatarSrc: (user as any)?.avatarSrc,
@@ -68,9 +68,7 @@ export default function Header({ user: initialUser, className }: HeaderProps) {
 
   return (
     <header
-      className={["fixed top-0 left-0 right-0 w-full z-50 bg-[var(--green-pale)]", className]
-        .filter(Boolean)
-        .join(" ")}
+      className={["fixed top-0 left-0 right-0 w-full z-50 bg-[var(--green-pale)]", className].filter(Boolean).join(" ")}
     >
       <div className="w-full px-6 md:px-8">
         {isLandingPage ? (
@@ -78,7 +76,7 @@ export default function Header({ user: initialUser, className }: HeaderProps) {
           <div className="flex h-[var(--header-height)] w-full items-center justify-between">
             <BrandLink
               icon={<img src="/icons/turtle.png" alt="" className="object-contain shrink-0" />}
-              label="거북목 거북거북!"
+              label={t_basic("title")}
             />
             <div className="flex items-center gap-2">
               <UserActions />
@@ -90,7 +88,7 @@ export default function Header({ user: initialUser, className }: HeaderProps) {
             {/* Left: Logo & brand */}
             <BrandLink
               icon={<img src="/icons/turtle.png" alt="" className="object-contain shrink-0" />}
-              label="거북목 거북거북!"
+              label={t_basic("title")}
             />
 
             {/* Center: 네비게이션 탭 */}
