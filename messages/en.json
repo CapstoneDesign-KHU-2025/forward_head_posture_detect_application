@@ -27,5 +27,15 @@
       "stop": "stop estimating"
     },
     "async": { "suspense": "please start estimating!" }
+  },
+  "Login": {
+    "alt": {
+      "icon": "turtle"
+    },
+    "header": {
+      "title": "boogiboogi",
+      "description": "AI posture fixing program"
+    },
+    "body": { "recommendation": "Take the first step toward improving your forward head posture." }
   }
 }
