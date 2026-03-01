@@ -203,5 +203,47 @@
       "actions_outgoing": "✓ 요청됨",
       "actions_adding": "+ 추가"
     }
+  },
+  "CharacterSelectionModal": {
+    "ModalHeader": {
+      "title": "캐릭터 변경",
+      "subtitle": "나를 대표할 캐릭터를 선택하세요"
+    },
+    "button": {
+      "close": "닫기",
+      "confirm": "확인"
+    }
+  },
+  "Posture3DCard": {
+    "title": "당신의 거북목 도전기",
+    "statusText": {
+      "good": "바른 자세 유지 중 👍",
+      "bad": "목을 쉬게 해주세요!",
+      "middle": "조금만 더 신경 써볼까요?"
+    },
+    "fivemins_average": "5분 단위 평균 목 각도"
+  },
+  "SensitivitySettingsModal": {
+    "sens_options": {
+      "low": { "name": "낮음", "description": "자세가 많이 틀어졌을 때만 알림" },
+      "normal": { "name": "보통", "description": "적당한 수준에서 알림 (권장)" },
+      "high": {
+        "name": "높음",
+        "desc": "자세가 조금만 틀어져도 바로 알림"
+      }
+    },
+    "ModalHeader": {
+      "title": "민감도 설정",
+      "subtitle": "거북목 감지 민감도를 조절해보세요"
+    },
+    "button": {
+      "close": "닫기",
+      "confirm": "확인"
+    }
+  },
+  "WelcomeHero": {
+    "hello": "님, 안녕하세요!",
+    "title": "오늘도 바른 자세로 하루를 시작해봐요 🐢",
+    "button": "측정하기"
   }
 }
