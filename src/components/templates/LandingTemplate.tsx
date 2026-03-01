@@ -17,7 +17,7 @@ const FEATURES = [
   {
     icon: "🤖",
     title: "AI 실시간 분석",
-    desc: "MediaPipe AI 기술로 33개 신체 랜드마크를 추적하여 정확한 거북목 판정을 제공합니다.",
+    desc: "MediaPipe AI 기술로 신체 랜드마크를 추적하여 정확한 거북목 판정을 제공합니다.",
   },
   {
     icon: "🔔",
@@ -72,9 +72,9 @@ export default function LandingTemplate() {
               className="landing-hero-fade-up-1 font-[Nunito] text-[clamp(2rem,4vw,3.2rem)] font-black leading-tight text-[var(--text)] mb-4"
               style={{ fontFamily: "Nunito, sans-serif" }}
             >
-              목이 아프기 전에,
+              거북목, 이제
               <br />
-              <span className="text-[var(--green)]">거북목을 잡아요</span>
+              <span className="text-[var(--green)]">AI로 관리하세요</span>
             </h1>
             <p className="landing-hero-fade-up-2 text-base text-[var(--text-sub)] leading-[1.75] mb-9 font-normal">
               카메라 한 대로 충분해요.
