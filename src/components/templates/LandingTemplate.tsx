@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { signIn } from "next-auth/react";
 import { Button } from "@/components/atoms/Button";
+import TurtleLogo from "@/components/atoms/TurtleLogo";
 
 const FEATURES = [
   {
@@ -96,67 +97,9 @@ export default function LandingTemplate() {
             </div>
           </div>
 
-          {/* 앱 목업 */}
-          <div className="landing-hero-scale-in flex justify-center items-center relative">
-            <div
-              className="absolute left-0 top-[20%] bg-white rounded-[14px] py-2 px-3 shadow-[0_8px_24px_rgba(45,59,53,0.12)] border border-[var(--green-border)] flex items-center gap-2 whitespace-nowrap landing-float"
-              style={{ animationDelay: "0.5s" }}
-            >
-              <span className="text-base">✅</span>
-              <div>
-                <div className="text-[11px] font-bold text-[var(--text)]">바른 자세!</div>
-                <div className="text-[10px] text-[var(--text-muted)]">오늘 2시간 유지 중</div>
-              </div>
-            </div>
-
-            <div className="w-[260px] bg-white rounded-[28px] overflow-hidden border border-[rgba(212,234,217,0.6)] landing-float shadow-[0_24px_60px_rgba(45,59,53,0.15),0_4px_16px_rgba(45,59,53,0.08)]">
-              <div className="h-7 bg-[#f4faf6] flex items-center justify-center">
-                <div className="w-[60px] h-1.5 bg-[#d4ead9] rounded" />
-              </div>
-              <div className="p-4">
-                <div className="flex justify-between items-center mb-3.5">
-                  <div>
-                    <div className="text-[11px] text-[var(--text-muted)]">안녕하세요 👋</div>
-                    <div className="text-[13px] font-bold text-[var(--text)]">짐짐이님</div>
-                  </div>
-                  <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[var(--green)] to-[var(--green-mid)] flex items-center justify-center text-sm">
-                    🐢
-                  </div>
-                </div>
-                <div className="bg-gradient-to-br from-[var(--green)] to-[var(--green-mid)] rounded-4 p-3.5 mb-3 text-white">
-                  <div className="text-[10px] opacity-75 mb-1">오늘 자세 점수</div>
-                  <div className="font-[Nunito] text-xl font-black">87점 😊</div>
-                  <div className="text-[10px] opacity-70 mt-0.5">어제보다 +12점 올랐어요!</div>
-                </div>
-                <div className="grid grid-cols-2 gap-2 mb-3">
-                  <div className="bg-[var(--green-pale)] rounded-xl p-2.5 border border-[var(--green-border)]">
-                    <div className="text-base mb-1">⏱</div>
-                    <div className="font-[Nunito] text-[15px] font-black text-[var(--text)]">2h 14m</div>
-                    <div className="text-[9px] text-[var(--text-muted)] mt-0.5">바른 자세 유지</div>
-                  </div>
-                  <div className="bg-[var(--green-pale)] rounded-xl p-2.5 border border-[var(--green-border)]">
-                    <div className="text-base mb-1">🐢</div>
-                    <div className="font-[Nunito] text-[15px] font-black text-[var(--text)]">3회</div>
-                    <div className="text-[9px] text-[var(--text-muted)] mt-0.5">거북목 감지</div>
-                  </div>
-                </div>
-                <div className="bg-gradient-to-b-[160deg,#1e2d28,#263530] rounded-xl h-[60px] flex items-center justify-center relative overflow-hidden">
-                  <div className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-[var(--green-mid)] landing-pulse" />
-                  <span className="text-[10px] text-white/50">카메라 측정 중...</span>
-                </div>
-              </div>
-            </div>
-
-            <div
-              className="absolute right-0 bottom-[28%] bg-white rounded-[14px] py-2 px-3 shadow-[0_8px_24px_rgba(45,59,53,0.12)] border border-[var(--green-border)] flex items-center gap-2 whitespace-nowrap landing-float"
-              style={{ animationDelay: "1s" }}
-            >
-              <span className="text-base">📊</span>
-              <div>
-                <div className="text-[11px] font-bold text-[var(--text)]">주간 리포트</div>
-                <div className="text-[10px] text-[var(--text-muted)]">이번 주 목표 달성!</div>
-              </div>
-            </div>
+          {/* TurtleLogo */}
+          <div className="landing-hero-scale-in flex justify-center items-center">
+            <TurtleLogo />
           </div>
         </div>
       </section>

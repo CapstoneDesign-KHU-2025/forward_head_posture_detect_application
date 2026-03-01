@@ -1,28 +1,8 @@
 export default function TurtleLogo() {
   return (
-    <div className="hero-image bg-white rounded-3xl p-8 shadow-xl text-center">
+    <div className="bg-white rounded-3xl p-8 shadow-xl text-center">
       {" "}
       <style jsx>{`
-        @keyframes fadeInUp {
-          from {
-            opacity: 0;
-            transform: translateY(30px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        @keyframes fadeInRight {
-          from {
-            opacity: 0;
-            transform: translateX(30px);
-          }
-          to {
-            opacity: 1;
-            transform: translateX(0);
-          }
-        }
         @keyframes float {
           0%,
           100% {
@@ -42,12 +22,6 @@ export default function TurtleLogo() {
             opacity: 0.4;
             transform: scale(1.1);
           }
-        }
-        .hero-content {
-          animation: fadeInUp 0.8s ease-out;
-        }
-        .hero-image {
-          animation: fadeInRight 0.8s ease-out 0.2s both;
         }
         .turtle-float {
           animation: float 3s ease-in-out infinite;
