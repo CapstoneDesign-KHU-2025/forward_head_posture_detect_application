@@ -37,7 +37,7 @@ export default function Header({ user: initialUser, className }: HeaderProps) {
     }
 
     if (!user) {
-      return <Button onClick={() => signIn()}>로그인</Button>;
+      return <Button onClick={() => signIn()}>시작하기</Button>;
     }
 
     return (

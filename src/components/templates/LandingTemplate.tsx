@@ -10,33 +10,33 @@ import TurtleLogo from "@/components/atoms/TurtleLogo";
 const FEATURES = [
   {
     icon: "📷",
-    title: "실시간 자세 감지",
-    desc: "MediaPipe 기반 AI가 웹캠으로 목 각도를 실시간으로 측정하고, 거북목이 감지되면 즉시 알려드려요.",
+    title: "웹캠만 있으면 OK",
+    desc: "별도의 장비나 측면 카메라 없이 정면 웹캠만으로 실시간 자세 측정이 가능합니다.",
   },
   {
-    icon: "📊",
-    title: "상세 통계 분석",
-    desc: "시간대별 목 각도, 일별 경고 횟수, 누적 평균을 시각화해 내 자세 패턴을 한눈에 파악할 수 있어요.",
-  },
-  {
-    icon: "🏆",
-    title: "거북이 성장 시스템",
-    desc: "자세가 좋은 날이 쌓일수록 거북이가 진화해요. 알 → 아기 → 성인 → 거북왕까지 함께 성장해봐요!",
-  },
-  {
-    icon: "📅",
-    title: "캘린더 기록",
-    desc: "매일의 자세 상태를 캘린더로 확인하세요. 좋은 날과 경고가 많은 날을 색상으로 구분해서 보여줘요.",
-  },
-  {
-    icon: "👥",
-    title: "친구와 함께",
-    desc: "친구를 추가하고 자세 관리를 함께해요. 서로의 진행 상황을 보며 동기부여를 받을 수 있어요.",
+    icon: "🤖",
+    title: "AI 실시간 분석",
+    desc: "MediaPipe AI 기술로 33개 신체 랜드마크를 추적하여 정확한 거북목 판정을 제공합니다.",
   },
   {
     icon: "🔔",
-    title: "스마트 알림",
-    desc: "민감도 설정으로 나에게 맞는 알림을 받아보세요. 낮음 · 보통 · 높음 세 단계로 조절할 수 있어요.",
+    title: "통계 기반 관리",
+    desc: "거북목 자세 감지 시 소리와 알림으로 즉시 알려드려 바른 자세를 유지하도록 돕습니다.",
+  },
+  {
+    icon: "📊",
+    title: "즉각적인 알림",
+    desc: "매일, 매주 평균 목 각도를 분석하여 자세 변화 추이를 한눈에 확인할 수 있습니다.",
+  },
+  {
+    icon: "🔒",
+    title: "개인정보 보호",
+    desc: "클라이언트 사이드 AI 처리로 영상 데이터가 서버로 전송되지 않아 안전합니다.",
+  },
+  {
+    icon: "💻",
+    title: "플랫폼 독립적",
+    desc: "브라우저만 있으면 언제 어디서나 사용 가능한 웹 기반 솔루션입니다.",
   },
 ];
 
@@ -87,7 +87,7 @@ export default function LandingTemplate() {
                 className="inline-flex items-center gap-2 py-3.5 px-7 rounded-[14px] text-[15px] font-bold shadow-[0_4px_16px_rgba(74,124,89,0.3)] hover:shadow-[0_8px_24px_rgba(74,124,89,0.35)] hover:-translate-y-0.5"
                 onClick={() => signIn()}
               >
-                무료로 시작하기 🐢
+                시작하기
               </Button>
               <button
                 type="button"
@@ -154,16 +154,18 @@ export default function LandingTemplate() {
         </p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           {FEATURES.map((f, i) => (
-            <Card
+            <div
               key={f.title}
-              className={`reveal ${["reveal-delay-1", "reveal-delay-2", "reveal-delay-3"][i % 3]} rounded-[20px] p-8 text-left transition-all duration-250 hover:-translate-y-1`}
+              className={`reveal ${["reveal-delay-1", "reveal-delay-2", "reveal-delay-3"][i % 3]}`}
             >
-              <div className="w-[52px] h-[52px] bg-[var(--green-light)] rounded-[14px] flex items-center justify-center text-[26px] mb-4">
-                {f.icon}
-              </div>
-              <div className="font-[Nunito] font-extrabold text-[17px] mb-2">{f.title}</div>
-              <div className="text-sm text-[var(--text-sub)] leading-relaxed">{f.desc}</div>
-            </Card>
+              <Card className="rounded-[20px] p-8 text-left transition-all duration-250 hover:-translate-y-1">
+                <div className="w-[52px] h-[52px] bg-[var(--green-light)] rounded-[14px] flex items-center justify-center text-[26px] mb-4">
+                  {f.icon}
+                </div>
+                <div className="font-[Nunito] font-extrabold text-[17px] mb-2">{f.title}</div>
+                <div className="text-sm text-[var(--text-sub)] leading-relaxed">{f.desc}</div>
+              </Card>
+            </div>
           ))}
         </div>
       </section>
@@ -240,8 +242,6 @@ export default function LandingTemplate() {
         </h2>
         <p className="text-base text-white/75 mb-9 leading-[1.7]">
           거북목 걱정 없는 하루를 만들어드릴게요.
-          <br />
-          무료로 시작할 수 있어요.
         </p>
         <button
           type="button"
@@ -249,7 +249,7 @@ export default function LandingTemplate() {
           className="bg-white text-[var(--green)] border-none rounded-[14px] py-[15px] px-9 text-base font-bold cursor-pointer transition-all duration-200 shadow-[0_8px_24px_rgba(0,0,0,0.15)] hover:-translate-y-[3px] hover:shadow-[0_14px_36px_rgba(0,0,0,0.2)]"
           style={{ fontFamily: "inherit" }}
         >
-          GitHub로 무료 시작하기
+          시작하기
         </button>
       </div>
 
