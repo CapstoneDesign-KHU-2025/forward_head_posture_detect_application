@@ -1,6 +1,8 @@
-import { getTranslations } from "next-intl/server";
-export default async function LoadingSkeleton() {
-  const t = await getTranslations("LoadingSkeleton");
+"use client";
+
+import { useTranslations } from "next-intl";
+export default function LoadingSkeleton() {
+  const t = useTranslations("LoadingSkeleton");
   return (
     <div
       role="status"
@@ -13,7 +15,7 @@ export default async function LoadingSkeleton() {
 
       {/* 텍스트 */}
       <div className="flex flex-col items-center">
-        <p className="text-lg font-bold">📷 {t("LoadingSkeleton.message")}</p>
+        <p className="text-lg font-bold">📷 {t("message")}</p>
         <p className="text-sm text-gray-400 mt-2"> </p>
       </div>
     </div>

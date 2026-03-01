@@ -1,64 +1,64 @@
+"use client";
 import { Card } from "@/components/atoms/Card";
-import { getTranslations } from "next-intl/server";
+import { useTranslations } from "next-intl";
 type StatusType = "excellent" | "normal" | "bad" | "empty";
 
-const t = await getTranslations("TodayStatusCard");
 type TodayStatusCardProps = {
   warningCount?: number | null;
   isNewUser?: boolean;
 };
 
-type StatusInfo = {
-  emoji: string;
-  title: string;
-  message: string;
-  statusClass: StatusType;
-};
+export default function TodayStatusCard({ warningCount, isNewUser }: TodayStatusCardProps) {
+  const t = useTranslations("TodayStatusCard");
+  type StatusInfo = {
+    emoji: string;
+    title: string;
+    message: string;
+    statusClass: StatusType;
+  };
 
-function getStatusInfo(warningCount: number | null | undefined, isNewUser: boolean = false): StatusInfo {
-  if (warningCount === null || warningCount === undefined) {
-    if (isNewUser === true) {
+  function getStatusInfo(warningCount: number | null | undefined, isNewUser: boolean = false): StatusInfo {
+    if (warningCount === null || warningCount === undefined) {
+      if (isNewUser === true) {
+        return {
+          emoji: "👋",
+          title: t("first_empty.title"),
+          message: t("first_empty.message"),
+          statusClass: "empty",
+        };
+      } else {
+        return {
+          emoji: "☀️",
+          title: t("empty.title"),
+          message: t("empty.message"),
+          statusClass: "empty",
+        };
+      }
+    }
+
+    if (warningCount <= 10) {
       return {
-        emoji: "👋",
-        title: t("first_empty.title"),
-        message: t("first_empty.message"),
-        statusClass: "empty",
+        emoji: "🎉",
+        title: t("excellent.title"),
+        message: t("excellent.message"),
+        statusClass: "excellent",
+      };
+    } else if (warningCount <= 20) {
+      return {
+        emoji: "😐",
+        title: t("normal.title"),
+        message: t("normal.message"),
+        statusClass: "normal",
       };
     } else {
       return {
-        emoji: "☀️",
-        title: t("empty.title"),
-        message: t("empty.message"),
-        statusClass: "empty",
+        emoji: "😰",
+        title: t("bad.title"),
+        message: t("bad.message"),
+        statusClass: "bad",
       };
     }
   }
-
-  if (warningCount <= 10) {
-    return {
-      emoji: "🎉",
-      title: t("excellent.title"),
-      message: t("excellent.message"),
-      statusClass: "excellent",
-    };
-  } else if (warningCount <= 20) {
-    return {
-      emoji: "😐",
-      title: t("normal.title"),
-      message: t("normal.message"),
-      statusClass: "normal",
-    };
-  } else {
-    return {
-      emoji: "😰",
-      title: t("bad.title"),
-      message: t("bad.message"),
-      statusClass: "bad",
-    };
-  }
-}
-
-export default function TodayStatusCard({ warningCount, isNewUser }: TodayStatusCardProps) {
   const statusInfo = getStatusInfo(warningCount, isNewUser);
 
   type StatusStyle = {

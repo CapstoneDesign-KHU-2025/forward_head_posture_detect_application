@@ -6,7 +6,7 @@ import { EmptyState } from "@/components/atoms/EmptyState";
 import { SectionLabel } from "@/components/atoms/SectionLabel";
 import type { FriendRequestRow } from "@/types/friends";
 import { cn } from "@/utils/cn";
-
+import { useTranslations } from "next-intl";
 const AVATAR_COLORS = ["#ff9f6b", "#6b9fff", "#ffc46b", "#b06bff", "#6aab7a", "#ff8c8c"];
 
 function getAvatarStyle(id: string) {
@@ -25,25 +25,26 @@ type OutgoingRequestListProps = {
 };
 
 export function OutgoingRequestList({ items, onCancel }: OutgoingRequestListProps) {
+  const t = useTranslations("OutgoingRequestList");
   const pending = items.filter((r) => r.status === "PENDING");
 
   return (
     <div className="space-y-5">
-      <SectionLabel>보낸 요청</SectionLabel>
+      <SectionLabel>{t("SectionLabel")}</SectionLabel>
       {pending.length === 0 ? (
-        <EmptyState icon={<span>📤</span>} message="보낸 요청이 없어요" />
+        <EmptyState icon={<span>📤</span>} message={t("EmptyState.message")} />
       ) : (
         <div className="space-y-0">
           {pending.map((r) => (
             <UserRow
               key={r.id}
-              name={r.toUser.name ?? "알 수 없음"}
+              name={r.toUser.name ?? t("UserRow.name")}
               email={r.toUser.email ?? ""}
               initial={getInitial(r.toUser.name, r.toUser.id)}
               bgColor={getAvatarStyle(r.toUser.id)}
               actions={
                 <>
-                  <Chip>대기 중</Chip>
+                  <Chip>{t("Chip")}</Chip>
                   <button
                     type="button"
                     onClick={() => onCancel(r.id, r.toUser.id, r.toUser.name)}
@@ -53,7 +54,7 @@ export function OutgoingRequestList({ items, onCancel }: OutgoingRequestListProp
                       "transition-colors hover:border-[#ffb3a0] hover:bg-[#fff5f2] hover:text-[#ff8c6b]",
                     )}
                   >
-                    취소
+                    {t("Button")}
                   </button>
                 </>
               }

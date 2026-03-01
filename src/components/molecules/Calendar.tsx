@@ -7,33 +7,6 @@ import { IconButton } from "@/components/atoms/IconButton";
 import { cn } from "@/utils/cn";
 import { useTranslations } from "next-intl";
 
-const t = useTranslations("Calendar");
-
-const MONTHS_KO = [
-  t("Calendar.month.1"),
-  t("Calendar.month.2"),
-  t("Calendar.month.3"),
-  t("Calendar.month.4"),
-  t("Calendar.month.5"),
-  t("Calendar.month.6"),
-  t("Calendar.month.7"),
-  t("Calendar.month.8"),
-  t("Calendar.month.9"),
-  t("Calendar.month.10"),
-  t("Calendar.month.11"),
-  t("Calendar.month.12"),
-];
-
-const DAY_LABELS = [
-  t("Calendar.day.1"),
-  t("Calendar.day.2"),
-  t("Calendar.day.3"),
-  t("Calendar.day.4"),
-  t("Calendar.day.5"),
-  t("Calendar.day.6"),
-  t("Calendar.day.7"),
-];
-
 function formatDateKey(year: number, month: number, day: number): string {
   return `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
 }
@@ -47,6 +20,24 @@ export type CalendarProps = {
 };
 
 export function Calendar({ dayStatusMap = {}, className }: CalendarProps) {
+  const t = useTranslations("Calendar");
+
+  const MONTHS_KO = [
+    t("month.1"),
+    t("month.2"),
+    t("month.3"),
+    t("month.4"),
+    t("month.5"),
+    t("month.6"),
+    t("month.7"),
+    t("month.8"),
+    t("month.9"),
+    t("month.10"),
+    t("month.11"),
+    t("month.12"),
+  ];
+
+  const DAY_LABELS = [t("day.1"), t("day.2"), t("day.3"), t("day.4"), t("day.5"), t("day.6"), t("day.7")];
   const today = new Date();
   const [viewDate, setViewDate] = useState(() => new Date(today.getFullYear(), today.getMonth(), 1));
 
@@ -126,14 +117,14 @@ export function Calendar({ dayStatusMap = {}, className }: CalendarProps) {
             variant="calendar"
             size="xs"
             icon={<ChevronLeft size={12} strokeWidth={2.5} />}
-            ariaLabel={t("Calendar.buttons.previous")}
+            ariaLabel={t("buttons.previous")}
             onClick={() => moveMonth(-1)}
           />
           <IconButton
             variant="calendar"
             size="xs"
             icon={<ChevronRight size={12} strokeWidth={2.5} />}
-            ariaLabel={t("Calendar.buttons.next")}
+            ariaLabel={t("buttons.next")}
             onClick={() => moveMonth(1)}
           />
         </div>
@@ -176,11 +167,11 @@ export function Calendar({ dayStatusMap = {}, className }: CalendarProps) {
       <div className="mt-2 flex gap-3 border-t border-[#d4ead9] pt-2">
         <div className="flex items-center gap-1 text-[10px] text-[#aac8b2]">
           <div className="h-2.5 w-2.5 rounded-[3px] bg-[#d6f0df]" />
-          {t("Calendar.good")}
+          {t("good")}
         </div>
         <div className="flex items-center gap-1 text-[10px] text-[#aac8b2]">
           <div className="h-2.5 w-2.5 rounded-[3px] bg-[#fde0d8]" />
-          {t("Calendar.bad")}
+          {t("bad")}
         </div>
       </div>
     </Card>

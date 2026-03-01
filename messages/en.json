@@ -1,6 +1,9 @@
 {
   "Basic": {
-    "title": "boogiboogi"
+    "title": "boogiboogi",
+    "user": "User",
+    "description": "Improve forward head posture with measurements and metrics",
+    "usermenu": "User menu"
   },
   "Characters": {
     "remy": {
@@ -17,28 +20,143 @@
     },
     "header": {
       "title": "Choose your own 3D avatar!",
-      "description": "Pick the character that will show your posture"
+      "description": "Pick the character that will appear during measurement"
     },
     "buttons": {
-      "skip": "skip",
-      "done": "next"
+      "skip": "Skip",
+      "done": "Done"
     }
   },
   "Estimate": {
     "buttons": {
-      "start": "start estimating",
-      "stop": "stop estimating"
+      "start": "Start measurement",
+      "stop": "Stop today's measurement"
     },
-    "async": { "suspense": "please start estimating!" }
+    "async": {
+      "suspense": "Tap to start measuring!"
+    }
   },
   "Login": {
     "alt": {
-      "icon": "turtle"
+      "icon": "Turtle"
     },
     "header": {
       "title": "boogiboogi",
-      "description": "AI posture fixing program"
+      "description": "AI posture correction program"
     },
-    "body": { "recommendation": "Take the first step toward improving your forward head posture." }
+    "body": {
+      "recommendation": "Take the first step toward improving your forward head posture."
+    }
+  },
+  "NotFound": {
+    "description": "We can't find that page",
+    "message": "Even the turtle got lost. Let's head back together.",
+    "button": "Back to home"
+  },
+  "Calendar": {
+    "month": {
+      "1": "January",
+      "2": "February",
+      "3": "March",
+      "4": "April",
+      "5": "May",
+      "6": "June",
+      "7": "July",
+      "8": "August",
+      "9": "September",
+      "10": "October",
+      "11": "November",
+      "12": "December"
+    },
+    "day": {
+      "1": "Sun",
+      "2": "Mon",
+      "3": "Tue",
+      "4": "Wed",
+      "5": "Thu",
+      "6": "Fri",
+      "7": "Sat"
+    },
+    "buttons": {
+      "previous": "Previous month",
+      "next": "Next month"
+    },
+    "good": "Good day",
+    "bad": "High warning day"
+  },
+  "ErrorFallback": {
+    "title": "Something went wrong",
+    "message": "An unexpected error occurred.",
+    "button": "Refresh",
+    "tryAgain": "Try again"
+  },
+  "EstimatePanel": {
+    "message": "Press Start Measurement\nand turn on your camera",
+    "startMeasurementToast": "Starting posture measurement"
+  },
+  "EvolutionTooltip": {
+    "ariaLabel": "Evolution requirements info"
+  },
+  "FloatingBar": {
+    "title": "Measuring",
+    "elapsedTime": "Elapsed",
+    "stop": "Stop"
+  },
+  "FriendsButton": {
+    "ariaLabel": "Manage friends"
+  },
+  "LoadingSkeleton": {
+    "message": "Turning on the camera...",
+    "description": "Please wait a moment"
+  },
+  "OauthButton": {
+    "google": "Continue with Google",
+    "github": "Continue with GitHub"
+  },
+  "RecoveryNotice": {
+    "message": "Your last measurement was interrupted",
+    "restart": "Want to restart?",
+    "button": {
+      "yes": "Restart",
+      "no": "No thanks"
+    }
+  },
+  "SearchInput": {
+    "placeholder": "Search friends by email..."
+  },
+  "TodayStatusCard": {
+    "first_empty": {
+      "title": "Welcome!",
+      "message": "Start your first measurement\nand build a healthy posture habit!"
+    },
+    "empty": {
+      "title": "You got this!",
+      "message": "Start today's measurement\nand keep a great streak going!"
+    },
+    "excellent": {
+      "title": "You're amazing today!",
+      "message": "Your neck must feel so relieved!"
+    },
+    "normal": {
+      "title": "Almost there—just a bit more!",
+      "message": "Try lifting your chin a little."
+    },
+    "bad": {
+      "title": "That sounds like a tough day",
+      "message": "Give your neck a break today."
+    }
+  },
+  "TurtleEvolutionCard": {
+    "stages": {
+      "1st": "Hatchling turtle",
+      "2nd": "Baby turtle",
+      "3rd": "Adult turtle",
+      "4th": "Turtle King"
+    },
+    "message": {
+      "next_stage": "Until the next stage",
+      "day": " day(s) ",
+      "left": "left!"
+    }
   }
 }

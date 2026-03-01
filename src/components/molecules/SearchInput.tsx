@@ -1,12 +1,13 @@
 "use client";
+
 import { cn } from "@/utils/cn";
 import { useTranslations } from "next-intl";
 type SearchInputProps = Omit<React.InputHTMLAttributes<HTMLInputElement>, "type"> & {
   className?: string;
 };
 
-export async function SearchInput({ className, ...props }: SearchInputProps) {
-  const t = useTranslations("searchInput");
+export function SearchInput({ className, ...props }: SearchInputProps) {
+  const t = useTranslations("SearchInput");
   return (
     <input
       type="text"

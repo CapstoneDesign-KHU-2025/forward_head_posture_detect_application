@@ -17,7 +17,7 @@ export function FriendsButton({ requestCount, onClick, className }: FriendsButto
     <button
       type="button"
       onClick={onClick}
-      title={t("FriendsButton.ariaLabel")}
+      title={t("ariaLabel")}
       className={cn(
         "relative flex h-11 w-11 shrink-0 items-center justify-center rounded-[12px]",
         "text-[var(--text-sub)] transition-all duration-150",

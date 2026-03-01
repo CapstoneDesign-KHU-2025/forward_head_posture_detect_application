@@ -11,7 +11,7 @@ import { IncomingRequestList } from "@/components/organisms/friends/IncomingRequ
 import { OutgoingRequestList } from "@/components/organisms/friends/OutgoingRequestList";
 import { FriendList } from "@/components/organisms/friends/FriendList";
 import { useFriendsData } from "@/hooks/useFriendsData";
-
+import { useTranslations } from "next-intl";
 type TabId = "search" | "requests" | "friends";
 
 export type FriendsModalData = ReturnType<typeof useFriendsData>;
@@ -23,6 +23,7 @@ type FriendsModalProps = {
 };
 
 export function FriendsModal({ isOpen, onClose, friendsData: externalData }: FriendsModalProps) {
+  const t = useTranslations("FriendsModal");
   const [activeTab, setActiveTab] = useState<TabId>("search");
 
   const internalData = useFriendsData();
@@ -48,17 +49,13 @@ export function FriendsModal({ isOpen, onClose, friendsData: externalData }: Fri
       <Modal isOpen={isOpen} onClose={onClose} contentClassName="h-[500px] max-w-[480px]">
         <div className="flex shrink-0 flex-col border-b border-[#d4ead9] bg-white">
           <ModalHeader
-            title="친구 관리"
-            subtitle="친구와 함께 거북목 탈출!"
+            title={t("ModalHeader.title")}
+            subtitle={t("ModalHeader.subtitle")}
             icon={<Users size={18} className="text-[#4a7c59]" strokeWidth={2.2} />}
             onClose={onClose}
           />
           <div className="px-6">
-            <ModalTabBar
-              activeTab={activeTab}
-              incomingCount={incomingCount}
-              onTabChange={setActiveTab}
-            />
+            <ModalTabBar activeTab={activeTab} incomingCount={incomingCount} onTabChange={setActiveTab} />
           </div>
         </div>
 

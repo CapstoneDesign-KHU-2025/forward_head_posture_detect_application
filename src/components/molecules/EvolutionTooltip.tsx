@@ -7,7 +7,7 @@ type EvolutionTooltipProps = {
 
 export default function EvolutionTooltip({ text, ariaLabel }: EvolutionTooltipProps) {
   const t = useTranslations("EvolutionTooltip");
-  const ariaLabelText = ariaLabel || t("EvolutionTooltip.ariaLabel");
+  const ariaLabelText = ariaLabel || t("ariaLabel");
   return (
     <div className="group relative inline-flex items-center self-center">
       <div

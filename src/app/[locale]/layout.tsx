@@ -31,24 +31,21 @@ export default async function LocaleLayout({ children, params }: Props) {
     : null;
 
   return (
-    <html lang={locale}>
-      <body className="min-h-dvh bg-neutral-50 text-black antialiased">
-        <NextIntlClientProvider locale={locale} messages={messages}>
-          <Providers session={session}>
-            <MeasurementProvider>
-              <Header user={user} />
-              <PageContainer>{children}</PageContainer>
-              <Footer
-                links={[
-                  { label: "Privacy Policy", href: "/privacy" },
-                  { label: "Terms of Service", href: "/terms" },
-                  { label: "Contact Us", href: "/contact" },
-                ]}
-              />
-            </MeasurementProvider>
-          </Providers>
-        </NextIntlClientProvider>
-      </body>
-    </html>
+    <NextIntlClientProvider locale={locale} messages={messages}>
+      <Providers session={session}>
+        <MeasurementProvider>
+          <Header user={user} />
+          <PageContainer>{children}</PageContainer>
+          <Footer
+            links={[
+              { label: "Privacy Policy", href: "/privacy" },
+              { label: "Terms of Service", href: "/terms" },
+              { label: "Contact Us", href: "/contact" },
+            ]}
+          />
+        </MeasurementProvider>
+      </Providers>
+      /
+    </NextIntlClientProvider>
   );
 }

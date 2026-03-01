@@ -2,14 +2,16 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { getTranslations } from "next-intl/server";
 
+import React from "react";
 const t = await getTranslations("Basic");
+
 export const metadata: Metadata = {
-  title: t("Basic.title"),
-  description: t("Basic.description"),
+  title: t("title"),
+  description: t("description"),
   icons: { icon: "/icons/turtle.png" },
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html>
       <head>

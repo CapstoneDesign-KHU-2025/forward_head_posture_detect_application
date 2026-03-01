@@ -142,5 +142,66 @@
       "day": "일 ",
       "left": "남았어요!"
     }
+  },
+  "FriendList": {
+    "EmptyState": {
+      "message": "친구가 없어요. 검색에서 친구를 추가해보세요!"
+    },
+    "UserRow": {
+      "unknown": "알 수 없음"
+    },
+    "IconButton": {
+      "title": "친구 삭제"
+    }
+  },
+  "FriendsModal": {
+    "ModalHeader": {
+      "title": "친구 관리",
+      "subtitle": "친구와 함께 거북목 탈출!"
+    }
+  },
+  "IncomingRequestList": {
+    "SectionLabel": "받은 요청",
+    "EmptyState": {
+      "message": "받은 요청이 없어요"
+    },
+    "UserRow": {
+      "name": "알 수 없음"
+    },
+    "Button": {
+      "yes": "수락",
+      "no": "거절"
+    }
+  },
+  "ModalTabBar": {
+    "TabButton": {
+      "search": "검색",
+      "request": "요청",
+      "friend": "친구"
+    }
+  },
+  "OutgoingRequestList": {
+    "SectionLabel": "보낸 요청",
+    "EmptyState": {
+      "message": "보낸 요청이 없어요"
+    },
+    "UserRow": {
+      "name": "알 수 없음"
+    },
+    "Chip": "대기 중",
+
+    "Button": "취소"
+  },
+  "SearchResultList": {
+    "SectionLabel": "검색 결과",
+    "EmptyState": {
+      "message_find_friends": "이메일을 입력해서 친구를 찾아보세요",
+      "message_no_result": "일치하는 사용자를 찾을 수 없어요"
+    },
+    "UserRow": {
+      "name": "알 수 없음",
+      "actions_outgoing": "✓ 요청됨",
+      "actions_adding": "+ 추가"
+    }
   }
 }

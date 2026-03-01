@@ -1,21 +1,23 @@
+"use client";
+
 import { Card } from "@/components/atoms/Card";
 import EvolutionTooltip from "@/components/molecules/EvolutionTooltip";
 import { cn } from "@/utils/cn";
-import { getTranslations } from "next-intl/server";
+import { useTranslations } from "next-intl";
 type TurtleEvolutionCardProps = {
   goodDays: number;
 };
-const t = await getTranslations("TurtleEvolutionCard");
-const STAGES = [
-  { emoji: "🥚", label: t("stages.1st") },
-  { emoji: "🐣", label: t("stages.2nd") },
-  { emoji: "🐢", label: t("stages.3rd") },
-  { emoji: "👑", label: t("stages.4th") },
-] as const;
 
 const DAYS_PER_STAGE = 10;
 
 export default function TurtleEvolutionCard({ goodDays }: TurtleEvolutionCardProps) {
+  const t = useTranslations("TurtleEvolutionCard");
+  const STAGES = [
+    { emoji: "🥚", label: t("stages.1st") },
+    { emoji: "🐣", label: t("stages.2nd") },
+    { emoji: "🐢", label: t("stages.3rd") },
+    { emoji: "👑", label: t("stages.4th") },
+  ] as const;
   const currentStageIndex = Math.min(3, Math.floor(goodDays / DAYS_PER_STAGE));
   const daysInCurrentStage = goodDays % DAYS_PER_STAGE;
   const daysToNext = currentStageIndex >= 3 ? 0 : DAYS_PER_STAGE - daysInCurrentStage;

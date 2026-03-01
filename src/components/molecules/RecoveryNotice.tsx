@@ -8,7 +8,7 @@ type RecoveryNoticeProps = {
   className?: string;
 };
 
-export async function RecoveryNotice({ isVisible, onRestart, onDismiss, className }: RecoveryNoticeProps) {
+export function RecoveryNotice({ isVisible, onRestart, onDismiss, className }: RecoveryNoticeProps) {
   const t = useTranslations("RecoveryNotice");
   return (
     <div

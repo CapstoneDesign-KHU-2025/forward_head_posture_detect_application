@@ -9,6 +9,7 @@ import type { SearchResultItem } from "@/hooks/useFriendsData";
 import { Icon } from "@/components/atoms/Icon";
 import { Search } from "lucide-react";
 import { cn } from "@/utils/cn";
+import { useTranslations } from "next-intl";
 
 type SearchResultListProps = {
   searchResults: (query: string) => SearchResultItem[];
@@ -16,6 +17,8 @@ type SearchResultListProps = {
 };
 
 export function SearchResultList({ searchResults, onSendRequest }: SearchResultListProps) {
+  const t = useTranslations("SearchResultList");
+
   const [query, setQuery] = useState("");
   const results = searchResults(query);
 
@@ -25,7 +28,7 @@ export function SearchResultList({ searchResults, onSendRequest }: SearchResultL
         <SearchInput value={query} onChange={(e) => setQuery(e.target.value)} />
       </div>
       <div className="flex-1 overflow-y-auto px-6 pb-6 pt-3">
-        <SectionLabel>검색 결과</SectionLabel>
+        <SectionLabel>{t("SectionLabel")}</SectionLabel>
         {query.trim().length < 2 ? (
           <EmptyState
             icon={
@@ -33,7 +36,7 @@ export function SearchResultList({ searchResults, onSendRequest }: SearchResultL
                 <Search className="text-[#7a9585]" />
               </Icon>
             }
-            message="이메일을 입력해서 친구를 찾아보세요"
+            message={t("EmptyState.message_find_friends")}
           />
         ) : results.length === 0 ? (
           <EmptyState
@@ -42,14 +45,14 @@ export function SearchResultList({ searchResults, onSendRequest }: SearchResultL
                 <Search className="text-[#7a9585]" />
               </Icon>
             }
-            message="일치하는 사용자를 찾을 수 없어요"
+            message={t("EmptyState.message_no_result")}
           />
         ) : (
           <div className="space-y-0">
             {results.map((u) => (
               <UserRow
                 key={u.id}
-                name={u.name ?? "알 수 없음"}
+                name={u.name ?? t("UserRow.name")}
                 email={u.email ?? ""}
                 initial={u.initial}
                 bgColor={u.color}
@@ -61,7 +64,7 @@ export function SearchResultList({ searchResults, onSendRequest }: SearchResultL
                         "whitespace-nowrap text-[14px] font-semibold text-[#4a7c59]",
                       )}
                     >
-                      ✓ 요청됨
+                      {t("UserRow.actions_outgoing")}
                     </span>
                   ) : (
                     <button
@@ -73,7 +76,7 @@ export function SearchResultList({ searchResults, onSendRequest }: SearchResultL
                         "transition-colors hover:bg-[#3a6147]",
                       )}
                     >
-                      + 추가
+                      {t("UserRow.actions_adding")}
                     </button>
                   )
                 }

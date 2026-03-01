@@ -5,6 +5,7 @@ import { EmptyState } from "@/components/atoms/EmptyState";
 import { SectionLabel } from "@/components/atoms/SectionLabel";
 import type { FriendRequestRow } from "@/types/friends";
 import { cn } from "@/utils/cn";
+import { useTranslations } from "next-intl";
 
 const AVATAR_COLORS = ["#ff9f6b", "#6b9fff", "#ffc46b", "#b06bff", "#6aab7a", "#ff8c8c"];
 
@@ -28,19 +29,20 @@ type IncomingRequestListProps = {
 };
 
 export function IncomingRequestList({ items, onAccept, onDecline }: IncomingRequestListProps) {
+  const t = useTranslations("IncomingRequestList");
   const pending = items.filter((r) => r.status === "PENDING");
 
   return (
     <div className="space-y-5">
-      <SectionLabel>받은 요청</SectionLabel>
+      <SectionLabel>{t("SectionLabel")}</SectionLabel>
       {pending.length === 0 ? (
-        <EmptyState icon={<span>📩</span>} message="받은 요청이 없어요" />
+        <EmptyState icon={<span>📩</span>} message={t("EmptyState.message")} />
       ) : (
         <ul className="space-y-0">
           {pending.map((r) => (
             <li key={r.id}>
               <UserRow
-                name={r.fromUser.name ?? "알 수 없음"}
+                name={r.fromUser.name ?? t("UserRow.name")}
                 email={r.fromUser.email ?? ""}
                 initial={getInitial(r.fromUser.name, r.fromUser.id)}
                 bgColor={getAvatarStyle(r.fromUser.id)}
@@ -55,7 +57,7 @@ export function IncomingRequestList({ items, onAccept, onDecline }: IncomingRequ
                         "transition-colors hover:bg-[#3a6147]",
                       )}
                     >
-                      수락
+                      {t("Button.yes")}
                     </button>
                     <button
                       type="button"
@@ -66,7 +68,7 @@ export function IncomingRequestList({ items, onAccept, onDecline }: IncomingRequ
                         "transition-colors hover:border-[#ff8c8c] hover:text-[#ff8c8c]",
                       )}
                     >
-                      거절
+                      {t("Button.no")}
                     </button>
                   </>
                 }

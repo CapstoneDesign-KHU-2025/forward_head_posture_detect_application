@@ -11,8 +11,6 @@ function formatElapsed(seconds: number): string {
   return `${m}:${s}`;
 }
 
-const t = useTranslations("FloatingBar");
-
 export type FloatingBarProps = {
   /** 표시 여부 (true면 슬라이드 업) */
   visible: boolean;
@@ -26,7 +24,8 @@ export type FloatingBarProps = {
 };
 
 export function FloatingBar({ visible, title, elapsedSeconds = 0, onStop, className }: FloatingBarProps) {
-  const titleText = title || t("FloatingBar.title");
+  const t = useTranslations("FloatingBar");
+  const titleText = title || t("title");
   return (
     <div
       role="status"
@@ -42,7 +41,7 @@ export function FloatingBar({ visible, title, elapsedSeconds = 0, onStop, classN
       <div className="min-w-0 flex-1">
         <div className="text-[13px] font-bold text-white">{titleText}</div>
         <div className="text-[11px] text-white/50">
-          {formatElapsed(elapsedSeconds)} {t("FloatingBar.elapsedTime")}
+          {formatElapsed(elapsedSeconds)} {t("elapsedTime")}
         </div>
       </div>
       <button
@@ -50,7 +49,7 @@ export function FloatingBar({ visible, title, elapsedSeconds = 0, onStop, classN
         onClick={onStop}
         className="flex-shrink-0 whitespace-nowrap rounded-[10px] border border-[rgba(255,92,92,0.25)] bg-[rgba(255,92,92,0.15)] px-3.5 py-1.5 text-xs font-bold text-[#ff8c8c] transition-colors hover:bg-[rgba(255,92,92,0.28)]"
       >
-        {t("FloatingBar.stop")}
+        {t("stop")}
       </button>
     </div>
   );
