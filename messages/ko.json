@@ -20,5 +20,12 @@
       "skip": "건너뛰기",
       "done": "선택 완료"
     }
+  },
+  "Estimate": {
+    "buttons": {
+      "start": "측정 시작하기",
+      "stop": "오늘의 측정 중단하기"
+    },
+    "async": { "suspense": "측정을 시작해주세요!" }
   }
 }
