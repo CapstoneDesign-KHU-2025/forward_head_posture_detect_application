@@ -1,46 +1,29 @@
 "use client";
 
 import { StatusBannerType } from "@/hooks/useTurtleNeckMeasurement";
-import { useEffect, useState } from "react";
 import LoadingSkeleton from "@/components/molecules/LoadingSkeleton";
 
 type EstimatePanelProps = {
   bannerType: StatusBannerType;
   bannerMessage: string;
-  videoRef: React.RefObject<HTMLVideoElement | null>;
   canvasSlotId: string;
   showMeasurementStartedToast: boolean;
   countdownRemain: number | null;
   measurementStarted: boolean;
   stopEstimating: boolean;
+  isFirstFrameDrawn: boolean;
 };
 
 export default function EstimatePanel({
   bannerType,
   bannerMessage,
-  videoRef,
   canvasSlotId,
   showMeasurementStartedToast,
   countdownRemain,
   measurementStarted,
   stopEstimating,
+  isFirstFrameDrawn,
 }: EstimatePanelProps) {
-  const [isCameraLoading, setIsCameraLoading] = useState(true);
-
-  useEffect(() => {
-    if (stopEstimating) {
-      setIsCameraLoading(true);
-      return;
-    }
-    const checkVideoReady = () => {
-      if (videoRef.current && videoRef.current.readyState >= 2) {
-        setIsCameraLoading(false);
-      }
-    };
-    const interval = setInterval(checkVideoReady, 100);
-    return () => clearInterval(interval);
-  }, [videoRef, stopEstimating]);
-
   return (
     <section className="bg-white rounded-[20px] overflow-hidden shadow-[0_4px_30px_rgba(45,95,46,0.1)] w-full max-w-[600px] min-w-0 mx-auto">
       <div className="p-0">
@@ -67,9 +50,9 @@ export default function EstimatePanel({
             </div>
           ) : (
             <>
-              {isCameraLoading && (
+              {!isFirstFrameDrawn && (
                 <div className="absolute inset-0 z-10 w-full h-full">
-                  <LoadingSkeleton />
+                  <LoadingSkeleton variant="camera" />
                 </div>
               )}
 

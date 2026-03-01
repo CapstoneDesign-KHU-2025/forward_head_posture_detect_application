@@ -13,13 +13,13 @@ export default function Estimate() {
     stopEstimating,
     startMeasurement,
     stopMeasurement,
-    videoRef,
     countdownRemain,
     measurementStarted,
     showMeasurementStartedToast,
     error,
     getStatusBannerType,
     statusBannerMessage,
+    isFirstFrameDrawn,
   } = useMeasurement();
 
   const bannerType = getStatusBannerType();
@@ -45,7 +45,7 @@ export default function Estimate() {
                 측정을 시작해주세요!
               </div>
               <div className="relative w-full min-w-0 rounded-none overflow-hidden bg-[#2C3E50]" style={{ aspectRatio: "4/3" }}>
-                <LoadingSkeleton />
+                <LoadingSkeleton/>
               </div>
             </section>
           }
@@ -53,12 +53,12 @@ export default function Estimate() {
           <EstimatePanel
             bannerType={bannerType}
             bannerMessage={bannerMessage}
-            videoRef={videoRef}
             canvasSlotId={MEASUREMENT_CANVAS_SLOT_ID}
             showMeasurementStartedToast={showMeasurementStartedToast}
             countdownRemain={countdownRemain}
             measurementStarted={measurementStarted}
             stopEstimating={stopEstimating}
+            isFirstFrameDrawn={isFirstFrameDrawn}
           />
         </AsyncBoundary>
         {error && <ErrorBanner error={error} />}

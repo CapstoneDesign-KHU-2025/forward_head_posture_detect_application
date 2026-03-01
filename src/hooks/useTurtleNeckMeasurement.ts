@@ -39,6 +39,7 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating, isInitial }: 
   const measuringRef = useRef<boolean>(false);
   const lastGuideMessageRef = useRef<string | null>(null);
   const lastGuideColorRef = useRef<GuideColor>("red");
+  const firstFrameDrawnRef = useRef(false);
   if (!userId) {
     useEffect(() => {
       if (!userId) return;
@@ -53,6 +54,7 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating, isInitial }: 
   const [measurementStarted, setMeasurementStarted] = useState<boolean>(false);
   const [showMeasurementStartedToast, setShowMeasurementStartedToast] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [isFirstFrameDrawn, setIsFirstFrameDrawn] = useState(false);
 
   // 초기 각도 베이스라인용 상태
   const baselineAngleRef = useRef<number | null>(null);
@@ -236,6 +238,11 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating, isInitial }: 
           ctx.scale(-1, 1);
           ctx.drawImage(v, -c.width, 0, c.width, c.height);
           ctx.restore();
+
+          if (!firstFrameDrawnRef.current) {
+            firstFrameDrawnRef.current = true;
+            setIsFirstFrameDrawn(true);
+          }
 
           const poses = result.landmarks ?? [];
 
@@ -455,6 +462,14 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating, isInitial }: 
     };
   }, [stopEstimating, userId]);
 
+  // stopEstimating 시 첫 프레임 플래그 리셋
+  useEffect(() => {
+    if (stopEstimating) {
+      firstFrameDrawnRef.current = false;
+      setIsFirstFrameDrawn(false);
+    }
+  }, [stopEstimating]);
+
   // === 외부에서 "다시 측정 시작"할 때 쓸 리셋 함수 ===
   const resetForNewMeasurement = () => {
     measuringRef.current = false;
@@ -496,6 +511,7 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating, isInitial }: 
     // UI helper
     getStatusBannerType: () => bannerType,
     statusBannerMessage: () => bannerMessage,
+    isFirstFrameDrawn,
 
     // 외부에서 사용할 메서드
     resetForNewMeasurement,
