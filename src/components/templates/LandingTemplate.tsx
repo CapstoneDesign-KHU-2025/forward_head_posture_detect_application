@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { signIn } from "next-auth/react";
 import { Button } from "@/components/atoms/Button";
+import { Card } from "@/components/atoms/Card";
 import TurtleLogo from "@/components/atoms/TurtleLogo";
 
 const FEATURES = [
@@ -123,9 +124,9 @@ export default function LandingTemplate() {
               { icon: "🐢", num: "70%", label: "현대인 거북목 유병률", source: "출처 | 질병관리청" },
               { icon: "⚖️", num: "15kg+", label: "잘못된 자세로 인한 목 부담", source: "출처 | 질병관리청" },
             ].map((stat) => (
-              <div
+              <Card
                 key={stat.num}
-                className="bg-white rounded-[20px] p-9 text-center shadow-[0_8px_32px_rgba(45,59,53,0.1),0_2px_8px_rgba(45,59,53,0.06)] transition-all duration-250 hover:-translate-y-1 hover:shadow-[0_16px_48px_rgba(45,59,53,0.14)]"
+                className="rounded-[20px] p-9 text-center transition-all duration-250 hover:-translate-y-1"
               >
                 <div className="text-[28px] mb-3">{stat.icon}</div>
                 <div className="font-[Nunito] text-[clamp(36px,5vw,52px)] font-black text-[var(--green)] leading-none mb-0">
@@ -134,7 +135,7 @@ export default function LandingTemplate() {
                 <div className="w-8 h-0.5 bg-[#d4ead9] rounded mx-auto my-2.5" />
                 <div className="text-[15px] font-semibold text-[var(--text)] mb-2.5">{stat.label}</div>
                 <div className="text-xs text-[var(--text-muted)] leading-relaxed whitespace-pre-line">{stat.source}</div>
-              </div>
+              </Card>
             ))}
           </div>
         </div>
@@ -152,16 +153,16 @@ export default function LandingTemplate() {
         </p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           {FEATURES.map((f, i) => (
-            <div
+            <Card
               key={f.title}
-              className={`reveal ${["reveal-delay-1", "reveal-delay-2", "reveal-delay-3"][i % 3]} bg-white rounded-[20px] p-8 text-left transition-all duration-250 shadow-[0_8px_32px_rgba(45,59,53,0.1),0_2px_8px_rgba(45,59,53,0.06)] hover:-translate-y-1 hover:shadow-[0_16px_48px_rgba(45,59,53,0.14)]`}
+              className={`reveal ${["reveal-delay-1", "reveal-delay-2", "reveal-delay-3"][i % 3]} rounded-[20px] p-8 text-left transition-all duration-250 hover:-translate-y-1`}
             >
               <div className="w-[52px] h-[52px] bg-[var(--green-light)] rounded-[14px] flex items-center justify-center text-[26px] mb-4">
                 {f.icon}
               </div>
               <div className="font-[Nunito] font-extrabold text-[17px] mb-2">{f.title}</div>
               <div className="text-sm text-[var(--text-sub)] leading-relaxed">{f.desc}</div>
-            </div>
+            </Card>
           ))}
         </div>
       </section>
@@ -196,7 +197,7 @@ export default function LandingTemplate() {
           </div>
         </div>
 
-        <div className="reveal bg-white rounded-[24px] border border-[var(--green-border)] shadow-[0_20px_60px_rgba(74,124,89,0.14)] overflow-hidden">
+        <Card className="reveal rounded-[24px] border border-[var(--green-border)] overflow-hidden">
           <div className="bg-[var(--green-pale)] border-b border-[var(--green-border)] py-3 px-4 flex items-center gap-1.5">
             <div className="w-2.5 h-2.5 rounded-full bg-[#ff6b6b]" />
             <div className="w-2.5 h-2.5 rounded-full bg-[#ffd93d]" />
@@ -230,7 +231,7 @@ export default function LandingTemplate() {
               </div>
             </div>
           </div>
-        </div>
+        </Card>
       </section>
 
       {/* HOW IT WORKS */}

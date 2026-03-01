@@ -1,6 +1,8 @@
+import { Card } from "@/components/atoms/Card";
+
 export default function TurtleLogo() {
   return (
-    <div className="bg-white rounded-3xl p-8 shadow-xl text-center">
+    <Card className="p-8 text-center">
       {" "}
       <style jsx>{`
         @keyframes float {
@@ -78,6 +80,6 @@ export default function TurtleLogo() {
           />
         </g>
       </svg>
-    </div>
+    </Card>
   );
 }
