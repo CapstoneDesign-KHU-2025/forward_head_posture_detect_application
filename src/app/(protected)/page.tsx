@@ -9,6 +9,7 @@ export default async function Page() {
   if (!session || !session?.user?.id) {
     return redirect("/landing");
   }
+
   const userId = session.user.id as string;
   const result = await getDailySummaryAction(null, { days: 7 });
   let weeklyData: WeeklySummaryData | null = null;

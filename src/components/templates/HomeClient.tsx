@@ -10,6 +10,7 @@ import { computeTodaySoFarAverage } from "@/lib/hourlyOps";
 import { computeDayStatusMap } from "@/utils/computeDayStatusMap";
 import { getTodayCount, getTodayMeasuredSeconds } from "@/lib/postureLocal";
 import { computeImprovementPercent } from "@/utils/computeImprovementPercent";
+import { useRouter } from "next/navigation";
 
 type WeeklySummaryRow = {
   id: number;
@@ -78,8 +79,12 @@ export default function HomeClient({ weeklyData, user }: HomeClientProps) {
   const goodDays = weeklyData?.goodDays ?? 0;
 
   const [calendarRows, setCalendarRows] = useState<WeeklySummaryRow[]>([]);
-
+  const router = useRouter();
   useEffect(() => {
+    const hasCharacter = localStorage.getItem("selectedCharacter");
+    if (!hasCharacter) {
+      router.push("/character");
+    }
     let cancelled = false;
     apiRequest<{ safeRows: WeeklySummaryRow[] }>({ requestPath: "/summaries/daily?days=90" })
       .then((result) => {
