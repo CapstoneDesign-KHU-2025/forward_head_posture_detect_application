@@ -1,4 +1,4 @@
-import { auth } from "@/auth";
+/* import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 
 const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || "")
@@ -25,4 +25,4 @@ export default async function SentryExampleLayout({ children }: SentryExampleLay
 
   return <>{children}</>;
 }
-
+ */
