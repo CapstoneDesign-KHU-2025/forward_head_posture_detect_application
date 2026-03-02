@@ -11,7 +11,7 @@ const PostureSampleSchema = z
     angleDeg: z.number().gte(-180).lte(180),
     isTurtle: z.boolean(),
     hasPose: z.boolean().optional(),
-    sessionId: z.union([z.string(), z.number()]).nullable().optional(),
+    sessionId: z.coerce.bigint().nullable().optional(),
     sampleGapS: z.number().gte(0).lte(3600).optional(),
   })
   .strict();
