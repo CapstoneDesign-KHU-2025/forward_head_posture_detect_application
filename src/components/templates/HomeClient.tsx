@@ -99,9 +99,7 @@ export default function HomeClient({ weeklyData, user }: HomeClientProps) {
       cancelled = true;
     };
   }, []);
-  if (isCheckingRedirect) {
-    return <LoadingSkeleton />;
-  }
+
   const dayStatusMap = useMemo(() => computeDayStatusMap(calendarRows), [calendarRows]);
 
   const [isNewUser, setIsNewUser] = useState<boolean>(() => {
@@ -225,7 +223,9 @@ export default function HomeClient({ weeklyData, user }: HomeClientProps) {
 
   const warningCount =
     (todayCount === 0 && todayHour === 0) || todayCount === null || todayCount === undefined ? null : todayCount;
-
+  if (isCheckingRedirect) {
+    return <LoadingSkeleton />;
+  }
   return (
     <HomeTemplate
       user={homeData.user}
