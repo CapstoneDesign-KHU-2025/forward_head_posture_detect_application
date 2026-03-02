@@ -62,7 +62,7 @@ export default function CharacterSelectionPage() {
   }, [selectedCharacter]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#F8FBF8] to-[#E8F5E9] flex items-center justify-center p-8">
+    <div className="min-h-screen bg-gradient-to-br from-[var(--green-pale)] to-[#E8F5E9] flex items-center justify-center p-8">
       <div className="max-w-[1200px] w-full bg-white rounded-[24px] p-12 shadow-[0_10px_40px_rgba(45,95,46,0.15)]">
         {/* 헤더 */}
         <div className="text-center mb-12">

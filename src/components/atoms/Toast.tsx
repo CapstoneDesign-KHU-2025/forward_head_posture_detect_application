@@ -15,7 +15,7 @@ export function Toast({ message, isVisible, className }: ToastProps) {
       aria-live="polite"
       className={cn(
         "pointer-events-none fixed bottom-8 left-1/2 z-[200] -translate-x-1/2 whitespace-nowrap",
-        "rounded-[30px] bg-[#4a7c59] px-6 py-2.5 text-[15px] font-medium text-white",
+        "rounded-[30px] bg-[rgba(45,59,53,0.92)] backdrop-blur-sm px-6 py-3 text-[15px] font-medium text-white",
         "transition-all duration-300 ease-out",
         isVisible
           ? "translate-y-0 opacity-100"

@@ -80,7 +80,7 @@ export default function UserMenuDropdown({
               setIsSensitivityModalOpen(true);
               onClose();
             }}
-            className="w-full flex items-center gap-4 px-4 py-3 rounded-xl text-base font-medium text-black transition-colors duration-150 hover:bg-[#F8FBF8] cursor-pointer text-left"
+            className="w-full flex items-center gap-4 px-4 py-3 rounded-xl text-base font-medium text-black transition-colors duration-150 hover:bg-[var(--green-pale)] cursor-pointer text-left"
           >
             <Icon size="sm">
               <Settings className="text-black shrink-0" />
@@ -93,7 +93,7 @@ export default function UserMenuDropdown({
               setIsCharacterModalOpen(true);
               onClose();
             }}
-            className="w-full flex items-center gap-4 px-4 py-3 rounded-xl text-base font-medium text-black transition-colors duration-150 hover:bg-[#F8FBF8] cursor-pointer text-left"
+            className="w-full flex items-center gap-4 px-4 py-3 rounded-xl text-base font-medium text-black transition-colors duration-150 hover:bg-[var(--green-pale)] cursor-pointer text-left"
           >
             <Icon size="sm">
               <UserCircle className="text-black shrink-0" />
@@ -106,7 +106,7 @@ export default function UserMenuDropdown({
               signOut();
               onClose();
             }}
-            className="w-full flex items-center gap-4 px-4 py-3 rounded-xl text-base font-medium text-black transition-colors duration-150 hover:bg-[#F8FBF8] cursor-pointer text-left"
+            className="w-full flex items-center gap-4 px-4 py-3 rounded-xl text-base font-medium text-black transition-colors duration-150 hover:bg-[var(--green-pale)] cursor-pointer text-left"
           >
             <Icon size="sm">
               <LogOut className="text-black shrink-0" />
