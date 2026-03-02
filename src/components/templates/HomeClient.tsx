@@ -11,6 +11,7 @@ import { computeDayStatusMap } from "@/utils/computeDayStatusMap";
 import { getTodayCount, getTodayMeasuredSeconds } from "@/lib/postureLocal";
 import { computeImprovementPercent } from "@/utils/computeImprovementPercent";
 import { useRouter } from "next/navigation";
+import LoadingSkeleton from "../molecules/LoadingSkeleton";
 
 type WeeklySummaryRow = {
   id: number;
@@ -74,7 +75,7 @@ export default function HomeClient({ weeklyData, user }: HomeClientProps) {
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
+  const [isCheckingRedirect, setIsCheckingRedirect] = useState(true);
   const weeklyAvg = weeklyData?.weightedAvg ?? null;
   const goodDays = weeklyData?.goodDays ?? 0;
 
@@ -83,7 +84,10 @@ export default function HomeClient({ weeklyData, user }: HomeClientProps) {
   useEffect(() => {
     const hasCharacter = localStorage.getItem("selectedCharacter");
     if (!hasCharacter) {
-      router.push("/character");
+      router.replace("/character");
+      return;
+    } else {
+      setIsCheckingRedirect(false);
     }
     let cancelled = false;
     apiRequest<{ safeRows: WeeklySummaryRow[] }>({ requestPath: "/summaries/daily?days=90" })
@@ -95,7 +99,9 @@ export default function HomeClient({ weeklyData, user }: HomeClientProps) {
       cancelled = true;
     };
   }, []);
-
+  if (isCheckingRedirect) {
+    return <LoadingSkeleton />;
+  }
   const dayStatusMap = useMemo(() => computeDayStatusMap(calendarRows), [calendarRows]);
 
   const [isNewUser, setIsNewUser] = useState<boolean>(() => {
