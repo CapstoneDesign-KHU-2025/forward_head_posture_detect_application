@@ -14,8 +14,9 @@ import AsyncBoundary from "@/components/molecules/AsyncBoundary";
 import LoadingSkeleton from "@/components/molecules/LoadingSkeleton";
 import { logger } from "@/lib/logger";
 import { useClearPostureDBOnLoad } from "@/hooks/useClearDBOnload";
-
+import { runClearPostureDB } from "@/utils/clearDB";
 export default function Estimate() {
+  useClearPostureDBOnLoad();
   const { data: session } = useSession();
   const userId = (session?.user as any)?.id as string;
   const [_dailySumState, dailySumAction] = useActionState(postDailySummaryAction, null);
@@ -92,7 +93,7 @@ export default function Estimate() {
     } finally {
       if (!forced) {
         setStopEstimating((prev) => !prev);
-        useClearPostureDBOnLoad();
+        await runClearPostureDB();
       }
       setIsProcessing(false);
     }
