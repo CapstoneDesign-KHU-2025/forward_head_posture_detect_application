@@ -1,12 +1,16 @@
-"use client";
-
+import { auth } from "@/auth";
+import { redirect } from "next/navigation";
 import React from "react";
 import Link from "next/link";
 
 import { Card } from "@/components/atoms/Card";
 import OauthButton from "@/components/molecules/OauthButton";
 
-export default function LoginPage() {
+export default async function LoginPage() {
+  const session = await auth();
+  if (session?.user) {
+    return redirect("/");
+  }
   return (
     <div className="min-h-screen w-screen flex items-center justify-center p-8 bg-[var(--green-pale)] relative overflow-hidden">
       {/* 배경 */}
@@ -52,30 +56,21 @@ export default function LoginPage() {
         }}
       >
         {/* 브랜딩 */}
-        <div
-          className="flex flex-col items-center mb-7"
-          style={{ fontFamily: "Nunito, sans-serif" }}
-        >
+        <div className="flex flex-col items-center mb-7" style={{ fontFamily: "Nunito, sans-serif" }}>
           <div
             className="text-[56px] mb-3 login-turtle-bounce"
             style={{ filter: "drop-shadow(0 4px 12px rgba(74,124,89,0.25))" }}
           >
             🐢
           </div>
-          <h1 className="text-[30px] font-black text-[var(--green)] tracking-tight">
-            거북목 거북거북!
-          </h1>
-          <p className="text-[13px] text-[var(--text-muted)] mt-1 font-medium">
-            AI 자세 교정 프로그램
-          </p>
+          <h1 className="text-[30px] font-black text-[var(--green)] tracking-tight">거북목 거북거북!</h1>
+          <p className="text-[13px] text-[var(--text-muted)] mt-1 font-medium">AI 자세 교정 프로그램</p>
         </div>
 
         {/* 구분선 */}
         <div className="flex items-center gap-2.5 mb-5">
           <div className="flex-1 h-px bg-[var(--green-border)]" />
-          <span className="text-xs text-[var(--text-muted)] font-semibold whitespace-nowrap">
-            간편하게 시작하기
-          </span>
+          <span className="text-xs text-[var(--text-muted)] font-semibold whitespace-nowrap">간편하게 시작하기</span>
           <div className="flex-1 h-px bg-[var(--green-border)]" />
         </div>
 
