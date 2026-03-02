@@ -1,3 +1,5 @@
+"use client";
+
 import { cn } from "@/utils/cn";
 import { logger } from "@/lib/logger";
 import { signIn } from "next-auth/react";
