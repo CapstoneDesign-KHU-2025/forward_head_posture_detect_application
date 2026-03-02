@@ -128,15 +128,30 @@ export function MeasurementProvider({ children }: { children: ReactNode }) {
 
   const startMeasurement = useCallback(() => {
     setShowRecoveryNotice(false);
-    if (typeof window !== "undefined") {
-      sessionStorage.setItem(SESSION_STORAGE_MEASUREMENT_INTERRUPTED, "1");
-    }
     setStopEstimating(false);
   }, []);
 
   const stopMeasurement = useCallback(() => {
     handleStopMeasurement();
   }, [handleStopMeasurement]);
+
+  // 실제 측정 시작 시에만 중단 플래그 설정 (가이드라인 단계에서 나가면 복구 제안 안 함)
+  useEffect(() => {
+    if (typeof window === "undefined" || !measurementStarted) return;
+    sessionStorage.setItem(SESSION_STORAGE_MEASUREMENT_INTERRUPTED, "1");
+  }, [measurementStarted]);
+
+  // pathname 변경 시: 측정 페이지 밖으로 나가면 카메라 끄기
+  useEffect(() => {
+    if (pathname !== "/estimate" && pathname !== "/") {
+      if (measurementStarted) {
+        handleStopMeasurement(true);
+      }
+      setStopEstimating(true);
+    } else if (pathname === "/" && !measurementStarted) {
+      setStopEstimating(true);
+    }
+  }, [pathname, measurementStarted, handleStopMeasurement]);
 
   // 새로고침 후 이전 측정 중단 감지 → 복구 제안 표시 (로그인된 사용자에게만)
   useEffect(() => {
