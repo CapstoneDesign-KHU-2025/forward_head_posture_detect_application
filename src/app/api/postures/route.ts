@@ -42,7 +42,7 @@ export const POST = withApiReq(
       return json({ error: "Unauthorized" }, 401);
     }
 
-    const rate = checkRateLimit(`postures:create:${session.user.id}`, {
+    const rate = await checkRateLimit(`postures:create:${session.user.id}`, {
       windowMs: 60_000,
       max: 120,
     });

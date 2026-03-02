@@ -15,7 +15,7 @@ export const POST = withApiReq(
     const session = await auth();
     if (!session?.user?.id) return json({ error: "UNAUTHORIZED" }, 401);
 
-    const rate = checkRateLimit(`friends:respond:${session.user.id}`, {
+    const rate = await checkRateLimit(`friends:respond:${session.user.id}`, {
       windowMs: 60_000,
       max: 40,
     });
