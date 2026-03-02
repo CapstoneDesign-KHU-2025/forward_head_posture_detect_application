@@ -1,6 +1,6 @@
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
-import { getDailySummaryAction } from "./actions/summaryActions";
+import { getDailySummaryAction } from "../actions/summaryActions";
 import HomeClient, { WeeklySummaryData } from "@/components/templates/HomeClient";
 
 export default async function Page() {
