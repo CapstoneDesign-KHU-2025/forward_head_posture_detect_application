@@ -7,7 +7,7 @@ export const runtime = "nodejs";
 
 const DailySummaryBodySchema = z
   .object({
-    dateISO: z.string().min(1),
+    dateISO: z.string().datetime({ message: "Invalid ISO 8601 date format" }),
     sumWeighted: z.number().finite(),
     weightSeconds: z.number().positive(),
     count: z.number().int().nonnegative().optional(),
