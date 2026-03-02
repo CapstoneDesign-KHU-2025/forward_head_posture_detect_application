@@ -1,3 +1,4 @@
+"use client";
 import WelcomeHero from "@/components/organisms/home/WelcomeHero";
 import Posture3DCard from "@/components/organisms/home/Posture3DCard";
 import StatCard from "@/components/molecules/StatCard";
@@ -7,7 +8,7 @@ import TurtleEvolutionCard from "@/components/molecules/TurtleEvolutionCard";
 import { formatMeasuredTime } from "@/utils/formatMeasuredTime";
 import AsyncBoundary from "@/components/molecules/AsyncBoundary";
 import LoadingSkeleton from "@/components/molecules/LoadingSkeleton";
-import { getTranslations } from "next-intl/server";
+import { useTranslations } from "next-intl";
 
 type KPIItem = {
   label: string;
@@ -39,7 +40,7 @@ type HomeTemplateProps = {
   className?: string;
 };
 
-export default async function HomeTemplate({
+export default function HomeTemplate({
   user,
   kpis,
   challenge,
@@ -51,8 +52,8 @@ export default async function HomeTemplate({
   className,
 }: HomeTemplateProps) {
   // 다국어 훅 호출
-  const t = await getTranslations("HomeTemplate");
-  const tBasic = await getTranslations("Basic");
+  const t = useTranslations("HomeTemplate");
+  const tBasic = useTranslations("Basic");
 
   // 측정 시간 KPI 찾기 (라벨 검색 시에도 다국어 키워드 대응)
   const measureTimeLabel = t("kpi.measureTime.label");

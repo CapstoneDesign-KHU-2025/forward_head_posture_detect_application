@@ -241,7 +241,7 @@
     }
   },
   "WelcomeHero": {
-    "hello": "Hello, {name}!",
+    "hello": ", Hello!",
     "title": "Start your day with good posture 🐢",
     "button": "Start Measurement"
   },

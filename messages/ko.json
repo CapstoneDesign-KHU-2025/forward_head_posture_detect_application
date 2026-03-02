@@ -444,5 +444,11 @@
       "far": "너무 멉니다. 앞으로 이동하세요.",
       "good": "적절한 거리입니다."
     }
+  },
+  "getStatusBanner": {
+    "isInitial": "측정을 시작해주세요!",
+    "stopEstimating": "측정이 중단되었습니다",
+    "badPosture": "거북목 자세입니다!",
+    "guideMessage": "바른 자세입니다!"
   }
 }

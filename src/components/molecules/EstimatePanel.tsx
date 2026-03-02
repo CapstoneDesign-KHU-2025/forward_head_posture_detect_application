@@ -63,7 +63,7 @@ export default function EstimatePanel({
         >
           {stopEstimating ? (
             <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 p-8 text-center">
-              <p className="text-[#aac8b2] text-sm font-medium">{t("EstimatePanel.message")}</p>
+              <p className="text-[#aac8b2] text-sm font-medium">{t("message")}</p>
             </div>
           ) : (
             <>
@@ -77,7 +77,7 @@ export default function EstimatePanel({
 
               {showMeasurementStartedToast && (
                 <div className="pointer-events-none absolute left-1/2 top-1/2 z-[1000] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[rgba(64,64,64,0.85)] px-7 py-4 text-center text-[20px] font-bold text-white shadow-[0_10px_30px_rgba(0,0,0,0.35)]">
-                  {t("EstimatePanel.startMeasurementToast")}
+                  {t("startMeasurementToast")}
                 </div>
               )}
 
