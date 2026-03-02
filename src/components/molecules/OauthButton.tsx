@@ -1,3 +1,5 @@
+"use client";
+
 import { cn } from "@/utils/cn";
 import { logger } from "@/lib/logger";
 import { signIn } from "next-auth/react";
@@ -11,7 +13,7 @@ export default function OauthButton({ provider, variant = "default" }: OauthButt
   const handleSignIn = async (provider: "github" | "google") => {
     try {
       await signIn(provider, {
-        callbackUrl: "/character",
+        callbackUrl: "/",
         redirect: true,
       });
     } catch (error) {
