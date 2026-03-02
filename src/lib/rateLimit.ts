@@ -1,14 +1,13 @@
-const store = new Map<
-  string,
-  {
-    count: number;
-    resetAt: number;
-  }
->();
+// src/lib/rateLimit.ts
+import { Redis } from "@upstash/redis";
+
+// Upstash는 환경 변수 UPSTASH_REDIS_REST_URL와
+// UPSTASH_REDIS_REST_TOKEN를 자동으로 읽어옵니다.
+const redis = Redis.fromEnv();
 
 export type RateLimitOptions = {
-  windowMs: number;
-  max: number;
+  windowMs: number; // 제한 시간 (밀리초)
+  max: number; // 허용 횟수
 };
 
 export type RateLimitResult = {
@@ -17,35 +16,34 @@ export type RateLimitResult = {
   retryAfterMs?: number;
 };
 
-export function checkRateLimit(key: string, options: RateLimitOptions): RateLimitResult {
-  const now = Date.now();
-  const current = store.get(key);
+/**
+ * Redis 기반 레이트 리밋 체크
+ */
+export async function checkRateLimit(key: string, options: RateLimitOptions): Promise<RateLimitResult> {
+  const fullKey = `ratelimit:${key}`;
 
-  if (!current || current.resetAt <= now) {
-    store.set(key, {
-      count: 1,
-      resetAt: now + options.windowMs,
-    });
+  // 1. 카운트 증가 (원자적 연산)
+  const count = await redis.incr(fullKey);
 
-    return {
-      ok: true,
-      remaining: options.max - 1,
-    };
+  // 2. 처음 생성된 키라면 만료 시간 설정
+  if (count === 1) {
+    // windowMs를 초 단위로 변환 (Redis EXPIRE는 초 단위 기준)
+    await redis.expire(fullKey, Math.floor(options.windowMs / 1000));
   }
 
-  if (current.count >= options.max) {
+  // 3. 제한 초과 확인
+  if (count > options.max) {
+    const ttl = await redis.ttl(fullKey); // 남은 시간(초) 조회
     return {
       ok: false,
       remaining: 0,
-      retryAfterMs: current.resetAt - now,
+      retryAfterMs: ttl > 0 ? ttl * 1000 : options.windowMs,
     };
   }
 
-  current.count += 1;
-
+  // 4. 통과
   return {
     ok: true,
-    remaining: options.max - current.count,
+    remaining: options.max - count,
   };
 }
-
