@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/atoms/Button";
+import { Card } from "@/components/atoms/Card";
 import { useRouter } from "next/navigation";
 import { useCallback } from "react";
 
@@ -21,26 +22,27 @@ export default function WelcomeHero({ userName = "사용자", onPrimaryAction, c
   }, [onPrimaryAction, router]);
 
   return (
-    <section
-      className={[
-        "w-full rounded-[20px] bg-white text-center",
-        "py-12 mb-8",
-        "shadow-[0_2px_20px_rgba(45,95,46,0.08)]",
-        className,
-      ]
-        .filter(Boolean)
-        .join(" ")}
-    >
-      <div className="mx-auto max-w-4xl">
-        <h1 className="text-[2rem] font-bold mb-2">
-          <span className="text-[#4A9D4D]">{userName}</span> 님, 안녕하세요.
-        </h1>
-        <p className="text-[1.1rem] text-[#4F4F4F] mb-6">거북거북!</p>
-
-        <div className="flex justify-center">
-          <Button onClick={handlePrimaryAction}>측정하기</Button>
+    <section className={className}>
+      <Card className="w-full h-[270px] flex-shrink-0 flex items-center justify-between py-[28px] px-[80px] overflow-hidden">
+        <div className="greeting-text">
+          <h1
+            className="text-[27px] font-black mb-2"
+            style={{ fontFamily: "Nunito, sans-serif" }}
+          >
+            <span className="text-[var(--green)]">{userName}</span> 님, 안녕하세요!
+          </h1>
+          <p className="text-[14px] font-semibold text-[var(--text-sub)] leading-relaxed">
+            오늘도 바른 자세로 하루를 시작해봐요 🐢
+          </p>
         </div>
-      </div>
+        <Button
+          size="lg"
+          onClick={handlePrimaryAction}
+          className="flex-shrink-0 py-3.5 px-8"
+        >
+          측정하기
+        </Button>
+      </Card>
     </section>
   );
 }

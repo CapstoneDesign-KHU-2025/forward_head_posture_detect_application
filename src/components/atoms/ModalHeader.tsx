@@ -1,6 +1,8 @@
 "use client";
 
-import { Button } from "@/components/atoms/Button";
+import { X } from "lucide-react";
+import { Icon } from "@/components/atoms/Icon";
+import { IconButton } from "@/components/atoms/IconButton";
 
 type ModalHeaderProps = {
   title: string;
@@ -11,31 +13,31 @@ type ModalHeaderProps = {
 
 export function ModalHeader({ title, subtitle, icon, onClose }: ModalHeaderProps) {
   return (
-    <header
-      className="flex shrink-0 flex-col px-6 pt-5 pb-5"
-      style={{ background: "linear-gradient(135deg, #4a7c59 0%, #6aab7a 100%)" }}
-    >
-      <div className="flex items-center justify-between">
-        <div>
-          <h2
-            className="flex items-center gap-2 font-extrabold text-[20px] text-white"
-            style={{ fontFamily: "Nunito, sans-serif" }}
-          >
-            {icon}
-            {title}
-          </h2>
-          {subtitle && <p className="mt-0.5 text-[14px] text-white/75">{subtitle}</p>}
-        </div>
-        <Button
-          type="button"
-          variant="icon"
-          onClick={onClose}
-          className="h-[34px] w-[34px] px-0 rounded-[10px] bg-white/20 text-white hover:bg-white/35 text-[20px] leading-none"
+    <header className="flex shrink-0 items-start justify-between gap-4 pl-6 pr-8 pt-[22px] pb-[8px]">
+      <div className="min-w-0 flex-1">
+        <h2
+          className="mb-1.5 flex items-center gap-2 text-[20px] font-black leading-tight text-[#2d3b35]"
+          style={{ fontFamily: "Nunito, sans-serif" }}
         >
-          ×
-        </Button>
+          {icon}
+          {title}
+        </h2>
+        {subtitle && <p className="text-sm text-[#7a9585]">{subtitle}</p>}
+      </div>
+      <div className="shrink-0 pl-2 pr-4">
+        <IconButton
+          variant="outline"
+          size="sm"
+          icon={
+            <Icon size="xs">
+              <X />
+            </Icon>
+          }
+          onClick={onClose}
+          ariaLabel="모달 닫기"
+          className="h-[30px] w-[30px] shrink-0"
+        />
       </div>
     </header>
   );
 }
-

@@ -1,31 +1,43 @@
-"use client";
+import Link from "next/link";
+import { cn } from "@/utils/cn";
 
-import { usePathname } from "next/navigation";
-import { FooterLink } from "@/components/atoms/FooterLink";
+const FOOTER_LINKS = [
+  { label: "서비스 약관", href: "/terms" },
+  { label: "개인정보처리방침", href: "/privacy" },
+  { label: "문의하기", href: "/contact" },
+];
 
 type FooterProps = {
-  links: { label: string; href: string; underline?: boolean }[];
   className?: string;
 };
 
-export default function Footer({ links, className }: FooterProps) {
-  const pathname = usePathname();
-  const isLoginPage = pathname === "/login";
-  const isCharacterPage = pathname === "/character";
-
-  // 로그인 페이지와 캐릭터 선택 페이지에서는 Footer 숨김
-  if (isLoginPage || isCharacterPage) return null;
-
+export default function Footer({ className }: FooterProps) {
   return (
-    <footer className={["w-full border-t border-black/10 bg-white", className].filter(Boolean).join(" ")}>
-      <div className="mx-auto max-w-6xl px-4 py-6">
-        <nav className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
-          {links.map((l) => (
-            <FooterLink key={l.href} href={l.href} underline={l.underline}>
-              {l.label}
-            </FooterLink>
-          ))}
-        </nav>
+    <footer
+      className={cn(
+        "w-full border-t border-[var(--green-border)] py-8 px-6 md:px-12 flex flex-col sm:flex-row items-center justify-between gap-4 flex-shrink-0",
+        className
+      )}
+    >
+      <div
+        className="font-[Nunito] font-extrabold text-base text-[var(--green)]"
+        style={{ fontFamily: "Nunito, sans-serif" }}
+      >
+        🐢 거북목 거북거북!
+      </div>
+      <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-1">
+        {FOOTER_LINKS.map((link) => (
+          <Link
+            key={link.href}
+            href={link.href}
+            className="text-xs text-[var(--text-muted)] hover:text-[var(--green)] transition-colors"
+          >
+            {link.label}
+          </Link>
+        ))}
+      </div>
+      <div className="text-xs text-[var(--text-muted)]">
+        © 2026 거북목 거북거북! Team. All rights reserved.
       </div>
     </footer>
   );

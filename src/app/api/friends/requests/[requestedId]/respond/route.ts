@@ -35,5 +35,5 @@ export const POST = withApiReq(
 
     return json({ ok: true, ...result }, 200);
   },
-  { path: "/api/friends/requests/[requestsId]/respond POST" },
+  { path: "/api/friends/requests/[requestedId]/respond POST" },
 );

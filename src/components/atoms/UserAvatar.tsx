@@ -12,7 +12,7 @@ export function UserAvatar({ initial, bgColor = "#6aab7a", className }: UserAvat
       className={cn(
         "flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full",
         "text-[16px] font-bold text-white",
-        className
+        className,
       )}
       style={{ backgroundColor: bgColor }}
     >
@@ -20,3 +20,4 @@ export function UserAvatar({ initial, bgColor = "#6aab7a", className }: UserAvat
     </div>
   );
 }
+
