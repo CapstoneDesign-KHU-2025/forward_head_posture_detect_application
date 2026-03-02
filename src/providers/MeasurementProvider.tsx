@@ -10,7 +10,7 @@ import { getTodayCount, storeMeasurementAndAccumulate } from "@/lib/postureLocal
 import { useTurtleNeckMeasurement } from "@/hooks/useTurtleNeckMeasurement";
 import { createISO } from "@/utils/createISO";
 import { postDailySummaryAction } from "@/app/actions/summaryActions";
-import { FloatingBar } from "@/components/molecules/FloatingBar";
+import { FloatingBarController } from "@/components/molecules/FloatingBarController";
 import { RecoveryNotice } from "@/components/molecules/RecoveryNotice";
 import { logger } from "@/lib/logger";
 import type { StatusBannerType } from "@/hooks/useTurtleNeckMeasurement";
@@ -239,12 +239,7 @@ export function MeasurementProvider({ children }: { children: ReactNode }) {
       {/* 비디오 - 항상 숨김 */}
       <video ref={videoRef} className="absolute -left-[9999px]" muted playsInline />
 
-      <FloatingBar
-        visible={!stopEstimating && measurementStarted}
-        title="측정 중"
-        elapsedSeconds={elapsedSeconds}
-        onStop={stopMeasurement}
-      />
+      <FloatingBarController />
 
       <RecoveryNotice
         isVisible={showRecoveryNotice}
