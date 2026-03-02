@@ -6,6 +6,11 @@ import { z } from "zod";
 
 const CreateRequestSchema = z.object({
   toUserId: z.string().min(1, "We can't find this friend!"),
+  type: z.preprocess((val) => (val === null ? undefined : val), z.enum(["incoming", "outgoing"]).default("incoming")),
+  status: z.preprocess(
+    (val) => (val === null ? undefined : val),
+    z.enum(["PENDING", "ACCEPTED", "REJECTED", "CANCELED"]).nullable().default(null),
+  ),
 });
 
 export const POST = withApiReq(
@@ -46,8 +51,8 @@ export const GET = withApiReq(
 
     const { searchParams } = new URL(req.url);
     const parsedQuery = GetRequestsQuerySchema.safeParse({
-      type: searchParams.get("type") || undefined,
-      status: searchParams.get("status") || undefined,
+      type: searchParams.get("type"),
+      status: searchParams.get("status"),
     });
 
     if (!parsedQuery.success) {
