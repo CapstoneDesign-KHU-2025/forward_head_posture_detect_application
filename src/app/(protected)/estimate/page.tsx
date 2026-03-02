@@ -6,9 +6,13 @@ import EstimatePanel from "@/components/molecules/EstimatePanel";
 import ErrorBanner from "@/components/atoms/ErrorBanner";
 import AsyncBoundary from "@/components/molecules/AsyncBoundary";
 import LoadingSkeleton from "@/components/molecules/LoadingSkeleton";
+import { logger } from "@/lib/logger";
+import { useClearPostureDBOnLoad } from "@/hooks/useClearDBOnload";
+
 import { MEASUREMENT_CANVAS_SLOT_ID } from "@/providers/MeasurementProvider";
 
 export default function Estimate() {
+  useClearPostureDBOnLoad();
   const {
     stopEstimating,
     startMeasurement,
@@ -44,8 +48,11 @@ export default function Estimate() {
               <div className="w-full px-8 py-4 text-center text-[1.1rem] font-semibold rounded-t-[20px] bg-gradient-to-r from-[#6B7280] to-[#9CA3AF] text-white">
                 측정을 시작해주세요!
               </div>
-              <div className="relative w-full min-w-0 rounded-none overflow-hidden bg-[#2C3E50]" style={{ aspectRatio: "4/3" }}>
-                <LoadingSkeleton/>
+              <div
+                className="relative w-full min-w-0 rounded-none overflow-hidden bg-[#2C3E50]"
+                style={{ aspectRatio: "4/3" }}
+              >
+                <LoadingSkeleton />
               </div>
             </section>
           }
