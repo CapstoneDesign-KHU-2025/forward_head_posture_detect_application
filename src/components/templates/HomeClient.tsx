@@ -82,7 +82,7 @@ export default function HomeClient({ weeklyData, user }: HomeClientProps) {
   const [calendarRows, setCalendarRows] = useState<WeeklySummaryRow[]>([]);
   const router = useRouter();
   useEffect(() => {
-    const hasCharacter = localStorage.getItem("selectedCharacter");
+    const hasCharacter = localStorage.getItem("selectedCharacter")?.trim();
     if (!hasCharacter) {
       router.replace("/character");
       return;
@@ -98,7 +98,7 @@ export default function HomeClient({ weeklyData, user }: HomeClientProps) {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [router]);
 
   const dayStatusMap = useMemo(() => computeDayStatusMap(calendarRows), [calendarRows]);
 

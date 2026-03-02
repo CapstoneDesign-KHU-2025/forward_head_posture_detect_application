@@ -13,7 +13,7 @@ export default function OauthButton({ provider, variant = "default" }: OauthButt
   const handleSignIn = async (provider: "github" | "google") => {
     try {
       await signIn(provider, {
-        callbackUrl: "/character",
+        callbackUrl: "/",
         redirect: true,
       });
     } catch (error) {
