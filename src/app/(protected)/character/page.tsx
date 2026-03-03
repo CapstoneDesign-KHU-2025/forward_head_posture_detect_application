@@ -48,6 +48,14 @@ export default function CharacterSelectionPage() {
     router.push("/");
   };
 
+  // 이미 캐릭터가 선택돼 있으면 홈으로 바로 이동 (로그인 후 /character 콜백 시 스킵)
+  useEffect(() => {
+    const stored = localStorage.getItem("selectedCharacter");
+    if (stored?.trim()) {
+      router.replace("/");
+    }
+  }, [router]);
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Enter" && selectedCharacter) {
