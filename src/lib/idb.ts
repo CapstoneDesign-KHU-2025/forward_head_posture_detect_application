@@ -46,7 +46,12 @@ interface PostureDB extends DBSchema {
   };
 }
 
-let _db: IDBPDatabase<PostureDB>;
+let _db: IDBPDatabase<PostureDB> | null = null;
+
+/** DB 삭제 후 캐시 무효화 (다음 getDB() 시 새 연결 생성) */
+export function invalidatePostureDB() {
+  _db = null;
+}
 
 export async function getDB() {
   if (_db) return _db;

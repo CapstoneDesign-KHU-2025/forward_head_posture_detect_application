@@ -1,5 +1,6 @@
 // src/lib/db/clearDB.ts
 import { clearIndexedDB } from "@/utils/clearIndexedDB";
+import { invalidatePostureDB } from "@/lib/idb";
 import { logger } from "@/lib/logger";
 
 /**
@@ -9,7 +10,7 @@ import { logger } from "@/lib/logger";
 export async function runClearPostureDB(dbName: string = "posture-db") {
   try {
     await clearIndexedDB(dbName);
-    // sessionStorage 플래그가 필요하다면 여기서 처리
+    invalidatePostureDB();
     sessionStorage.setItem("__posture_db_cleared__", "1");
     return true;
   } catch (e) {
