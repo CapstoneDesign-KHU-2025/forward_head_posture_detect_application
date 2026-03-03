@@ -59,7 +59,7 @@ export default function OauthButton({ provider, variant = "default" }: OauthButt
       </svg>
     );
 
-  const buttonTitle = provider === "google" ? t("OauthButton.google") : t("OauthButton.github");
+  const buttonTitle = provider === "google" ? t("google") : t("github");
   return (
     <button
       onClick={provider === "google" ? () => handleSignIn("google") : () => handleSignIn("github")}

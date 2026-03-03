@@ -7,41 +7,27 @@ import { Card } from "@/components/atoms/Card";
 import DashboardMockupCard from "@/components/molecules/DashboardMockupCard";
 import Footer from "@/components/organisms/layout/Footer";
 import TurtleLogo from "@/components/atoms/TurtleLogo";
-
-const FEATURES = [
-  {
-    icon: "📷",
-    title: "웹캠만 있으면 OK",
-    desc: "별도의 장비나 측면 카메라 없이 정면 웹캠만으로 실시간 자세 측정이 가능합니다.",
-  },
-  {
-    icon: "🤖",
-    title: "AI 실시간 분석",
-    desc: "MediaPipe AI 기술로 신체 랜드마크를 추적하여 정확한 거북목 판정을 제공합니다.",
-  },
-  {
-    icon: "🔔",
-    title: "통계 기반 관리",
-    desc: "거북목 자세 감지 시 소리와 알림으로 즉시 알려드려 바른 자세를 유지하도록 돕습니다.",
-  },
-  {
-    icon: "📊",
-    title: "즉각적인 알림",
-    desc: "매일, 매주 평균 목 각도를 분석하여 자세 변화 추이를 한눈에 확인할 수 있습니다.",
-  },
-  {
-    icon: "🔒",
-    title: "개인정보 보호",
-    desc: "클라이언트 사이드 AI 처리로 영상 데이터가 서버로 전송되지 않아 안전합니다.",
-  },
-  {
-    icon: "💻",
-    title: "플랫폼 독립적",
-    desc: "브라우저만 있으면 언제 어디서나 사용 가능한 웹 기반 솔루션입니다.",
-  },
-];
-
+import { useTranslations } from "next-intl";
+type FeatureI18n = {
+  title: string;
+  description: string;
+};
 export default function LandingTemplate() {
+  const t = useTranslations("landing");
+
+  // 1) Get localized features from JSON
+  const featureTexts = t.raw("features") as FeatureI18n[];
+
+  // 2) Keep icons in code (not in i18n)
+  const icons = ["📷", "🤖", "🔔", "📊", "🔒", "💻"];
+
+  // 3) Merge them
+  const FEATURES = featureTexts.map((f, i) => ({
+    icon: icons[i] ?? "✨",
+    title: f.title,
+    desc: f.description, // your UI currently expects `desc`
+  }));
+
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {

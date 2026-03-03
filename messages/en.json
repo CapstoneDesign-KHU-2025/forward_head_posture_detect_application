@@ -444,5 +444,58 @@
       "far": "Too far. Please move forward.",
       "good": "Perfect distance."
     }
+  },
+  "useMenuDropdown": {
+    "menu": {
+      "sensitivity": "set sensitivity",
+      "change_character": "change character",
+      "logout": "logout"
+    }
+  },
+  "getStatusBanner": {
+    "isInitial": "start estimating!",
+    "stopEstimating": "estimating is stopped",
+    "badPosture": "bad posture!",
+    "guideMessage": "good posture!"
+  },
+  "login": {
+    "description": "AI Posture Correction Program",
+    "startEasily": "Get Started Easily",
+    "policy": {
+      "whenLogin": "By logging in,",
+      "policy": "Terms of Service",
+      "and": "and",
+      "datapolicy": "Privacy Policy",
+      "agree": " you are deemed to have agreed."
+    }
+  },
+
+  "landing": {
+    "features": [
+      {
+        "title": "All You Need Is a Webcam",
+        "description": "Measure your posture in real time using only a front-facing webcam — no additional equipment or side cameras required."
+      },
+      {
+        "title": "Real-Time AI Analysis",
+        "description": "Powered by MediaPipe AI technology, the system tracks body landmarks to accurately detect forward head posture."
+      },
+      {
+        "title": "Instant Alerts",
+        "description": "Receive immediate sound and on-screen notifications when poor posture is detected to help you maintain proper alignment."
+      },
+      {
+        "title": "Statistics-Based Tracking",
+        "description": "Analyze daily and weekly average neck angles to monitor posture changes at a glance."
+      },
+      {
+        "title": "Privacy Protection",
+        "description": "With client-side AI processing, video data is never sent to a server, ensuring your privacy and security."
+      },
+      {
+        "title": "Platform Independent",
+        "description": "A web-based solution that works anytime, anywhere — all you need is a browser."
+      }
+    ]
   }
 }

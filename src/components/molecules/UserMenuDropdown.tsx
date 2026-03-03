@@ -6,7 +6,7 @@ import { signOut } from "next-auth/react";
 import SensitivitySettingsModal from "@/components/organisms/home/SensitivitySettingsModal";
 import CharacterSelectionModal from "@/components/organisms/home/CharacterSelectionModal";
 import { useEffect, useRef, useState } from "react";
-
+import { useTranslations } from "next-intl";
 type UserMenuDropdownProps = {
   userName: string;
   userEmail?: string;
@@ -24,6 +24,7 @@ export default function UserMenuDropdown({
   onClose,
   anchorRef,
 }: UserMenuDropdownProps) {
+  const t = useTranslations("useMenuDropdown");
   const [isSensitivityModalOpen, setIsSensitivityModalOpen] = useState(false);
   const [isCharacterModalOpen, setIsCharacterModalOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -85,7 +86,7 @@ export default function UserMenuDropdown({
             <Icon size="sm">
               <Settings className="text-black shrink-0" />
             </Icon>
-            <span>민감도 설정</span>
+            <span>{t("menu.sensitivity")}</span>
           </button>
 
           <button
@@ -98,7 +99,7 @@ export default function UserMenuDropdown({
             <Icon size="sm">
               <UserCircle className="text-black shrink-0" />
             </Icon>
-            <span>캐릭터 변경</span>
+            <span>{t("menu.change_character")}</span>
           </button>
 
           <button
@@ -111,7 +112,7 @@ export default function UserMenuDropdown({
             <Icon size="sm">
               <LogOut className="text-black shrink-0" />
             </Icon>
-            <span>로그아웃</span>
+            <span>{t("menu.logout")}</span>
           </button>
         </div>
       </div>

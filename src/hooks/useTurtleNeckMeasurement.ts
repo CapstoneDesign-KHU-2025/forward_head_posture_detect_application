@@ -25,6 +25,7 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating, isInitial }: 
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const t = useTranslations("Measurement");
+  const t_banner = useTranslations("getStatusBanner");
   // === 내부 제어용 refs (훅 안에 숨김) ===
   const landmarkerRef = useRef<PoseLandmarker | null>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -487,6 +488,7 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating, isInitial }: 
   const bannerType = getStatusBannerTypeCore(stopEstimating, isTurtle, measurementStarted, guideColor, guideMessage);
 
   const bannerMessage = getStatusBannerMessageCore(
+    t_banner,
     isInitial,
     stopEstimating,
     isTurtle,

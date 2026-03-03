@@ -6,18 +6,13 @@ import EstimatePanel from "@/components/molecules/EstimatePanel";
 import ErrorBanner from "@/components/atoms/ErrorBanner";
 import AsyncBoundary from "@/components/molecules/AsyncBoundary";
 import LoadingSkeleton from "@/components/molecules/LoadingSkeleton";
-import { logger } from "@/lib/logger";
-import { useClearPostureDBOnLoad } from "@/hooks/useClearDBOnload";
 
 import { MEASUREMENT_CANVAS_SLOT_ID } from "@/providers/MeasurementProvider";
 import { useTranslations } from "next-intl";
 
 export default function Estimate() {
-<<<<<<< HEAD:src/app/[locale]/(protected)/estimate/page.tsx
   const t = useTranslations("Estimate");
-=======
-  useClearPostureDBOnLoad();
->>>>>>> develop:src/app/(protected)/estimate/page.tsx
+
   const {
     stopEstimating,
     startMeasurement,
