@@ -5,7 +5,7 @@ import { createPortal } from "react-dom";
 import { usePathname, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { getTodayHourly } from "@/lib/hourlyOps";
-import { getTodayCount, storeMeasurementAndAccumulate } from "@/lib/postureLocal";
+import { getTodayTurtleWarningCount, storeMeasurementAndAccumulate } from "@/lib/postureLocal";
 import { useTurtleNeckMeasurement } from "@/hooks/useTurtleNeckMeasurement";
 import { createISO } from "@/utils/createISO";
 import { postDailySummaryAction } from "@/app/actions/summaryActions";
@@ -99,7 +99,7 @@ export function MeasurementProvider({ children }: { children: ReactNode }) {
           const rows = await getTodayHourly(userId);
           const dailySumWeighted = rows?.reduce((acc: number, r: any) => acc + (r?.sumWeighted ?? 0), 0) ?? 0;
           const dailyWeightSeconds = rows?.reduce((acc: number, r: any) => acc + (r?.weight ?? 0), 0) ?? 0;
-          const count = await getTodayCount(userId);
+          const count = await getTodayTurtleWarningCount(userId);
           const dateISO = createISO();
           const postData = {
             userId,

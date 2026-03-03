@@ -124,7 +124,7 @@ export async function getHourlyAverage(userId: string, date = new Date()) {
   return record.sumWeighted / record.weight;
 }
 
-export async function getTodayCount(userId: string | undefined): Promise<number> {
+export async function getTodayTurtleWarningCount(userId: string | undefined): Promise<number> {
   if (!userId) return 0;
 
   const db = await getDB();

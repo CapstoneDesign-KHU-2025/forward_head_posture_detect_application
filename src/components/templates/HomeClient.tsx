@@ -8,7 +8,7 @@ import { useMeasurement } from "@/providers/MeasurementProvider";
 import { apiRequest } from "@/lib/api/client";
 import { computeTodaySoFarAverage } from "@/lib/hourlyOps";
 import { computeDayStatusMap } from "@/utils/computeDayStatusMap";
-import { getTodayCount, getTodayMeasuredSeconds } from "@/lib/postureLocal";
+import { getTodayTurtleWarningCount, getTodayMeasuredSeconds } from "@/lib/postureLocal";
 import { computeImprovementPercent } from "@/utils/computeImprovementPercent";
 import { usePathname, useRouter } from "next/navigation";
 import LoadingSkeleton from "../molecules/LoadingSkeleton";
@@ -117,7 +117,7 @@ export default function HomeClient({ weeklyData, user }: HomeClientProps) {
         setError(null);
 
         const avg = await computeTodaySoFarAverage(user.id);
-        const count = await getTodayCount(user.id);
+        const count = await getTodayTurtleWarningCount(user.id);
         const hours = await getTodayMeasuredSeconds(user.id);
 
         if (!cancelled) {
