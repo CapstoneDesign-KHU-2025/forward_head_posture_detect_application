@@ -111,7 +111,7 @@ export function MeasurementProvider({ children }: { children: ReactNode }) {
           if (dailyWeightSeconds > 0) {
             const result = await postDailySummaryAction(null, postData);
             if (result?.ok) {
-              await cleanupAfterSync(userId);
+              await cleanupAfterSync();
             }
           }
           if (forced) return;

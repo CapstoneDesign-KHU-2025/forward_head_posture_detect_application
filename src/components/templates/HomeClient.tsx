@@ -6,9 +6,7 @@ import ErrorBanner from "@/components/atoms/ErrorBanner";
 import { useMeasurement } from "@/providers/MeasurementProvider";
 
 import { apiRequest } from "@/lib/api/client";
-import { computeTodaySoFarAverage } from "@/lib/hourlyOps";
 import { computeDayStatusMap } from "@/utils/computeDayStatusMap";
-import { getTodayTurtleWarningCount, getTodayMeasuredSeconds } from "@/lib/postureLocal";
 import { computeImprovementPercent } from "@/utils/computeImprovementPercent";
 import { usePathname, useRouter } from "next/navigation";
 import LoadingSkeleton from "../molecules/LoadingSkeleton";
@@ -111,19 +109,25 @@ export default function HomeClient({ weeklyData, user }: HomeClientProps) {
   useEffect(() => {
     let cancelled = false;
 
-    async function loadLocalData() {
+    async function loadTodayData() {
       try {
         setLoading(true);
         setError(null);
 
-        const avg = await computeTodaySoFarAverage(user.id);
-        const count = await getTodayTurtleWarningCount(user.id);
-        const hours = await getTodayMeasuredSeconds(user.id);
+        const result = await apiRequest<{
+          todayAvg: number | null;
+          safeRow?: { count?: number; weightSeconds?: number };
+        }>({ requestPath: "/summaries/daily" });
 
-        if (!cancelled) {
-          setTodayAvg(avg);
-          setTodayCount(count);
-          setTodayHour(hours);
+        if (!cancelled && result.ok && result.data) {
+          const data = result.data;
+          setTodayAvg(data.todayAvg ?? null);
+          setTodayCount(data.safeRow?.count ?? 0);
+          setTodayHour(data.safeRow?.weightSeconds ?? 0);
+        } else if (!cancelled && !result.ok) {
+          setTodayAvg(null);
+          setTodayCount(0);
+          setTodayHour(0);
         }
       } catch (e: any) {
         if (!cancelled) {
@@ -134,7 +138,7 @@ export default function HomeClient({ weeklyData, user }: HomeClientProps) {
       }
     }
 
-    loadLocalData();
+    loadTodayData();
 
     return () => {
       cancelled = true;

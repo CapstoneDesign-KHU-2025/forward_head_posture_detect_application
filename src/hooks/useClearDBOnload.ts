@@ -1,16 +1,11 @@
-// src/hooks/useClearPostureDBOnLoad.ts
-import { cleanupOldPostureData } from "@/utils/cleanupOldPostureData";
+// src/hooks/useClearDBOnload.ts
+import { runClearPostureDB } from "@/utils/clearDB";
 
 /**
- * 서버 동기화 후 로컬 DB 정리 (팀원 의도대로)
+ * 서버 동기화 후 로컬 DB 전체 삭제 (팀원 의도대로)
  * - postDailySummaryAction 성공 시 호출
- * - 오래된 hourly, samples 삭제 (중복/오래된 데이터 방지, 브라우저 메모리 절약)
- * @param userId - 사용자 ID
- * @param keepDays - 이 일수 이전 데이터 삭제 (기본 3일)
+ * - 서버에 동기화됐으므로 로컬 데이터 불필요 (중복 방지, 브라우저 메모리 절약)
  */
-export async function cleanupAfterSync(
-  userId: string,
-  keepDays: number = 3
-): Promise<{ hourlyDeleted: number; samplesDeleted: number }> {
-  return cleanupOldPostureData(userId, keepDays);
+export async function cleanupAfterSync(): Promise<boolean> {
+  return runClearPostureDB("posture-db");
 }
