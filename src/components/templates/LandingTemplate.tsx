@@ -245,8 +245,6 @@ export default function LandingTemplate() {
           시작하기
         </button>
       </div>
-
-      <Footer />
     </div>
   );
 }

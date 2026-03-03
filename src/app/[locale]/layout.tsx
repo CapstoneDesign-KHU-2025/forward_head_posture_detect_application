@@ -34,15 +34,19 @@ export default async function LocaleLayout({ children, params }: Props) {
     <NextIntlClientProvider locale={locale} messages={messages}>
       <Providers session={session}>
         <MeasurementProvider>
-          <Header user={user} />
-          <PageContainer>{children}</PageContainer>
-          <Footer
-            links={[
-              { label: "Privacy Policy", href: "/privacy" },
-              { label: "Terms of Service", href: "/terms" },
-              { label: "Contact Us", href: "/contact" },
-            ]}
-          />
+          <div className="h-dvh flex flex-col">
+            <Header user={user} />
+            <main className="flex-1 overflow-y-auto">
+              {children}
+              <Footer
+                links={[
+                  { label: "Privacy Policy", href: "/privacy" },
+                  { label: "Terms of Service", href: "/terms" },
+                  { label: "Contact Us", href: "/contact" },
+                ]}
+              />
+            </main>
+          </div>
         </MeasurementProvider>
       </Providers>
       /
