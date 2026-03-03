@@ -20,7 +20,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           rel="stylesheet"
         />
       </head>
-      <body className="min-h-dvh bg-neutral-50 text-black antialiased">{children}</body>
+      <body className="flex h-dvh flex-col overflow-hidden bg-[var(--green-pale)] text-black antialiased">
+        <div className="flex min-h-0 w-full flex-1 flex-col overflow-hidden">{children}</div>
+      </body>
     </html>
   );
 }

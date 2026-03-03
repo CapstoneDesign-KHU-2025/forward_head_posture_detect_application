@@ -15,17 +15,14 @@ type FeatureI18n = {
 export default function LandingTemplate() {
   const t = useTranslations("landing");
 
-  // 1) Get localized features from JSON
   const featureTexts = t.raw("features") as FeatureI18n[];
 
-  // 2) Keep icons in code (not in i18n)
   const icons = ["📷", "🤖", "🔔", "📊", "🔒", "💻"];
 
-  // 3) Merge them
   const FEATURES = featureTexts.map((f, i) => ({
     icon: icons[i] ?? "✨",
     title: f.title,
-    desc: f.description, // your UI currently expects `desc`
+    description: f.description,
   }));
 
   useEffect(() => {
@@ -58,14 +55,14 @@ export default function LandingTemplate() {
               className="landing-hero-fade-up-1 font-[Nunito] text-[clamp(2rem,4vw,3.2rem)] font-black leading-tight text-[var(--text)] mb-4"
               style={{ fontFamily: "Nunito, sans-serif" }}
             >
-              거북목, 이제
+              {t("hero.title.1")}
               <br />
-              <span className="text-[var(--green)]">AI로 관리하세요</span>
+              <span className="text-[var(--green)]">{t("hero.title.2")}</span>
             </h1>
             <p className="landing-hero-fade-up-2 text-base text-[var(--text-sub)] leading-[1.75] mb-9 font-normal">
-              카메라 한 대로 충분해요.
+              {t("hero.description.1")}
               <br />
-              실시간으로 자세를 감지하고, 거북목이 되는 순간 바로 알려드려요.
+              {t("hero.description.2")}
             </p>
             <div className="landing-hero-fade-up-3 flex gap-3 items-center flex-wrap">
               <Button
@@ -74,14 +71,15 @@ export default function LandingTemplate() {
                 className="inline-flex items-center gap-2 py-3.5 px-7 rounded-[14px] text-[15px] font-bold shadow-[0_4px_16px_rgba(74,124,89,0.3)] hover:shadow-[0_8px_24px_rgba(74,124,89,0.35)] hover:-translate-y-0.5"
                 onClick={() => signIn()}
               >
-                시작하기
+                {t("hero.buttons.start")}
               </Button>
               <button
                 type="button"
                 onClick={scrollToHow}
                 className="group inline-flex items-center gap-1.5 text-[var(--text-sub)] text-sm font-semibold border-none bg-transparent cursor-pointer transition-colors hover:text-[var(--green)]"
               >
-                어떻게 작동하나요 <span className="transition-transform duration-200 group-hover:translate-x-1">→</span>
+                {t("hero.buttons.howItWorks")}{" "}
+                <span className="transition-transform duration-200 group-hover:translate-x-1">→</span>
               </button>
             </div>
           </div>
@@ -157,7 +155,7 @@ export default function LandingTemplate() {
                   {f.icon}
                 </div>
                 <div className="font-[Nunito] font-extrabold text-[17px] mb-2">{f.title}</div>
-                <div className="text-sm text-[var(--text-sub)] leading-relaxed">{f.desc}</div>
+                <div className="text-sm text-[var(--text-sub)] leading-relaxed">{f.description}</div>
               </Card>
             </div>
           ))}

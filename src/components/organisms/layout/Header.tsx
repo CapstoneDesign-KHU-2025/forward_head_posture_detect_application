@@ -11,7 +11,7 @@ import { FriendsModal } from "@/components/organisms/friends/FriendsModal";
 import { useFriendsData } from "@/hooks/useFriendsData";
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import LanguageSwitcher from "@/components/molecules/LanguageSwithcer";
+
 import LanguageToggle from "@/components/molecules/LanguageToggle";
 type HeaderProps = {
   user?: { name: string; avatarSrc?: string } | null;
