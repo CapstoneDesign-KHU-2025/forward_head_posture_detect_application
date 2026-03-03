@@ -10,7 +10,7 @@ import { computeTodaySoFarAverage } from "@/lib/hourlyOps";
 import { computeDayStatusMap } from "@/utils/computeDayStatusMap";
 import { getTodayCount, getTodayMeasuredSeconds } from "@/lib/postureLocal";
 import { computeImprovementPercent } from "@/utils/computeImprovementPercent";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import LoadingSkeleton from "../molecules/LoadingSkeleton";
 
 type WeeklySummaryRow = {
@@ -66,6 +66,7 @@ type HomeData = {
 };
 
 export default function HomeClient({ weeklyData, user }: HomeClientProps) {
+  const pathname = usePathname();
   const { stopEstimating, measurementStarted } = useMeasurement();
   const isMeasuring = !stopEstimating && measurementStarted;
 
@@ -138,7 +139,7 @@ export default function HomeClient({ weeklyData, user }: HomeClientProps) {
     return () => {
       cancelled = true;
     };
-  }, [user.id]);
+  }, [user.id, pathname, stopEstimating]);
 
   useEffect(() => {
     if (

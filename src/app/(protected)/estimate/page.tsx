@@ -6,13 +6,10 @@ import EstimatePanel from "@/components/molecules/EstimatePanel";
 import ErrorBanner from "@/components/atoms/ErrorBanner";
 import AsyncBoundary from "@/components/molecules/AsyncBoundary";
 import LoadingSkeleton from "@/components/molecules/LoadingSkeleton";
-import { logger } from "@/lib/logger";
-import { useClearPostureDBOnLoad } from "@/hooks/useClearDBOnload";
 
 import { MEASUREMENT_CANVAS_SLOT_ID } from "@/providers/MeasurementProvider";
 
 export default function Estimate() {
-  useClearPostureDBOnLoad();
   const {
     stopEstimating,
     startMeasurement,

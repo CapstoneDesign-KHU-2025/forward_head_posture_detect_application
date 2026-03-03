@@ -4,12 +4,12 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState, t
 import { createPortal } from "react-dom";
 import { usePathname, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { startTransition, useActionState } from "react";
 import { getTodayHourly } from "@/lib/hourlyOps";
 import { getTodayCount, storeMeasurementAndAccumulate } from "@/lib/postureLocal";
 import { useTurtleNeckMeasurement } from "@/hooks/useTurtleNeckMeasurement";
 import { createISO } from "@/utils/createISO";
 import { postDailySummaryAction } from "@/app/actions/summaryActions";
+import { cleanupAfterSync } from "@/hooks/useClearDBOnload";
 import { FloatingBarController } from "@/components/molecules/FloatingBarController";
 import { RecoveryNotice } from "@/components/molecules/RecoveryNotice";
 import { logger } from "@/lib/logger";
@@ -60,7 +60,6 @@ export function MeasurementProvider({ children }: { children: ReactNode }) {
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [showRecoveryNotice, setShowRecoveryNotice] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const [_dailySumState, dailySumAction] = useActionState(postDailySummaryAction, null);
   const [slotEl, setSlotEl] = useState<HTMLElement | null>(null);
   const [portalTarget, setPortalTarget] = useState<HTMLElement | null>(null);
   useEffect(() => {
@@ -109,7 +108,12 @@ export function MeasurementProvider({ children }: { children: ReactNode }) {
             weightSeconds: dailyWeightSeconds,
             count,
           };
-          startTransition(() => dailySumAction(postData));
+          if (dailyWeightSeconds > 0) {
+            const result = await postDailySummaryAction(null, postData);
+            if (result?.ok) {
+              await cleanupAfterSync(userId);
+            }
+          }
           if (forced) return;
         }
       } catch (err) {
@@ -123,7 +127,7 @@ export function MeasurementProvider({ children }: { children: ReactNode }) {
         }
       }
     },
-    [userId, stopEstimating, angle, isTurtle, isProcessing, session?.user?.id, dailySumAction],
+    [userId, stopEstimating, angle, isTurtle, isProcessing, session?.user?.id],
   );
 
   const startMeasurement = useCallback(() => {
@@ -141,14 +145,18 @@ export function MeasurementProvider({ children }: { children: ReactNode }) {
     sessionStorage.setItem(SESSION_STORAGE_MEASUREMENT_INTERRUPTED, "1");
   }, [measurementStarted]);
 
-  // pathname 변경 시: 측정 페이지 밖으로 나가면 카메라 끄기
+  // pathname 변경 시: 측정 페이지 밖으로 나가면 카메라 끄기 + 로컬 저장 & 서버 전송
   useEffect(() => {
     if (pathname !== "/estimate" && pathname !== "/") {
       if (measurementStarted) {
         handleStopMeasurement(true);
       }
       setStopEstimating(true);
-    } else if (pathname === "/" && !measurementStarted) {
+    } else if (pathname === "/") {
+      // 홈으로 이동 시에도 측정 중이면 중단 (로컬 저장 + 서버 전송)
+      if (measurementStarted) {
+        handleStopMeasurement(true);
+      }
       setStopEstimating(true);
     }
   }, [pathname, measurementStarted, handleStopMeasurement]);
