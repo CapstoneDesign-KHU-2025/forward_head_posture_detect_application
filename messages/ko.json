@@ -141,6 +141,10 @@
       "next_stage": "다음 단계까지",
       "day": "일 ",
       "left": "남았어요!"
+    },
+    "header": {
+      "title": "거북이 진화",
+      "description": "경고 10회 이하인 날 10일마다 진화!"
     }
   },
   "FriendList": {
@@ -224,12 +228,12 @@
     "fivemins_average": "5분 단위 평균 목 각도"
   },
   "SensitivitySettingsModal": {
-    "sens_options": {
+    "sense_options": {
       "low": { "name": "낮음", "description": "자세가 많이 틀어졌을 때만 알림" },
       "normal": { "name": "보통", "description": "적당한 수준에서 알림 (권장)" },
       "high": {
         "name": "높음",
-        "desc": "자세가 조금만 틀어져도 바로 알림"
+        "description": "자세가 조금만 틀어져도 바로 알림"
       }
     },
     "ModalHeader": {

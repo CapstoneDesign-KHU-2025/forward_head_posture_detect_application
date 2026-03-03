@@ -28,9 +28,9 @@ export default function TurtleEvolutionCard({ goodDays }: TurtleEvolutionCardPro
       {/* 헤더: 제목 + 툴팁 */}
       <div className="flex items-center gap-2 flex-shrink-0">
         <h2 className="text-[18px] font-extrabold text-[var(--text)]" style={{ fontFamily: "Nunito, sans-serif" }}>
-          거북이 진화
+          {t("header.title")}
         </h2>
-        <EvolutionTooltip text="경고 10회 이하인 날 10일마다 진화!" />
+        <EvolutionTooltip text={t("header.description")} />
       </div>
 
       {/* 배지 + 스텝 + 진행 문구 */}

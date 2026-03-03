@@ -1,10 +1,7 @@
 import { auth } from "@/auth";
-<<<<<<<< HEAD:src/app/[locale]/page.tsx
 import { redirect } from "@/navigation";
-========
-import { redirect } from "next/navigation";
->>>>>>>> develop:src/app/[locale]/(protected)/page.tsx
-import { getDailySummaryAction } from "../actions/summaryActions";
+
+import { getDailySummaryAction } from "@/app/actions/summaryActions";
 import HomeClient, { WeeklySummaryData } from "@/components/templates/HomeClient";
 import { getTranslations } from "next-intl/server";
 type Props = {

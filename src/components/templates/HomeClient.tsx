@@ -216,7 +216,8 @@ export default function HomeClient({ weeklyData, user }: HomeClientProps) {
           },
         ],
     challenge: {
-      title: isEmptyState ? t("HomeData.challenge.emptyTitle") : t("HomeData·challenge.title"),
+      title: isEmptyState ? t("HomeData.challenge.emptyTitle") : t("HomeData.challenge.title"),
+
       description: t("HomeData.challenge.description"),
       progress: isEmptyState ? 0 : 30,
       ctaText: t("HomeData.challenge.cta"),

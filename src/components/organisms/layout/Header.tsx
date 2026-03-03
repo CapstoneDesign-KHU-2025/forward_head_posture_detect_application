@@ -11,6 +11,8 @@ import { FriendsModal } from "@/components/organisms/friends/FriendsModal";
 import { useFriendsData } from "@/hooks/useFriendsData";
 import { useState } from "react";
 import { useTranslations } from "next-intl";
+import LanguageSwitcher from "@/components/molecules/LanguageSwithcer";
+import LanguageToggle from "@/components/molecules/LanguageToggle";
 type HeaderProps = {
   user?: { name: string; avatarSrc?: string } | null;
   className?: string;
@@ -116,7 +118,9 @@ export default function Header({ user: initialUser, className }: HeaderProps) {
             </nav>
 
             {/* Right: 친구 아이콘 + 프로필 */}
+
             <div className="flex items-center gap-2">
+              <LanguageToggle />
               <UserActions />
             </div>
           </div>

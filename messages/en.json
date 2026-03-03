@@ -141,6 +141,10 @@
       "next_stage": "Next stage in",
       "day": " day(s) ",
       "left": "left!"
+    },
+    "header": {
+      "title": "evolution of turtle",
+      "description": "Evolves every 10 days with 10 or fewer warnings!"
     }
   },
   "FriendList": {
@@ -223,12 +227,12 @@
     "fivemins_average": "5-min Average Neck Angle"
   },
   "SensitivitySettingsModal": {
-    "sens_options": {
+    "sense_options": {
       "low": { "name": "Low", "description": "Alert only for severe slouching" },
       "normal": { "name": "Normal", "description": "Alert at a moderate level (Recommended)" },
       "high": {
         "name": "High",
-        "desc": "Alert even for slight slouching"
+        "description": "Alert even for slight slouching"
       }
     },
     "ModalHeader": {
