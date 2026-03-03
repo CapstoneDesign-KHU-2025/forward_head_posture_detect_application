@@ -1,12 +1,17 @@
 import Link from "next/link";
 import { cn } from "@/utils/cn";
 
+const FOOTER_LINKS = [
+  { label: "서비스 약관", href: "/terms" },
+  { label: "개인정보처리방침", href: "/privacy" },
+  { label: "문의하기", href: "/contact" },
+];
+
 type FooterProps = {
-  links: { label: string; href: string }[];
   className?: string;
 };
 
-export default function Footer({ links, className }: FooterProps) {
+export default function Footer({ className }: FooterProps) {
   return (
     <footer
       className={cn(
@@ -21,7 +26,7 @@ export default function Footer({ links, className }: FooterProps) {
         🐢 거북목 거북거북!
       </div>
       <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-1">
-        {links.map((link) => (
+        {FOOTER_LINKS.map((link) => (
           <Link
             key={link.href}
             href={link.href}

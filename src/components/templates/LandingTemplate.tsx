@@ -12,15 +12,41 @@ type FeatureI18n = {
   title: string;
   description: string;
 };
+type FeatureI18n_Proof = {
+  num: string;
+  label: string;
+  source: string;
+};
 export default function LandingTemplate() {
   const t = useTranslations("landing");
 
-  const featureTexts = t.raw("features") as FeatureI18n[];
+  const featureTexts = t.raw("features.features") as FeatureI18n[];
+  const proofTexts = t.raw("proof") as FeatureI18n_Proof[];
+  const mockupTexts = t.raw("mockup.mockups") as FeatureI18n[];
+  const howItWorks = t.raw("howItWorks.workLists") as FeatureI18n[];
 
   const icons = ["📷", "🤖", "🔔", "📊", "🔒", "💻"];
+  const icons_proof = ["💻", "🐢", "⚖️"];
+  const icons_howItWorks = ["📸", "🤖", "📈"];
 
   const FEATURES = featureTexts.map((f, i) => ({
     icon: icons[i] ?? "✨",
+    title: f.title,
+    description: f.description,
+  }));
+  const PROOF = proofTexts.map((f, i) => ({
+    icon: icons_proof[i] ?? "✨",
+    num: f.num,
+    label: f.label,
+    source: f.source,
+  }));
+  const MOCKUPS = mockupTexts.map((f, i) => ({
+    num: i,
+    title: f.title,
+    description: f.description,
+  }));
+  const HOWITWORKS = howItWorks.map((f, i) => ({
+    icon: icons_proof[i] ?? "✨",
     title: f.title,
     description: f.description,
   }));
@@ -98,26 +124,17 @@ export default function LandingTemplate() {
             className="reveal text-[clamp(28px,4vw,40px)] font-black text-[var(--text)] leading-tight mb-3"
             style={{ fontFamily: "Nunito, sans-serif" }}
           >
-            현대인의 건강은 잦은 컴퓨터 사용으로
+            {t("problem.title.1")}
             <br />
-            위협받고 있어요
+            {t("problem.title.2")}
           </h2>
           <p className="reveal text-base text-[var(--text-sub)] mx-auto mb-12 max-w-[520px] leading-[1.7]">
-            어떻게 하면 업무를 하는 동안
+            {t("problem.title.1")}
             <br />
-            올바른 자세를 유지할 수 있을까?
+            {t("problem.title.2")}
           </p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5 reveal">
-            {[
-              {
-                icon: "💻",
-                num: "5시간+",
-                label: "하루 평균 컴퓨터 사용 시간",
-                source: "출처 | 방송통신위원회의 스마트폰·PC\n이용 행태 조사",
-              },
-              { icon: "🐢", num: "70%", label: "현대인 거북목 유병률", source: "출처 | 질병관리청" },
-              { icon: "⚖️", num: "15kg+", label: "잘못된 자세로 인한 목 부담", source: "출처 | 질병관리청" },
-            ].map((stat) => (
+            {PROOF.map((stat) => (
               <Card
                 key={stat.num}
                 className="rounded-[20px] p-9 text-center transition-all duration-250 hover:-translate-y-1"
@@ -140,12 +157,12 @@ export default function LandingTemplate() {
       {/* FEATURES */}
       <section className="py-[100px] px-6 md:px-12 text-center max-w-[1100px] mx-auto">
         <h2 className="reveal font-[Nunito] text-[clamp(28px,4vw,40px)] font-black tracking-tight mb-3 leading-tight">
-          거북목 탈출을 위한
+          {t("features.title.1")}
           <br />
-          모든 것
+          {t("features.title.2")}
         </h2>
         <p className="reveal text-base text-[var(--text-sub)] max-w-[520px] mx-auto mb-14 leading-[1.7]">
-          측정부터 분석, 게임화까지 — 바른 자세를 재미있게 만들어요.
+          {t("features.description")}
         </p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           {FEATURES.map((f, i) => (
@@ -166,26 +183,22 @@ export default function LandingTemplate() {
       <section className="py-[100px] px-6 md:px-12 max-w-[1100px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
         <div>
           <h2 className="reveal font-[Nunito] text-[clamp(28px,4vw,40px)] font-black tracking-tight mb-3 leading-tight">
-            깔끔하고
+            {t("mockup.title.1")}
             <br />
-            직관적인 대시보드
+            {t("mockup.title.2")}
           </h2>
           <p className="reveal text-base text-[var(--text-sub)] mb-7 max-w-[520px] leading-[1.7]">
-            복잡하지 않아요. 열면 바로 오늘의 자세 상태를 확인할 수 있어요.
+            {t("mockup.description")}
           </p>
           <div className="reveal flex flex-col gap-4">
-            {[
-              { num: 1, title: "오늘의 목 상태 한눈에", sub: "측정 시간, 경고 횟수, 평균 각도를 카드로 확인" },
-              { num: 2, title: "3D 캐릭터로 시각화", sub: "내 목각도에 맞춰 캐릭터 자세가 실시간으로 반영" },
-              { num: 3, title: "거북이 진화 현황", sub: "좋은 자세를 유지할수록 거북이가 성장" },
-            ].map((p) => (
+            {MOCKUPS.map((p) => (
               <div key={p.num} className="flex items-start gap-3.5">
                 <div className="w-7 h-7 bg-[var(--green)] text-white rounded-full flex items-center justify-center text-xs font-extrabold flex-shrink-0 mt-0.5">
                   {p.num}
                 </div>
                 <div>
                   <strong className="block text-sm font-bold mb-0.5">{p.title}</strong>
-                  <span className="text-[13px] text-[var(--text-sub)]">{p.sub}</span>
+                  <span className="text-[13px] text-[var(--text-sub)]">{p.description}</span>
                 </div>
               </div>
             ))}
@@ -198,18 +211,14 @@ export default function LandingTemplate() {
       {/* HOW IT WORKS */}
       <section id="how" className="py-[100px] px-6 md:px-12 text-center max-w-[1100px] mx-auto">
         <h2 className="reveal font-[Nunito] text-[clamp(28px,4vw,40px)] font-black tracking-tight mb-3 leading-tight">
-          3단계면 충분해요
+          {t("howItWorks.title")}
         </h2>
         <p className="reveal text-base text-[var(--text-sub)] max-w-[520px] mx-auto mb-14 leading-[1.7]">
-          복잡한 설정 없이 바로 시작할 수 있어요.
+          {t("howItWorks.description")}
         </p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-0 relative">
           <div className="absolute top-10 left-[calc(16.66%+16px)] right-[calc(16.66%+16px)] h-0.5 bg-gradient-to-r from-[var(--green-border)] via-[var(--green-mid)] to-[var(--green-border)] z-0 hidden md:block" />
-          {[
-            { icon: "📸", title: "카메라 켜기", desc: "측정하기 버튼을 누르면\n웹캠이 자동으로 활성화돼요." },
-            { icon: "🤖", title: "AI가 분석해요", desc: "MediaPipe AI가 실시간으로\n목 각도를 측정하고 기록해요." },
-            { icon: "📈", title: "결과 확인", desc: "대시보드에서 오늘의 자세 데이터를\n한눈에 확인할 수 있어요." },
-          ].map((s, i) => (
+          {HOWITWORKS.map((s, i) => (
             <div
               key={s.title}
               className={`reveal ${["reveal-delay-1", "reveal-delay-2", "reveal-delay-3"][i]} flex flex-col items-center py-0 px-6 relative z-10`}
@@ -218,7 +227,9 @@ export default function LandingTemplate() {
                 {s.icon}
               </div>
               <div className="font-[Nunito] font-extrabold text-[17px] mb-2">{s.title}</div>
-              <div className="text-[13px] text-[var(--text-sub)] leading-relaxed whitespace-pre-line">{s.desc}</div>
+              <div className="text-[13px] text-[var(--text-sub)] leading-relaxed whitespace-pre-line">
+                {s.description}
+              </div>
             </div>
           ))}
         </div>
@@ -233,18 +244,19 @@ export default function LandingTemplate() {
         }}
       >
         <h2 className="font-[Nunito] text-[clamp(28px,4vw,42px)] font-black text-white mb-3 leading-tight">
-          지금 바로 시작해보세요 🐢
+          {t("cta.title")} 🐢
         </h2>
-        <p className="text-base text-white/75 mb-9 leading-[1.7]">거북목 걱정 없는 하루를 만들어드릴게요.</p>
+        <p className="text-base text-white/75 mb-9 leading-[1.7]">{t("cta.description")}</p>
         <button
           type="button"
           onClick={() => signIn("github")}
           className="bg-white text-[var(--green)] border-none rounded-[14px] py-[15px] px-9 text-base font-bold cursor-pointer transition-all duration-200 shadow-[0_8px_24px_rgba(0,0,0,0.15)] hover:-translate-y-[3px] hover:shadow-[0_14px_36px_rgba(0,0,0,0.2)]"
           style={{ fontFamily: "inherit" }}
         >
-          시작하기
+          {t("button")}
         </button>
       </div>
+      <Footer />
     </div>
   );
 }

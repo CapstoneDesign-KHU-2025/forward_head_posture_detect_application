@@ -471,31 +471,123 @@
   },
 
   "landing": {
-    "features": [
-      {
-        "title": "All You Need Is a Webcam",
-        "description": "Measure your posture in real time using only a front-facing webcam — no additional equipment or side cameras required."
+    "features": {
+      "title": {
+        "1": "Everything You Need",
+        "2": "to Fix Forward Head Posture"
       },
-      {
-        "title": "Real-Time AI Analysis",
-        "description": "Powered by MediaPipe AI technology, the system tracks body landmarks to accurately detect forward head posture."
+      "description": "From measurement to analysis and gamification — we make good posture fun.",
+      "features": [
+        {
+          "title": "All You Need Is a Webcam",
+          "description": "Measure your posture in real time using only a front-facing webcam — no additional equipment or side cameras required."
+        },
+        {
+          "title": "Real-Time AI Analysis",
+          "description": "Powered by MediaPipe AI technology, the system tracks body landmarks to accurately detect forward head posture."
+        },
+        {
+          "title": "Statistics-Based Tracking",
+          "description": "Receive instant sound and on-screen alerts when poor posture is detected to help you maintain proper alignment."
+        },
+        {
+          "title": "Instant Notifications",
+          "description": "Analyze daily and weekly average neck angles to monitor posture changes at a glance."
+        },
+        {
+          "title": "Privacy Protection",
+          "description": "With client-side AI processing, video data is never sent to a server, ensuring your privacy and security."
+        },
+        {
+          "title": "Platform Independent",
+          "description": "A web-based solution that works anytime, anywhere — all you need is a browser."
+        }
+      ]
+    },
+    "hero": {
+      "title": {
+        "1": "Forward Head Posture,",
+        "2": "Now Manage with AI"
       },
-      {
-        "title": "Instant Alerts",
-        "description": "Receive immediate sound and on-screen notifications when poor posture is detected to help you maintain proper alignment."
+      "description": {
+        "1": "All you need is a single camera.",
+        "2": "We detect your posture in real time and notify you instantly when it becomes unhealthy."
       },
-      {
-        "title": "Statistics-Based Tracking",
-        "description": "Analyze daily and weekly average neck angles to monitor posture changes at a glance."
-      },
-      {
-        "title": "Privacy Protection",
-        "description": "With client-side AI processing, video data is never sent to a server, ensuring your privacy and security."
-      },
-      {
-        "title": "Platform Independent",
-        "description": "A web-based solution that works anytime, anywhere — all you need is a browser."
+      "buttons": {
+        "start": "Get Started",
+        "howItWorks": "How It Works"
       }
-    ]
+    },
+    "problem": {
+      "title": {
+        "1": "Modern health is increasingly affected",
+        "2": "by prolonged computer use"
+      }
+    },
+    "description": {
+      "1": "How can we maintain proper posture",
+      "2": "while working long hours?"
+    },
+    "proof": [
+      {
+        "num": "5+ Hours",
+        "label": "Average Daily Computer Usage",
+        "source": "Source | Korea Communications Commission Survey on Smartphone & PC Usage"
+      },
+      {
+        "num": "70%",
+        "label": "Prevalence of Forward Head Posture",
+        "source": "Source | Korea Disease Control and Prevention Agency"
+      },
+      {
+        "num": "15kg+",
+        "label": "Neck Load Caused by Poor Posture",
+        "source": "Source | Korea Disease Control and Prevention Agency"
+      }
+    ],
+    "mockup": {
+      "title": {
+        "1": "Clean and",
+        "2": "Intuitive Dashboard"
+      },
+      "description": "No complexity. Open it and instantly check your posture status for today.",
+      "mockups": [
+        {
+          "title": "Your Neck Status at a Glance",
+          "description": "View measurement time, warning count, and average angle in simple cards."
+        },
+        {
+          "title": "3D Character Visualization",
+          "description": "Your character’s posture reflects your real-time neck angle."
+        },
+        {
+          "title": "Turtle Evolution Progress",
+          "description": "The better your posture, the more your turtle grows."
+        }
+      ]
+    },
+    "howItWorks": {
+      "title": "Just 3 Simple Steps",
+      "description": "Click the measure button and your webcam activates automatically.",
+      "workLists": [
+        {
+          "title": "Turn On the Camera",
+          "description": "When you start measuring, your webcam activates automatically."
+        },
+        {
+          "title": "AI Analysis",
+          "description": "MediaPipe AI measures and records your neck angle in real time."
+        },
+        {
+          "title": "Check Your Results",
+          "description": "View today’s posture data clearly on your dashboard."
+        }
+      ]
+    },
+    "cta": {
+      "title": "Start Right Now",
+      "description": "Build a healthier day without worrying about forward head posture."
+    },
+    "button": "Get Started"
   }
 }
