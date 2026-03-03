@@ -1,5 +1,5 @@
 import { auth } from "@/auth";
-import { redirect } from "@/navigation";
+import { redirect } from "@/i18n/navigation";
 import { Props } from "../layout";
 
 export default async function Layout({ children, params }: Props) {

@@ -1,10 +1,9 @@
+// src/i18n/request.ts
 import { getRequestConfig } from "next-intl/server";
-
-const locales = ["ko", "en"] as const;
-const defaultLocale = "en";
+import { routing } from "./routing";
 
 export default getRequestConfig(async ({ locale }) => {
-  const resolvedLocale = locale && locales.includes(locale as any) ? locale : defaultLocale;
+  const resolvedLocale = locale && routing.locales.includes(locale as any) ? locale : routing.defaultLocale;
 
   return {
     locale: resolvedLocale,

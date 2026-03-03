@@ -1,13 +1,11 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { getTranslations } from "next-intl/server";
 
 import React from "react";
-const t = await getTranslations("Basic");
 
 export const metadata: Metadata = {
-  title: t("title"),
-  description: t("description"),
+  title: "BoogiBoogi",
+  description: "Improve turtle neck posture with AI metrics",
   icons: { icon: "/icons/turtle.png" },
 };
 

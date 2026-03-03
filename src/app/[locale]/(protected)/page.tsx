@@ -1,5 +1,5 @@
 import { auth } from "@/auth";
-import { redirect } from "@/navigation";
+import { redirect } from "@/i18n/navigation";
 
 import { getDailySummaryAction } from "@/app/actions/summaryActions";
 import HomeClient, { WeeklySummaryData } from "@/components/templates/HomeClient";

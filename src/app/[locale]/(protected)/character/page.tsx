@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useRouter } from "@/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { Button } from "@/components/atoms/Button";
 import CharacterGrid from "@/components/molecules/CharacterGrid";
 import { useTranslations } from "next-intl";

@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/atoms/Button";
 import { Card } from "@/components/atoms/Card";
-import { useRouter } from "@/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { useCallback } from "react";
 import { useTranslations } from "next-intl";
 type WelcomeHeroProps = {

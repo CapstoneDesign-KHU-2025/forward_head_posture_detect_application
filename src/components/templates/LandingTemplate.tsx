@@ -46,7 +46,7 @@ export default function LandingTemplate() {
     description: f.description,
   }));
   const HOWITWORKS = howItWorks.map((f, i) => ({
-    icon: icons_proof[i] ?? "✨",
+    icon: icons_howItWorks[i] ?? "✨",
     title: f.title,
     description: f.description,
   }));

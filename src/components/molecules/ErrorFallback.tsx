@@ -1,7 +1,7 @@
 "use client";
 
 import { FallbackProps } from "react-error-boundary";
-import { useRouter } from "@/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { startTransition } from "react";
 import { useTranslations } from "next-intl";
 export default function ErrorFallback({ error, resetErrorBoundary }: FallbackProps) {

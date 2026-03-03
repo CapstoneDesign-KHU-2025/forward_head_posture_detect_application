@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "@/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { Button } from "@/components/atoms/Button";
 import { useTranslations } from "next-intl";
 export default function NotFound() {

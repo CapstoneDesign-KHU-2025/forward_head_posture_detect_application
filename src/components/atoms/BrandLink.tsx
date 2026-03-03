@@ -1,6 +1,6 @@
 "use client";
 
-import { Link } from "@/navigation";
+import { Link } from "@/i18n/navigation";
 import { usePathname } from "next/navigation";
 import { Icon } from "@/components/atoms/Icon";
 import { cn } from "@/utils/cn";

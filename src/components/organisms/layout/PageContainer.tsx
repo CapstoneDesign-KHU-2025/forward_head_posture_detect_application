@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname } from "@/navigation";
+import { usePathname } from "@/i18n/navigation";
 import { ReactNode } from "react";
 
 type PageContainerProps = {

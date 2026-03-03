@@ -1,6 +1,5 @@
 import "../globals.css";
 import Header from "@/components/organisms/layout/Header";
-import Footer from "@/components/organisms/layout/Footer";
 import PageContainer from "@/components/organisms/layout/PageContainer";
 import { auth } from "@/auth";
 
@@ -9,7 +8,7 @@ import { MeasurementProvider } from "@/providers/MeasurementProvider";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
-import { routing } from "@/navigation";
+import { routing } from "@/i18n/routing";
 import { getTranslations } from "next-intl/server";
 export type Props = {
   children: React.ReactNode;
@@ -27,7 +26,7 @@ export default async function LocaleLayout({ children, params }: Props) {
   const messages = await getMessages();
 
   const user = session?.user
-    ? { name: session.user.name || t("Basic.user"), avatarSrc: session.user.image || undefined }
+    ? { name: session.user.name || t("user"), avatarSrc: session.user.image || undefined }
     : null;
 
   return (
@@ -42,7 +41,6 @@ export default async function LocaleLayout({ children, params }: Props) {
           </div>
         </MeasurementProvider>
       </Providers>
-      /
     </NextIntlClientProvider>
   );
 }
