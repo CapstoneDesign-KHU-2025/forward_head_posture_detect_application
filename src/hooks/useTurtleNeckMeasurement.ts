@@ -10,6 +10,7 @@ import { getStatusBannerMessageCore, getStatusBannerTypeCore } from "@/utils/get
 import { checkGuidelinesAndDistance, Pose } from "@/utils/checkGuidelinesAndDistance";
 import { drawGuidelines } from "@/utils/drawGuidelines";
 import { startBeep, stopBeep } from "@/utils/manageBeep";
+import { incrementTurtleCount } from "@/lib/postureLocal";
 type GuideColor = "green" | "red" | "orange";
 export type StatusBannerType = "success" | "warning" | "info";
 
@@ -78,8 +79,9 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating, isInitial }: 
     lastBeepIntervalRef: React.RefObject<NodeJS.Timeout | null>;
     setAngle: (angle: number) => void;
     setIsTurtle: (val: boolean) => void;
+    userId: string | undefined;
   }) {
-    const { poseBufferRef, lastBufferTimeRef, measuringRef, lastStateRef, lastBeepIntervalRef, setAngle, setIsTurtle } =
+    const { poseBufferRef, lastBufferTimeRef, measuringRef, lastStateRef, lastBeepIntervalRef, setAngle, setIsTurtle, userId } =
       options;
 
     const now = performance.now();
@@ -145,6 +147,7 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating, isInitial }: 
 
       if (turtleNow) {
         startBeep(lastBeepIntervalRef);
+        incrementTurtleCount(userId);
       } else {
         stopBeep(lastBeepIntervalRef);
       }
@@ -414,6 +417,7 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating, isInitial }: 
               lastBeepIntervalRef,
               setAngle,
               setIsTurtle,
+              userId,
             });
           }
         };
