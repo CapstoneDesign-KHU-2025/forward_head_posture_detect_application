@@ -11,6 +11,8 @@ import { computeDayStatusMap } from "@/utils/computeDayStatusMap";
 import { getTodayCount, getTodayMeasuredSeconds } from "@/lib/postureLocal";
 import { computeImprovementPercent } from "@/utils/computeImprovementPercent";
 import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
+import LoadingSkeleton from "../molecules/LoadingSkeleton";
 
 type WeeklySummaryRow = {
   id: number;
@@ -74,13 +76,21 @@ export default function HomeClient({ weeklyData, user }: HomeClientProps) {
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
+  const [isCheckingRedirect, setIsCheckingRedirect] = useState(true);
   const weeklyAvg = weeklyData?.weightedAvg ?? null;
   const goodDays = weeklyData?.goodDays ?? 0;
 
   const [calendarRows, setCalendarRows] = useState<WeeklySummaryRow[]>([]);
   const t = useTranslations("HomeClient");
+  const router = useRouter();
   useEffect(() => {
+    const hasCharacter = localStorage.getItem("selectedCharacter")?.trim();
+    if (!hasCharacter) {
+      router.replace("/character");
+      return;
+    } else {
+      setIsCheckingRedirect(false);
+    }
     let cancelled = false;
     apiRequest<{ safeRows: WeeklySummaryRow[] }>({ requestPath: "/summaries/daily?days=90" })
       .then((result) => {
@@ -90,7 +100,7 @@ export default function HomeClient({ weeklyData, user }: HomeClientProps) {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [router]);
 
   const dayStatusMap = useMemo(() => computeDayStatusMap(calendarRows), [calendarRows]);
 
@@ -215,7 +225,13 @@ export default function HomeClient({ weeklyData, user }: HomeClientProps) {
 
   const warningCount =
     (todayCount === 0 && todayHour === 0) || todayCount === null || todayCount === undefined ? null : todayCount;
-
+  if (isCheckingRedirect) {
+    return (
+      <div className="fixed inset-0 z-[100] flex items-center justify-center bg-[var(--green-pale)]">
+        <LoadingSkeleton />
+      </div>
+    );
+  }
   return (
     <HomeTemplate
       user={homeData.user}

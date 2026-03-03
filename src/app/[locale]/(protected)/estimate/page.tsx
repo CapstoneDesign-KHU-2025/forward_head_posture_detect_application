@@ -6,29 +6,36 @@ import EstimatePanel from "@/components/molecules/EstimatePanel";
 import ErrorBanner from "@/components/atoms/ErrorBanner";
 import AsyncBoundary from "@/components/molecules/AsyncBoundary";
 import LoadingSkeleton from "@/components/molecules/LoadingSkeleton";
+import { logger } from "@/lib/logger";
+import { useClearPostureDBOnLoad } from "@/hooks/useClearDBOnload";
+
 import { MEASUREMENT_CANVAS_SLOT_ID } from "@/providers/MeasurementProvider";
 import { useTranslations } from "next-intl";
 
 export default function Estimate() {
+<<<<<<< HEAD:src/app/[locale]/(protected)/estimate/page.tsx
   const t = useTranslations("Estimate");
+=======
+  useClearPostureDBOnLoad();
+>>>>>>> develop:src/app/(protected)/estimate/page.tsx
   const {
     stopEstimating,
     startMeasurement,
     stopMeasurement,
-    videoRef,
     countdownRemain,
     measurementStarted,
     showMeasurementStartedToast,
     error,
     getStatusBannerType,
     statusBannerMessage,
+    isFirstFrameDrawn,
   } = useMeasurement();
 
   const bannerType = getStatusBannerType();
   const bannerMessage = statusBannerMessage();
 
   return (
-    <div className="min-h-screen bg-[#F8FBF8] overflow-x-hidden">
+    <div className="min-h-screen bg-[var(--green-pale)] overflow-x-hidden">
       <div className="max-w-[1200px] mx-auto px-4 sm:px-6 md:px-8 pb-8 pt-2 w-full min-w-0">
         <div className="flex justify-center mb-8">
           <Button
@@ -58,12 +65,12 @@ export default function Estimate() {
           <EstimatePanel
             bannerType={bannerType}
             bannerMessage={bannerMessage}
-            videoRef={videoRef}
             canvasSlotId={MEASUREMENT_CANVAS_SLOT_ID}
             showMeasurementStartedToast={showMeasurementStartedToast}
             countdownRemain={countdownRemain}
             measurementStarted={measurementStarted}
             stopEstimating={stopEstimating}
+            isFirstFrameDrawn={isFirstFrameDrawn}
           />
         </AsyncBoundary>
         {error && <ErrorBanner error={error} />}

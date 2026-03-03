@@ -36,6 +36,14 @@ export default function CharacterSelectionPage() {
     router.push("/");
   };
 
+  // 이미 캐릭터가 선택돼 있으면 홈으로 바로 이동 (로그인 후 /character 콜백 시 스킵)
+  useEffect(() => {
+    const stored = localStorage.getItem("selectedCharacter");
+    if (stored?.trim()) {
+      router.replace("/");
+    }
+  }, [router]);
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Enter" && selectedCharacter) {
@@ -50,7 +58,7 @@ export default function CharacterSelectionPage() {
   }, [selectedCharacter]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#F8FBF8] to-[#E8F5E9] flex items-center justify-center p-8">
+    <div className="min-h-screen bg-gradient-to-br from-[var(--green-pale)] to-[#E8F5E9] flex items-center justify-center p-8">
       <div className="max-w-[1200px] w-full bg-white rounded-[24px] p-12 shadow-[0_10px_40px_rgba(45,95,46,0.15)]">
         {/* 헤더 */}
         <div className="text-center mb-12">

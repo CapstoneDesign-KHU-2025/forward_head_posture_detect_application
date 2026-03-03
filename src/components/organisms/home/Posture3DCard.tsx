@@ -1,6 +1,7 @@
 "use client";
 
 import { Card } from "@/components/atoms/Card";
+import { cn } from "@/utils/cn";
 import LoadingSkeleton from "@/components/molecules/LoadingSkeleton";
 import { SegmentToggle } from "@/components/molecules/SegmentToggle";
 import type { PoseMode } from "@/components/molecules/3DModel";
@@ -17,6 +18,7 @@ type ChallengePanelProps = {
   userAng: number | undefined;
   title?: React.ReactNode;
   description?: React.ReactNode;
+  className?: string;
 };
 
 const idealAng = 52;
@@ -27,7 +29,12 @@ function getSelectedCharacter(): string {
   return selected || "remy";
 }
 
-export default function Posture3DCard({ userAng, title = "당신의 거북목 도전기", description }: ChallengePanelProps) {
+export default function Posture3DCard({
+  userAng,
+  title = "당신의 거북목 도전기",
+  description,
+  className,
+}: ChallengePanelProps) {
   const t = useTranslations("Posture3DCard");
   const [characterId, setCharacterId] = useState<string>("remy");
   const [poseMode, setPoseMode] = useState<PoseMode>("upper");
@@ -75,7 +82,7 @@ export default function Posture3DCard({ userAng, title = "당신의 거북목 �
   }
 
   return (
-    <Card className="p-6 pt-4 flex flex-col gap-4 overflow-hidden">
+    <Card className={cn("p-6 pt-4 flex flex-col gap-4 overflow-hidden h-full w-full", className)}>
       {/* 헤더 */}
       <div className="flex items-center justify-between">
         <div>
@@ -93,8 +100,8 @@ export default function Posture3DCard({ userAng, title = "당신의 거북목 �
       </div>
 
       {/* 3D 모델 영역 */}
-      <div className="flex-1 min-h-[260px] flex flex-col items-center justify-center relative">
-        <div className="w-full aspect-[4/3] rounded-[22px] bg-[linear-gradient(180deg,#e8f5ec_0%,#f4faf6_70%,#e0f0e5_100%)] flex items-center justify-center relative overflow-hidden">
+      <div className="flex-1 min-h-[260px] flex flex-col relative">
+        <div className="w-full h-full min-h-[200px] rounded-[22px] bg-[linear-gradient(180deg,#e8f5ec_0%,var(--green-pale)_70%,#e0f0e5_100%)] flex items-center justify-center relative overflow-hidden">
           {/* 바닥 그라디언트 느낌 */}
           <div className="absolute inset-x-0 bottom-0 h-10 bg-[linear-gradient(0deg,rgba(74,124,89,0.12)_0%,transparent_100%)]" />
 
