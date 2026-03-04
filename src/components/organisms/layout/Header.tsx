@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import { usePathname } from "@/i18n/navigation";
 import Link from "next/link";
 import { Button } from "@/components/atoms/Button";
 import { BrandLink } from "@/components/atoms/BrandLink";
@@ -35,7 +35,6 @@ export default function Header({ user: initialUser, className }: HeaderProps) {
   const isLandingPage = pathname === "/landing";
   const isLoginPage = pathname === "/login";
   const isCharacterPage = pathname === "/character";
-
   const UserActions = () => {
     if (isLoading) {
       return <span className="text-sm text-black/40">...</span>;
@@ -81,6 +80,7 @@ export default function Header({ user: initialUser, className }: HeaderProps) {
               label={t_basic("title")}
             />
             <div className="flex items-center gap-2">
+              <LanguageToggle />
               <UserActions />
             </div>
           </div>

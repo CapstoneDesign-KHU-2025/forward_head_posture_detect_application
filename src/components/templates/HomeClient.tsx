@@ -11,7 +11,7 @@ import { computeDayStatusMap } from "@/utils/computeDayStatusMap";
 import { getTodayCount, getTodayMeasuredSeconds } from "@/lib/postureLocal";
 import { computeImprovementPercent } from "@/utils/computeImprovementPercent";
 import { useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import LoadingSkeleton from "../molecules/LoadingSkeleton";
 
 type WeeklySummaryRow = {

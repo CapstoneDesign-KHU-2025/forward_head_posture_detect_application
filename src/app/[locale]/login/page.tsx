@@ -1,16 +1,17 @@
 import { auth } from "@/auth";
-import { redirect } from "next/navigation";
+import { redirect } from "@/i18n/navigation";
 import React from "react";
 import Link from "next/link";
-
+import { getLocale } from "next-intl/server";
 import { Card } from "@/components/atoms/Card";
 import OauthButton from "@/components/molecules/OauthButton";
 import { getTranslations } from "next-intl/server";
 
 export default async function LoginPage() {
   const session = await auth();
+  const locale = await getLocale();
   if (session?.user) {
-    return redirect("/");
+    return redirect({ href: "/", locale });
   }
   const t = await getTranslations("login");
   const t_basic = await getTranslations("Basic");

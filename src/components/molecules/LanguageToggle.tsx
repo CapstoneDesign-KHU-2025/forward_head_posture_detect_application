@@ -1,7 +1,7 @@
 "use client";
 
 import { useLocale } from "next-intl";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter, usePathname } from "@/i18n/navigation";
 
 export default function LanguageToggle() {
   const locale = useLocale();
@@ -11,7 +11,7 @@ export default function LanguageToggle() {
   // 💡 함수에 인자를 받아 처리하도록 변경하여 무한 렌더링 방지
   const handleToggle = (nextLocale: string) => {
     if (locale === nextLocale) return; // 이미 같은 언어면 무시
-    
+
     // 현재 경로에서 제일 앞의 언어 부분만 안전하게 교체
     const newPath = pathname.replace(`/${locale}`, `/${nextLocale}`);
     router.replace(newPath);

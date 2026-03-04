@@ -12,8 +12,6 @@ export default function LanguageSwitcher() {
   const toggleLanguage = () => {
     const nextLocale = locale === "ko" ? "en" : "ko";
 
-    // 현재 경로에서 locale 부분만 교체합니다.
-    // 예: /ko/login -> /en/login
     const newPath = pathname.replace(`/${locale}`, `/${nextLocale}`);
 
     router.replace(newPath);
