@@ -53,7 +53,6 @@ export default function HomeTemplate({
 }: HomeTemplateProps) {
   // 다국어 훅 호출
   const t = useTranslations("HomeTemplate");
-  const tBasic = useTranslations("Basic");
 
   // 측정 시간 KPI 찾기 (라벨 검색 시에도 다국어 키워드 대응)
   const measureTimeLabel = t("kpi.measureTime.label");
@@ -113,30 +112,39 @@ export default function HomeTemplate({
                       unit={measureTimeKpi.unit}
                       showStatusDot
                       statusDotVariant={isMeasuring ? "measuring" : "idle"}
-                      subtitle={isMeasuring ? "실시간 측정" : "측정 중 아님"}
+                      subtitle={
+                        isMeasuring ? t("statCards.realTimeCard.realTime") : t("statCards.realTimeCard.notEstimating")
+                      }
                     />
                   ) : (
                     <StatCard
-                      label="측정 시간"
+                      label={t("statCards.realTimeCard.estimatingTime")}
                       value="00:00"
                       showStatusDot
                       statusDotVariant={isMeasuring ? "measuring" : "idle"}
-                      subtitle={isMeasuring ? "실시간 측정 중" : "측정 중 아님"}
+                      subtitle={
+                        isMeasuring ? t("statCards.realTimeCard.estimating") : t("statCards.realTimeCard.notEstimating")
+                      }
                     />
                   )}
                 </div>
                 <div className="flex-1 min-w-[140px]">
-                  <StatCard label="오늘 경고" value={String(todayWarningCount)} unit="회" subtitle="오늘 기준" />
+                  <StatCard
+                    label={t("statCards.warning.todayWarning")}
+                    value={String(todayWarningCount)}
+                    unit={t("statCards.warning.time")}
+                    subtitle={t("statCards.warning.todayBenchMark")}
+                  />
                 </div>
                 <div className="flex-1 min-w-[140px]">
                   <StatCard
-                    label="누적 평균"
+                    label={t("statCards.average.accumulatedAverage")}
                     value={avgAngle != null ? avgAngle.toFixed(1) : "-"}
                     unit="°"
                     subtitle={
                       deltaFromIdeal != null ? (
                         <span className="text-[var(--warning-text)]">
-                          ideal 대비 {deltaFromIdeal >= 0 ? "+" : ""}
+                          {t("statCards.average.differenceIdeal")} {deltaFromIdeal >= 0 ? "+" : ""}
                           {deltaFromIdeal.toFixed(1)}°
                         </span>
                       ) : undefined
@@ -152,13 +160,13 @@ export default function HomeTemplate({
             <Posture3DCard
               className="flex-1 w-full"
               userAng={user?.avgAng}
-              title={challenge?.title ?? "당신의 거북목 도전기"}
+              title={challenge?.title ?? t("posture3DCard.yourChallenge")}
               description={
                 challenge?.description ?? (
                   <>
-                    측정을 시작하면 오늘의 평균 목 각도와
+                    {t("posture3DCard.description.1")}
                     <br />
-                    도전 현황이 여기에 표시됩니다.
+                    {t("posture3DCard.description.2")}
                   </>
                 )
               }

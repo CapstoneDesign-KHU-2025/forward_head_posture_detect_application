@@ -327,6 +327,31 @@
     "challenge": {
       "defaultTitle": "Your Posture Challenge",
       "defaultDescription": "Start measuring to see your progress\nand average angle here."
+    },
+
+    "statCards": {
+      "realTimeCard": {
+        "realTime": "Real-time Measurement",
+        "notEstimating": "Not measuring",
+        "estimatingTime": "Measurement time",
+        "estimating": "Measuring in real time"
+      },
+      "warning": {
+        "todayWarning": "Today's warnings",
+        "time": "times",
+        "todayBenchMark": "Today's benchmark"
+      },
+      "average": {
+        "accumulatedAverage": "Cumulative average",
+        "differenceIdeal": "Compared to the target angle"
+      }
+    },
+    "posture3DCard": {
+      "yourChallenge": "Your Turtle Neck Challenge",
+      "description": {
+        "1": "Once you start measuring, your average neck angle for today",
+        "2": "and your challenge progress will be shown here."
+      }
     }
   },
   "Landing": {
@@ -593,5 +618,13 @@
       "description": "Build a healthier day without worrying about forward head posture."
     },
     "button": "Get Started"
+  },
+  "DashboardMockupCard": {
+    "title": "Hello, Boogi!",
+    "subTitle": "Let's start great day with great posture",
+    "estimatingTime": "estimated time",
+    "todayAlert": "today's alert",
+    "mockNumber": "3times",
+    "neckAnglePerHour": "neck angle per hours"
   }
 }

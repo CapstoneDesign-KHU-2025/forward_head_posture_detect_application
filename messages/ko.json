@@ -330,6 +330,30 @@
     "challenge": {
       "defaultTitle": "당신의 거북목 도전기",
       "defaultDescription": "측정을 시작하면 오늘의 평균 목 각도와\n도전 현황이 여기에 표시됩니다."
+    },
+    "statCards": {
+      "realTimeCard": {
+        "realTime": "실시간 측정",
+        "notEstimating": "측정 중 아님",
+        "estimatingTime": "측정 시간",
+        "estimating": "실시간 측정 중"
+      },
+      "warning": {
+        "todayWarning": "오늘 경고",
+        "time": "회",
+        "todayBenchMark": "오늘 기준"
+      },
+      "average": {
+        "accumulatedAverage": "누적 평균",
+        "differenceIdeal": "기준 각도 대비"
+      }
+    },
+    "posture3DCard": {
+      "yourChallenge": "당신의 거북목 도전기기",
+      "description": {
+        "1": "측정을 시작하면 오늘의 평균 목 각도와",
+        "2": "도전 현황이 여기에 표시됩니다."
+      }
     }
   },
 
@@ -588,5 +612,13 @@
       "description": "거북목 걱정 없는 하루를 만들어드릴게요."
     },
     "button": "시작하기"
+  },
+  "DashboardMockupCard": {
+    "title": "부기님, 안녕하세요!",
+    "subTitle": "오늘도 바른 자세로 하루를 시작해봐요",
+    "estimatingTime": "측정 시간",
+    "todayAlert": "오늘 경고",
+    "mockNumber": "3회",
+    "neckAnglePerHour": "시간대별 목 각도"
   }
 }
