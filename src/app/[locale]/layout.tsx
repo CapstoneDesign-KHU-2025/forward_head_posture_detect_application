@@ -17,20 +17,22 @@ export type Props = {
 
 export default async function LocaleLayout({ children, params }: Props) {
   const { locale } = await params;
-  const t = await getTranslations("Basic");
+
   if (!routing.locales.includes(locale as any)) {
     notFound();
   }
   setRequestLocale(locale);
+
+  const t = await getTranslations("Basic");
   const session = await auth();
   const messages = await getMessages();
-
+  console.log("layout locale:", locale, "sample:", (messages as any)?.Basic?.user);
   const user = session?.user
     ? { name: session.user.name || t("user"), avatarSrc: session.user.image || undefined }
     : null;
 
   return (
-    <NextIntlClientProvider locale={locale} messages={messages}>
+    <NextIntlClientProvider key={locale} locale={locale} messages={messages}>
       <Providers session={session}>
         <MeasurementProvider>
           <div className="h-dvh flex flex-col">

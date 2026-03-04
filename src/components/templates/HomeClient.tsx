@@ -10,7 +10,7 @@ import { computeTodaySoFarAverage } from "@/lib/hourlyOps";
 import { computeDayStatusMap } from "@/utils/computeDayStatusMap";
 import { getTodayCount, getTodayMeasuredSeconds } from "@/lib/postureLocal";
 import { computeImprovementPercent } from "@/utils/computeImprovementPercent";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import LoadingSkeleton from "../molecules/LoadingSkeleton";
 
@@ -82,6 +82,8 @@ export default function HomeClient({ weeklyData, user }: HomeClientProps) {
 
   const [calendarRows, setCalendarRows] = useState<WeeklySummaryRow[]>([]);
   const t = useTranslations("HomeClient");
+  const locale = useLocale();
+
   const router = useRouter();
   useEffect(() => {
     const hasCharacter = localStorage.getItem("selectedCharacter")?.trim();

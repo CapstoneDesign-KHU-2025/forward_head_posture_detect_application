@@ -5,9 +5,9 @@ import Link from "next/link";
 import { Button } from "@/components/atoms/Button";
 import { BrandLink } from "@/components/atoms/BrandLink";
 import { useSession, signIn } from "next-auth/react";
-import { FriendsButton } from "@/components/molecules/FriendsButton";
+/* import { FriendsButton } from "@/components/molecules/FriendsButton"; */
 import { UserButton } from "@/components/molecules/UserButton";
-import { FriendsModal } from "@/components/organisms/friends/FriendsModal";
+/* import { FriendsModal } from "@/components/organisms/friends/FriendsModal"; */
 import { useFriendsData } from "@/hooks/useFriendsData";
 import { useState } from "react";
 import { useTranslations } from "next-intl";
@@ -22,8 +22,8 @@ export default function Header({ user: initialUser, className }: HeaderProps) {
   const t_basic = useTranslations("Basic");
   const pathname = usePathname();
   const { data: session, status } = useSession();
-  const [isFriendsModalOpen, setIsFriendsModalOpen] = useState(false);
-  const friendsData = useFriendsData();
+  // const [isFriendsModalOpen, setIsFriendsModalOpen] = useState(false);
+  //const friendsData = useFriendsData();
 
   const navItems = [
     { label: t("navItems.home"), href: "/" },
