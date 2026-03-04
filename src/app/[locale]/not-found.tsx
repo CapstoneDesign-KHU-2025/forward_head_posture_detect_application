@@ -1,10 +1,9 @@
 "use client";
 
-import { useRouter } from "@/i18n/navigation";
+import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/atoms/Button";
 import { useTranslations } from "next-intl";
 export default function NotFound() {
-  const router = useRouter();
   const t = useTranslations("NotFound");
   return (
     <div className="flex min-h-[calc(100dvh-var(--header-height))] flex-col items-center justify-center gap-6 animate-fade-up">
@@ -27,14 +26,16 @@ export default function NotFound() {
         className="text-center text-[28px] font-black tracking-[-0.5px] text-[var(--text)]"
         style={{ fontFamily: "Nunito, sans-serif" }}
       >
-        {t("NotFound.description")}
+        {t("description")}
       </div>
       <div className="text-center text-[13px] font-semibold uppercase tracking-[1.5px] text-[var(--text-muted)]">
-        {t("NotFound.message")}
+        {t("message")}
       </div>
-      <Button size="lg" variant="primary" className="mt-1" onClick={() => router.push("/")}>
-        {t("NotFound.button")}
-      </Button>
+      <Link href="/" className="mt-1">
+        <Button size="lg" variant="primary" className="mt-1">
+          {t("button")}
+        </Button>
+      </Link>
     </div>
   );
 }
