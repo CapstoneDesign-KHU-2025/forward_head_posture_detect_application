@@ -26,8 +26,8 @@ export default function Header({ user: initialUser, className }: HeaderProps) {
   const friendsData = useFriendsData();
 
   const navItems = [
-    { label: "Home", href: "/" },
-    { label: "Estimate", href: "/estimate" },
+    { label: t("navItems.home"), href: "/" },
+    { label: t("navItems.estimate"), href: "/estimate" },
   ];
 
   const isLoading = status === "loading";
@@ -46,7 +46,7 @@ export default function Header({ user: initialUser, className }: HeaderProps) {
 
     return (
       <>
-        <FriendsButton requestCount={friendsData?.incomingCount || 0} onClick={() => setIsFriendsModalOpen(true)} />
+        {/* <FriendsButton requestCount={friendsData?.incomingCount || 0} onClick={() => setIsFriendsModalOpen(true)} /> */}
         <UserButton
           user={{
             name: user.name ?? t("UserButton.name"),
@@ -55,11 +55,11 @@ export default function Header({ user: initialUser, className }: HeaderProps) {
             avatarSrc: (user as any)?.avatarSrc,
           }}
         />
-        <FriendsModal
+        {/*    <FriendsModal
           isOpen={isFriendsModalOpen}
           onClose={() => setIsFriendsModalOpen(false)}
           friendsData={friendsData || undefined}
-        />
+        /> */}
       </>
     );
   };

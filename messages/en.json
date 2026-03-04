@@ -253,6 +253,10 @@
     "login_button": "Login",
     "UserButton": {
       "name": "User"
+    },
+    "navItems": {
+      "home": "Home",
+      "estimate": "Estimate"
     }
   },
   "HomeClient": {

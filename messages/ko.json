@@ -254,6 +254,10 @@
     "login_button": "로그인",
     "UserButton": {
       "name": "사용자"
+    },
+    "navItems": {
+      "home": "홈",
+      "estimate": "측정하기"
     }
   },
 
