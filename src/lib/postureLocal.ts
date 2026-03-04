@@ -59,11 +59,7 @@ export async function storeMeasurementAndAccumulate(data: PostureMeasurement) {
     // 이미 이 시간대(hourStartTs)에 레코드가 있으면 누적
     cur.sumWeighted += data.angleDeg * w;
     cur.weight += w;
-
-    if (data.isTurtle) {
-      cur.count += 1;
-    }
-
+    // count는 거북목 진입 시점(incrementTurtleCount)에서만 증가
     cur.finalized = 0; // 새 데이터 들어왔으니 다시 미확정 상태
     await hourlyStore.put(cur);
   } else {
@@ -73,7 +69,7 @@ export async function storeMeasurementAndAccumulate(data: PostureMeasurement) {
       hourStartTs,
       sumWeighted: data.angleDeg * w,
       weight: w,
-      count: data.isTurtle ? 1 : 0,
+      count: 0, // count는 incrementTurtleCount에서만 증가
       avgAngle: null,
       finalized: 0,
     };
@@ -81,6 +77,72 @@ export async function storeMeasurementAndAccumulate(data: PostureMeasurement) {
   }
 
   await tx.done;
+}
+
+/**
+ * 거북목 진입 시점에 count 증가 (경고음과 동기화)
+ * 10초 샘플이 아닌 이벤트 기반으로 경고 횟수를 기록
+ */
+type HourlyRecord = {
+  userId: string;
+  hourStartTs: number;
+  sumWeighted: number;
+  weight: number;
+  count: number;
+  avgAngle: number | null;
+  finalized: 0 | 1;
+};
+
+// ✅ key 단위로 직렬화하기 위한 간단 큐 (in-memory)
+const hourlyKeyQueue = new Map<string, Promise<void>>();
+
+function serializeByKey(keyStr: string, fn: () => Promise<void>): Promise<void> {
+  const prev = hourlyKeyQueue.get(keyStr) ?? Promise.resolve();
+
+  const next = prev
+    .catch(() => {}) // 이전 작업 실패가 체인을 끊지 않게
+    .then(fn)
+    .finally(() => {
+      // 현재 작업이 map에 남아있을 때만 정리 (경합 방지)
+      if (hourlyKeyQueue.get(keyStr) === next) hourlyKeyQueue.delete(keyStr);
+    });
+
+  hourlyKeyQueue.set(keyStr, next);
+  return next;
+}
+
+export async function incrementTurtleCount(userId: string | undefined): Promise<void> {
+  if (!userId) return;
+
+  const db = await getDB();
+  const hourStart = new Date();
+  hourStart.setMinutes(0, 0, 0);
+  const hourStartTs = +hourStart;
+  const keyStr = `${userId}:${hourStartTs}`;
+  return serializeByKey(keyStr, async () => {
+    const tx = db.transaction("hourly", "readwrite");
+    const store = tx.objectStore("hourly");
+    const key: [string, number] = [userId, hourStartTs];
+
+    const cur = (await store.get(key)) as HourlyRecord | undefined;
+
+    if (cur) {
+      cur.count += 1;
+      await store.put(cur);
+    } else {
+      await store.put({
+        userId,
+        hourStartTs,
+        sumWeighted: 0,
+        weight: 0,
+        count: 1,
+        avgAngle: null,
+        finalized: 0,
+      } satisfies HourlyRecord);
+    }
+
+    await tx.done;
+  });
 }
 
 export async function getPendingPostureRecords(limit = 200): Promise<StoredPostureRecord[]> {
