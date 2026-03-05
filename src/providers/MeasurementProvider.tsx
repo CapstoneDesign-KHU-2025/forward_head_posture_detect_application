@@ -35,7 +35,6 @@ type MeasurementContextValue = {
   angle: number;
   elapsedSeconds: number;
   isProcessing: boolean;
-  isInitial: boolean;
   canvasSlotId: string;
   isFirstFrameDrawn: boolean;
   guideMessage: string | null;
@@ -58,7 +57,6 @@ export function MeasurementProvider({ children }: { children: ReactNode }) {
 
   const [stopEstimating, setStopEstimating] = useState(true);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [isInitial, setIsInitial] = useState(true);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [showRecoveryNotice, setShowRecoveryNotice] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -83,11 +81,10 @@ export function MeasurementProvider({ children }: { children: ReactNode }) {
     isFirstFrameDrawn,
     guideMessage,
     guideColor,
-  } = useTurtleNeckMeasurement({ userId, stopEstimating, isInitial });
+  } = useTurtleNeckMeasurement({ userId, stopEstimating });
 
   const handleStopMeasurement = useCallback(
     async (forced?: boolean) => {
-      setIsInitial(false);
       if (isProcessing) return;
       try {
         setIsProcessing(true);
@@ -207,7 +204,6 @@ export function MeasurementProvider({ children }: { children: ReactNode }) {
       angle,
       elapsedSeconds,
       isProcessing,
-      isInitial,
       canvasSlotId: MEASUREMENT_CANVAS_SLOT_ID,
       isFirstFrameDrawn,
       guideMessage,
@@ -229,7 +225,6 @@ export function MeasurementProvider({ children }: { children: ReactNode }) {
       angle,
       elapsedSeconds,
       isProcessing,
-      isInitial,
       isFirstFrameDrawn,
       guideMessage,
       guideColor,

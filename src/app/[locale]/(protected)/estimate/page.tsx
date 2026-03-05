@@ -25,7 +25,6 @@ export default function Estimate() {
     statusBannerMessage,
     isFirstFrameDrawn,
     guideColor,
-    isInitial,
   } = useMeasurement();
 
   const bannerType = getStatusBannerType();
@@ -75,7 +74,6 @@ export default function Estimate() {
             stopEstimating={stopEstimating}
             isFirstFrameDrawn={isFirstFrameDrawn}
             guideColor={guideColor}
-            isInitial={isInitial}
           />
         </AsyncBoundary>
         {error && <ErrorBanner error={error} />}

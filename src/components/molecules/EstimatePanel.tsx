@@ -18,21 +18,18 @@ type EstimatePanelProps = {
   stopEstimating: boolean;
   isFirstFrameDrawn: boolean;
   guideColor: GuideColor;
-  isInitial: boolean;
 };
 
 function getStatusPillVariant(props: {
   stopEstimating: boolean;
-  isInitial: boolean;
   countdownRemain: number | null;
   measurementStarted: boolean;
   isTurtle: boolean;
   guideColor: GuideColor;
 }): StatusPillVariant {
-  const { stopEstimating, isInitial, countdownRemain, measurementStarted, isTurtle, guideColor } = props;
+  const { stopEstimating, countdownRemain, measurementStarted, isTurtle, guideColor } = props;
   if (stopEstimating) return "stopped";
   if (countdownRemain !== null) return "count";
-  if (isInitial && !measurementStarted) return "idle";
   if (isTurtle && measurementStarted) return "bad";
   if (!isTurtle && measurementStarted) return "good";
   if (guideColor === "orange") return "warn";
@@ -71,13 +68,11 @@ export default function EstimatePanel({
   stopEstimating,
   isFirstFrameDrawn,
   guideColor,
-  isInitial,
 }: EstimatePanelProps) {
   const t = useTranslations("EstimatePanel");
 
   const pillVariant = getStatusPillVariant({
     stopEstimating,
-    isInitial,
     countdownRemain,
     measurementStarted,
     isTurtle: bannerType === "warning",
@@ -85,8 +80,17 @@ export default function EstimatePanel({
   });
   const headerIcon = getHeaderIcon(pillVariant);
 
+  const showLoadingOverlay = !stopEstimating && !isFirstFrameDrawn;
+
   return (
-    <section className="bg-white rounded-[16px] overflow-hidden shadow-[0_2px_16px_rgba(74,124,89,0.13)] w-full max-w-[600px] min-w-0 mx-auto">
+    <section className="relative bg-white rounded-[16px] overflow-hidden shadow-[0_2px_16px_rgba(74,124,89,0.13)] w-full max-w-[600px] min-w-0 mx-auto">
+      {/* 카메라 로딩 시 전체(헤더+바디) 덮는 스켈레톤 */}
+      {showLoadingOverlay && (
+        <div className="absolute inset-0 z-20 flex flex-col items-center justify-center rounded-[16px] bg-white">
+          <LoadingSkeleton variant="camera" />
+        </div>
+      )}
+
       {/* 헤더 B 스타일 */}
       <div className="flex items-center justify-between gap-2 px-4 py-3 bg-white border-b-[1.5px] border-[var(--green-border)]">
         <div className="flex items-center gap-[7px] min-w-0">
@@ -138,12 +142,6 @@ export default function EstimatePanel({
           </div>
         ) : (
           <>
-            {!isFirstFrameDrawn && (
-              <div className="absolute inset-0 z-10 w-full h-full">
-                <LoadingSkeleton variant="camera" />
-              </div>
-            )}
-
             <div id={canvasSlotId} className="absolute inset-0 w-full h-full" />
 
             {showMeasurementStartedToast && (

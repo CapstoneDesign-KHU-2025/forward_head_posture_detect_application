@@ -453,7 +453,7 @@
   },
   "Measurement": {
     "Guide": {
-      "initial": "Please move into the guidelines",
+      "initial": "Align with the guidelines",
       "tooClose": "You are too close",
       "tooFar": "You are too far",
       "good": "Good!",
@@ -488,7 +488,6 @@
     }
   },
   "getStatusBanner": {
-    "isInitial": "start estimating!",
     "stopEstimating": "Waiting",
     "badPosture": "bad posture!",
     "guideMessage": "good posture!"

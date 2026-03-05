@@ -18,10 +18,9 @@ export type StatusBannerType = "success" | "warning" | "info";
 interface UseTurtleNeckMeasurementOptions {
   userId?: string;
   stopEstimating: boolean;
-  isInitial: boolean;
 }
 
-export function useTurtleNeckMeasurement({ userId, stopEstimating, isInitial }: UseTurtleNeckMeasurementOptions) {
+export function useTurtleNeckMeasurement({ userId, stopEstimating }: UseTurtleNeckMeasurementOptions) {
   // === DOM refs (외부에서 써야 해서 반환 예정) ===
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -501,7 +500,6 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating, isInitial }: 
 
   const bannerMessage = getStatusBannerMessageCore(
     t_banner,
-    isInitial,
     stopEstimating,
     isTurtle,
     measurementStarted,
