@@ -259,6 +259,9 @@
       "estimate": "Estimate"
     }
   },
+  "TempFooter": {
+    "feedback": "Send Feedback 💬"
+  },
   "HomeClient": {
     "HomeData": {
       "empty": {

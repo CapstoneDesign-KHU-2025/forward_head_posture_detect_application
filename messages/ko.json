@@ -260,6 +260,9 @@
       "estimate": "측정하기"
     }
   },
+  "TempFooter": {
+    "feedback": "피드백 보내기 💬"
+  },
 
   "HomeClient": {
     "HomeData": {

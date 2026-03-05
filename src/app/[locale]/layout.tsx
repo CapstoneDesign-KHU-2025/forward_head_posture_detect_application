@@ -1,6 +1,7 @@
 import "../globals.css";
 import Header from "@/components/organisms/layout/Header";
 import PageContainer from "@/components/organisms/layout/PageContainer";
+import TempFooter from "@/components/organisms/layout/TempFooter";
 import { auth } from "@/auth";
 
 import Providers from "../providers";
@@ -38,6 +39,7 @@ export default async function LocaleLayout({ children, params }: Props) {
           <div className="h-dvh flex flex-col min-h-0">
             <Header user={user} />
             <PageContainer>{children}</PageContainer>
+            <TempFooter />
           </div>
         </MeasurementProvider>
       </Providers>
