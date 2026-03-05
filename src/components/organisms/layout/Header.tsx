@@ -1,28 +1,33 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import { usePathname } from "@/i18n/navigation";
 import Link from "next/link";
 import { Button } from "@/components/atoms/Button";
 import { BrandLink } from "@/components/atoms/BrandLink";
 import { useSession, signIn } from "next-auth/react";
-import { FriendsButton } from "@/components/molecules/FriendsButton";
+/* import { FriendsButton } from "@/components/molecules/FriendsButton"; */
 import { UserButton } from "@/components/molecules/UserButton";
-import { FriendsModal } from "@/components/organisms/friends/FriendsModal";
+/* import { FriendsModal } from "@/components/organisms/friends/FriendsModal"; */
 import { useFriendsData } from "@/hooks/useFriendsData";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
+
+import LanguageToggle from "@/components/molecules/LanguageToggle";
 type HeaderProps = {
   user?: { name: string; avatarSrc?: string } | null;
   className?: string;
 };
 export default function Header({ user: initialUser, className }: HeaderProps) {
+  const t = useTranslations("Header");
+  const t_basic = useTranslations("Basic");
   const pathname = usePathname();
   const { data: session, status } = useSession();
-  const [isFriendsModalOpen, setIsFriendsModalOpen] = useState(false);
-  const friendsData = useFriendsData();
+  // const [isFriendsModalOpen, setIsFriendsModalOpen] = useState(false);
+  //const friendsData = useFriendsData();
 
   const navItems = [
-    { label: "Home", href: "/" },
-    { label: "Estimate", href: "/estimate" },
+    { label: t("navItems.home"), href: "/" },
+    { label: t("navItems.estimate"), href: "/estimate" },
   ];
 
   const isLoading = status === "loading";
@@ -30,35 +35,31 @@ export default function Header({ user: initialUser, className }: HeaderProps) {
   const isLandingPage = pathname === "/landing";
   const isLoginPage = pathname === "/login";
   const isCharacterPage = pathname === "/character";
-
   const UserActions = () => {
     if (isLoading) {
       return <span className="text-sm text-black/40">...</span>;
     }
 
     if (!user) {
-      return <Button onClick={() => signIn()}>시작하기</Button>;
+      return <Button onClick={() => signIn()}>{t("login_button")}</Button>;
     }
 
     return (
       <>
-        <FriendsButton
-          requestCount={friendsData?.incomingCount || 0}
-          onClick={() => setIsFriendsModalOpen(true)}
-        />
+        {/* <FriendsButton requestCount={friendsData?.incomingCount || 0} onClick={() => setIsFriendsModalOpen(true)} /> */}
         <UserButton
           user={{
-            name: user.name ?? "사용자",
+            name: user.name ?? t("UserButton.name"),
             email: (user as any)?.email,
             image: (user as any)?.image,
             avatarSrc: (user as any)?.avatarSrc,
           }}
         />
-        <FriendsModal
+        {/*    <FriendsModal
           isOpen={isFriendsModalOpen}
           onClose={() => setIsFriendsModalOpen(false)}
           friendsData={friendsData || undefined}
-        />
+        /> */}
       </>
     );
   };
@@ -68,9 +69,7 @@ export default function Header({ user: initialUser, className }: HeaderProps) {
 
   return (
     <header
-      className={["fixed top-0 left-0 right-0 w-full z-50 bg-[var(--green-pale)]", className]
-        .filter(Boolean)
-        .join(" ")}
+      className={["fixed top-0 left-0 right-0 w-full z-50 bg-[var(--green-pale)]", className].filter(Boolean).join(" ")}
     >
       <div className="w-full px-6 md:px-8">
         {isLandingPage ? (
@@ -78,9 +77,10 @@ export default function Header({ user: initialUser, className }: HeaderProps) {
           <div className="flex h-[var(--header-height)] w-full items-center justify-between">
             <BrandLink
               icon={<img src="/icons/turtle.png" alt="" className="object-contain shrink-0" />}
-              label="거북목 거북거북!"
+              label={t_basic("title")}
             />
             <div className="flex items-center gap-2">
+              <LanguageToggle />
               <UserActions />
             </div>
           </div>
@@ -90,7 +90,7 @@ export default function Header({ user: initialUser, className }: HeaderProps) {
             {/* Left: Logo & brand */}
             <BrandLink
               icon={<img src="/icons/turtle.png" alt="" className="object-contain shrink-0" />}
-              label="거북목 거북거북!"
+              label={t_basic("title")}
             />
 
             {/* Center: 네비게이션 탭 */}
@@ -118,7 +118,9 @@ export default function Header({ user: initialUser, className }: HeaderProps) {
             </nav>
 
             {/* Right: 친구 아이콘 + 프로필 */}
+
             <div className="flex items-center gap-2">
+              <LanguageToggle />
               <UserActions />
             </div>
           </div>

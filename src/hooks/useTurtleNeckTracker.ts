@@ -5,6 +5,7 @@ import { FilesetResolver, PoseLandmarker } from "@mediapipe/tasks-vision";
 import analyzeTurtleNeck from "@/utils/isTurtleNeck";
 import turtleStabilizer from "@/utils/turtleStabilizer";
 import { useAppStore } from "@/app/store/app";
+import { useTranslations } from "next-intl";
 export type UseTurtleNeckTrackerOptions = {
   autoStart?: boolean;
   wasmBaseUrl?: string;
@@ -43,6 +44,8 @@ export function useTurtleNeckTracker(opts: UseTurtleNeckTrackerOptions = {}) {
     onResult,
     onSend,
   } = opts;
+
+  const t = useTranslations("useTurtleNeckTracker");
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -124,7 +127,7 @@ export function useTurtleNeckTracker(opts: UseTurtleNeckTrackerOptions = {}) {
       centerX - 215,
       centerY + 220 + offsetY,
       centerX - 225,
-      centerY + 280 + offsetY
+      centerY + 280 + offsetY,
     );
     ctx.moveTo(centerX + 190, centerY + 60 + offsetY);
     ctx.bezierCurveTo(
@@ -133,7 +136,7 @@ export function useTurtleNeckTracker(opts: UseTurtleNeckTrackerOptions = {}) {
       centerX + 215,
       centerY + 220 + offsetY,
       centerX + 225,
-      centerY + 280 + offsetY
+      centerY + 280 + offsetY,
     );
     ctx.moveTo(centerX - 225, centerY + 280 + offsetY);
     ctx.lineTo(centerX + 225, centerY + 280 + offsetY);
@@ -250,13 +253,13 @@ export function useTurtleNeckTracker(opts: UseTurtleNeckTrackerOptions = {}) {
             isDistanceOk = distanceRatio >= tooFarRatio && distanceRatio <= tooCloseRatio;
 
             if (distanceRatio >= tooCloseRatio) {
-              distanceMessage = "너무 가깝습니다. 뒤로 물러나세요.";
+              distanceMessage = t("distanceMessage.close");
               distanceColor = "rgba(255, 0, 0, 0.9)";
             } else if (distanceRatio <= tooFarRatio) {
-              distanceMessage = "너무 멉니다. 앞으로 이동하세요.";
+              distanceMessage = t("distanceMessage.far");
               distanceColor = "rgba(255, 165, 0, 0.9)";
             } else {
-              distanceMessage = "적절한 거리입니다.";
+              distanceMessage = t("distanceMessage.good");
               distanceColor = "rgba(0, 255, 0, 0.9)";
             }
           }

@@ -1,69 +1,64 @@
 "use client";
-
 import { Card } from "@/components/atoms/Card";
-
+import { useTranslations } from "next-intl";
 type StatusType = "excellent" | "normal" | "bad" | "empty";
 
 type TodayStatusCardProps = {
-  warningCount?: number | null; // null이면 데이터 없음
-  isNewUser?: boolean; // true: 완전 신규, false: 오늘 첫 방문 (기존 사용자)
+  warningCount?: number | null;
+  isNewUser?: boolean;
 };
 
-type StatusInfo = {
-  emoji: string;
-  title: string;
-  message: string;
-  statusClass: StatusType;
-};
+export default function TodayStatusCard({ warningCount, isNewUser }: TodayStatusCardProps) {
+  const t = useTranslations("TodayStatusCard");
+  type StatusInfo = {
+    emoji: string;
+    title: string;
+    message: string;
+    statusClass: StatusType;
+  };
 
-function getStatusInfo(warningCount: number | null | undefined, isNewUser: boolean = false): StatusInfo {
-  // warningCount가 null이거나 undefined면 오늘 데이터 없음
-  if (warningCount === null || warningCount === undefined) {
-    if (isNewUser === true) {
-      // 완전 신규 사용자 (localStorage에 hasEverMeasured가 없음)
+  function getStatusInfo(warningCount: number | null | undefined, isNewUser: boolean = false): StatusInfo {
+    if (warningCount === null || warningCount === undefined) {
+      if (isNewUser === true) {
+        return {
+          emoji: "👋",
+          title: t("first_empty.title"),
+          message: t("first_empty.message"),
+          statusClass: "empty",
+        };
+      } else {
+        return {
+          emoji: "☀️",
+          title: t("empty.title"),
+          message: t("empty.message"),
+          statusClass: "empty",
+        };
+      }
+    }
+
+    if (warningCount <= 10) {
       return {
-        emoji: "👋",
-        title: "환영합니다!",
-        message: '"첫 측정을 시작해서\n건강한 자세 습관을 만들어보세요!"',
-        statusClass: "empty",
+        emoji: "🎉",
+        title: t("excellent.title"),
+        message: t("excellent.message"),
+        statusClass: "excellent",
+      };
+    } else if (warningCount <= 20) {
+      return {
+        emoji: "😐",
+        title: t("normal.title"),
+        message: t("normal.message"),
+        statusClass: "normal",
       };
     } else {
-      // 오늘 첫 방문 (기존 사용자지만 오늘은 아직 측정 안 함)
       return {
-        emoji: "☀️",
-        title: "오늘도 화이팅!",
-        message: '"오늘의 측정을 시작해서\n좋은 기록을 만들어보세요!"',
-        statusClass: "empty",
+        emoji: "😰",
+        title: t("bad.title"),
+        message: t("bad.message"),
+        statusClass: "bad",
       };
     }
   }
-
-  // 경고 횟수에 따른 상태 분류
-  if (warningCount <= 10) {
-    return {
-      emoji: "🎉",
-      title: "오늘은 최고예요!",
-      message: '"목이 시원하시겠어요!"',
-      statusClass: "excellent",
-    };
-  } else if (warningCount <= 20) {
-    return {
-      emoji: "😐",
-      title: "조금만 더 신경 써볼까요?",
-      message: '"목을 좀 펴주세요!"',
-      statusClass: "normal",
-    };
-  } else {
-    return {
-      emoji: "😰",
-      title: "오늘은 많이 힘드시겠어요",
-      message: '"목을 쉬게 해주세요!"',
-      statusClass: "bad",
-    };
-  }
-}
-
-export default function TodayStatusCard({ warningCount, isNewUser }: TodayStatusCardProps) {
   const statusInfo = getStatusInfo(warningCount, isNewUser);
 
   type StatusStyle = {

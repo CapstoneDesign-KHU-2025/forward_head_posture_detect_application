@@ -1,3 +1,5 @@
+type GeneralTranslator = (key: any, values?: Record<string, any>) => string;
+
 type GuideColor = "green" | "red" | "orange";
 type StatusBannerType = "success" | "warning" | "info";
 
@@ -17,15 +19,16 @@ export function getStatusBannerTypeCore(
 }
 
 export function getStatusBannerMessageCore(
+  t: GeneralTranslator,
   isInitial: boolean,
   stopEstimating: boolean,
   isTurtle: boolean,
   measurementStarted: boolean,
   guideMessage: string | null,
 ): string {
-  if (isInitial) return "측정을 시작해주세요!";
-  if (stopEstimating) return "측정이 중단되었습니다";
-  if (isTurtle && measurementStarted) return "거북목 자세입니다!";
+  if (isInitial) return t("isInitial");
+  if (stopEstimating) return t("stopEstimating");
+  if (isTurtle && measurementStarted) return t("badPosture");
   if (guideMessage) return guideMessage;
-  return "바른 자세입니다!";
+  return t("guideMessage");
 }

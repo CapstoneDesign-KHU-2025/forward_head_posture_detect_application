@@ -6,32 +6,12 @@ import { ModalHeader } from "@/components/atoms/ModalHeader";
 import { Button } from "@/components/atoms/Button";
 import { SelectableOptionCard } from "@/components/molecules/SelectableOptionCard";
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 
 type CharacterSelectionModalProps = {
   isOpen: boolean;
   onClose: () => void;
 };
-
-const characters = [
-  {
-    id: "remy",
-    icon: "/icons/remy.png",
-    name: "래미",
-    description: "부드럽고 따뜻한 친근한 캐릭터",
-  },
-  {
-    id: "jerry",
-    icon: "/icons/cat.png",
-    name: "제리",
-    description: "활발하고 귀여운 사랑스러운 캐릭터",
-  },
-  {
-    id: "jessica",
-    icon: "/icons/girl.png",
-    name: "제시카",
-    description: "우아하고 세련된 멋진 캐릭터",
-  },
-];
 
 function getSelectedCharacter(): string {
   if (typeof window === "undefined") return "remy";
@@ -40,6 +20,29 @@ function getSelectedCharacter(): string {
 }
 
 export default function CharacterSelectionModal({ isOpen, onClose }: CharacterSelectionModalProps) {
+  const t_char = useTranslations("Characters");
+  const t = useTranslations("CharacterSelectionModal");
+  const characters = [
+    {
+      id: "remy",
+      icon: "/icons/remy.png",
+      name: t_char("remy.name"),
+      description: t_char("remy.description"),
+    },
+    {
+      id: "jerry",
+      icon: "/icons/cat.png",
+      name: t_char("jerry.name"),
+      description: t_char("jerry.description"),
+    },
+    {
+      id: "jessica",
+      icon: "/icons/girl.png",
+      name: t_char("jessica.name"),
+      description: t_char("jessica.description"),
+    },
+  ];
+
   const [selectedCharacter, setSelectedCharacter] = useState<string>("remy");
 
   useEffect(() => {
@@ -64,11 +67,7 @@ export default function CharacterSelectionModal({ isOpen, onClose }: CharacterSe
       onClose={onClose}
       contentClassName="w-full max-w-[420px] rounded-[22px] shadow-[0_20px_60px_rgba(45,59,53,0.18)]"
     >
-      <ModalHeader
-        title="캐릭터 변경"
-        subtitle="나를 대표할 캐릭터를 선택하세요"
-        onClose={onClose}
-      />
+      <ModalHeader title={t("ModalHeader.title")} subtitle={t("ModalHeader.subtitle")} onClose={onClose} />
 
       <div className="flex flex-1 flex-col overflow-y-auto px-6 py-[22px]">
         <div className="flex flex-col gap-2">
@@ -77,13 +76,7 @@ export default function CharacterSelectionModal({ isOpen, onClose }: CharacterSe
               key={character.id}
               icon={
                 <div className="relative flex h-[52px] w-[52px] shrink-0 items-center justify-center overflow-hidden rounded-xl bg-[#e8f5ec]">
-                  <Image
-                    src={character.icon}
-                    alt={character.name}
-                    width={52}
-                    height={52}
-                    className="object-cover"
-                  />
+                  <Image src={character.icon} alt={character.name} width={52} height={52} className="object-cover" />
                 </div>
               }
               title={character.name}
@@ -95,24 +88,13 @@ export default function CharacterSelectionModal({ isOpen, onClose }: CharacterSe
         </div>
       </div>
       <div className="flex shrink-0 gap-2.5 px-6 py-3.5">
-        <Button
-          type="button"
-          variant="secondary"
-          className="flex-1 text-[14px] font-semibold py-3"
-          onClick={onClose}
-        >
-          닫기
+        <Button type="button" variant="secondary" className="flex-1 text-[14px] font-semibold py-3" onClick={onClose}>
+          {t("button.close")}
         </Button>
-        <Button
-          type="button"
-          variant="primary"
-          className="flex-1 text-[14px] py-3"
-          onClick={handleConfirm}
-        >
-          확인
+        <Button type="button" variant="primary" className="flex-1 text-[14px] py-3" onClick={handleConfirm}>
+          {t("button.confirm")}
         </Button>
       </div>
     </Modal>
   );
 }
-

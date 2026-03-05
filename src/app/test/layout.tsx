@@ -1,5 +1,6 @@
 import { auth } from "@/auth";
-import { redirect } from "next/navigation";
+import { redirect } from "@/i18n/navigation";
+import { getLocale } from "next-intl/server";
 
 const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || "")
   .split(",")
@@ -12,15 +13,17 @@ type TestLayoutProps = {
 
 export default async function TestLayout({ children }: TestLayoutProps) {
   const session = await auth();
+  const locale = await getLocale();
 
-  if (!session?.user?.email) {
-    redirect("/login");
+  const email = session?.user?.email;
+  if (!email) {
+    return redirect({ href: "/login", locale });
   }
 
-  const isAdmin = ADMIN_EMAILS.includes(session.user.email);
+  const isAdmin = ADMIN_EMAILS.includes(email);
 
-  if (!isAdmin) {
-    redirect("/");
+  if (isAdmin) {
+    redirect({ href: "/", locale });
   }
 
   return <>{children}</>;

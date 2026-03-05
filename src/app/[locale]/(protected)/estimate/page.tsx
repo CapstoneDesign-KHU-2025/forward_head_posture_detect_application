@@ -6,11 +6,13 @@ import EstimatePanel from "@/components/molecules/EstimatePanel";
 import ErrorBanner from "@/components/atoms/ErrorBanner";
 import AsyncBoundary from "@/components/molecules/AsyncBoundary";
 import LoadingSkeleton from "@/components/molecules/LoadingSkeleton";
-import { logger } from "@/lib/logger";
 
 import { MEASUREMENT_CANVAS_SLOT_ID } from "@/providers/MeasurementProvider";
+import { useTranslations } from "next-intl";
 
 export default function Estimate() {
+  const t = useTranslations("Estimate");
+
   const {
     stopEstimating,
     startMeasurement,
@@ -36,7 +38,7 @@ export default function Estimate() {
             variant={stopEstimating ? "primary" : "danger"}
             onClick={stopEstimating ? startMeasurement : stopMeasurement}
           >
-            {stopEstimating ? "측정 시작하기" : "오늘의 측정 중단하기"}
+            {stopEstimating ? t("buttons.start") : t("buttons.stop")}
           </Button>
         </div>
 
@@ -44,7 +46,7 @@ export default function Estimate() {
           suspenseFallback={
             <section className="bg-white rounded-[20px] overflow-hidden shadow-[0_4px_30px_rgba(45,95,46,0.1)] w-full max-w-[600px] min-w-0 mx-auto">
               <div className="w-full px-8 py-4 text-center text-[1.1rem] font-semibold rounded-t-[20px] bg-gradient-to-r from-[#6B7280] to-[#9CA3AF] text-white">
-                측정을 시작해주세요!
+                {t("async.suspense")}
               </div>
               <div
                 className="relative w-full min-w-0 rounded-none overflow-hidden bg-[#2C3E50]"

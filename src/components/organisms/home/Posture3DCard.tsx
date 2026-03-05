@@ -7,6 +7,7 @@ import { SegmentToggle } from "@/components/molecules/SegmentToggle";
 import type { PoseMode } from "@/components/molecules/3DModel";
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 
 const ThreeDModel = dynamic(() => import("@/components/molecules/3DModel"), {
   ssr: false,
@@ -22,11 +23,10 @@ type ChallengePanelProps = {
 
 const idealAng = 52;
 
-// localStorage에서 선택한 캐릭터 가져오기
 function getSelectedCharacter(): string {
   if (typeof window === "undefined") return "remy";
   const selected = localStorage.getItem("selectedCharacter");
-  return selected || "remy"; // 기본값: remy
+  return selected || "remy";
 }
 
 export default function Posture3DCard({
@@ -35,6 +35,7 @@ export default function Posture3DCard({
   description,
   className,
 }: ChallengePanelProps) {
+  const t = useTranslations("Posture3DCard");
   const [characterId, setCharacterId] = useState<string>("remy");
   const [poseMode, setPoseMode] = useState<PoseMode>("upper");
 
@@ -73,11 +74,11 @@ export default function Posture3DCard({
   const delta = currentAngle - idealAng;
   const deltaLabel = `${delta >= 0 ? "+" : ""}${delta.toFixed(1)}°`;
 
-  let statusText = "바른 자세 유지 중 👍";
+  let statusText = t("statusText.good");
   if (Math.abs(delta) > 5) {
-    statusText = "목을 쉬게 해주세요!";
+    statusText = t("statusText.bad");
   } else if (Math.abs(delta) > 2) {
-    statusText = "조금만 더 신경 써볼까요?";
+    statusText = t("statusText.middle");
   }
 
   return (
@@ -85,13 +86,10 @@ export default function Posture3DCard({
       {/* 헤더 */}
       <div className="flex items-center justify-between">
         <div>
-          <h2
-            className="text-[18px] font-extrabold text-[var(--text)]"
-            style={{ fontFamily: "Nunito, sans-serif" }}
-          >
+          <h2 className="text-[18px] font-extrabold text-[var(--text)]" style={{ fontFamily: "Nunito, sans-serif" }}>
             {title}
           </h2>
-          <p className="mt-[2px] text-[12px] font-semibold text-[var(--text-muted)]">5분 단위 평균 목 각도</p>
+          <p className="mt-[2px] text-[12px] font-semibold text-[var(--text-muted)]">{t("fivemins_average")}</p>
         </div>
         <div
           className="bg-[var(--green-light)] rounded-full px-4 py-[4px] text-[15px] font-extrabold text-[var(--green)]"
@@ -108,12 +106,7 @@ export default function Posture3DCard({
           <div className="absolute inset-x-0 bottom-0 h-10 bg-[linear-gradient(0deg,rgba(74,124,89,0.12)_0%,transparent_100%)]" />
 
           <div className="relative z-[1] w-full h-full">
-            <ThreeDModel
-              characterId={characterId}
-              idealAng={idealAng}
-              userAng={currentAngle}
-              poseMode={poseMode}
-            />
+            <ThreeDModel characterId={characterId} idealAng={idealAng} userAng={currentAngle} poseMode={poseMode} />
             <div className="absolute bottom-3 right-3 z-10">
               <SegmentToggle
                 options={[

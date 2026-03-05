@@ -1,5 +1,7 @@
+"use client";
 import { Icon } from "@/components/atoms/Icon";
 import { Video } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 type LoadingSkeletonProps = {
   variant?: "card" | "camera";
@@ -7,6 +9,7 @@ type LoadingSkeletonProps = {
 
 export default function LoadingSkeleton({ variant = "card" }: LoadingSkeletonProps) {
   if (variant === "camera") {
+    const t = useTranslations("LoadingSkeleton");
     return (
       <div
         role="status"
@@ -20,8 +23,8 @@ export default function LoadingSkeleton({ variant = "card" }: LoadingSkeletonPro
 
         {/* 텍스트 */}
         <div className="flex flex-col items-center gap-2 text-center">
-          <p className="text-[18px] font-bold text-[var(--text)]">카메라 연결 중</p>
-          <p className="text-[14px] text-[var(--text-muted)]">잠시만 기다려주세요</p>
+          <p className="text-[18px] font-bold text-[var(--text)]">{t("message")}</p>
+          <p className="text-[14px] text-[var(--text-muted)]">{t("description")}</p>
         </div>
 
         {/* 점 3개 */}
@@ -40,11 +43,7 @@ export default function LoadingSkeleton({ variant = "card" }: LoadingSkeletonPro
 
   // variant="card" (기본값)
   return (
-    <div
-      role="status"
-      aria-live="polite"
-      className="flex h-full w-full items-center justify-center"
-    >
+    <div role="status" aria-live="polite" className="flex h-full w-full items-center justify-center">
       <div className="flex items-center gap-1.5">
         {[0, 1, 2].map((i) => (
           <span

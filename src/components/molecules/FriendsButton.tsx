@@ -1,26 +1,23 @@
- "use client";
+"use client";
 
 import { Icon } from "@/components/atoms/Icon";
 import { Badge } from "@/components/atoms/Badge";
 import { Users } from "lucide-react";
 import { cn } from "@/utils/cn";
-
+import { useTranslations } from "next-intl";
 type FriendsButtonProps = {
   requestCount: number;
   onClick: () => void;
   className?: string;
 };
 
-export function FriendsButton({
-  requestCount,
-  onClick,
-  className,
-}: FriendsButtonProps) {
+export function FriendsButton({ requestCount, onClick, className }: FriendsButtonProps) {
+  const t = useTranslations("FriendsButton");
   return (
     <button
       type="button"
       onClick={onClick}
-      title="친구 관리"
+      title={t("ariaLabel")}
       className={cn(
         "relative flex h-11 w-11 shrink-0 items-center justify-center rounded-[12px]",
         "text-[var(--text-sub)] transition-all duration-150",
