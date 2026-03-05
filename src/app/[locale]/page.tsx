@@ -10,7 +10,7 @@ type Props = {
 
 export default async function Page({ params }: Props) {
   const session = await auth();
-  const { locale } = await params;
+  const { locale } = params;
   const t = await getTranslations("Basic");
   if (!session || !session?.user?.id) {
     return redirect({ href: "/landing", locale: locale });
