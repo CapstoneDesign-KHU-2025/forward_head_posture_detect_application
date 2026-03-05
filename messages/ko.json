@@ -32,7 +32,8 @@
       "start": "측정 시작하기",
       "stop": "오늘의 측정 중단하기"
     },
-    "async": { "suspense": "측정을 시작해주세요!" }
+    "async": { "suspense": "측정을 시작해주세요!" },
+    "cameraTitle": "카메라"
   },
   "Login": {
     "alt": {
@@ -87,7 +88,9 @@
     "tryAgain": "다시 시도"
   },
   "EstimatePanel": {
-    "message": "측정 시작하기 버튼을 눌러\n카메라를 켜주세요",
+    "cameraTitle": "카메라",
+    "message": "🐢\n측정이 준비됐어요!\n버튼을 눌러 시작해주세요",
+    "messageText": "측정이 준비됐어요!\n버튼을 눌러 시작해주세요",
     "startMeasurementToast": "거북목 측정을 시작합니다"
   },
   "EvolutionTooltip": {
@@ -482,7 +485,7 @@
   },
   "getStatusBanner": {
     "isInitial": "측정을 시작해주세요!",
-    "stopEstimating": "측정이 중단되었습니다",
+    "stopEstimating": "대기중",
     "badPosture": "거북목 자세입니다!",
     "guideMessage": "바른 자세입니다!"
   },

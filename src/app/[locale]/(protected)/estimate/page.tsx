@@ -24,6 +24,8 @@ export default function Estimate() {
     getStatusBannerType,
     statusBannerMessage,
     isFirstFrameDrawn,
+    guideColor,
+    isInitial,
   } = useMeasurement();
 
   const bannerType = getStatusBannerType();
@@ -44,15 +46,21 @@ export default function Estimate() {
 
         <AsyncBoundary
           suspenseFallback={
-            <section className="bg-white rounded-[20px] overflow-hidden shadow-[0_4px_30px_rgba(45,95,46,0.1)] w-full max-w-[600px] min-w-0 mx-auto">
-              <div className="w-full px-8 py-4 text-center text-[1.1rem] font-semibold rounded-t-[20px] bg-gradient-to-r from-[#6B7280] to-[#9CA3AF] text-white">
-                {t("async.suspense")}
+            <section className="bg-white rounded-[16px] overflow-hidden shadow-[0_2px_16px_rgba(74,124,89,0.13)] w-full max-w-[600px] min-w-0 mx-auto">
+              <div className="flex items-center justify-between gap-2 px-4 py-3 bg-white border-b-[1.5px] border-[var(--green-border)]">
+                <div className="flex items-center gap-[7px] min-w-0">
+                  <span className="text-[15px] flex-shrink-0">📷</span>
+                  <span className="text-[13px] font-bold text-[var(--green)]">{t("cameraTitle")}</span>
+                </div>
+                <span className="inline-flex items-center gap-[5px] rounded-[20px] px-2.5 py-1.5 text-[11px] font-bold bg-[#f0f4f2] border border-[var(--green-border)] text-[var(--text-muted)]">
+                  {t("async.suspense")}
+                </span>
               </div>
               <div
-                className="relative w-full min-w-0 rounded-none overflow-hidden bg-[#2C3E50]"
+                className="relative w-full min-w-0 overflow-hidden bg-gradient-to-br from-[#ddf0e4] via-[#edf8f1] to-[#cde8d5]"
                 style={{ aspectRatio: "4/3" }}
               >
-                <LoadingSkeleton />
+                <LoadingSkeleton variant="camera" />
               </div>
             </section>
           }
@@ -66,6 +74,8 @@ export default function Estimate() {
             measurementStarted={measurementStarted}
             stopEstimating={stopEstimating}
             isFirstFrameDrawn={isFirstFrameDrawn}
+            guideColor={guideColor}
+            isInitial={isInitial}
           />
         </AsyncBoundary>
         {error && <ErrorBanner error={error} />}
