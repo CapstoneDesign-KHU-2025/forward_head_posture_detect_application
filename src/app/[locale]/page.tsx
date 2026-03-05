@@ -5,12 +5,12 @@ import { getDailySummaryAction } from "../actions/summaryActions";
 import HomeClient, { WeeklySummaryData } from "@/components/templates/HomeClient";
 import { getTranslations } from "next-intl/server";
 type Props = {
-  params: { locale: string };
+  params: Promise<{ locale: string }>;
 };
 
 export default async function Page({ params }: Props) {
   const session = await auth();
-  const { locale } = params;
+  const { locale } = await params;
   const t = await getTranslations("Basic");
   if (!session || !session?.user?.id) {
     return redirect({ href: "/landing", locale: locale });

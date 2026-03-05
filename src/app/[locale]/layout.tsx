@@ -12,11 +12,11 @@ import { routing } from "@/i18n/routing";
 import { getTranslations } from "next-intl/server";
 export type Props = {
   children: React.ReactNode;
-  params: { locale: string };
+  params: Promise<{ locale: string }>;
 };
 
 export default async function LocaleLayout({ children, params }: Props) {
-  const { locale } = params;
+  const { locale } = await params;
 
   if (!routing.locales.includes(locale as any)) {
     notFound();

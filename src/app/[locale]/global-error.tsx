@@ -2,20 +2,20 @@
 
 import * as Sentry from "@sentry/nextjs";
 import NextError from "next/error";
-import { useEffect } from "react";
+import { useEffect, use } from "react";
 
-export default async function GlobalError({
+export default function GlobalError({
   error,
   params,
 }: {
   error: Error & { digest?: string };
-  params: { locale: string };
+  params: Promise<{ locale: string }>;
 }) {
   useEffect(() => {
     Sentry.captureException(error);
   }, [error]);
 
-  const { locale } = params;
+  const { locale } = use(params);
 
   return (
     <html lang={locale}>
