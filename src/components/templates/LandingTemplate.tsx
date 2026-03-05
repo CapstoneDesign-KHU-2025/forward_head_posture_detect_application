@@ -8,6 +8,7 @@ import DashboardMockupCard from "@/components/molecules/DashboardMockupCard";
 import Footer from "@/components/organisms/layout/Footer";
 import TurtleLogo from "@/components/atoms/TurtleLogo";
 import { useTranslations } from "next-intl";
+import { useRouter } from "@/i18n/navigation";
 type FeatureI18n = {
   title: string;
   description: string;
@@ -19,6 +20,7 @@ type FeatureI18n_Proof = {
 };
 export default function LandingTemplate() {
   const t = useTranslations("landing");
+  const router = useRouter();
 
   const featureTexts = t.raw("features.features") as FeatureI18n[];
   const proofTexts = t.raw("proof") as FeatureI18n_Proof[];
@@ -249,7 +251,7 @@ export default function LandingTemplate() {
         <p className="text-base text-white/75 mb-9 leading-[1.7]">{t("cta.description")}</p>
         <button
           type="button"
-          onClick={() => signIn("github")}
+          onClick={() => router.push("/login")}
           className="bg-white text-[var(--green)] border-none rounded-[14px] py-[15px] px-9 text-base font-bold cursor-pointer transition-all duration-200 shadow-[0_8px_24px_rgba(0,0,0,0.15)] hover:-translate-y-[3px] hover:shadow-[0_14px_36px_rgba(0,0,0,0.2)]"
           style={{ fontFamily: "inherit" }}
         >
