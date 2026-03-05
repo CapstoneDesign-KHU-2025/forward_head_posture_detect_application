@@ -86,12 +86,6 @@ export function apiError(error: unknown, context?: { path?: string; hint?: strin
         error_hint: context?.hint || "none",
       },
     });
-    Sentry.captureException(error, {
-      tags: {
-        api_path: context?.path || "unknown",
-        error_hint: context?.hint || "none",
-      },
-    });
     return json(
       {
         error: error.message || "Server error",

@@ -16,9 +16,10 @@ export function checkGuidelinesAndDistance(
   centerY: number,
   offsetY: number
 ): GuidelineCheckResult {
-  let faceInside = true;
-  let shoulderInside = true;
-  let isDistanceOk = true;
+  // 포즈가 없으면(카메라 가림 등) 가이드라인 통과 불가
+  let faceInside = false;
+  let shoulderInside = false;
+  let isDistanceOk = false;
   let distanceRatio = 1;
 
   const tooCloseThreshold = 1.05;

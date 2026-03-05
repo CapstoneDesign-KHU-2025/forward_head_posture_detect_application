@@ -1,11 +1,14 @@
+"use client";
 import WelcomeHero from "@/components/organisms/home/WelcomeHero";
+import Posture3DCard from "@/components/organisms/home/Posture3DCard";
 import StatCard from "@/components/molecules/StatCard";
+import { Calendar, type DayStatus } from "@/components/molecules/Calendar";
 import TodayStatusCard from "@/components/molecules/TodayStatusCard";
-import TitleCard from "@/components/molecules/TitleCard";
+import TurtleEvolutionCard from "@/components/molecules/TurtleEvolutionCard";
 import { formatMeasuredTime } from "@/utils/formatMeasuredTime";
-import GraphicModelPanel from "@/components/organisms/home/GraphicModelPanel";
-import AsyncBoundary from "../common/AsyncBoundary";
-import LoadingSkeleton from "../common/LoadingSkeleton";
+import AsyncBoundary from "@/components/molecules/AsyncBoundary";
+import LoadingSkeleton from "@/components/molecules/LoadingSkeleton";
+import { useTranslations } from "next-intl";
 
 type KPIItem = {
   label: string;
@@ -30,6 +33,10 @@ type HomeTemplateProps = {
   isNewUser?: boolean;
   /** 누적 좋은 날 수 (칭호 카드용) */
   goodDays?: number;
+  /** 캘린더 날짜별 상태 (YYYY-MM-DD -> good | bad) */
+  dayStatusMap?: Record<string, DayStatus>;
+  /** 실시간 측정 중 여부 (측정 시간 카드 상태 점 표시용) */
+  isMeasuring?: boolean;
   className?: string;
 };
 
@@ -40,70 +47,142 @@ export default function HomeTemplate({
   warningCount = null,
   isNewUser,
   goodDays = 0,
+  dayStatusMap = {},
+  isMeasuring = false,
   className,
 }: HomeTemplateProps) {
-  // 측정 시간 KPI 찾기
+  // 다국어 훅 호출
+  const t = useTranslations("HomeTemplate");
+
+  // 측정 시간 KPI 찾기 (라벨 검색 시에도 다국어 키워드 대응)
+  const measureTimeLabel = t("kpi.measureTime.label");
   const measureTimeKpi = kpis?.find(
-    (kpi) => kpi.label === "측정 시간" || (typeof kpi.label === "string" && kpi.label.includes("측정 시간")),
+    (kpi) =>
+      kpi.label === "측정 시간" ||
+      kpi.label === measureTimeLabel ||
+      (typeof kpi.label === "string" && kpi.label.includes(measureTimeLabel)),
   );
 
-  return (
-    <main className={["bg-[#F8FBF8] min-h-screen", className].filter(Boolean).join(" ")}>
-      <div className="max-w-[1400px] mx-auto px-8 py-8">
-        <WelcomeHero userName={user?.name ?? "사용자"} />
+  const todayWarningCount = warningCount ?? 0;
+  const avgAngle = user?.avgAng ?? null;
+  const idealAngle = 52;
+  const deltaFromIdeal = avgAngle != null && Number.isFinite(avgAngle) ? avgAngle - idealAngle : null;
 
-        {/* 본문 2열 레이아웃: 좌(KPI), 우(도전기) */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
-          {/* LEFT: 오늘의 거북목 섹션 */}
-          <div className="flex flex-col gap-6">
-            {/* 섹션 타이틀 */}
-            <h2 className="text-[1.5rem] font-bold text-[#2D5F2E] mb-2">오늘의 거북목</h2>
-            <AsyncBoundary suspenseFallback={<LoadingSkeleton />}>
-              {/* 상태 카드 - 메인 */}
+  return (
+    <main
+      className={[
+        "w-full bg-[var(--green-pale)]",
+        // lg 기준 큰 화면: 화면 꽉 채우고 스크롤 없음
+        "lg:flex lg:flex-col lg:flex-1 lg:min-h-0 lg:overflow-hidden",
+        // lg 미만 작은 화면: 자연스럽게 스크롤
+        "overflow-y-auto",
+        className,
+      ]
+        .filter(Boolean)
+        .join(" ")}
+    >
+      <div
+        className={[
+          "mx-auto w-full max-w-[1400px] gap-3.5 px-4 pb-[100px] pt-1.5 sm:px-7",
+          // lg 기준 큰 화면: flex로 꽉 채움
+          "lg:flex lg:flex-row lg:flex-1 lg:min-h-0",
+          // lg 미만 작은 화면: 블록으로 쌓임
+          "flex flex-col",
+        ].join(" ")}
+      >
+        {/* 좌측: 인사말 + 배너/스탯 + 도전기 (히어로 너비 = 배너+도전기 반반) */}
+        <div className="flex-1 min-w-0 grid grid-cols-1 md:grid-cols-2 md:grid-rows-[auto_1fr] gap-3.5 min-h-0">
+          {/* 인사말 카드: 배너+도전기 전체 너비 */}
+          <div className="md:col-span-2">
+            <WelcomeHero userName={user?.name ?? "사용자"} />
+          </div>
+
+          {/* 배너 컬럼: 오늘도 화이팅 + StatCards */}
+          <div className="min-w-0 flex h-full flex-col gap-3.5 min-h-0">
+            <AsyncBoundary suspenseFallback={null}>
               <TodayStatusCard warningCount={warningCount} isNewUser={isNewUser} />
             </AsyncBoundary>
-
-            {/* 서브 정보 카드 */}
-            <div className="flex gap-4">
-              <AsyncBoundary suspenseFallback={<LoadingSkeleton />}>
-                <div className="flex-[0.7]">
-                  {/* 측정 시간 카드 */}
+            <AsyncBoundary suspenseFallback={null}>
+              <div className="flex flex-wrap gap-3.5 flex-shrink-0">
+                <div className="flex-1 min-w-[140px]">
                   {measureTimeKpi && typeof measureTimeKpi.value === "number" && measureTimeKpi.value > 0 ? (
                     <StatCard
                       label={measureTimeKpi.label}
                       value={formatMeasuredTime(measureTimeKpi.value)}
                       unit={measureTimeKpi.unit}
+                      showStatusDot
+                      statusDotVariant={isMeasuring ? "measuring" : "idle"}
+                      subtitle={
+                        isMeasuring ? t("statCards.realTimeCard.realTime") : t("statCards.realTimeCard.notEstimating")
+                      }
                     />
                   ) : (
-                    <StatCard label="측정 시간" value="측정을 시작해보세요!" />
+                    <StatCard
+                      label={t("statCards.realTimeCard.estimatingTime")}
+                      value="00:00"
+                      showStatusDot
+                      statusDotVariant={isMeasuring ? "measuring" : "idle"}
+                      subtitle={
+                        isMeasuring ? t("statCards.realTimeCard.estimating") : t("statCards.realTimeCard.notEstimating")
+                      }
+                    />
                   )}
                 </div>
-              </AsyncBoundary>
-              <AsyncBoundary suspenseFallback={<LoadingSkeleton />}>
-                <div className="flex-[1.3]">
-                  {/* 칭호 카드 */}
-                  <TitleCard goodDays={goodDays} />
+                <div className="flex-1 min-w-[140px]">
+                  <StatCard
+                    label={t("statCards.warning.todayWarning")}
+                    value={String(todayWarningCount)}
+                    unit={t("statCards.warning.time")}
+                    subtitle={t("statCards.warning.todayBenchMark")}
+                  />
                 </div>
-              </AsyncBoundary>
-            </div>
+                <div className="flex-1 min-w-[140px]">
+                  <StatCard
+                    label={t("statCards.average.accumulatedAverage")}
+                    value={avgAngle != null ? avgAngle.toFixed(1) : "-"}
+                    unit="°"
+                    subtitle={
+                      deltaFromIdeal != null ? (
+                        <span className="text-[var(--warning-text)]">
+                          {t("statCards.average.differenceIdeal")} {deltaFromIdeal >= 0 ? "+" : ""}
+                          {deltaFromIdeal.toFixed(1)}°
+                        </span>
+                      ) : undefined
+                    }
+                  />
+                </div>
+              </div>
+            </AsyncBoundary>
           </div>
 
-          {/* RIGHT: 측정 섹션 */}
-          <div>
-            <GraphicModelPanel
+          {/* 도전기 컬럼 */}
+          <div className="min-w-0 flex flex-1 min-h-0 h-full overflow-hidden">
+            <Posture3DCard
+              className="flex-1 w-full"
               userAng={user?.avgAng}
-              title={challenge?.title ?? "당신의 거북목 도전기"}
+              title={challenge?.title ?? t("posture3DCard.yourChallenge")}
               description={
                 challenge?.description ?? (
                   <>
-                    측정을 시작하면 오늘의 평균 목 각도와
+                    {t("posture3DCard.description.1")}
                     <br />
-                    도전 현황이 여기에 표시됩니다.
+                    {t("posture3DCard.description.2")}
                   </>
                 )
               }
             />
           </div>
+        </div>
+
+        {/* 우측 패널: 캘린더 + 진화 카드 */}
+        <div className="w-full lg:w-[340px] flex-shrink-0 flex flex-col gap-3.5 min-h-0">
+          <AsyncBoundary suspenseFallback={null}>
+            <Calendar dayStatusMap={dayStatusMap} />
+          </AsyncBoundary>
+
+          <AsyncBoundary suspenseFallback={null}>
+            <TurtleEvolutionCard goodDays={goodDays} />
+          </AsyncBoundary>
         </div>
       </div>
     </main>

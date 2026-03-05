@@ -10,6 +10,8 @@ import { getStatusBannerMessageCore, getStatusBannerTypeCore } from "@/utils/get
 import { checkGuidelinesAndDistance, Pose } from "@/utils/checkGuidelinesAndDistance";
 import { drawGuidelines } from "@/utils/drawGuidelines";
 import { startBeep, stopBeep } from "@/utils/manageBeep";
+import { useTranslations } from "next-intl";
+import { incrementTurtleCount } from "@/lib/postureLocal";
 type GuideColor = "green" | "red" | "orange";
 export type StatusBannerType = "success" | "warning" | "info";
 
@@ -23,7 +25,8 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating, isInitial }: 
   // === DOM refs (외부에서 써야 해서 반환 예정) ===
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-
+  const t = useTranslations("Measurement");
+  const t_banner = useTranslations("getStatusBanner");
   // === 내부 제어용 refs (훅 안에 숨김) ===
   const landmarkerRef = useRef<PoseLandmarker | null>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -39,6 +42,7 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating, isInitial }: 
   const measuringRef = useRef<boolean>(false);
   const lastGuideMessageRef = useRef<string | null>(null);
   const lastGuideColorRef = useRef<GuideColor>("red");
+  const firstFrameDrawnRef = useRef(false);
   if (!userId) {
     useEffect(() => {
       if (!userId) return;
@@ -53,6 +57,7 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating, isInitial }: 
   const [measurementStarted, setMeasurementStarted] = useState<boolean>(false);
   const [showMeasurementStartedToast, setShowMeasurementStartedToast] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [isFirstFrameDrawn, setIsFirstFrameDrawn] = useState(false);
 
   // 초기 각도 베이스라인용 상태
   const baselineAngleRef = useRef<number | null>(null);
@@ -76,9 +81,18 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating, isInitial }: 
     lastBeepIntervalRef: React.RefObject<NodeJS.Timeout | null>;
     setAngle: (angle: number) => void;
     setIsTurtle: (val: boolean) => void;
+    userId: string | undefined;
   }) {
-    const { poseBufferRef, lastBufferTimeRef, measuringRef, lastStateRef, lastBeepIntervalRef, setAngle, setIsTurtle } =
-      options;
+    const {
+      poseBufferRef,
+      lastBufferTimeRef,
+      measuringRef,
+      lastStateRef,
+      lastBeepIntervalRef,
+      setAngle,
+      setIsTurtle,
+      userId,
+    } = options;
 
     const now = performance.now();
     if (!measuringRef.current) {
@@ -143,6 +157,7 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating, isInitial }: 
 
       if (turtleNow) {
         startBeep(lastBeepIntervalRef);
+        incrementTurtleCount(userId);
       } else {
         stopBeep(lastBeepIntervalRef);
       }
@@ -162,6 +177,8 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating, isInitial }: 
 
     (async () => {
       try {
+        if (stopEstimating) return;
+
         const video = videoRef.current;
         if (!video) return;
 
@@ -235,6 +252,11 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating, isInitial }: 
           ctx.drawImage(v, -c.width, 0, c.width, c.height);
           ctx.restore();
 
+          if (!firstFrameDrawnRef.current) {
+            firstFrameDrawnRef.current = true;
+            setIsFirstFrameDrawn(true);
+          }
+
           const poses = result.landmarks ?? [];
 
           // stopEstimating 이면 측정 상태 초기화
@@ -289,15 +311,15 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating, isInitial }: 
 
           // --- 측정 시작 전: 가이드 + 카운트다운 ---
           if (!measuringRef.current) {
-            nextGuideMessage = "가이드라인 안으로 들어오세요";
+            nextGuideMessage = t("Guide.initial");
             nextGuideColor = "red";
 
             if (!isDistanceOk) {
               if (distanceRatio >= tooCloseThreshold) {
-                nextGuideMessage = "너무 가까워요";
+                nextGuideMessage = t("Guide.tooClose");
                 nextGuideColor = "orange";
               } else if (distanceRatio <= tooFarThreshold) {
-                nextGuideMessage = "너무 멀어요";
+                nextGuideMessage = t("Guide.tooFar");
                 nextGuideColor = "orange";
               }
               countdownStartRef.current = null;
@@ -363,7 +385,7 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating, isInitial }: 
                   baselineBufferRef.current = [];
                 }
               } else {
-                nextGuideMessage = `좋아요! ${nextCountdownRemain}초 유지하세요`;
+                nextGuideMessage = `${t("Guide.good")} ${nextCountdownRemain}${t("Guide.keepPose")}`;
                 nextGuideColor = "green";
               }
             } else {
@@ -405,6 +427,7 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating, isInitial }: 
               lastBeepIntervalRef,
               setAngle,
               setIsTurtle,
+              userId,
             });
           }
         };
@@ -421,7 +444,7 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating, isInitial }: 
         // 초기 루프 시작
         intervalRef.current = setInterval(loop, getInterval());
       } catch (e: any) {
-        setError(e?.message ?? "카메라 초기화 중 오류가 발생했습니다.");
+        setError(e?.message ?? t("Error.cameraInit"));
       }
     })();
 
@@ -453,12 +476,20 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating, isInitial }: 
     };
   }, [stopEstimating, userId]);
 
+  // stopEstimating 시 첫 프레임 플래그 리셋
+  useEffect(() => {
+    if (stopEstimating) {
+      firstFrameDrawnRef.current = false;
+      setIsFirstFrameDrawn(false);
+    }
+  }, [stopEstimating]);
+
   // === 외부에서 "다시 측정 시작"할 때 쓸 리셋 함수 ===
   const resetForNewMeasurement = () => {
     measuringRef.current = false;
     countdownStartRef.current = null;
     lastGuideMessageRef.current = null;
-    setGuideMessage("가이드라인 안으로 들어오세요");
+    setGuideMessage(t("Guide.initial"));
     setGuideColor("red");
     setMeasurementStarted(false);
     setCountdownRemain(null);
@@ -469,6 +500,7 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating, isInitial }: 
   const bannerType = getStatusBannerTypeCore(stopEstimating, isTurtle, measurementStarted, guideColor, guideMessage);
 
   const bannerMessage = getStatusBannerMessageCore(
+    t_banner,
     isInitial,
     stopEstimating,
     isTurtle,
@@ -494,6 +526,7 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating, isInitial }: 
     // UI helper
     getStatusBannerType: () => bannerType,
     statusBannerMessage: () => bannerMessage,
+    isFirstFrameDrawn,
 
     // 외부에서 사용할 메서드
     resetForNewMeasurement,

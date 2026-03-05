@@ -1,12 +1,18 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import HomeTemplate from "@/components/templates/HomeTemplate";
 import ErrorBanner from "@/components/atoms/ErrorBanner";
+import { useMeasurement } from "@/providers/MeasurementProvider";
 
+import { apiRequest } from "@/lib/api/client";
 import { computeTodaySoFarAverage } from "@/lib/hourlyOps";
+import { computeDayStatusMap } from "@/utils/computeDayStatusMap";
 import { getTodayCount, getTodayMeasuredSeconds } from "@/lib/postureLocal";
 import { computeImprovementPercent } from "@/utils/computeImprovementPercent";
+import { useLocale, useTranslations } from "next-intl";
+import { useRouter } from "@/i18n/navigation";
+import LoadingSkeleton from "../molecules/LoadingSkeleton";
 
 type WeeklySummaryRow = {
   id: number;
@@ -61,15 +67,44 @@ type HomeData = {
 };
 
 export default function HomeClient({ weeklyData, user }: HomeClientProps) {
+  const { stopEstimating, measurementStarted } = useMeasurement();
+  const isMeasuring = !stopEstimating && measurementStarted;
+
   const [todayAvg, setTodayAvg] = useState<number | null>(null);
   const [todayHour, setTodayHour] = useState<number | null>(null);
   const [todayCount, setTodayCount] = useState<number | null>(0);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
+  const [isCheckingRedirect, setIsCheckingRedirect] = useState(true);
   const weeklyAvg = weeklyData?.weightedAvg ?? null;
   const goodDays = weeklyData?.goodDays ?? 0;
+
+  const [calendarRows, setCalendarRows] = useState<WeeklySummaryRow[]>([]);
+  const t = useTranslations("HomeClient");
+  const locale = useLocale();
+
+  const router = useRouter();
+  useEffect(() => {
+    const hasCharacter = localStorage.getItem("selectedCharacter")?.trim();
+    if (!hasCharacter) {
+      router.replace("/character");
+      return;
+    } else {
+      setIsCheckingRedirect(false);
+    }
+    let cancelled = false;
+    apiRequest<{ safeRows: WeeklySummaryRow[] }>({ requestPath: "/summaries/daily?days=90" })
+      .then((result) => {
+        if (!cancelled && result.ok && result.data?.safeRows) setCalendarRows(result.data.safeRows);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [router]);
+
+  const dayStatusMap = useMemo(() => computeDayStatusMap(calendarRows), [calendarRows]);
 
   const [isNewUser, setIsNewUser] = useState<boolean>(() => {
     if (typeof window === "undefined") return false;
@@ -95,7 +130,7 @@ export default function HomeClient({ weeklyData, user }: HomeClientProps) {
         }
       } catch (e: any) {
         if (!cancelled) {
-          setError(e.message ?? "알 수 없는 에러가 발생했습니다.");
+          setError(e.message ?? "error");
         }
       } finally {
         if (!cancelled) setLoading(false);
@@ -128,10 +163,10 @@ export default function HomeClient({ weeklyData, user }: HomeClientProps) {
 
   const improvementText =
     improvement == null
-      ? "데이터 부족"
+      ? t("improvementText.lack_of_data")
       : improvement >= 0
-        ? `${improvement.toFixed(1)}% 개선`
-        : `${Math.abs(improvement).toFixed(1)}% 악화`;
+        ? `${improvement.toFixed(1)}% ${t("improvementText.improve")}`
+        : `${Math.abs(improvement).toFixed(1)}%  ${t("improvementText.worse")}`;
 
   const improvementValue = improvement == null ? 0 : Math.max(-100, Math.min(100, improvement));
 
@@ -144,55 +179,62 @@ export default function HomeClient({ weeklyData, user }: HomeClientProps) {
     kpis: isEmptyState
       ? [
           {
-            label: "아직 측정 기록이 없어요",
-            value: "첫 측정을 시작해보세요!",
+            label: t("HomeData.empty.label"),
+            value: t("HomeData.empty.value"),
             unit: "",
-            caption: "웹캠 측정을 시작하면 오늘의 평균 목 각도가 여기 보여져요.",
+            caption: t("HomeData.empty.caption"),
           },
         ]
       : [
           {
-            label: "오늘 당신의 평균 목 각도는?",
-            value: todayAvg != null ? todayAvg.toFixed(1) : loading ? "로딩 중..." : "-",
+            label: t("HomeData.kpi.avgAngle.label"),
+            value: todayAvg != null ? todayAvg.toFixed(1) : loading ? t("HomeData.kpi.avgAngle.loading") : "-",
             unit: "°",
             delta: "up",
             deltaText: weeklyAvg != null && todayAvg != null ? `${(todayAvg - weeklyAvg).toFixed(1)}°` : "",
             deltaVariant:
               weeklyAvg != null && todayAvg != null ? (todayAvg <= weeklyAvg ? "success" : "warning") : "neutral",
-            caption: weeklyAvg != null && todayAvg != null ? "최근 7일과 비교한 변화량" : undefined,
+            caption: weeklyAvg != null && todayAvg != null ? t("HomeData.kpi.avgAngle.caption") : undefined,
           },
           {
-            label: "오늘 거북목 경고 횟수",
-            value: todayCount != null ? todayCount : loading ? "로딩 중..." : "-",
-            unit: "회",
+            label: t("HomeData.kpi.warningCount.label"),
+            value: todayCount != null ? todayCount : loading ? t("HomeData.kpi.avgAngle.loading") : "-",
+            unit: t("HomeData.kpi.warningCount.unit"),
             delta: "down",
             deltaText: "",
             deltaVariant: "danger",
-            caption: "경고 횟수가 줄어들수록 좋아요!",
+            caption: t("HomeData.kpi.warningCount.caption"),
           },
           {
-            label: "측정 시간",
-            value: todayHour != null && todayHour > 0 ? todayHour : "측정을 시작해보세요!",
+            label: t("HomeData.kpi.measurementTime.label"),
+            value: todayHour != null && todayHour > 0 ? todayHour : t("HomeData.kpi.measurementTime.emptyValue"),
             unit: "",
           },
           {
-            label: "개선 정도",
+            label: t("HomeData.kpi.improvement.label"),
             value: improvementValue.toFixed(2),
             unit: "%",
             caption: improvementText,
           },
         ],
     challenge: {
-      title: isEmptyState ? "첫 거북목 측정을 시작해볼까요 ?" : "당신의 거북목 도전기",
-      description: "측정을 시작하면 오늘의 평균 목 각도와 도전 현황이 여기에 표시됩니다.",
+      title: isEmptyState ? t("HomeData.challenge.emptyTitle") : t("HomeData.challenge.title"),
+
+      description: t("HomeData.challenge.description"),
       progress: isEmptyState ? 0 : 30,
-      ctaText: "도전 계속하기",
+      ctaText: t("HomeData.challenge.cta"),
     },
   };
 
   const warningCount =
     (todayCount === 0 && todayHour === 0) || todayCount === null || todayCount === undefined ? null : todayCount;
-
+  if (isCheckingRedirect) {
+    return (
+      <div className="fixed inset-0 z-[100] flex items-center justify-center bg-[var(--green-pale)]">
+        <LoadingSkeleton />
+      </div>
+    );
+  }
   return (
     <HomeTemplate
       user={homeData.user}
@@ -201,6 +243,8 @@ export default function HomeClient({ weeklyData, user }: HomeClientProps) {
       warningCount={warningCount}
       isNewUser={isNewUser}
       goodDays={goodDays}
+      dayStatusMap={dayStatusMap}
+      isMeasuring={isMeasuring}
     />
   );
 }

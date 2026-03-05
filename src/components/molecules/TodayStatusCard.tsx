@@ -1,109 +1,118 @@
 "use client";
-
+import { Card } from "@/components/atoms/Card";
+import { useTranslations } from "next-intl";
 type StatusType = "excellent" | "normal" | "bad" | "empty";
 
 type TodayStatusCardProps = {
-  warningCount?: number | null; // null이면 데이터 없음
-  isNewUser?: boolean; // true: 완전 신규, false: 오늘 첫 방문 (기존 사용자)
+  warningCount?: number | null;
+  isNewUser?: boolean;
 };
 
-type StatusInfo = {
-  emoji: string;
-  title: string;
-  message: string;
-  statusClass: StatusType;
-};
+export default function TodayStatusCard({ warningCount, isNewUser }: TodayStatusCardProps) {
+  const t = useTranslations("TodayStatusCard");
+  type StatusInfo = {
+    emoji: string;
+    title: string;
+    message: string;
+    statusClass: StatusType;
+  };
 
-function getStatusInfo(warningCount: number | null | undefined, isNewUser: boolean = false): StatusInfo {
-  // warningCount가 null이거나 undefined면 오늘 데이터 없음
-  if (warningCount === null || warningCount === undefined) {
-    if (isNewUser === true) {
-      // 완전 신규 사용자 (localStorage에 hasEverMeasured가 없음)
+  function getStatusInfo(warningCount: number | null | undefined, isNewUser: boolean = false): StatusInfo {
+    if (warningCount === null || warningCount === undefined) {
+      if (isNewUser === true) {
+        return {
+          emoji: "👋",
+          title: t("first_empty.title"),
+          message: t("first_empty.message"),
+          statusClass: "empty",
+        };
+      } else {
+        return {
+          emoji: "☀️",
+          title: t("empty.title"),
+          message: t("empty.message"),
+          statusClass: "empty",
+        };
+      }
+    }
+
+    if (warningCount <= 10) {
       return {
-        emoji: "👋",
-        title: "환영합니다!",
-        message: '"첫 측정을 시작해서\n건강한 자세 습관을 만들어보세요!"',
-        statusClass: "empty",
+        emoji: "🎉",
+        title: t("excellent.title"),
+        message: t("excellent.message"),
+        statusClass: "excellent",
+      };
+    } else if (warningCount <= 20) {
+      return {
+        emoji: "😐",
+        title: t("normal.title"),
+        message: t("normal.message"),
+        statusClass: "normal",
       };
     } else {
-      // 오늘 첫 방문 (기존 사용자지만 오늘은 아직 측정 안 함)
       return {
-        emoji: "☀️",
-        title: "오늘도 화이팅!",
-        message: '"오늘의 측정을 시작해서\n좋은 기록을 만들어보세요!"',
-        statusClass: "empty",
+        emoji: "😰",
+        title: t("bad.title"),
+        message: t("bad.message"),
+        statusClass: "bad",
       };
     }
   }
-
-  // 경고 횟수에 따른 상태 분류
-  if (warningCount <= 10) {
-    return {
-      emoji: "🎉",
-      title: "오늘은 최고예요!",
-      message: '"목이 시원하시겠어요!"',
-      statusClass: "excellent",
-    };
-  } else if (warningCount <= 20) {
-    return {
-      emoji: "😐",
-      title: "조금만 더 신경 써볼까요?",
-      message: '"목을 좀 펴주세요!"',
-      statusClass: "normal",
-    };
-  } else {
-    return {
-      emoji: "😰",
-      title: "오늘은 많이 힘드시겠어요",
-      message: '"목을 쉬게 해주세요!"',
-      statusClass: "bad",
-    };
-  }
-}
-
-export default function TodayStatusCard({ warningCount, isNewUser }: TodayStatusCardProps) {
   const statusInfo = getStatusInfo(warningCount, isNewUser);
 
-  const statusStyles: Record<StatusType, { borderColor: string; background: string }> = {
+  type StatusStyle = {
+    background: string;
+    titleColor: string;
+    messageColor: string;
+    borderColor?: string;
+  };
+
+  const statusStyles: Record<Exclude<StatusType, "empty">, StatusStyle> = {
     excellent: {
-      borderColor: "#4A9D4D",
-      background: "linear-gradient(135deg, #ffffff 0%, #E8F5E9 100%)",
+      background: "linear-gradient(135deg, #d4f0dc 0%, #e8f8ee 100%)",
+      borderColor: "#6aab7a",
+      titleColor: "var(--green)",
+      messageColor: "var(--text-sub)",
     },
     normal: {
-      borderColor: "#FFA726",
-      background: "linear-gradient(135deg, #ffffff 0%, #FFF9E6 100%)",
+      background: "linear-gradient(135deg, #fff8e6 0%, #fffcf0 100%)",
+      borderColor: "#f0c040",
+      titleColor: "#b88a00",
+      messageColor: "var(--text-sub)",
     },
     bad: {
-      borderColor: "#FF7043",
-      background: "linear-gradient(135deg, #ffffff 0%, #FFE8E0 100%)",
-    },
-    empty: {
-      borderColor: "#9CA3AF",
-      background: "linear-gradient(135deg, #ffffff 0%, #F9FAFB 100%)",
+      background: "linear-gradient(135deg, #fff0ee 0%, #fff5f4 100%)",
+      borderColor: "#ff8c8c",
+      titleColor: "#c0392b",
+      messageColor: "var(--text-sub)",
     },
   };
 
-  const style = statusStyles[statusInfo.statusClass];
+  const style: StatusStyle =
+    statusInfo.statusClass === "empty"
+      ? isNewUser === true
+        ? {
+            // 신규 사용자 배너
+            background: "linear-gradient(135deg, #c8ecd4 0%, #e4f5e8 100%)",
+            titleColor: "#3a6147",
+            messageColor: "var(--text-sub)",
+          }
+        : {
+            // 오늘 첫 방문 배너
+            background: "linear-gradient(135deg, #4a7c59 0%, #6aab7a 100%)",
+            titleColor: "#ffffff",
+            messageColor: "rgba(255,255,255,0.85)",
+          }
+      : statusStyles[statusInfo.statusClass as Exclude<StatusType, "empty">];
 
   return (
-    <div
-      className="status-card"
+    <Card
+      className="status-card flex flex-1 min-h-0 flex-col items-center justify-center px-6 py-5"
       style={{
         background: style.background,
-        padding: "2.5rem 2rem",
-        borderRadius: "16px",
-        boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
+        border: style.borderColor ? `2px solid ${style.borderColor}` : "none",
         textAlign: "center",
-        border: `3px solid ${style.borderColor}`,
-        transition: "all 0.3s",
-      }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.transform = "translateY(-4px)";
-        e.currentTarget.style.boxShadow = "0 8px 30px rgba(45, 95, 46, 0.15)";
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.transform = "translateY(0)";
-        e.currentTarget.style.boxShadow = "0 4px 20px rgba(0,0,0,0.08)";
       }}
     >
       <style jsx>{`
@@ -117,33 +126,34 @@ export default function TodayStatusCard({ warningCount, isNewUser }: TodayStatus
           }
         }
         .status-emoji {
-          font-size: ${statusInfo.statusClass === "empty" ? "3.5rem" : "4rem"};
-          margin-bottom: 1rem;
+          font-size: 2.25rem;
+          margin-bottom: 10px;
           animation: bounce 2s infinite;
         }
       `}</style>
       <div className="status-emoji">{statusInfo.emoji}</div>
       <div
         style={{
-          fontSize: statusInfo.statusClass === "empty" ? "1.6rem" : "1.8rem",
-          fontWeight: "bold",
-          color: statusInfo.statusClass === "empty" ? "#4F4F4F" : "#2D5F2E",
-          marginBottom: "0.8rem",
+          fontFamily: "'Nunito', sans-serif",
+          fontSize: "18px",
+          fontWeight: 800,
+          color: style.titleColor,
+          marginBottom: "6px",
         }}
       >
         {statusInfo.title}
       </div>
       <div
         style={{
-          fontSize: statusInfo.statusClass === "empty" ? "1rem" : "1.1rem",
-          fontWeight: "normal",
-          color: statusInfo.statusClass === "empty" ? "#6B7280" : "#4F4F4F",
+          fontSize: "13px",
+          fontWeight: 400,
+          color: style.messageColor,
           lineHeight: "1.6",
           whiteSpace: "pre-line",
         }}
       >
         {statusInfo.message}
       </div>
-    </div>
+    </Card>
   );
 }

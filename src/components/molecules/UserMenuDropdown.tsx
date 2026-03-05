@@ -1,11 +1,12 @@
 "use client";
 
+import { Icon } from "@/components/atoms/Icon";
 import { Settings, LogOut, UserCircle } from "lucide-react";
 import { signOut } from "next-auth/react";
-import SensitivitySettingsModal from "./SensitivitySettingsModal";
-import CharacterSelectionModal from "./CharacterSelectionModal";
+import SensitivitySettingsModal from "@/components/organisms/home/SensitivitySettingsModal";
+import CharacterSelectionModal from "@/components/organisms/home/CharacterSelectionModal";
 import { useEffect, useRef, useState } from "react";
-
+import { useTranslations } from "next-intl";
 type UserMenuDropdownProps = {
   userName: string;
   userEmail?: string;
@@ -23,6 +24,7 @@ export default function UserMenuDropdown({
   onClose,
   anchorRef,
 }: UserMenuDropdownProps) {
+  const t = useTranslations("useMenuDropdown");
   const [isSensitivityModalOpen, setIsSensitivityModalOpen] = useState(false);
   const [isCharacterModalOpen, setIsCharacterModalOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -50,12 +52,12 @@ export default function UserMenuDropdown({
     <>
       <div
         ref={dropdownRef}
-        className={`absolute right-0 top-[calc(100%+0.8rem)] min-w-[280px] bg-white rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.12)] border-2 border-[#E8F5E9] z-50 transition-all duration-300 ease-in-out ${
+        className={`absolute right-0 top-[calc(100%+0.8rem)] min-w-[280px] bg-white rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.06)] z-50 transition-all duration-300 ease-in-out ${
           isOpen ? "opacity-100 visible translate-y-0" : "opacity-0 invisible -translate-y-2.5"
         }`}
       >
         {/* 프로필 헤더 */}
-        <div className="px-6 py-6 border-b-2 border-[#F0F9F0] flex items-center gap-4">
+        <div className="px-6 py-6 flex items-center gap-4">
           {userImage ? (
             <img src={userImage} alt={userName} className="w-[50px] h-[50px] rounded-full" />
           ) : (
@@ -73,16 +75,18 @@ export default function UserMenuDropdown({
         </div>
 
         {/* 메뉴 항목들 */}
-        <div className="py-2">
+        <div className="py-2 px-2 flex flex-col gap-0.5">
           <button
             onClick={() => {
               setIsSensitivityModalOpen(true);
               onClose();
             }}
-            className="w-full flex items-center gap-4 px-6 py-4 text-base font-medium text-black transition-all duration-200 hover:bg-[#F8FBF8] hover:pl-7 cursor-pointer"
+            className="w-full flex items-center gap-4 px-4 py-3 rounded-xl text-base font-medium text-black transition-colors duration-150 hover:bg-[var(--green-pale)] cursor-pointer text-left"
           >
-            <Settings size={20} className="text-black" />
-            <span>민감도 설정</span>
+            <Icon size="sm">
+              <Settings className="text-black shrink-0" />
+            </Icon>
+            <span>{t("menu.sensitivity")}</span>
           </button>
 
           <button
@@ -90,10 +94,12 @@ export default function UserMenuDropdown({
               setIsCharacterModalOpen(true);
               onClose();
             }}
-            className="w-full flex items-center gap-4 px-6 py-4 text-base font-medium text-black border-t-2 border-[#F0F9F0] transition-all duration-200 hover:bg-[#F8FBF8] hover:pl-7 cursor-pointer"
+            className="w-full flex items-center gap-4 px-4 py-3 rounded-xl text-base font-medium text-black transition-colors duration-150 hover:bg-[var(--green-pale)] cursor-pointer text-left"
           >
-            <UserCircle size={20} className="text-black" />
-            <span>캐릭터 변경</span>
+            <Icon size="sm">
+              <UserCircle className="text-black shrink-0" />
+            </Icon>
+            <span>{t("menu.change_character")}</span>
           </button>
 
           <button
@@ -101,10 +107,12 @@ export default function UserMenuDropdown({
               signOut();
               onClose();
             }}
-            className="w-full flex items-center gap-4 px-6 py-4 text-base font-medium text-black border-t-2 border-[#F0F9F0] transition-all duration-200 hover:bg-[#F8FBF8] hover:pl-7 cursor-pointer"
+            className="w-full flex items-center gap-4 px-4 py-3 rounded-xl text-base font-medium text-black transition-colors duration-150 hover:bg-[var(--green-pale)] cursor-pointer text-left"
           >
-            <LogOut size={20} className="text-black" />
-            <span>로그아웃</span>
+            <Icon size="sm">
+              <LogOut className="text-black shrink-0" />
+            </Icon>
+            <span>{t("menu.logout")}</span>
           </button>
         </div>
       </div>

@@ -1,16 +1,30 @@
 import { auth } from "@/auth";
 import { json, withApiReq } from "@/lib/api/utils";
 import { getFriendRequests, createFriendRequest } from "@/services/friends.service";
+import { checkRateLimit } from "@/lib/rateLimit";
 import { z } from "zod";
 
 const CreateRequestSchema = z.object({
   toUserId: z.string().min(1, "We can't find this friend!"),
+  type: z.preprocess((val) => (val === null ? undefined : val), z.enum(["incoming", "outgoing"]).default("incoming")),
+  status: z.preprocess(
+    (val) => (val === null ? undefined : val),
+    z.enum(["PENDING", "ACCEPTED", "REJECTED", "CANCELED"]).nullable().default(null),
+  ),
 });
 
 export const POST = withApiReq(
   async (req) => {
     const session = await auth();
     if (!session?.user?.id) return json({ error: "UNAUTHORIZED" }, 401);
+
+    const rate = await checkRateLimit(`friends:create:${session.user.id}`, {
+      windowMs: 60_000,
+      max: 20,
+    });
+    if (!rate.ok) {
+      return json({ error: "Too many friend requests. Please try again later." }, 429);
+    }
 
     const body = await req.json().catch(() => ({}));
     const parsed = CreateRequestSchema.safeParse(body);
@@ -37,8 +51,8 @@ export const GET = withApiReq(
 
     const { searchParams } = new URL(req.url);
     const parsedQuery = GetRequestsQuerySchema.safeParse({
-      type: searchParams.get("type") || undefined,
-      status: searchParams.get("status") || undefined,
+      type: searchParams.get("type"),
+      status: searchParams.get("status"),
     });
 
     if (!parsedQuery.success) {
