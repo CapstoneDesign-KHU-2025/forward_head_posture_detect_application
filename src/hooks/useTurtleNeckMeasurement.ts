@@ -12,7 +12,7 @@ import { drawGuidelines } from "@/utils/drawGuidelines";
 import { startBeep, stopBeep } from "@/utils/manageBeep";
 import { useTranslations } from "next-intl";
 import { incrementTurtleCount } from "@/lib/postureLocal";
-type GuideColor = "green" | "red" | "orange";
+import type { GuideColor } from "@/utils/types";
 export type StatusBannerType = "success" | "warning" | "info";
 
 interface UseTurtleNeckMeasurementOptions {

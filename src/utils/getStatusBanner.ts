@@ -1,6 +1,6 @@
-type GeneralTranslator = (key: any, values?: Record<string, any>) => string;
+import type { GuideColor } from "./types";
 
-type GuideColor = "green" | "red" | "orange";
+type GeneralTranslator = (key: any, values?: Record<string, any>) => string;
 type StatusBannerType = "success" | "warning" | "info";
 
 export function getStatusBannerTypeCore(

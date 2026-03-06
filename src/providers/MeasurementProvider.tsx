@@ -14,6 +14,7 @@ import { FloatingBarController } from "@/components/molecules/FloatingBarControl
 import { RecoveryNotice } from "@/components/molecules/RecoveryNotice";
 import { logger } from "@/lib/logger";
 import type { StatusBannerType } from "@/hooks/useTurtleNeckMeasurement";
+import type { GuideColor } from "@/utils/types";
 
 export const MEASUREMENT_CANVAS_SLOT_ID = "measurement-canvas-slot";
 
@@ -38,7 +39,7 @@ type MeasurementContextValue = {
   canvasSlotId: string;
   isFirstFrameDrawn: boolean;
   guideMessage: string | null;
-  guideColor: "green" | "red" | "orange";
+  guideColor: GuideColor;
 };
 
 const MeasurementContext = createContext<MeasurementContextValue | null>(null);

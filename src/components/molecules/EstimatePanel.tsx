@@ -5,8 +5,7 @@ import type { StatusPillVariant } from "@/components/atoms/StatusPill";
 import { StatusPill } from "@/components/atoms/StatusPill";
 import LoadingSkeleton from "@/components/molecules/LoadingSkeleton";
 import { useTranslations } from "next-intl";
-
-type GuideColor = "green" | "red" | "orange";
+import type { GuideColor } from "@/utils/types";
 
 type EstimatePanelProps = {
   bannerType: StatusBannerType;
