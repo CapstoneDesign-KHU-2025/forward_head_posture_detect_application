@@ -124,19 +124,10 @@ export default function EstimatePanel({
         )}
         {stopEstimating ? (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 p-8 text-center">
-            <span
-              className={`text-6xl leading-none ${
-                stopEstimating ? "opacity-30" : ""
-              }`}
-              aria-hidden
-            >
+            <span className="text-6xl leading-none opacity-30" aria-hidden>
               🐢
             </span>
-            <p
-              className={`text-lg font-semibold whitespace-pre-line ${
-                stopEstimating ? "text-white/30" : "text-[var(--text-muted)]"
-              }`}
-            >
+            <p className="text-lg font-semibold whitespace-pre-line text-white/30">
               {t("messageText")}
             </p>
           </div>
