@@ -32,7 +32,8 @@
       "start": "Start Measuring",
       "stop": "Stop Today's Measurement"
     },
-    "async": { "suspense": "Please start the measurement!" }
+    "async": { "suspense": "Please start the measurement!" },
+    "cameraTitle": "Camera"
   },
   "Login": {
     "alt": {
@@ -87,7 +88,9 @@
     "tryAgain": "Try Again"
   },
   "EstimatePanel": {
-    "message": "Press the start button\nto turn on the camera",
+    "cameraTitle": "Camera",
+    "message": "🐢\nMeasurement is ready!\nPress the button to start",
+    "messageText": "Measurement is ready!\nPress the button to start",
     "startMeasurementToast": "Starting posture measurement"
   },
   "EvolutionTooltip": {
@@ -450,7 +453,7 @@
   },
   "Measurement": {
     "Guide": {
-      "initial": "Please move into the guidelines",
+      "initial": "Align with the guidelines",
       "tooClose": "You are too close",
       "tooFar": "You are too far",
       "good": "Good!",
@@ -485,8 +488,7 @@
     }
   },
   "getStatusBanner": {
-    "isInitial": "start estimating!",
-    "stopEstimating": "estimating is stopped",
+    "stopEstimating": "Waiting",
     "badPosture": "bad posture!",
     "guideMessage": "good posture!"
   },

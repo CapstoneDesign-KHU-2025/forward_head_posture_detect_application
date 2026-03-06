@@ -1,6 +1,6 @@
-type GeneralTranslator = (key: any, values?: Record<string, any>) => string;
+import type { GuideColor } from "./types";
 
-type GuideColor = "green" | "red" | "orange";
+type GeneralTranslator = (key: any, values?: Record<string, any>) => string;
 type StatusBannerType = "success" | "warning" | "info";
 
 export function getStatusBannerTypeCore(
@@ -20,13 +20,11 @@ export function getStatusBannerTypeCore(
 
 export function getStatusBannerMessageCore(
   t: GeneralTranslator,
-  isInitial: boolean,
   stopEstimating: boolean,
   isTurtle: boolean,
   measurementStarted: boolean,
   guideMessage: string | null,
 ): string {
-  if (isInitial) return t("isInitial");
   if (stopEstimating) return t("stopEstimating");
   if (isTurtle && measurementStarted) return t("badPosture");
   if (guideMessage) return guideMessage;

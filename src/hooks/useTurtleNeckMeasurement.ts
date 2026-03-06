@@ -12,16 +12,15 @@ import { drawGuidelines } from "@/utils/drawGuidelines";
 import { startBeep, stopBeep } from "@/utils/manageBeep";
 import { useTranslations } from "next-intl";
 import { incrementTurtleCount } from "@/lib/postureLocal";
-type GuideColor = "green" | "red" | "orange";
+import type { GuideColor } from "@/utils/types";
 export type StatusBannerType = "success" | "warning" | "info";
 
 interface UseTurtleNeckMeasurementOptions {
   userId?: string;
   stopEstimating: boolean;
-  isInitial: boolean;
 }
 
-export function useTurtleNeckMeasurement({ userId, stopEstimating, isInitial }: UseTurtleNeckMeasurementOptions) {
+export function useTurtleNeckMeasurement({ userId, stopEstimating }: UseTurtleNeckMeasurementOptions) {
   // === DOM refs (외부에서 써야 해서 반환 예정) ===
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -501,7 +500,6 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating, isInitial }: 
 
   const bannerMessage = getStatusBannerMessageCore(
     t_banner,
-    isInitial,
     stopEstimating,
     isTurtle,
     measurementStarted,
