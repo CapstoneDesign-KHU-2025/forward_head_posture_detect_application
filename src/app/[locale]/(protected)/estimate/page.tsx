@@ -46,15 +46,15 @@ export default function Estimate() {
         <AsyncBoundary
           suspenseFallback={
             <section className="bg-white rounded-[16px] overflow-hidden shadow-[0_2px_16px_rgba(74,124,89,0.13)] w-full max-w-[600px] min-w-0 mx-auto">
-              <div className="flex items-center justify-between gap-2 px-4 py-3 bg-white border-b-[1.5px] border-[var(--green-border)]">
+              <header className="flex items-center justify-between gap-2 px-4 py-3 bg-white border-b-[1.5px] border-[var(--green-border)]">
                 <div className="flex items-center gap-[7px] min-w-0">
-                  <span className="text-[15px] flex-shrink-0">📷</span>
-                  <span className="text-[13px] font-bold text-[var(--green)]">{t("cameraTitle")}</span>
+                  <span className="text-[15px] flex-shrink-0" aria-hidden>📷</span>
+                  <h2 className="m-0 text-[13px] font-bold text-[var(--green)]">{t("cameraTitle")}</h2>
                 </div>
                 <span className="inline-flex items-center gap-[5px] rounded-[20px] px-2.5 py-1.5 text-[11px] font-bold bg-[#f0f4f2] border border-[var(--green-border)] text-[var(--text-muted)]">
                   {t("async.suspense")}
                 </span>
-              </div>
+              </header>
               <div
                 className="relative w-full min-w-0 overflow-hidden bg-gradient-to-br from-[#ddf0e4] via-[#edf8f1] to-[#cde8d5]"
                 style={{ aspectRatio: "4/3" }}

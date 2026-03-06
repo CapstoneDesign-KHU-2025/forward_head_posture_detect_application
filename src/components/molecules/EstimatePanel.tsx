@@ -90,18 +90,17 @@ export default function EstimatePanel({
         </div>
       )}
 
-      {/* 헤더 B 스타일 */}
-      <div className="flex items-center justify-between gap-2 px-4 py-3 bg-white border-b-[1.5px] border-[var(--green-border)]">
+      <header className="flex items-center justify-between gap-2 px-4 py-3 bg-white border-b-[1.5px] border-[var(--green-border)]">
         <div className="flex items-center gap-[7px] min-w-0">
           <span className="text-[15px] flex-shrink-0" aria-hidden>
             {headerIcon}
           </span>
-          <span className="text-[13px] font-bold text-[var(--green)] whitespace-nowrap">
+          <h2 className="m-0 text-[13px] font-bold text-[var(--green)] whitespace-nowrap">
             {t("cameraTitle")}
-          </span>
+          </h2>
         </div>
         <StatusPill variant={pillVariant}>{bannerMessage}</StatusPill>
-      </div>
+      </header>
 
       {/* cam-body: 측정 중단 시 dark, 아니면 light */}
       <div
