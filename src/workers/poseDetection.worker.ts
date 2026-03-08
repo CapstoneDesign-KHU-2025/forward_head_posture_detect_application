@@ -20,11 +20,12 @@ type WorkerMessage =
 type WorkerResponse =
   | { type: "initDone"; payload?: { error?: string } }
   | { type: "requestFrame" }
-  | { type: "result"; payload: { landmarks: Array<Array<{ x: number; y: number; z: number }>> } };
+  | { type: "result"; payload: { landmarks: Array<Array<{ x: number; y: number; z: number }>> } }
+  | { type: "error"; payload: { message: string } };
 
 async function initPoseLandmarker(): Promise<void> {
   const vision = await FilesetResolver.forVisionTasks(
-    "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm"
+    "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.22-rc.20250304/wasm",
   );
 
   poseLandmarker = await PoseLandmarker.createFromOptions(vision, {
@@ -43,9 +44,7 @@ async function initPoseLandmarker(): Promise<void> {
 function detectPose(bitmap: ImageBitmap, timestamp: number): Array<Array<{ x: number; y: number; z: number }>> {
   if (!poseLandmarker) return [];
   const result = poseLandmarker.detectForVideo(bitmap, timestamp);
-  return (result?.landmarks ?? []).map((lm) =>
-    lm.map((p) => ({ x: p.x, y: p.y, z: p.z }))
-  );
+  return (result?.landmarks ?? []).map((lm) => lm.map((p) => ({ x: p.x, y: p.y, z: p.z })));
 }
 
 self.onmessage = async (e: MessageEvent<WorkerMessage>) => {
@@ -54,10 +53,11 @@ self.onmessage = async (e: MessageEvent<WorkerMessage>) => {
   if (msg.type === "init") {
     try {
       await initPoseLandmarker();
+      (self as unknown as Worker).postMessage({ type: "initDone" } as WorkerResponse);
+
       requestFrameTimer = setInterval(() => {
         (self as unknown as Worker).postMessage({ type: "requestFrame" } as WorkerResponse);
       }, INTERVAL_MS);
-      (self as unknown as Worker).postMessage({ type: "initDone" } as WorkerResponse);
     } catch (err) {
       (self as unknown as Worker).postMessage({
         type: "initDone",
@@ -74,6 +74,11 @@ self.onmessage = async (e: MessageEvent<WorkerMessage>) => {
       (self as unknown as Worker).postMessage({
         type: "result",
         payload: { landmarks },
+      } as WorkerResponse);
+    } catch (err) {
+      (self as unknown as Worker).postMessage({
+        type: "error",
+        payload: { message: String(err) },
       } as WorkerResponse);
     } finally {
       bitmap.close();
