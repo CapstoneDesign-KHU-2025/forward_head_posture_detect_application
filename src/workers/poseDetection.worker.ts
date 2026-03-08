@@ -9,6 +9,7 @@ import { FilesetResolver, PoseLandmarker } from "@mediapipe/tasks-vision";
 
 let poseLandmarker: PoseLandmarker | null = null;
 let requestFrameTimer: ReturnType<typeof setInterval> | null = null;
+let isRunning = false;
 const TARGET_FPS = 30;
 const INTERVAL_MS = 1000 / TARGET_FPS;
 
@@ -53,10 +54,11 @@ self.onmessage = async (e: MessageEvent<WorkerMessage>) => {
   if (msg.type === "init") {
     try {
       await initPoseLandmarker();
-      (self as unknown as Worker).postMessage({ type: "initDone" } as WorkerResponse);
+      isRunning = true;
+      self.postMessage({ type: "initDone" } as WorkerResponse);
 
       requestFrameTimer = setInterval(() => {
-        (self as unknown as Worker).postMessage({ type: "requestFrame" } as WorkerResponse);
+        self.postMessage({ type: "requestFrame" } as WorkerResponse);
       }, INTERVAL_MS);
     } catch (err) {
       (self as unknown as Worker).postMessage({
@@ -69,6 +71,10 @@ self.onmessage = async (e: MessageEvent<WorkerMessage>) => {
 
   if (msg.type === "frame" && msg.payload?.bitmap) {
     const { bitmap, timestamp } = msg.payload;
+    if (!isRunning) {
+      bitmap.close(); // 메모리 누수 방지
+      return;
+    }
     try {
       const landmarks = detectPose(bitmap, timestamp);
       (self as unknown as Worker).postMessage({
@@ -87,6 +93,7 @@ self.onmessage = async (e: MessageEvent<WorkerMessage>) => {
   }
 
   if (msg.type === "stop") {
+    isRunning = false;
     if (requestFrameTimer) {
       clearInterval(requestFrameTimer);
       requestFrameTimer = null;
