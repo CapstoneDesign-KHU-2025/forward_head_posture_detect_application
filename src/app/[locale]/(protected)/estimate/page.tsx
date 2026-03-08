@@ -5,7 +5,6 @@ import { Button } from "@/components/atoms/Button";
 import EstimatePanel from "@/components/molecules/EstimatePanel";
 import ErrorBanner from "@/components/atoms/ErrorBanner";
 import AsyncBoundary from "@/components/molecules/AsyncBoundary";
-import LoadingSkeleton from "@/components/molecules/LoadingSkeleton";
 
 import { MEASUREMENT_CANVAS_SLOT_ID } from "@/providers/MeasurementProvider";
 import { useTranslations } from "next-intl";
@@ -60,9 +59,7 @@ export default function Estimate() {
               <div
                 className="relative w-full min-w-0 overflow-hidden bg-gradient-to-br from-[#ddf0e4] via-[#edf8f1] to-[#cde8d5]"
                 style={{ aspectRatio: "4/3" }}
-              >
-                <LoadingSkeleton variant="camera" />
-              </div>
+              />
             </section>
           }
         >
