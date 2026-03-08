@@ -345,13 +345,15 @@
         "estimating": "실시간 측정 중"
       },
       "warning": {
-        "todayWarning": "오늘 경고",
+        "todayWarning": "경고 횟수",
         "time": "회",
         "todayBenchMark": "오늘 기준"
       },
       "average": {
         "accumulatedAverage": "누적 평균",
-        "differenceIdeal": "기준 각도 대비"
+        "differenceIdeal": "기준 각도 대비",
+        "differenceIdealDefault": "기준 각도 대비 +0.0°",
+        "unitEmpty": "°"
       }
     },
     "posture3DCard": {
