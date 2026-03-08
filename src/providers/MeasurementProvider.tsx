@@ -180,8 +180,7 @@ export function MeasurementProvider({ children }: { children: ReactNode }) {
     if (pathname !== "/estimate") {
       router.push("/estimate");
     }
-    startMeasurement();
-  }, [dismissRecoveryNotice, startMeasurement, pathname, router]);
+  }, [dismissRecoveryNotice, pathname, router]);
 
   useEffect(() => {
     if (stopEstimating || !measurementStarted) {
