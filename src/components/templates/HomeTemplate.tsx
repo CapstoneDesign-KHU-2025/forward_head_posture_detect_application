@@ -72,9 +72,9 @@ export default function HomeTemplate({
     <main
       className={[
         "w-full bg-[var(--green-pale)]",
-        // lg 기준 큰 화면: 화면 꽉 채우고 스크롤 없음
-        "lg:flex lg:flex-col lg:flex-1 lg:min-h-0 lg:overflow-hidden",
-        // lg 미만 작은 화면: 자연스럽게 스크롤
+        // lg 기준 큰 화면: flex로 꽉 채움
+        "lg:flex lg:flex-col lg:flex-1 lg:min-h-0",
+        // 모든 화면: 넘치면 스크롤 (작은 노트북에서 잘림 방지)
         "overflow-y-auto",
         className,
       ]
@@ -156,7 +156,7 @@ export default function HomeTemplate({
           </div>
 
           {/* 도전기 컬럼 */}
-          <div className="min-w-0 flex flex-1 min-h-0 h-full overflow-hidden">
+          <div className="min-w-0 flex flex-1 h-full">
             <Posture3DCard
               className="flex-1 w-full"
               userAng={user?.avgAng}
