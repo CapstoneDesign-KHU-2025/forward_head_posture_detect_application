@@ -106,7 +106,9 @@
   },
   "LoadingSkeleton": {
     "message": "카메라를 켜고 있습니다...",
-    "description": "잠시만 기다려주세요"
+    "description": "잠시만 기다려주세요",
+    "brand": "잠시만 기다려주세요!",
+    "sub": "바른 자세를 위한 첫 걸음 🌿"
   },
   "OauthButton": {
     "google": "Google로 시작하기",
