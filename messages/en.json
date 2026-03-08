@@ -106,7 +106,9 @@
   },
   "LoadingSkeleton": {
     "message": "Turning on the camera...",
-    "description": "Please wait a moment"
+    "description": "Please wait a moment",
+    "brand": "Please wait a moment!",
+    "sub": "First step to better posture 🌿"
   },
   "OauthButton": {
     "google": "Continue with Google",

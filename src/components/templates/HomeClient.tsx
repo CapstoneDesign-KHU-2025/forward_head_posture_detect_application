@@ -229,11 +229,7 @@ export default function HomeClient({ weeklyData, user }: HomeClientProps) {
   const warningCount =
     (todayCount === 0 && todayHour === 0) || todayCount === null || todayCount === undefined ? null : todayCount;
   if (isCheckingRedirect) {
-    return (
-      <div className="fixed inset-0 z-[100] flex items-center justify-center bg-[var(--green-pale)]">
-        <LoadingSkeleton />
-      </div>
-    );
+    return <LoadingSkeleton variant="home" />;
   }
   return (
     <HomeTemplate
