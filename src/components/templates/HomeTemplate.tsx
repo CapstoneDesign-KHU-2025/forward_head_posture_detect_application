@@ -21,7 +21,7 @@ type KPIItem = {
 };
 
 type HomeTemplateProps = {
-  user: { name: string; avgAng: number; avatarSrc?: string } | null;
+  user: { name: string; avgAng?: number | null; avatarSrc?: string } | null;
   kpis: KPIItem[];
   challenge?: {
     title?: React.ReactNode;
@@ -119,7 +119,7 @@ export default function HomeTemplate({
                   ) : (
                     <StatCard
                       label={t("statCards.realTimeCard.estimatingTime")}
-                      value="00:00"
+                      value="-"
                       showStatusDot
                       statusDotVariant={isMeasuring ? "measuring" : "idle"}
                       subtitle={
@@ -131,7 +131,7 @@ export default function HomeTemplate({
                 <div className="flex-1 min-w-[140px]">
                   <StatCard
                     label={t("statCards.warning.todayWarning")}
-                    value={String(todayWarningCount)}
+                    value={warningCount != null ? String(warningCount) : "-"}
                     unit={t("statCards.warning.time")}
                     subtitle={t("statCards.warning.todayBenchMark")}
                   />
@@ -147,7 +147,9 @@ export default function HomeTemplate({
                           {t("statCards.average.differenceIdeal")} {deltaFromIdeal >= 0 ? "+" : ""}
                           {deltaFromIdeal.toFixed(1)}°
                         </span>
-                      ) : undefined
+                      ) : (
+                        <span className="text-[var(--warning-text)]">{t("statCards.average.differenceIdealDefault")}</span>
+                      )
                     }
                   />
                 </div>
@@ -159,7 +161,7 @@ export default function HomeTemplate({
           <div className="min-w-0 flex flex-1 min-h-0 h-full overflow-hidden">
             <Posture3DCard
               className="flex-1 w-full"
-              userAng={user?.avgAng}
+              userAng={user?.avgAng ?? undefined}
               title={challenge?.title ?? t("posture3DCard.yourChallenge")}
               description={
                 challenge?.description ?? (

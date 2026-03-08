@@ -48,7 +48,7 @@ type HomeClientProps = {
 };
 
 type HomeData = {
-  user: { name: string; avgAng: number; avatarSrc?: string };
+  user: { name: string; avgAng: number | null; avatarSrc?: string };
   kpis: Array<{
     label: string;
     value: number | string;
@@ -173,7 +173,7 @@ export default function HomeClient({ weeklyData, user }: HomeClientProps) {
   const homeData: HomeData = {
     user: {
       name: user.name,
-      avgAng: todayAvg ?? 52,
+      avgAng: todayAvg ?? null,
       avatarSrc: user.image,
     },
     kpis: isEmptyState
