@@ -82,6 +82,7 @@ export function MeasurementProvider({ children }: { children: ReactNode }) {
     isFirstFrameDrawn,
     guideMessage,
     guideColor,
+    resetForNewMeasurement,
   } = useTurtleNeckMeasurement({ userId, stopEstimating });
 
   const handleStopMeasurement = useCallback(
@@ -112,13 +113,16 @@ export function MeasurementProvider({ children }: { children: ReactNode }) {
             count,
           };
           startTransition(() => dailySumAction(postData));
+          resetForNewMeasurement();
           if (forced) return;
         }
       } catch (err) {
         logger.error("[handleStopMeasurement] error:", err);
+        resetForNewMeasurement();
       } finally {
         if (!forced) setStopEstimating((prev) => !prev);
         setIsProcessing(false);
+        resetForNewMeasurement();
         // 정상 종료 시 중단 플래그 제거 (새로고침 후 복구 제안 방지)
         if (typeof window !== "undefined") {
           sessionStorage.removeItem(SESSION_STORAGE_MEASUREMENT_INTERRUPTED);
@@ -209,6 +213,7 @@ export function MeasurementProvider({ children }: { children: ReactNode }) {
       isFirstFrameDrawn,
       guideMessage,
       guideColor,
+      resetForNewMeasurement,
     }),
     [
       stopEstimating,
@@ -229,6 +234,7 @@ export function MeasurementProvider({ children }: { children: ReactNode }) {
       isFirstFrameDrawn,
       guideMessage,
       guideColor,
+      resetForNewMeasurement,
     ],
   );
   useEffect(() => {
