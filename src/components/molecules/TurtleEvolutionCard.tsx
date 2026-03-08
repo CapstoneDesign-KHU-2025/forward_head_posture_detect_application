@@ -24,7 +24,7 @@ export default function TurtleEvolutionCard({ goodDays }: TurtleEvolutionCardPro
   const currentStage = STAGES[currentStageIndex];
 
   return (
-    <Card className="flex flex-1 min-h-0 flex-col px-6 py-4">
+    <Card className="flex flex-1 flex-col px-6 py-4">
       {/* 헤더: 제목 + 툴팁 */}
       <div className="flex items-center gap-2 flex-shrink-0">
         <h2 className="text-[18px] font-extrabold text-[var(--text)]" style={{ fontFamily: "Nunito, sans-serif" }}>

@@ -156,7 +156,7 @@ export default function HomeTemplate({
           </div>
 
           {/* 도전기 컬럼 */}
-          <div className="min-w-0 flex flex-1 min-h-0 h-full overflow-hidden">
+          <div className="min-w-0 flex flex-1 h-full">
             <Posture3DCard
               className="flex-1 w-full"
               userAng={user?.avgAng}
