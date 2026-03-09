@@ -235,7 +235,7 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating }: UseTurtleNe
           nowPerformance: number,
           _v: HTMLVideoElement,
           c: HTMLCanvasElement,
-          ctx: CanvasRenderingContext2D
+          ctx: CanvasRenderingContext2D,
         ) => {
           if (stopEstimating) {
             measuringRef.current = false;
@@ -411,7 +411,7 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating }: UseTurtleNe
           v: HTMLVideoElement,
           c: HTMLCanvasElement,
           lm: PoseLandmarker,
-          ctx: CanvasRenderingContext2D
+          ctx: CanvasRenderingContext2D,
         ) => {
           if (!v || !c || v.videoWidth === 0 || v.videoHeight === 0) return;
           drawVideoToCanvas(v, c, ctx);
@@ -491,7 +491,7 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating }: UseTurtleNe
 
         if (!useWorkerMode) {
           const vision = await FilesetResolver.forVisionTasks(
-            "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm"
+            "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm",
           );
           landmarkerRef.current = await PoseLandmarker.createFromOptions(vision, {
             baseOptions: {

@@ -148,7 +148,9 @@ export default function HomeTemplate({
                           {deltaFromIdeal.toFixed(1)}°
                         </span>
                       ) : (
-                        <span className="text-[var(--warning-text)]">{t("statCards.average.differenceIdealDefault")}</span>
+                        <span className="text-[var(--warning-text)]">
+                          {t("statCards.average.differenceIdealDefault")}
+                        </span>
                       )
                     }
                   />

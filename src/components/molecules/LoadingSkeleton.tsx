@@ -4,6 +4,7 @@ import { Video } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 type LoadingSkeletonProps = {
+<<<<<<< HEAD
   variant?: "card" | "camera" | "home";
 };
 
@@ -35,6 +36,14 @@ export default function LoadingSkeleton({ variant = "card" }: LoadingSkeletonPro
   }
 
   if (variant === "camera") {
+=======
+  variant?: "card" | "camera";
+};
+
+export default function LoadingSkeleton({ variant = "card" }: LoadingSkeletonProps) {
+  if (variant === "camera") {
+    const t = useTranslations("LoadingSkeleton");
+>>>>>>> 7b734bc7f583a4228942612f5b99e463e8dd6c18
     return (
       <div
         role="status"
