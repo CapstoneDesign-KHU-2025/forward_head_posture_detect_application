@@ -32,7 +32,8 @@
       "start": "측정 시작하기",
       "stop": "오늘의 측정 중단하기"
     },
-    "async": { "suspense": "측정을 시작해주세요!" }
+    "async": { "suspense": "측정을 시작해주세요!" },
+    "cameraTitle": "카메라"
   },
   "Login": {
     "alt": {
@@ -87,7 +88,9 @@
     "tryAgain": "다시 시도"
   },
   "EstimatePanel": {
-    "message": "측정 시작하기 버튼을 눌러\n카메라를 켜주세요",
+    "cameraTitle": "카메라",
+    "message": "🐢\n측정이 준비됐어요!\n버튼을 눌러 시작해주세요",
+    "messageText": "측정이 준비됐어요!\n버튼을 눌러 시작해주세요",
     "startMeasurementToast": "거북목 측정을 시작합니다"
   },
   "EvolutionTooltip": {
@@ -103,7 +106,9 @@
   },
   "LoadingSkeleton": {
     "message": "카메라를 켜고 있습니다...",
-    "description": "잠시만 기다려주세요"
+    "description": "잠시만 기다려주세요",
+    "brand": "잠시만 기다려주세요!",
+    "sub": "바른 자세를 위한 첫 걸음 🌿"
   },
   "OauthButton": {
     "google": "Google로 시작하기",
@@ -260,6 +265,9 @@
       "estimate": "측정하기"
     }
   },
+  "TempFooter": {
+    "feedback": "피드백 보내기 💬"
+  },
 
   "HomeClient": {
     "HomeData": {
@@ -339,13 +347,15 @@
         "estimating": "실시간 측정 중"
       },
       "warning": {
-        "todayWarning": "오늘 경고",
+        "todayWarning": "경고 횟수",
         "time": "회",
         "todayBenchMark": "오늘 기준"
       },
       "average": {
         "accumulatedAverage": "누적 평균",
-        "differenceIdeal": "기준 각도 대비"
+        "differenceIdeal": "기준 각도 대비",
+        "differenceIdealDefault": "기준 각도 대비 +0.0°",
+        "unitEmpty": "°"
       }
     },
     "posture3DCard": {
@@ -450,7 +460,7 @@
   },
   "Measurement": {
     "Guide": {
-      "initial": "가이드라인 안으로 들어오세요",
+      "initial": "가이드라인에 맞춰주세요",
       "tooClose": "너무 가까워요",
       "tooFar": "너무 멀어요",
       "good": "좋아요!",
@@ -478,8 +488,7 @@
     }
   },
   "getStatusBanner": {
-    "isInitial": "측정을 시작해주세요!",
-    "stopEstimating": "측정이 중단되었습니다",
+    "stopEstimating": "대기중",
     "badPosture": "거북목 자세입니다!",
     "guideMessage": "바른 자세입니다!"
   },

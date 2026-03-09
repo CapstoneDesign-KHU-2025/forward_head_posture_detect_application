@@ -14,6 +14,7 @@ import { FloatingBarController } from "@/components/molecules/FloatingBarControl
 import { RecoveryNotice } from "@/components/molecules/RecoveryNotice";
 import { logger } from "@/lib/logger";
 import type { StatusBannerType } from "@/hooks/useTurtleNeckMeasurement";
+import type { GuideColor } from "@/utils/types";
 
 export const MEASUREMENT_CANVAS_SLOT_ID = "measurement-canvas-slot";
 
@@ -35,9 +36,10 @@ type MeasurementContextValue = {
   angle: number;
   elapsedSeconds: number;
   isProcessing: boolean;
-  isInitial: boolean;
   canvasSlotId: string;
   isFirstFrameDrawn: boolean;
+  guideMessage: string | null;
+  guideColor: GuideColor;
 };
 
 const MeasurementContext = createContext<MeasurementContextValue | null>(null);
@@ -56,7 +58,6 @@ export function MeasurementProvider({ children }: { children: ReactNode }) {
 
   const [stopEstimating, setStopEstimating] = useState(true);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [isInitial, setIsInitial] = useState(true);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [showRecoveryNotice, setShowRecoveryNotice] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -79,11 +80,13 @@ export function MeasurementProvider({ children }: { children: ReactNode }) {
     isTurtle,
     angle,
     isFirstFrameDrawn,
-  } = useTurtleNeckMeasurement({ userId, stopEstimating, isInitial });
+    guideMessage,
+    guideColor,
+    resetForNewMeasurement,
+  } = useTurtleNeckMeasurement({ userId, stopEstimating });
 
   const handleStopMeasurement = useCallback(
     async (forced?: boolean) => {
-      setIsInitial(false);
       if (isProcessing) return;
       try {
         setIsProcessing(true);
@@ -110,13 +113,16 @@ export function MeasurementProvider({ children }: { children: ReactNode }) {
             count,
           };
           startTransition(() => dailySumAction(postData));
+          resetForNewMeasurement();
           if (forced) return;
         }
       } catch (err) {
         logger.error("[handleStopMeasurement] error:", err);
+        resetForNewMeasurement();
       } finally {
         if (!forced) setStopEstimating((prev) => !prev);
         setIsProcessing(false);
+        resetForNewMeasurement();
         // 정상 종료 시 중단 플래그 제거 (새로고침 후 복구 제안 방지)
         if (typeof window !== "undefined") {
           sessionStorage.removeItem(SESSION_STORAGE_MEASUREMENT_INTERRUPTED);
@@ -174,8 +180,7 @@ export function MeasurementProvider({ children }: { children: ReactNode }) {
     if (pathname !== "/estimate") {
       router.push("/estimate");
     }
-    startMeasurement();
-  }, [dismissRecoveryNotice, startMeasurement, pathname, router]);
+  }, [dismissRecoveryNotice, pathname, router]);
 
   useEffect(() => {
     if (stopEstimating || !measurementStarted) {
@@ -203,9 +208,11 @@ export function MeasurementProvider({ children }: { children: ReactNode }) {
       angle,
       elapsedSeconds,
       isProcessing,
-      isInitial,
       canvasSlotId: MEASUREMENT_CANVAS_SLOT_ID,
       isFirstFrameDrawn,
+      guideMessage,
+      guideColor,
+      resetForNewMeasurement,
     }),
     [
       stopEstimating,
@@ -223,8 +230,10 @@ export function MeasurementProvider({ children }: { children: ReactNode }) {
       angle,
       elapsedSeconds,
       isProcessing,
-      isInitial,
       isFirstFrameDrawn,
+      guideMessage,
+      guideColor,
+      resetForNewMeasurement,
     ],
   );
   useEffect(() => {

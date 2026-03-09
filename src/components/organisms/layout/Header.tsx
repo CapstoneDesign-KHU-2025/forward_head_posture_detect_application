@@ -1,15 +1,15 @@
 "use client";
 
-import { usePathname } from "@/i18n/navigation";
-import Link from "next/link";
+import { usePathname, Link } from "@/i18n/navigation";
+
 import { Button } from "@/components/atoms/Button";
 import { BrandLink } from "@/components/atoms/BrandLink";
 import { useSession, signIn } from "next-auth/react";
 /* import { FriendsButton } from "@/components/molecules/FriendsButton"; */
 import { UserButton } from "@/components/molecules/UserButton";
 /* import { FriendsModal } from "@/components/organisms/friends/FriendsModal"; */
-import { useFriendsData } from "@/hooks/useFriendsData";
-import { useState } from "react";
+//import { useFriendsData } from "@/hooks/useFriendsData";
+//import { useState } from "react";
 import { useTranslations } from "next-intl";
 
 import LanguageToggle from "@/components/molecules/LanguageToggle";

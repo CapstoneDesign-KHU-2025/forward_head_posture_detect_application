@@ -4,12 +4,40 @@ import { Video } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 type LoadingSkeletonProps = {
-  variant?: "card" | "camera";
+  variant?: "card" | "camera" | "home";
 };
 
 export default function LoadingSkeleton({ variant = "card" }: LoadingSkeletonProps) {
+  const t = useTranslations("LoadingSkeleton");
+
+  if (variant === "home") {
+    return (
+      <div
+        role="status"
+        aria-live="polite"
+        className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[var(--green-pale)]"
+      >
+        <div className="text-[80px] leading-none animate-turtle-walk">🐢</div>
+        <div
+          className="mt-5 font-black text-2xl text-[var(--green)] tracking-tight"
+          style={{ fontFamily: "Nunito, sans-serif" }}
+        >
+          {t("brand")}
+        </div>
+        <div className="mt-7 flex gap-1.5">
+          {[0, 1, 2].map((i) => (
+            <span
+              key={i}
+              className="h-1.5 w-1.5 rounded-full bg-[var(--green-border)] animate-loading-dot-pulse"
+              style={{ animationDelay: `${i * 0.2}s` }}
+            />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   if (variant === "camera") {
-    const t = useTranslations("LoadingSkeleton");
     return (
       <div
         role="status"

@@ -48,7 +48,7 @@ type HomeClientProps = {
 };
 
 type HomeData = {
-  user: { name: string; avgAng: number; avatarSrc?: string };
+  user: { name: string; avgAng: number | null; avatarSrc?: string };
   kpis: Array<{
     label: string;
     value: number | string;
@@ -173,7 +173,7 @@ export default function HomeClient({ weeklyData, user }: HomeClientProps) {
   const homeData: HomeData = {
     user: {
       name: user.name,
-      avgAng: todayAvg ?? 52,
+      avgAng: todayAvg ?? null,
       avatarSrc: user.image,
     },
     kpis: isEmptyState
@@ -229,11 +229,7 @@ export default function HomeClient({ weeklyData, user }: HomeClientProps) {
   const warningCount =
     (todayCount === 0 && todayHour === 0) || todayCount === null || todayCount === undefined ? null : todayCount;
   if (isCheckingRedirect) {
-    return (
-      <div className="fixed inset-0 z-[100] flex items-center justify-center bg-[var(--green-pale)]">
-        <LoadingSkeleton />
-      </div>
-    );
+    return <LoadingSkeleton variant="home" />;
   }
   return (
     <HomeTemplate
