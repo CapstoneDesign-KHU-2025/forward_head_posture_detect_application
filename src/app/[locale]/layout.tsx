@@ -36,7 +36,7 @@ export default async function LocaleLayout({ children, params }: Props) {
     <NextIntlClientProvider key={locale} locale={locale} messages={messages}>
       <Providers session={session}>
         <MeasurementProvider>
-          <div className="h-dvh flex flex-col min-h-0">
+          <div className="flex flex-col min-h-0">
             <Header user={user} />
             <PageContainer>{children}</PageContainer>
             <TempFooter />

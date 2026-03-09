@@ -136,7 +136,7 @@ export default function HomeTemplate({
                     subtitle={t("statCards.warning.todayBenchMark")}
                   />
                 </div>
-                <div className="flex-1 min-w-[140px]">
+                <div className="flex-1 min-w-[140px] mb-7">
                   <StatCard
                     label={t("statCards.average.accumulatedAverage")}
                     value={avgAngle != null ? avgAngle.toFixed(1) : "-"}
