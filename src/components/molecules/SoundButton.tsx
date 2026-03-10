@@ -4,7 +4,7 @@ import { IconButton } from "../atoms/IconButton";
 import muteIcon from "../../../public/icons/mute.png";
 import unMuteIcon from "../../../public/icons/unmute.png";
 import Image from "next/image";
-import { useSoundContext } from "@/contexts/SoundContext";
+import { useSoundContext } from "@/providers/SoundContext";
 
 export function SoundButton() {
   const { isMuted, toggleMute } = useSoundContext();

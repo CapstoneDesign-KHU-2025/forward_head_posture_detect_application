@@ -11,7 +11,7 @@ import { getMessages, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import { getTranslations } from "next-intl/server";
-import { SoundProvider } from "@/contexts/SoundContext";
+import { SoundProvider } from "@/providers/SoundContext";
 export type Props = {
   children: React.ReactNode;
   params: Promise<{ locale: string }>;

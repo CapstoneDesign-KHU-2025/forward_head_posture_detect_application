@@ -12,6 +12,7 @@ import { drawGuidelines } from "@/utils/drawGuidelines";
 import { startBeep, stopBeep } from "@/utils/manageBeep";
 import { useTranslations } from "next-intl";
 import { incrementTurtleCount } from "@/lib/postureLocal";
+import { useSoundContext } from "@/providers/SoundContext";
 import type { GuideColor } from "@/utils/types";
 export type StatusBannerType = "success" | "warning" | "info";
 
@@ -41,16 +42,17 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating }: UseTurtleNe
   const t_banner = useTranslations("getStatusBanner");
   // === 내부 제어용 refs (훅 안에 숨김) ===
   const landmarkerRef = useRef<PoseLandmarker | null>(null);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const workerRef = useRef<Worker | null>(null);
 
   const lastStateRef = useRef<boolean | null>(null);
-  const lastBeepIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const lastBeepIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const poseBufferRef = useRef<any[]>([]);
   const lastBufferTimeRef = useRef<number>(performance.now());
   const visibilityChangeHandlerRef = useRef<(() => void) | null>(null);
 
+  const { isMuted, getAudio } = useSoundContext();
   const countdownStartRef = useRef<number | null>(null);
   const measuringRef = useRef<boolean>(false);
   const lastGuideMessageRef = useRef<string | null>(null);
@@ -83,7 +85,11 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating }: UseTurtleNe
     sessionIdRef.current = `measure-${userId ?? "guest"}-${Date.now()}`;
   }
   const sessionId = sessionIdRef.current;
-
+  useEffect(() => {
+    if (isMuted) {
+      stopBeep(lastBeepIntervalRef);
+    }
+  }, [isMuted]);
   // === IndexedDB 저장 훅 (각도/거북목 상태를 10초 단위로 저장) ===
   usePostureStorageManager(userId, angle, isTurtle, sessionId, measuringRef.current);
   function processPoseBufferAndUpdateState(options: {
@@ -169,7 +175,7 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating }: UseTurtleNe
       lastStateRef.current = turtleNow;
 
       if (turtleNow) {
-        startBeep(lastBeepIntervalRef);
+        startBeep(lastBeepIntervalRef, getAudio());
         incrementTurtleCount(userId);
       } else {
         stopBeep(lastBeepIntervalRef);
