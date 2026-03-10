@@ -8,9 +8,12 @@ import AsyncBoundary from "@/components/molecules/AsyncBoundary";
 
 import { MEASUREMENT_CANVAS_SLOT_ID } from "@/providers/MeasurementProvider";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
+import CoachmarkOverlay from "@/components/organisms/tutorial/CoachmarkOverlay";
 
 export default function Estimate() {
   const t = useTranslations("Estimate");
+  const [open, setOpen] = useState(true);
 
   const {
     stopEstimating,
@@ -32,7 +35,7 @@ export default function Estimate() {
   return (
     <div className="min-h-[calc(100dvh-var(--header-height))] bg-[var(--green-pale)] overflow-x-hidden">
       <div className="max-w-[1200px] mx-auto px-4 sm:px-6 md:px-8 pt-2 w-full min-w-0">
-        <div className="flex justify-center mb-8">
+        <div className="flex justify-center mb-8" data-tour-id="measure-toggle">
           <Button
             size="lg"
             variant={stopEstimating ? "primary" : "danger"}
@@ -41,6 +44,14 @@ export default function Estimate() {
             {stopEstimating ? t("buttons.start") : t("buttons.stop")}
           </Button>
         </div>
+        <CoachmarkOverlay
+          open={open}
+          targetId="measure-toggle"
+          placement="bottom"
+          title="측정 시작/중단"
+          description="이 버튼을 눌러 측정을 시작하거나 중단할 수 있어요."
+          onClose={() => setOpen(false)}
+        />
 
         <AsyncBoundary
           suspenseFallback={
