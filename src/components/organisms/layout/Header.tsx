@@ -13,6 +13,7 @@ import { UserButton } from "@/components/molecules/UserButton";
 import { useTranslations } from "next-intl";
 
 import LanguageToggle from "@/components/molecules/LanguageToggle";
+import Image from "next/image";
 type HeaderProps = {
   user?: { name: string; avatarSrc?: string } | null;
   className?: string;
