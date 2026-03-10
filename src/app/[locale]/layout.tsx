@@ -11,6 +11,7 @@ import { getMessages, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import { getTranslations } from "next-intl/server";
+import { SoundProvider } from "@/contexts/SoundContext";
 export type Props = {
   children: React.ReactNode;
   params: Promise<{ locale: string }>;
@@ -35,13 +36,15 @@ export default async function LocaleLayout({ children, params }: Props) {
   return (
     <NextIntlClientProvider key={locale} locale={locale} messages={messages}>
       <Providers session={session}>
-        <MeasurementProvider>
-          <div className="h-dvh flex flex-col min-h-0">
-            <Header user={user} />
-            <PageContainer>{children}</PageContainer>
-            <TempFooter />
-          </div>
-        </MeasurementProvider>
+        <SoundProvider>
+          <MeasurementProvider>
+            <div className="h-dvh flex flex-col min-h-0">
+              <Header user={user} />
+              <PageContainer>{children}</PageContainer>
+              <TempFooter />
+            </div>
+          </MeasurementProvider>
+        </SoundProvider>
       </Providers>
     </NextIntlClientProvider>
   );
