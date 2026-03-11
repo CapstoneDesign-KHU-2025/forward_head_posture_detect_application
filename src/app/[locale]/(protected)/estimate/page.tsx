@@ -31,8 +31,8 @@ export default function Estimate() {
 
   return (
     <div className="min-h-[calc(100dvh-var(--header-height))] bg-[var(--green-pale)] overflow-x-hidden">
-      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 md:px-8 pt-2 w-full min-w-0">
-        <div className="flex justify-center mb-8">
+      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 md:px-8 pt-2 w-full min-w-0 mb-4">
+        <div className="flex justify-center mb-14">
           <Button
             size="lg"
             variant={stopEstimating ? "primary" : "danger"}
