@@ -33,7 +33,11 @@
       "stop": "Stop Today's Measurement"
     },
     "async": { "suspense": "Please start the measurement!" },
-    "cameraTitle": "Camera"
+    "cameraTitle": "Camera",
+    "CoachmarkOverlayParams": {
+      "title": "start/stop",
+      "description": "you can start/stop estimating by clicking this button!"
+    }
   },
   "Login": {
     "alt": {
@@ -635,5 +639,9 @@
     "todayAlert": "today's alert",
     "mockNumber": "3times",
     "neckAnglePerHour": "neck angle per hours"
+  },
+  "CoachmarkOverlay": {
+    "safeGuard": "close",
+    "next": "next"
   }
 }

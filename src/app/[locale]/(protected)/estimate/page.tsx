@@ -48,8 +48,8 @@ export default function Estimate() {
           open={open}
           targetId="measure-toggle"
           placement="bottom"
-          title="측정 시작/중단"
-          description="이 버튼을 눌러 측정을 시작하거나 중단할 수 있어요."
+          title={t("CoachmarkOverlayParams.title")}
+          description={t("CoachmarkOverlayParams.description")}
           onClose={() => setOpen(false)}
         />
 

@@ -1,7 +1,8 @@
 "use client";
 
+import { Button } from "@/components/atoms/Button";
 import React, { useEffect, useRef, useState } from "react";
-
+import { useTranslations } from "next-intl";
 type Placement = "top" | "right" | "bottom" | "left";
 type ArrowSide = "top" | "right" | "bottom" | "left";
 
@@ -50,8 +51,8 @@ export default function CoachmarkOverlay({
   const targetElRef = useRef<HTMLElement | null>(null);
   const [rect, setRect] = useState<Rect | null>(null);
   const [ready, setReady] = useState(false);
-
-  // ✅ open 되면 DOM commit 이후 target 찾기(재시도 포함)
+  const t = useTranslations("CoachmarkOverlay");
+  // open 되면 DOM commit 이후 target 찾기(재시도 포함)
   useEffect(() => {
     if (!open) {
       targetElRef.current = null;
@@ -93,7 +94,7 @@ export default function CoachmarkOverlay({
     return () => cancelAnimationFrame(raf);
   }, [open, targetId]);
 
-  // ✅ 스크롤/리사이즈/타겟 크기변화 시 rect 갱신
+  // 스크롤/리사이즈/타겟 크기변화 시 rect 갱신
   useEffect(() => {
     if (!open) return;
     const el = targetElRef.current;
@@ -121,16 +122,15 @@ export default function CoachmarkOverlay({
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-black/50" style={{ zIndex }}>
         <div className="rounded-2xl bg-white px-4 py-3 text-sm font-semibold">
-          {ready ? "튜토리얼 타겟을 찾지 못했어요." : "Loading tutorial…"}
-          <button className="ml-3 underline opacity-70 hover:opacity-100" onClick={onClose}>
-            닫기
-          </button>
+          {ready ? "tutorial is not working." : "Loading tutorial…"}
+          <Button className="ml-3 underline opacity-70 hover:opacity-100" onClick={onClose}>
+            {t("safeGuard")}
+          </Button>
         </div>
       </div>
     );
   }
 
-  // ===== spotlight 박스 =====
   const pad = 8;
   const spotlight = {
     top: rect.top - pad,
@@ -139,7 +139,6 @@ export default function CoachmarkOverlay({
     height: rect.height + pad * 2,
   };
 
-  // ===== bubble 위치 계산 =====
   const bubbleW = 320;
   const gap = 12;
   const centerX = rect.left + rect.width / 2;
@@ -169,7 +168,6 @@ export default function CoachmarkOverlay({
 
   return (
     <div className="fixed inset-0" style={{ zIndex }}>
-      {/* ✅ spotlight: 주변 딤 처리 (box-shadow trick) */}
       <div
         className="fixed rounded-2xl ring-2 ring-white/90"
         style={{
@@ -182,7 +180,6 @@ export default function CoachmarkOverlay({
         }}
       />
 
-      {/* ✅ 말풍선 */}
       <div
         className="fixed"
         style={{
@@ -196,8 +193,8 @@ export default function CoachmarkOverlay({
         <CoachBubble arrow={bubble.arrow} title={title} description={description} onClose={onClose} onNext={onNext} />
       </div>
 
-      {/* ✅ backdrop 클릭 처리 */}
-      <button
+      {/* backdrop 클릭 처리 */}
+      <Button
         aria-label="Close tutorial overlay"
         className="fixed inset-0"
         style={{ background: "transparent" }}
@@ -220,6 +217,7 @@ function CoachBubble({
   onClose: () => void;
   onNext?: () => void;
 }) {
+  const t = useTranslations("CoachmarkOverlay");
   return (
     <div className="relative rounded-2xl bg-white p-4 shadow-2xl">
       <Arrow arrow={arrow} />
@@ -230,22 +228,22 @@ function CoachBubble({
           <div className="mt-1 text-[13px] leading-relaxed text-[var(--text-sub)]">{description}</div>
         </div>
 
-        <button onClick={onClose} className="h-8 w-8 shrink-0 rounded-full hover:bg-black/5" aria-label="Close">
+        <Button onClick={onClose} className="h-8 w-8 shrink-0 rounded-full hover:bg-black/5" aria-label="Close">
           ✕
-        </button>
+        </Button>
       </div>
 
       <div className="mt-4 flex items-center justify-end gap-2">
-        <button onClick={onClose} className="rounded-xl px-3 py-2 text-sm font-semibold hover:bg-black/5">
-          닫기
-        </button>
+        <Button onClick={onClose} className="rounded-xl px-3 py-2 text-sm font-semibold hover:bg-black/5">
+          {t("safeGuard")}
+        </Button>
         {onNext ? (
-          <button
+          <Button
             onClick={onNext}
             className="rounded-xl bg-[var(--green)] px-3 py-2 text-sm font-semibold text-white hover:opacity-90"
           >
-            다음
-          </button>
+            {t("next")}
+          </Button>
         ) : null}
       </div>
     </div>

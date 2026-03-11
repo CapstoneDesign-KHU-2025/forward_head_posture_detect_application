@@ -33,7 +33,11 @@
       "stop": "오늘의 측정 중단하기"
     },
     "async": { "suspense": "측정을 시작해주세요!" },
-    "cameraTitle": "카메라"
+    "cameraTitle": "카메라",
+    "CoachmarkOverlayParams": {
+      "title": "시작/중단",
+      "description": "버튼을 클릭해서 측정을 시작/중단해보세요!"
+    }
   },
   "Login": {
     "alt": {
@@ -629,5 +633,9 @@
     "todayAlert": "오늘 경고",
     "mockNumber": "3회",
     "neckAnglePerHour": "시간대별 목 각도"
+  },
+  "CoachmarkOverlay": {
+    "safeGuard": "닫기",
+    "next": "다음"
   }
 }
