@@ -635,5 +635,12 @@
     "todayAlert": "today's alert",
     "mockNumber": "3times",
     "neckAnglePerHour": "neck angle per hours"
+  },
+  "Footer": {
+    "labels": {
+      "terms": "service terms",
+      "privacy": "privacy policy",
+      "contact": "contact"
+    }
   }
 }

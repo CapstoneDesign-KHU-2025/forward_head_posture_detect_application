@@ -629,5 +629,12 @@
     "todayAlert": "오늘 경고",
     "mockNumber": "3회",
     "neckAnglePerHour": "시간대별 목 각도"
+  },
+  "Footer": {
+    "labels": {
+      "terms": "서비스 약관",
+      "privacy": "개인정보처리방침",
+      "contact": "문의하기"
+    }
   }
 }
