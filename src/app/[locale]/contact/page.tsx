@@ -7,7 +7,7 @@ export default async function ContactPage() {
     "https://docs.google.com/forms/d/e/1FAIpQLSeRNoOKH3aNfmu0_JMZFy6Vslur6jfBuNlrj-5-Cekjen9wpw/viewform";
 
   return (
-    <main className="bg-gray-50 py-16 px-6 sm:px-12 lg:px-24 mb-5 min-h-screen">
+    <main className="bg-gray-50 py-16 px-6 sm:px-12 lg:px-24 mb-5">
       <div className="max-w-3xl mx-auto bg-white p-8 md:p-12 rounded-2xl shadow-sm border border-gray-100">
         <h1 className="text-3xl font-bold text-gray-900 mb-6">{t("title")}</h1>
         <p className="text-gray-600 mb-12 leading-relaxed">{t("description")}</p>
