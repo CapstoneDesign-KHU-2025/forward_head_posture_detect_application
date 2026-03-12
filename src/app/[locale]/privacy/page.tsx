@@ -10,26 +10,26 @@ export default async function PrivacyPolicyPage() {
 
         <section className="mb-8">
           <h2 className="text-xl font-semibold text-gray-800 mb-4">{t("policy.1")}</h2>
-          <p className="text-gray-600 mb-3">{t("description.1.title")}</p>
+          <p className="text-gray-600 mb-3">{t("description.fst.title")}</p>
           <ul className="list-disc pl-5 text-gray-600 space-y-2">
             <li>
-              <strong>{t("description.1.list[0].label")}:</strong> {t("description.1.list[0].text")}
+              <strong>{t("description.fst.list.1.label")}:</strong> {t("description.fst.list.1.text")}
             </li>
             <li>
-              <strong>{t("description.1.list[1].label")}:</strong> {t("description.1.list[1].text")}
+              <strong>{t("description.fst.list.2.label")}:</strong> {t("description.fst.list.2.text")}
             </li>
           </ul>
         </section>
 
         <section className="mb-8">
           <h2 className="text-xl font-semibold text-gray-800 mb-4">{t("policy.2")}</h2>
-          <p className="text-gray-600 mb-3">{t("description.2.title")}</p>
+          <p className="text-gray-600 mb-3">{t("description.snd.title")}</p>
           <ul className="list-disc pl-5 text-gray-600 space-y-2">
             <li>
-              <strong>{t("description.2.list[0].label")}:</strong> {t("description.2.list[0].text")}
+              <strong>{t("description.snd.list.1.label")}:</strong> {t("description.snd.list.1.text")}
             </li>
             <li>
-              <strong>{t("description.2.list[1].label")}:</strong> {t("description.2.list[1].text")}
+              <strong>{t("description.snd.list.2.label")}:</strong> {t("description.snd.list.2.text")}
             </li>
           </ul>
         </section>

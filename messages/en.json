@@ -654,31 +654,31 @@
       "5": "5. Contact Information"
     },
     "description": {
-      "1": {
+      "fst": {
         "title": "To provide our service smoothly, we collect the following minimum personal information.",
-        "list": [
-          {
+        "list": {
+          "1": {
             "label": "When signing in with Google",
             "text": "Email address (for OAuth authentication and user identification)"
           },
-          {
+          "2": {
             "label": "When using the service",
             "text": "Service usage history, access logs"
           }
-        ]
+        }
       },
-      "2": {
+      "snd": {
         "title": "This service requests access to your device's camera to detect forward head posture and measure angles in real time. Our policy for handling this data is as follows.",
-        "list": [
-          {
+        "list": {
+          "1": {
             "label": "Local Processing",
             "text": "Video data captured through the camera is analyzed in real time only within the user's browser (local environment), that is, on the user's own computer."
           },
-          {
+          "2": {
             "label": "No Storage Principle",
             "text": "Video data is never transmitted to or stored on any external server or database under any circumstances."
           }
-        ]
+        }
       },
       "3": {
         "text": "The collected personal information is used solely for user account management, smooth service operation, and statistical analysis for service improvement."
