@@ -17,7 +17,7 @@ export default async function ContactPage() {
             <h2 className="text-lg font-semibold text-gray-800 mb-2">{t("email.title")}</h2>
             <a
               href={`mailto:${t("email.address")}`}
-              className="text-blue-600 hover:underline text-lg font-medium inline-block"
+              className="text-[var(--green)] hover:underline text-lg font-medium inline-block"
             >
               {t("email.address")}
             </a>
@@ -26,11 +26,12 @@ export default async function ContactPage() {
           <section className="bg-gray-50 p-6 rounded-xl border border-gray-100">
             <h2 className="text-lg font-semibold text-gray-800 mb-2">{t("feedback.title")}</h2>
             <p className="text-gray-600 mb-4">{t("feedback.text")}</p>
+
             <a
               href={FEEDBACK_LINK}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-block bg-gray-900 text-white px-5 py-2.5 rounded-lg font-medium hover:bg-gray-800 transition-colors"
+              className="inline-flex items-center justify-center font-semibold transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 bg-[var(--green)] text-white border border-transparent hover:bg-[var(--green-dark)] focus-visible:ring-[var(--green)] ring-offset-white px-5 py-2.5 text-[13px] rounded-[10px]"
             >
               {t("feedback.linkText")}
             </a>
