@@ -642,5 +642,53 @@
       "privacy": "privacy policy",
       "contact": "contact"
     }
+  },
+  "PrivacyPolicyPage": {
+    "title": "Privacy Policy",
+    "startDate": "Effective Date: March 12, 2026",
+    "policy": {
+      "1": "1. Personal Information We Collect",
+      "2": "2. Camera and Video Data Processing",
+      "3": "3. Purpose of Using Personal Information",
+      "4": "4. Destruction of Personal Information",
+      "5": "5. Contact Information"
+    },
+    "description": {
+      "1": {
+        "title": "To provide our service smoothly, we collect the following minimum personal information.",
+        "list": [
+          {
+            "label": "When signing in with Google",
+            "text": "Email address (for OAuth authentication and user identification)"
+          },
+          {
+            "label": "When using the service",
+            "text": "Service usage history, access logs"
+          }
+        ]
+      },
+      "2": {
+        "title": "This service requests access to your device's camera to detect forward head posture and measure angles in real time. Our policy for handling this data is as follows.",
+        "list": [
+          {
+            "label": "Local Processing",
+            "text": "Video data captured through the camera is analyzed in real time only within the user's browser (local environment), that is, on the user's own computer."
+          },
+          {
+            "label": "No Storage Principle",
+            "text": "Video data is never transmitted to or stored on any external server or database under any circumstances."
+          }
+        ]
+      },
+      "3": {
+        "text": "The collected personal information is used solely for user account management, smooth service operation, and statistical analysis for service improvement."
+      },
+      "4": {
+        "text": "If a user requests account deletion or when the purpose of collecting and using personal information has been fulfilled, the relevant information is destroyed without delay. Identifiable information stored in the database is permanently deleted in an irrecoverable manner."
+      },
+      "5": {
+        "text": "If you have any questions regarding this Privacy Policy, please contact us at the email address below."
+      }
+    }
   }
 }
