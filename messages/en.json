@@ -728,5 +728,18 @@
         "text": "This Service is provided free of charge and does not guarantee 100% accuracy of the AI model's analysis results. To the maximum extent permitted by law, we shall not be held liable for any direct or indirect damages or data loss arising from the use of the Service."
       }
     }
+  },
+  "ContactPage": {
+    "title": "Contact & Feedback",
+    "description": "Thank you for using the 'Turtle Turtle Turtle Neck' service! If you have any questions or would like to leave feedback, please reach out using the methods below.",
+    "email": {
+      "title": "Email Us",
+      "address": "kge0211114@gmail.com"
+    },
+    "feedback": {
+      "title": "Send Feedback",
+      "text": "Please leave your comments to help us improve the service.",
+      "linkText": "Go to feedback form ➔"
+    }
   }
 }
