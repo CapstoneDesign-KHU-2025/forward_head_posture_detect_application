@@ -14,6 +14,7 @@ import { useTranslations } from "next-intl";
 
 import LanguageToggle from "@/components/molecules/LanguageToggle";
 import { SoundButton } from "@/components/molecules/SoundButton";
+
 type HeaderProps = {
   user?: { name: string; avatarSrc?: string } | null;
   className?: string;

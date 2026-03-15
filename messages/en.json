@@ -635,5 +635,111 @@
     "todayAlert": "today's alert",
     "mockNumber": "3times",
     "neckAnglePerHour": "neck angle per hours"
+  },
+  "Footer": {
+    "labels": {
+      "terms": "service terms",
+      "privacy": "privacy policy",
+      "contact": "contact"
+    }
+  },
+  "PrivacyPolicyPage": {
+    "title": "Privacy Policy",
+    "startDate": "Effective Date: March 12, 2026",
+    "policy": {
+      "1": "1. Personal Information We Collect",
+      "2": "2. Camera and Video Data Processing",
+      "3": "3. Purpose of Using Personal Information",
+      "4": "4. Destruction of Personal Information",
+      "5": "5. Contact Information"
+    },
+    "description": {
+      "fst": {
+        "title": "To provide our service smoothly, we collect the following minimum personal information.",
+        "list": {
+          "1": {
+            "label": "When signing in with Google",
+            "text": "Email address (for OAuth authentication and user identification)"
+          },
+          "2": {
+            "label": "When using the service",
+            "text": "Service usage history, access logs"
+          }
+        }
+      },
+      "snd": {
+        "title": "This service requests access to your device's camera to detect forward head posture and measure angles in real time. Our policy for handling this data is as follows.",
+        "list": {
+          "1": {
+            "label": "Local Processing",
+            "text": "Video data captured through the camera is analyzed in real time only within the user's browser (local environment), that is, on the user's own computer."
+          },
+          "2": {
+            "label": "No Storage Principle",
+            "text": "Video data is never transmitted to or stored on any external server or database under any circumstances."
+          }
+        }
+      },
+      "3": {
+        "text": "The collected personal information is used solely for user account management, smooth service operation, and statistical analysis for service improvement."
+      },
+      "4": {
+        "text": "If a user requests account deletion or when the purpose of collecting and using personal information has been fulfilled, the relevant information is destroyed without delay. Identifiable information stored in the database is permanently deleted in an irrecoverable manner."
+      },
+      "5": {
+        "text": "If you have any questions regarding this Privacy Policy, please contact us at the email address below."
+      }
+    }
+  },
+  "TermsOfServicePage": {
+    "title": "Terms of Service",
+    "startDate": "Effective Date: March 12, 2026",
+    "policy": {
+      "1": "1. Purpose",
+      "2": "2. Service Content and Modifications",
+      "3": "3. Medical Disclaimer (Important)",
+      "4": "4. User Obligations",
+      "5": "5. Limitation of Liability"
+    },
+    "description": {
+      "1": {
+        "text": "These terms aim to stipulate the conditions of use, rights, obligations, and responsibilities for the 'Turtle Turtle Turtle Neck' service (hereinafter referred to as the 'Service')."
+      },
+      "2": {
+        "text": "This Service utilizes the device's camera to analyze the user's posture in real-time, determining the presence of a forward head posture to provide feedback. The features of the Service may be changed or suspended without prior notice for performance improvements or operational needs."
+      },
+      "3": {
+        "title": "The posture analysis and feedback provided by this Service are for reference purposes only, based on an AI model (Pose Estimation).",
+        "list": {
+          "1": {
+            "label": "Non-Medical Device",
+            "text": "This Service is not a medical device intended for professional medical diagnosis, prevention, or treatment."
+          },
+          "2": {
+            "label": "Consult a Specialist",
+            "text": "If you experience pain or health issues related to your posture, you must consult a medical professional rather than relying solely on the results provided by this Service."
+          }
+        }
+      },
+      "4": {
+        "text": "Users must not use the Service by misappropriating others' personal information, such as email addresses, and must not use the camera feature in any way that infringes upon the portrait rights or privacy of others."
+      },
+      "5": {
+        "text": "This Service is provided free of charge and does not guarantee 100% accuracy of the AI model's analysis results. To the maximum extent permitted by law, we shall not be held liable for any direct or indirect damages or data loss arising from the use of the Service."
+      }
+    }
+  },
+  "ContactPage": {
+    "title": "Contact & Feedback",
+    "description": "Thank you for using the 'BoogiBoogi' service! If you have any questions or would like to leave feedback, please reach out using the methods below.",
+    "email": {
+      "title": "Email Us",
+      "address": "kge0211114@gmail.com"
+    },
+    "feedback": {
+      "title": "Send Feedback",
+      "text": "Please leave your comments to help us improve the service.",
+      "linkText": "Go to feedback form ➔"
+    }
   }
 }
