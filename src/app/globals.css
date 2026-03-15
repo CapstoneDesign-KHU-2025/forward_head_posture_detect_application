@@ -40,6 +40,25 @@
   --cal-sat: #6b9fff; /* 캘린더 토요일 */
 }
 
+@keyframes soft-bloom {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(74, 124, 89, 0.6); /* var(--green)과 비슷한 초록색 아우라 시작 */
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 15px rgba(74, 124, 89, 0); /* 15px 밖으로 퍼지면서 투명해짐 */
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(74, 124, 89, 0); /* 원래대로 복귀 */
+  }
+}
+
+.animate-soft-bloom {
+  /* 2초에 한 번씩, 영원히(infinite), 부드럽게(ease-in-out) 반복합니다 */
+  animation: soft-bloom 2s infinite ease-in-out;
+}
 /* @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
