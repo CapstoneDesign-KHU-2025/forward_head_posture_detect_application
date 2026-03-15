@@ -1,13 +1,16 @@
+"use client";
+
 import { AlertTriangle, CheckCircle2 } from "lucide-react";
 import { createPortal } from "react-dom";
-import { getTranslations } from "next-intl/server";
+import { useTranslations } from "next-intl";
+
 type MiniWarningPipProps = {
   isTurtle: boolean;
   pipWindow: Window | null;
 };
-export async function MiniWarningPip({ isTurtle, pipWindow }: MiniWarningPipProps) {
+export function MiniWarningPip({ isTurtle, pipWindow }: MiniWarningPipProps) {
   if (!pipWindow) return null;
-  const t = await getTranslations("MiniWarningPip");
+  const t = useTranslations("MiniWarningPip");
   return createPortal(
     <div
       className={`flex h-screen w-screen flex-col items-center justify-center transition-colors duration-500 ${
