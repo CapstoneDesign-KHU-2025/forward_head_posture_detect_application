@@ -2,34 +2,8 @@
 
 import { useState } from "react";
 import { ChevronDown, X } from "lucide-react";
-import { Button } from "./Button";
-
-const GUIDE_DATA = [
-  {
-    id: 1,
-    title: "기기는 정면에 놓아주세요.",
-    descriptions: [
-      "노트북을 앞에 두고 업무하는 환경에 적합하도록, AI 모델이 인체의 '정면'을 기준으로 학습되어 있어요!",
-      "혹시 측면 측정 기능도 원하시면 피드백을 남겨주세요 🐢",
-    ],
-  },
-  {
-    id: 2,
-    title: "평소 업무/공부할 때의 자세로 측정해주세요.",
-    descriptions: [
-      "측정 시작 시점에 수집한 기본 자세를 바탕으로 거북목을 판단합니다.",
-      "카메라의 각도나 방향이 틀어지지 않을수록 신체 인식이 훨씬 정확해져요!",
-    ],
-  },
-  {
-    id: 3,
-    title: "얇은 옷과 묶은 머리가 측정에 도움이 됩니다.",
-    descriptions: [
-      "AI 모델은 어깨와 귀의 위치를 인식해서 각도를 계산해요.",
-      "두꺼운 옷이나 긴 머리로 어깨선이 가려지면 정확도가 떨어질 수 있습니다!",
-    ],
-  },
-];
+import { Button } from "@/components/atoms/Button";
+import { useTranslations } from "next-intl";
 
 type HelpMessageModalProps = {
   isOpen: boolean;
@@ -42,6 +16,24 @@ export function HelpMessageModal({ isOpen, onClose }: HelpMessageModalProps) {
   const toggleAccordion = (id: number) => {
     setOpenAccordionId((prev) => (prev === id ? null : id));
   };
+  const t = useTranslations("HelpMessageModal");
+  const GUIDE_DATA = [
+    {
+      id: 1,
+      title: t("messages.1.title"),
+      descriptions: [t("messages.1.description.1"), t("messages.1.description.2")],
+    },
+    {
+      id: 2,
+      title: t("messages.2.title"),
+      descriptions: [t("messages.2.description.1"), t("messages.2.description.2")],
+    },
+    {
+      id: 3,
+      title: t("messages.3.title"),
+      descriptions: [t("messages.3.description.1"), t("messages.3.description.2")],
+    },
+  ];
 
   return (
     <div
@@ -51,12 +43,12 @@ export function HelpMessageModal({ isOpen, onClose }: HelpMessageModalProps) {
     >
       <div className="p-5">
         <header className="mb-4 flex items-center justify-between">
-          <h2 className="text-[17px] font-bold text-[var(--green-dark)]">🐢 측정 가이드 팁</h2>
+          <h2 className="text-[17px] font-bold text-[var(--green-dark)]">🐢 {t("header")}</h2>
           <Button
             variant="ghost"
             onClick={onClose}
             className="rounded-full p-1.5 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--green-dark)]"
-            aria-label="가이드 닫기"
+            aria-label={t("ariaLabel")}
           >
             <X size={18} />
           </Button>
@@ -70,7 +62,7 @@ export function HelpMessageModal({ isOpen, onClose }: HelpMessageModalProps) {
             return (
               <div
                 key={item.id}
-                className={`overflow-hidden rounded-2xl border transition-colors duration-300 p-1.5 pb-3 shadow-md ${
+                className={`overflow-hidden rounded-2xl border transition-colors duration-300 p-1.5 shadow-md ${
                   isAccordionOpen
                     ? "border-[var(--green-light)] bg-[var(--green-pale)]"
                     : "border-transparent bg-gray-50 hover:bg-[var(--green-light)]"
