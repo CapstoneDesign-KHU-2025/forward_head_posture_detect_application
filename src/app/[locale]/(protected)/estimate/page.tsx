@@ -9,11 +9,10 @@ import AsyncBoundary from "@/components/molecules/AsyncBoundary";
 import { MEASUREMENT_CANVAS_SLOT_ID } from "@/providers/MeasurementProvider";
 import { useTranslations } from "next-intl";
 import { useDocumentPiP } from "@/hooks/useDocumentPip";
-import { MiniWarningPip } from "@/components/atoms/MiniWarningPip";
 
 export default function Estimate() {
   const t = useTranslations("Estimate");
-  const { pipWindow, openPiP, closePiP } = useDocumentPiP();
+
   const {
     stopEstimating,
     startMeasurement,
@@ -26,21 +25,23 @@ export default function Estimate() {
     statusBannerMessage,
     isFirstFrameDrawn,
     guideColor,
-    isTurtle,
   } = useMeasurement();
-
+  const { closePiP } = useDocumentPiP();
   const bannerType = getStatusBannerType();
   const bannerMessage = statusBannerMessage();
-
+  const handleClickEstimateButton = () => {
+    if (stopEstimating) {
+      closePiP();
+      startMeasurement();
+    } else {
+      stopMeasurement();
+    }
+  };
   return (
     <div className="min-h-[calc(100dvh-var(--header-height))] bg-[var(--green-pale)] overflow-x-hidden">
       <div className="max-w-[1200px] mx-auto px-4 sm:px-6 md:px-8 pt-2 w-full min-w-0 mb-4">
         <div className="flex justify-center mb-14">
-          <Button
-            size="lg"
-            variant={stopEstimating ? "primary" : "danger"}
-            onClick={stopEstimating ? startMeasurement : stopMeasurement}
-          >
+          <Button size="lg" variant={stopEstimating ? "primary" : "danger"} onClick={handleClickEstimateButton}>
             {stopEstimating ? t("buttons.start") : t("buttons.stop")}
           </Button>
         </div>
@@ -78,13 +79,7 @@ export default function Estimate() {
             guideColor={guideColor}
           />
         </AsyncBoundary>
-        <div>
-          <Button variant="secondary" onClick={pipWindow ? closePiP : openPiP}>
-            {pipWindow ? "팝업 닫기" : "팝업 열기📺"}
-          </Button>
 
-          <MiniWarningPip isTurtle={isTurtle} pipWindow={pipWindow} />
-        </div>
         {error && <ErrorBanner error={error} />}
       </div>
     </div>
