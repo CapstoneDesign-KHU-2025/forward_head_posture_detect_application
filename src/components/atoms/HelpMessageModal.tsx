@@ -51,11 +51,11 @@ export function HelpMessageModal({ isOpen, onClose }: HelpMessageModalProps) {
     >
       <div className="p-5">
         <header className="mb-4 flex items-center justify-between">
-          <h2 className="text-[17px] font-bold text-[#2d4a36]">🐢 측정 가이드 팁</h2>
+          <h2 className="text-[17px] font-bold text-[var(--green-dark)]">🐢 측정 가이드 팁</h2>
           <Button
             variant="ghost"
             onClick={onClose}
-            className="rounded-full p-1.5 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#4a7c59]"
+            className="rounded-full p-1.5 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--green-dark)]"
             aria-label="가이드 닫기"
           >
             <X size={18} />
@@ -70,8 +70,10 @@ export function HelpMessageModal({ isOpen, onClose }: HelpMessageModalProps) {
             return (
               <div
                 key={item.id}
-                className={`overflow-hidden rounded-2xl border transition-colors duration-300 ${
-                  isAccordionOpen ? "border-[#4a7c59] bg-[#f4f9f5]" : "border-transparent bg-gray-50 hover:bg-[#edf5f0]"
+                className={`overflow-hidden rounded-2xl border transition-colors duration-300 p-1.5 pb-3 shadow-md ${
+                  isAccordionOpen
+                    ? "border-[var(--green-light)] bg-[var(--green-pale)]"
+                    : "border-transparent bg-gray-50 hover:bg-[var(--green-light)]"
                 }`}
               >
                 <Button
@@ -81,14 +83,14 @@ export function HelpMessageModal({ isOpen, onClose }: HelpMessageModalProps) {
                   aria-expanded={isAccordionOpen}
                 >
                   <span
-                    className={`text-[14px] font-bold leading-snug transition-colors pr-2 ${isAccordionOpen ? "text-[#4a7c59]" : "text-gray-700"}`}
+                    className={`block w-full pr-2 text-left text-[13px] font-bold leading-snug transition-colors ${isAccordionOpen ? "text-[var(--green-dark)]" : "text-gray-700"}`}
                   >
                     <span className="mr-1.5 opacity-60">{item.id}.</span>
                     {item.title}
                   </span>
                   <ChevronDown
                     size={16}
-                    className={`mt-0.5 shrink-0 text-[#4a7c59] transition-transform duration-300 ${isAccordionOpen ? "rotate-180" : "rotate-0"}`}
+                    className={`mt-0.5 shrink-0 text-[var(--green)] transition-transform duration-300 ${isAccordionOpen ? "rotate-180" : "rotate-0"}`}
                   />
                 </Button>
 
@@ -99,11 +101,11 @@ export function HelpMessageModal({ isOpen, onClose }: HelpMessageModalProps) {
                   }`}
                 >
                   <div className="overflow-hidden">
-                    <div className="px-3.5 pb-3.5 pt-0 text-[13px] leading-relaxed text-[#5a7564]">
+                    <div className="px-3.5 pb-3.5 pt-0 text-[13px] leading-relaxed text-[var(--green)]">
                       <ul className="flex flex-col gap-1.5">
                         {item.descriptions.map((desc, idx) => (
                           <li key={idx} className="flex gap-1.5 items-start">
-                            <span className="mt-0.5 text-[#84a98f] text-[10px]">●</span>
+                            <span className="mt-0.5 text-[var(--green-mid)] text-[10px]">●</span>
                             <span>{desc}</span>
                           </li>
                         ))}
