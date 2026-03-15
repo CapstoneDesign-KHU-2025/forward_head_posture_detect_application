@@ -27,7 +27,6 @@ export default async function LocaleLayout({ children, params }: Props) {
   const t = await getTranslations("Basic");
   const session = await auth();
   const messages = await getMessages();
-  console.log("layout locale:", locale, "sample:", (messages as any)?.Basic?.user);
   const user = session?.user
     ? { name: session.user.name || t("user"), avatarSrc: session.user.image || undefined }
     : null;
