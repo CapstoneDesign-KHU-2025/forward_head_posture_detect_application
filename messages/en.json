@@ -741,5 +741,11 @@
       "text": "Please leave your comments to help us improve the service.",
       "linkText": "Go to feedback form ➔"
     }
+  },
+  "PipToggleButton": {
+    "title": {
+      "close": "open Popup",
+      "open": "close Popup"
+    }
   }
 }
