@@ -36,7 +36,7 @@ export function useDocumentPiP() {
       pip.addEventListener("pagehide", () => setPipWindow(null));
       setPipWindow(pip);
     } catch (error) {
-      console.error("PiP 창을 여는 중 에러 발생:", error);
+      throw Error("clientSide Error: Popup");
     }
   }, []);
 

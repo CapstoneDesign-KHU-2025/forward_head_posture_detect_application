@@ -747,5 +747,9 @@
       "close": "open Popup",
       "open": "close Popup"
     }
+  },
+  "MiniWarningPip": {
+    "warning": "Warning!",
+    "good": "Good Posture!"
   }
 }

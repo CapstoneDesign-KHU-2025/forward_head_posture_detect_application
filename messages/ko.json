@@ -741,5 +741,9 @@
       "close": "팝업 열기",
       "open": "팝업 닫기"
     }
+  },
+  "MiniWarningPip": {
+    "warning": "거북목 경고!",
+    "good": "완벽해요!"
   }
 }
