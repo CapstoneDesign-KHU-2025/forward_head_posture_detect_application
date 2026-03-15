@@ -12,8 +12,8 @@ export function useDocumentPiP() {
 
     try {
       const pip = await (window as any).documentPictureInPicture.requestWindow({
-        width: 300,
-        height: 300,
+        width: 100,
+        height: 80,
       });
 
       [...document.styleSheets].forEach((styleSheet) => {

@@ -8,10 +8,12 @@ import AsyncBoundary from "@/components/molecules/AsyncBoundary";
 
 import { MEASUREMENT_CANVAS_SLOT_ID } from "@/providers/MeasurementProvider";
 import { useTranslations } from "next-intl";
+import { useDocumentPiP } from "@/hooks/useDocumentPip";
+import { MiniWarningPip } from "@/components/atoms/MiniWarningPip";
 
 export default function Estimate() {
   const t = useTranslations("Estimate");
-
+  const { pipWindow, openPiP, closePiP } = useDocumentPiP();
   const {
     stopEstimating,
     startMeasurement,
@@ -24,6 +26,7 @@ export default function Estimate() {
     statusBannerMessage,
     isFirstFrameDrawn,
     guideColor,
+    isTurtle,
   } = useMeasurement();
 
   const bannerType = getStatusBannerType();
@@ -75,6 +78,13 @@ export default function Estimate() {
             guideColor={guideColor}
           />
         </AsyncBoundary>
+        <div>
+          <Button variant="secondary" onClick={pipWindow ? closePiP : openPiP}>
+            {pipWindow ? "팝업 닫기" : "팝업 열기📺"}
+          </Button>
+
+          <MiniWarningPip isTurtle={isTurtle} pipWindow={pipWindow} />
+        </div>
         {error && <ErrorBanner error={error} />}
       </div>
     </div>
