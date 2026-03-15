@@ -13,7 +13,8 @@ import { UserButton } from "@/components/molecules/UserButton";
 import { useTranslations } from "next-intl";
 
 import LanguageToggle from "@/components/molecules/LanguageToggle";
-import Image from "next/image";
+import { SoundButton } from "@/components/molecules/SoundButton";
+
 type HeaderProps = {
   user?: { name: string; avatarSrc?: string } | null;
   className?: string;
@@ -48,6 +49,7 @@ export default function Header({ user: initialUser, className }: HeaderProps) {
     return (
       <>
         {/* <FriendsButton requestCount={friendsData?.incomingCount || 0} onClick={() => setIsFriendsModalOpen(true)} /> */}
+        <SoundButton />
         <UserButton
           user={{
             name: user.name ?? t("UserButton.name"),
