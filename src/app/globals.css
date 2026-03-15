@@ -40,25 +40,68 @@
   --cal-sat: #6b9fff; /* 캘린더 토요일 */
 }
 
-@keyframes soft-bloom {
-  0% {
-    transform: scale(1);
-    box-shadow: 0 0 0 0 rgba(74, 124, 89, 0.6); /* var(--green)과 비슷한 초록색 아우라 시작 */
-  }
-  50% {
-    transform: scale(1.05);
-    box-shadow: 0 0 0 15px rgba(74, 124, 89, 0); /* 15px 밖으로 퍼지면서 투명해짐 */
-  }
+@keyframes shara-attention {
+  0%,
   100% {
     transform: scale(1);
-    box-shadow: 0 0 0 0 rgba(74, 124, 89, 0); /* 원래대로 복귀 */
+    box-shadow:
+      0 6px 18px rgba(74, 124, 89, 0.28),
+      0 0 0 0 rgba(255, 255, 255, 0),
+      0 0 12px rgba(120, 190, 140, 0.18);
+    filter: brightness(1);
+  }
+
+  18% {
+    transform: scale(1.04);
+    box-shadow:
+      0 10px 24px rgba(74, 124, 89, 0.34),
+      0 0 0 6px rgba(255, 255, 255, 0.14),
+      0 0 18px rgba(120, 190, 140, 0.24);
+    filter: brightness(1.03);
+  }
+
+  32% {
+    transform: scale(1.09);
+    box-shadow:
+      0 14px 30px rgba(74, 124, 89, 0.42),
+      0 0 0 10px rgba(255, 255, 255, 0.18),
+      0 0 26px rgba(140, 220, 165, 0.34);
+    filter: brightness(1.1);
+  }
+
+  46% {
+    transform: scale(1.03);
+    box-shadow:
+      0 8px 22px rgba(74, 124, 89, 0.32),
+      0 0 0 4px rgba(255, 255, 255, 0.1),
+      0 0 16px rgba(120, 190, 140, 0.22);
+    filter: brightness(1.02);
+  }
+
+  60% {
+    transform: scale(1.07);
+    box-shadow:
+      0 12px 28px rgba(74, 124, 89, 0.38),
+      0 0 0 7px rgba(255, 255, 255, 0.14),
+      0 0 22px rgba(140, 220, 165, 0.3);
+    filter: brightness(1.07);
+  }
+
+  75% {
+    transform: scale(1);
+    box-shadow:
+      0 6px 18px rgba(74, 124, 89, 0.28),
+      0 0 0 0 rgba(255, 255, 255, 0),
+      0 0 12px rgba(120, 190, 140, 0.18);
+    filter: brightness(1);
   }
 }
 
-.animate-soft-bloom {
-  /* 2초에 한 번씩, 영원히(infinite), 부드럽게(ease-in-out) 반복합니다 */
-  animation: soft-bloom 2s infinite ease-in-out;
+.animate-shara-attention {
+  animation: shara-attention 1.9s ease-in-out infinite;
+  will-change: transform, box-shadow, filter;
 }
+
 /* @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;

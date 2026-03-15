@@ -37,7 +37,7 @@ type HelpMessageModalProps = {
 };
 
 export function HelpMessageModal({ isOpen, onClose }: HelpMessageModalProps) {
-  const [openAccordionId, setOpenAccordionId] = useState<number | null>(1); // 1번 기본 열림
+  const [openAccordionId, setOpenAccordionId] = useState<number | null>(1);
 
   const toggleAccordion = (id: number) => {
     setOpenAccordionId((prev) => (prev === id ? null : id));
@@ -62,7 +62,7 @@ export function HelpMessageModal({ isOpen, onClose }: HelpMessageModalProps) {
           </Button>
         </header>
 
-        {/* 아코디언 리스트 */}
+        {/* accordion list*/}
         <div className="flex max-h-[400px] flex-col gap-2.5 overflow-y-auto pr-1 custom-scrollbar">
           {GUIDE_DATA.map((item) => {
             const isAccordionOpen = openAccordionId === item.id;
@@ -92,7 +92,7 @@ export function HelpMessageModal({ isOpen, onClose }: HelpMessageModalProps) {
                   />
                 </Button>
 
-                {/* 💡 높이 애니메이션 로직 */}
+                {/* animation for lists*/}
                 <div
                   className={`grid transition-all duration-300 ease-in-out ${
                     isAccordionOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
