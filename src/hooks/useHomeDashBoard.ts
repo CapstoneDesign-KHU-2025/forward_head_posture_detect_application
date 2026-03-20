@@ -56,6 +56,11 @@ export default function useHomeDashBoard({ weeklyData, user }: HomeClientProps) 
   const [calendarRows, setCalendarRows] = useState<WeeklySummaryRow[]>([]);
   const t = useTranslations("HomeClient");
   const router = useRouter();
+  const [isNewUser, setIsNewUser] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false;
+    return !localStorage.getItem("hasEverMeasured");
+  });
+
   useEffect(() => {
     const hasCharacter = localStorage.getItem("selectedCharacter")?.trim();
     if (!hasCharacter) {
@@ -77,11 +82,6 @@ export default function useHomeDashBoard({ weeklyData, user }: HomeClientProps) 
   }, [router]);
 
   const dayStatusMap = useMemo(() => computeDayStatusMap(calendarRows), [calendarRows]);
-
-  const [isNewUser, setIsNewUser] = useState<boolean>(() => {
-    if (typeof window === "undefined") return false;
-    return !localStorage.getItem("hasEverMeasured");
-  });
 
   useEffect(() => {
     let cancelled = false;
@@ -138,5 +138,6 @@ export default function useHomeDashBoard({ weeklyData, user }: HomeClientProps) 
     dayStatusMap,
     isMeasuring,
     t,
+    isNewUser,
   };
 }
