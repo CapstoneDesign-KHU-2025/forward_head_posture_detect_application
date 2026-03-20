@@ -13,6 +13,7 @@ import { computeImprovementPercent } from "@/utils/computeImprovementPercent";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import LoadingSkeleton from "../molecules/LoadingSkeleton";
+import useHomeDashBoard from "@/hooks/useHomeDashBoard";
 
 type WeeklySummaryRow = {
   id: number;
@@ -67,7 +68,20 @@ type HomeData = {
 };
 
 export default function HomeClient({ weeklyData, user }: HomeClientProps) {
-  const { stopEstimating, measurementStarted } = useMeasurement();
+  const {
+    error,
+    loading,
+    weeklyAvg,
+    todayAvg,
+    todayCount,
+    todayHour,
+    isCheckingRedirect,
+    goodDays,
+    dayStatusMap,
+    isMeasuring,
+    t,
+  } = useHomeDashBoard({ weeklyData, user });
+  /* const { stopEstimating, measurementStarted } = useMeasurement();
   const isMeasuring = !stopEstimating && measurementStarted;
 
   const [todayAvg, setTodayAvg] = useState<number | null>(null);
@@ -81,11 +95,11 @@ export default function HomeClient({ weeklyData, user }: HomeClientProps) {
   const goodDays = weeklyData?.goodDays ?? 0;
 
   const [calendarRows, setCalendarRows] = useState<WeeklySummaryRow[]>([]);
-  const t = useTranslations("HomeClient");
+  const t = useTranslations("HomeClient"); */
   const locale = useLocale();
 
-  const router = useRouter();
-  useEffect(() => {
+  //const router = useRouter();
+  /*   useEffect(() => {
     const hasCharacter = localStorage.getItem("selectedCharacter")?.trim();
     if (!hasCharacter) {
       router.replace("/character");
@@ -102,16 +116,16 @@ export default function HomeClient({ weeklyData, user }: HomeClientProps) {
     return () => {
       cancelled = true;
     };
-  }, [router]);
+  }, [router]); */
 
-  const dayStatusMap = useMemo(() => computeDayStatusMap(calendarRows), [calendarRows]);
-
+  /*   const dayStatusMap = useMemo(() => computeDayStatusMap(calendarRows), [calendarRows]);
+   */
   const [isNewUser, setIsNewUser] = useState<boolean>(() => {
     if (typeof window === "undefined") return false;
     return !localStorage.getItem("hasEverMeasured");
   });
 
-  useEffect(() => {
+  /*   useEffect(() => {
     let cancelled = false;
 
     async function loadLocalData() {
@@ -153,7 +167,7 @@ export default function HomeClient({ weeklyData, user }: HomeClientProps) {
       setIsNewUser(false);
     }
   }, [todayCount, todayHour]);
-
+ */
   if (error) {
     return <ErrorBanner error={error} />;
   }
