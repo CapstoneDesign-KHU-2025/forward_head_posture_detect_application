@@ -241,7 +241,7 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating }: UseTurtleNe
           nowPerformance: number,
           _v: HTMLVideoElement,
           c: HTMLCanvasElement,
-          ctx: CanvasRenderingContext2D,
+          ctx: CanvasRenderingContext2D | null,
         ) => {
           if (stopEstimating) {
             measuringRef.current = false;
@@ -392,10 +392,15 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating }: UseTurtleNe
             }
             setCountdownRemain(null);
           }
-
-          // --- 미측정 상태: 가이드라인 그리기 ---
           if (!measuringRef.current) {
-            drawGuidelines(ctx, centerX, centerY, offsetY, allInside);
+            if (ctx) {
+              drawGuidelines(ctx, centerX, centerY, offsetY, allInside);
+            } else if (workerRef.current) {
+              workerRef.current.postMessage({
+                type: "drawGuide",
+                payload: { centerX, centerY, offsetY, allInside },
+              });
+            }
           }
 
           // --- 측정 시작 후: 거북목 계산 + 경고음 ---
@@ -442,8 +447,25 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating }: UseTurtleNe
               if (e.data?.type === "initDone") {
                 resolve(!e.data?.payload?.error);
               }
+
+              const c = canvasRef.current;
+              let offscreen: OffscreenCanvas | undefined;
+              if (c) {
+                try {
+                  if (!(c as any).__transferred) {
+                    offscreen = c.transferControlToOffscreen();
+                    (c as any).__transferred = true;
+                  }
+                } catch (e) {
+                  console.warn("OffsccreenCanvas not supported or ");
+                }
+              }
+              if (offscreen) {
+                worker.postMessage({ type: "init", payload: { canvas: offscreen } }, [offscreen]);
+              } else {
+                worker.postMessage({ type: "init" });
+              }
             };
-            worker.postMessage({ type: "init" });
           });
 
           const timeoutPromise = new Promise<boolean>((resolve) => {
@@ -482,8 +504,13 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating }: UseTurtleNe
                 const v2 = videoRef.current;
                 const c2 = canvasRef.current;
                 if (!v2 || !c2 || cancelled) return;
-                const ctx2 = c2.getContext("2d")!;
-                drawVideoToCanvas(v2, c2, ctx2);
+
+                let ctx2: CanvasRenderingContext2D | null = null;
+                if (!useWorkerMode) {
+                  ctx2 = c2.getContext("2d");
+                  if (ctx2) drawVideoToCanvas(v2, c2, ctx2);
+                }
+
                 const poses = msg.payload.landmarks as Pose[];
                 processPoseResult(poses, performance.now(), v2, c2, ctx2);
               }
@@ -540,12 +567,7 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating }: UseTurtleNe
 
     return () => {
       cancelled = true;
-      const w = workerRef.current;
-      if (w) {
-        w.postMessage({ type: "stop" });
-        w.terminate();
-        workerRef.current = null;
-      }
+
       if (visibilityChangeHandlerRef.current) {
         document.removeEventListener("visibilitychange", visibilityChangeHandlerRef.current);
         visibilityChangeHandlerRef.current = null;
@@ -554,21 +576,29 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating }: UseTurtleNe
         clearInterval(intervalRef.current);
         intervalRef.current = null;
       }
-      landmarkerRef.current?.close?.();
-      landmarkerRef.current = null;
+      setTimeout(() => {
+        const w = workerRef.current;
+        if (w) {
+          w.postMessage({ type: "stop" });
+          w.terminate();
+          workerRef.current = null;
+        }
+        landmarkerRef.current?.close?.();
+        landmarkerRef.current = null;
 
-      if (streamRef.current) {
-        streamRef.current.getTracks().forEach((t) => t.stop());
-        streamRef.current = null;
-      }
+        if (streamRef.current) {
+          streamRef.current.getTracks().forEach((t) => t.stop());
+          streamRef.current = null;
+        }
 
-      if (lastBeepIntervalRef.current) {
-        clearInterval(lastBeepIntervalRef.current);
-        lastBeepIntervalRef.current = null;
-      }
+        if (lastBeepIntervalRef.current) {
+          clearInterval(lastBeepIntervalRef.current);
+          lastBeepIntervalRef.current = null;
+        }
 
-      const tracks = (videoRef.current?.srcObject as MediaStream | null)?.getTracks() || [];
-      tracks.forEach((t) => t.stop());
+        const tracks = (videoRef.current?.srcObject as MediaStream | null)?.getTracks() || [];
+        tracks.forEach((t) => t.stop());
+      }, 50);
     };
   }, [stopEstimating, userId]);
 
