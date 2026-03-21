@@ -539,7 +539,7 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating }: UseTurtleNe
           });
           if (cancelled) return;
 
-          const getFPS = () => (document.hidden ? 10 : 30);
+          const getFPS = () => (document.hidden ? 5 : 10);
           const getInterval = () => 1000 / getFPS();
 
           const loop = () => {
