@@ -87,6 +87,15 @@
     "button": "Refresh",
     "tryAgain": "Try Again"
   },
+  "Trial": {
+    "resultTitle": "Trial Results",
+    "measureTime": "Measurement Time",
+    "warningCount": "Warnings",
+    "avgAngle": "Average Neck Angle",
+    "warningUnit": "times",
+    "angleUnit": "°",
+    "retryButton": "Measure Again"
+  },
   "EstimatePanel": {
     "cameraTitle": "Camera",
     "message": "🐢\nMeasurement is ready!\nPress the button to start",

@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect } from "react";
-import { signIn } from "next-auth/react";
 import { Button } from "@/components/atoms/Button";
 import { Card } from "@/components/atoms/Card";
 import DashboardMockupCard from "@/components/molecules/DashboardMockupCard";
@@ -97,7 +96,7 @@ export default function LandingTemplate() {
                 size="lg"
                 variant="primary"
                 className="inline-flex items-center gap-2 py-3.5 px-7 rounded-[14px] text-[15px] font-bold shadow-[0_4px_16px_rgba(74,124,89,0.3)] hover:shadow-[0_8px_24px_rgba(74,124,89,0.35)] hover:-translate-y-0.5"
-                onClick={() => signIn()}
+                onClick={() => router.push("/trial")}
               >
                 {t("hero.buttons.start")}
               </Button>
@@ -251,7 +250,7 @@ export default function LandingTemplate() {
         <p className="text-base text-white/75 mb-9 leading-[1.7]">{t("cta.description")}</p>
         <button
           type="button"
-          onClick={() => router.push("/login")}
+          onClick={() => router.push("/trial")}
           className="bg-white text-[var(--green)] border-none rounded-[14px] py-[15px] px-9 text-base font-bold cursor-pointer transition-all duration-200 shadow-[0_8px_24px_rgba(0,0,0,0.15)] hover:-translate-y-[3px] hover:shadow-[0_14px_36px_rgba(0,0,0,0.2)]"
           style={{ fontFamily: "inherit" }}
         >

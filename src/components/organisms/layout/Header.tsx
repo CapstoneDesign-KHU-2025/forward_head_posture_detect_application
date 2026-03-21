@@ -35,6 +35,7 @@ export default function Header({ user: initialUser, className }: HeaderProps) {
   const isLoading = status === "loading";
   const user = session?.user ?? initialUser ?? null;
   const isLandingPage = pathname === "/landing";
+  const isTrialPage = pathname === "/trial";
   const isLoginPage = pathname === "/login";
   const isCharacterPage = pathname === "/character";
   const UserActions = () => {
@@ -75,8 +76,8 @@ export default function Header({ user: initialUser, className }: HeaderProps) {
       className={["fixed top-0 left-0 right-0 w-full z-50 bg-[var(--green-pale)]", className].filter(Boolean).join(" ")}
     >
       <div className="w-full px-6 md:px-8">
-        {isLandingPage ? (
-          // 랜딩 페이지: 로고와 프로필만 있는 간단한 레이아웃
+        {(isLandingPage || isTrialPage) ? (
+          // 랜딩/체험 페이지: 로고와 프로필만 있는 간단한 레이아웃
           <div className="flex h-[var(--header-height)] w-full items-center justify-between">
             <BrandLink
               icon={<img src="/icons/turtle.png" alt="" className="object-contain shrink-0" />}

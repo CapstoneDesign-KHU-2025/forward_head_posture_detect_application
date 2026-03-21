@@ -87,6 +87,15 @@
     "button": "새로고침",
     "tryAgain": "다시 시도"
   },
+  "Trial": {
+    "resultTitle": "체험 측정 결과",
+    "measureTime": "측정 시간",
+    "warningCount": "경고 횟수",
+    "avgAngle": "평균 목 각도",
+    "warningUnit": "회",
+    "angleUnit": "°",
+    "retryButton": "다시 측정하기"
+  },
   "EstimatePanel": {
     "cameraTitle": "카메라",
     "message": "🐢\n측정이 준비됐어요!\n버튼을 눌러 시작해주세요",
