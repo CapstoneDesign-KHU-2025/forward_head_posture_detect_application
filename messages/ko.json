@@ -3,7 +3,8 @@
     "title": "부기부기",
     "user": "사용자",
     "description": "자세 측정/지표로 거북목 개선하기",
-    "usermenu": "사용자 메뉴"
+    "usermenu": "사용자 메뉴",
+    "loading": "로딩 중..."
   },
   "Characters": {
     "remy": {
@@ -270,6 +271,7 @@
   },
 
   "HomeClient": {
+    "loading": "로딩 중...",
     "HomeData": {
       "empty": {
         "label": "아직 측정 기록이 없어요",

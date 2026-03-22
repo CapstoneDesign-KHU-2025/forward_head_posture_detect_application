@@ -101,14 +101,14 @@ export default function LandingTemplate() {
               >
                 {t("hero.buttons.start")}
               </Button>
-              <button
+              <Button
                 type="button"
                 onClick={scrollToHow}
                 className="group inline-flex items-center gap-1.5 text-[var(--text-sub)] text-sm font-semibold border-none bg-transparent cursor-pointer transition-colors hover:text-[var(--green)]"
               >
                 {t("hero.buttons.howItWorks")}{" "}
                 <span className="transition-transform duration-200 group-hover:translate-x-1">→</span>
-              </button>
+              </Button>
             </div>
           </div>
 
@@ -249,14 +249,14 @@ export default function LandingTemplate() {
           {t("cta.title")} 🐢
         </h2>
         <p className="text-base text-white/75 mb-9 leading-[1.7]">{t("cta.description")}</p>
-        <button
+        <Button
           type="button"
           onClick={() => router.push("/login")}
           className="bg-white text-[var(--green)] border-none rounded-[14px] py-[15px] px-9 text-base font-bold cursor-pointer transition-all duration-200 shadow-[0_8px_24px_rgba(0,0,0,0.15)] hover:-translate-y-[3px] hover:shadow-[0_14px_36px_rgba(0,0,0,0.2)]"
           style={{ fontFamily: "inherit" }}
         >
           {t("button")}
-        </button>
+        </Button>
       </div>
       <Footer />
     </div>

@@ -190,15 +190,58 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating }: UseTurtleNe
     return () => clearTimeout(timer);
   }, [showMeasurementStartedToast]);
 
-  // === Mediapipe 초기화 + 메인 루프 (Worker 또는 Main thread) ===
+  // Mediapipe initialization + main loop (Worker or Main thread)
   useEffect(() => {
     let cancelled = false;
 
     (async () => {
       try {
         if (stopEstimating) return;
+        const worker = USE_WORKER ? createPoseWorker() : null;
+        workerRef.current = worker;
+        let useWorkerMode = false;
+        let pendingCapture = false;
 
+        if (worker) {
+          worker.postMessage({ type: "init" });
+          worker.onmessage = async (e: MessageEvent) => {
+            if (cancelled) return;
+            const msg = e.data;
+
+            if (msg?.type === "initDone") {
+              if (!msg.payload?.error) useWorkerMode = true;
+            } else if (msg?.type === "requestFrame") {
+              const v = videoRef.current;
+              if (!v || v.videoWidth === 0 || pendingCapture) return;
+              pendingCapture = true;
+
+              if (!firstFrameDrawnRef.current) {
+                firstFrameDrawnRef.current = true;
+                setIsFirstFrameDrawn(true);
+              }
+
+              try {
+                const bitmap = await createImageBitmap(v);
+                worker.postMessage({ type: "frame", payload: { bitmap, timestamp: performance.now() } }, [bitmap]);
+              } catch {
+                pendingCapture = false;
+              }
+            } else if (msg?.type === "result" && msg?.payload?.landmarks) {
+              pendingCapture = false;
+              const v2 = videoRef.current;
+              const c2 = canvasRef.current;
+              if (!v2 || !c2 || cancelled) return;
+
+              const ctx2 = c2.getContext("2d");
+              if (ctx2) drawVideoToCanvas(v2, c2, ctx2);
+
+              const poses = msg.payload.landmarks as Pose[];
+              processPoseResult(poses, performance.now(), v2, c2, ctx2);
+            }
+          };
+        }
         const video = videoRef.current;
+
         if (!video) return;
 
         video.muted = true;
@@ -241,7 +284,7 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating }: UseTurtleNe
           nowPerformance: number,
           _v: HTMLVideoElement,
           c: HTMLCanvasElement,
-          ctx: CanvasRenderingContext2D,
+          ctx: CanvasRenderingContext2D | null,
         ) => {
           if (stopEstimating) {
             measuringRef.current = false;
@@ -285,12 +328,12 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating }: UseTurtleNe
             });
           }
 
-          //onst allInside = faceInside && shoulderInside && isDistanceOk;
+          //const allInside = faceInside && shoulderInside && isDistanceOk;
           let nextGuideMessage: string | null = null;
           let nextGuideColor: GuideColor = lastGuideColorRef.current ?? "red";
           let nextCountdownRemain: number | null = null;
 
-          // --- 측정 시작 전: 가이드 + 카운트다운 ---
+          // before estimating: guide + countdown
           if (!measuringRef.current) {
             nextGuideMessage = t("Guide.initial");
             nextGuideColor = "red";
@@ -314,7 +357,7 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating }: UseTurtleNe
               const remain = Math.max(0, 3000 - elapsed);
               nextCountdownRemain = Math.ceil(remain / 1000);
 
-              // 베이스라인 좌표 저장(0.2초간)
+              // store baseline
               if (elapsed >= 2800 && elapsed < 3000) {
                 if (poses.length > 0) {
                   const p = poses[0];
@@ -339,7 +382,7 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating }: UseTurtleNe
                 lastGuideMessageRef.current = null;
                 setGuideMessage(null);
 
-                // 베이스라인 계산
+                // calculate baseline
                 const buf = baselineBufferRef.current;
                 if (buf.length > 0) {
                   const avg = (key: "earLeft" | "earRight" | "shoulderLeft" | "shoulderRight") => ({
@@ -374,7 +417,7 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating }: UseTurtleNe
             }
           }
 
-          // 가이드 메시지/색상 업데이트
+          // update guide message / color
           if (!measuringRef.current) {
             if (lastGuideMessageRef.current !== nextGuideMessage) {
               lastGuideMessageRef.current = nextGuideMessage;
@@ -392,13 +435,18 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating }: UseTurtleNe
             }
             setCountdownRemain(null);
           }
-
-          // --- 미측정 상태: 가이드라인 그리기 ---
           if (!measuringRef.current) {
-            drawGuidelines(ctx, centerX, centerY, offsetY, allInside);
+            if (ctx) {
+              drawGuidelines(ctx, centerX, centerY, offsetY, allInside);
+            } else if (workerRef.current) {
+              workerRef.current.postMessage({
+                type: "drawGuide",
+                payload: { centerX, centerY, offsetY, allInside },
+              });
+            }
           }
 
-          // --- 측정 시작 후: 거북목 계산 + 경고음 ---
+          // after start : posture / beep
           for (const _ of poses) {
             processPoseBufferAndUpdateState({
               poseBufferRef,
@@ -431,70 +479,6 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating }: UseTurtleNe
           processPoseResult(poses, nowPerformance, v, c, ctx);
         };
 
-        const worker = USE_WORKER ? createPoseWorker() : null;
-        workerRef.current = worker;
-        let useWorkerMode = false;
-        let pendingCapture = false;
-
-        if (worker) {
-          const initPromise = new Promise<boolean>((resolve) => {
-            worker.onmessage = (e: MessageEvent) => {
-              if (e.data?.type === "initDone") {
-                resolve(!e.data?.payload?.error);
-              }
-            };
-            worker.postMessage({ type: "init" });
-          });
-
-          const timeoutPromise = new Promise<boolean>((resolve) => {
-            setTimeout(() => resolve(false), 15000);
-          });
-
-          const initOk = await Promise.race([initPromise, timeoutPromise]);
-          if (cancelled) return;
-
-          if (initOk) {
-            useWorkerMode = true;
-            worker.onmessage = async (e: MessageEvent) => {
-              if (cancelled) return;
-              const msg = e.data;
-
-              if (msg?.type === "requestFrame") {
-                const v = videoRef.current;
-                if (!v || v.videoWidth === 0 || pendingCapture) return;
-                pendingCapture = true;
-                if (!firstFrameDrawnRef.current) {
-                  firstFrameDrawnRef.current = true;
-                  setIsFirstFrameDrawn(true);
-                }
-                try {
-                  const bitmap = await createImageBitmap(v);
-                  const ts = performance.now();
-                  worker.postMessage({ type: "frame", payload: { bitmap, timestamp: ts } }, [bitmap]);
-                } catch {
-                  pendingCapture = false;
-                }
-                return;
-              }
-
-              if (msg?.type === "result" && msg?.payload?.landmarks) {
-                pendingCapture = false;
-                const v2 = videoRef.current;
-                const c2 = canvasRef.current;
-                if (!v2 || !c2 || cancelled) return;
-                const ctx2 = c2.getContext("2d")!;
-                drawVideoToCanvas(v2, c2, ctx2);
-                const poses = msg.payload.landmarks as Pose[];
-                processPoseResult(poses, performance.now(), v2, c2, ctx2);
-              }
-            };
-          } else {
-            worker.postMessage({ type: "stop" });
-            worker.terminate();
-            workerRef.current = null;
-          }
-        }
-
         if (!useWorkerMode) {
           const vision = await FilesetResolver.forVisionTasks(
             "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm",
@@ -512,7 +496,7 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating }: UseTurtleNe
           });
           if (cancelled) return;
 
-          const getFPS = () => (document.hidden ? 10 : 30);
+          const getFPS = () => (document.hidden ? 5 : 10);
           const getInterval = () => 1000 / getFPS();
 
           const loop = () => {
@@ -540,12 +524,7 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating }: UseTurtleNe
 
     return () => {
       cancelled = true;
-      const w = workerRef.current;
-      if (w) {
-        w.postMessage({ type: "stop" });
-        w.terminate();
-        workerRef.current = null;
-      }
+
       if (visibilityChangeHandlerRef.current) {
         document.removeEventListener("visibilitychange", visibilityChangeHandlerRef.current);
         visibilityChangeHandlerRef.current = null;
@@ -554,21 +533,29 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating }: UseTurtleNe
         clearInterval(intervalRef.current);
         intervalRef.current = null;
       }
-      landmarkerRef.current?.close?.();
-      landmarkerRef.current = null;
+      setTimeout(() => {
+        const w = workerRef.current;
+        if (w) {
+          w.postMessage({ type: "stop" });
+          w.terminate();
+          workerRef.current = null;
+        }
+        landmarkerRef.current?.close?.();
+        landmarkerRef.current = null;
 
-      if (streamRef.current) {
-        streamRef.current.getTracks().forEach((t) => t.stop());
-        streamRef.current = null;
-      }
+        if (streamRef.current) {
+          streamRef.current.getTracks().forEach((t) => t.stop());
+          streamRef.current = null;
+        }
 
-      if (lastBeepIntervalRef.current) {
-        clearInterval(lastBeepIntervalRef.current);
-        lastBeepIntervalRef.current = null;
-      }
+        if (lastBeepIntervalRef.current) {
+          clearInterval(lastBeepIntervalRef.current);
+          lastBeepIntervalRef.current = null;
+        }
 
-      const tracks = (videoRef.current?.srcObject as MediaStream | null)?.getTracks() || [];
-      tracks.forEach((t) => t.stop());
+        const tracks = (videoRef.current?.srcObject as MediaStream | null)?.getTracks() || [];
+        tracks.forEach((t) => t.stop());
+      }, 50);
     };
   }, [stopEstimating, userId]);
 

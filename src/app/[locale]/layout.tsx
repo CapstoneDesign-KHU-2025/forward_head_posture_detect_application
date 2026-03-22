@@ -12,6 +12,21 @@ import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import { getTranslations } from "next-intl/server";
 import { SoundProvider } from "@/providers/SoundContext";
+import { Nunito } from "next/font/google";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "BoogiBoogi",
+  description: "Improve turtle neck posture with AI metrics",
+  icons: { icon: "/icons/turtle.png" },
+};
+const nunito = Nunito({
+  subsets: ["latin"],
+  weight: ["400", "500", "700"],
+  display: "swap",
+  variable: "--font-gothic",
+});
+
 export type Props = {
   children: React.ReactNode;
   params: Promise<{ locale: string }>;
@@ -28,23 +43,28 @@ export default async function LocaleLayout({ children, params }: Props) {
   const t = await getTranslations("Basic");
   const session = await auth();
   const messages = await getMessages();
+
   const user = session?.user
     ? { name: session.user.name || t("user"), avatarSrc: session.user.image || undefined }
     : null;
 
   return (
-    <NextIntlClientProvider key={locale} locale={locale} messages={messages}>
-      <Providers session={session}>
-        <SoundProvider>
-          <MeasurementProvider>
-            <div className="h-dvh flex flex-col min-h-0">
-              <Header user={user} />
-              <PageContainer>{children}</PageContainer>
-              <TempFooter />
-            </div>
-          </MeasurementProvider>
-        </SoundProvider>
-      </Providers>
-    </NextIntlClientProvider>
+    <html lang={locale} className={`${nunito.variable} font-sans`}>
+      <body>
+        <NextIntlClientProvider key={locale} locale={locale} messages={messages}>
+          <Providers session={session}>
+            <SoundProvider>
+              <MeasurementProvider>
+                <div className="h-dvh flex flex-col min-h-0">
+                  <Header user={user} />
+                  <PageContainer>{children}</PageContainer>
+                  <TempFooter />
+                </div>
+              </MeasurementProvider>
+            </SoundProvider>
+          </Providers>
+        </NextIntlClientProvider>
+      </body>
+    </html>
   );
 }

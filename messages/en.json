@@ -3,7 +3,8 @@
     "title": "BoogiBoogi",
     "user": "User",
     "description": "Improve turtle neck posture with AI metrics",
-    "usermenu": "User Menu"
+    "usermenu": "User Menu",
+    "loading": "Loading..."
   },
   "Characters": {
     "remy": {
@@ -268,6 +269,7 @@
     "feedback": "Send Feedback 💬"
   },
   "HomeClient": {
+    "loading": "Loading...",
     "HomeData": {
       "empty": {
         "label": "No measurement records yet",
