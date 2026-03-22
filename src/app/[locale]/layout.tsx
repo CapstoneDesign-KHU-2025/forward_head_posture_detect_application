@@ -12,7 +12,6 @@ import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import { getTranslations } from "next-intl/server";
 import { SoundProvider } from "@/providers/SoundContext";
-import { Gothic_A1 } from "next/font/google";
 import { Nunito } from "next/font/google";
 import { Metadata } from "next";
 

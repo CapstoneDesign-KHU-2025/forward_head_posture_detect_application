@@ -32,16 +32,16 @@ export function getKpiConfigs(
       },
     ];
   }
-
+  const hasBothAvgs = todayAvg != null && weeklyAvg != null;
   return [
     {
       label: t("HomeData.kpi.avgAngle.label"),
       value: todayAvg != null ? todayAvg.toFixed(1) : "-",
       unit: "°",
       delta: "up",
-      deltaText: weeklyAvg != null && todayAvg != null ? `${(todayAvg - weeklyAvg).toFixed(1)}°` : "",
-      deltaVariant: weeklyAvg != null && todayAvg != null ? (todayAvg <= weeklyAvg ? "success" : "warning") : "neutral",
-      caption: weeklyAvg != null && todayAvg != null ? t("HomeData.kpi.avgAngle.caption") : undefined,
+      deltaText: hasBothAvgs ? `${(todayAvg - weeklyAvg).toFixed(1)}°` : "",
+      deltaVariant: hasBothAvgs ? (todayAvg <= weeklyAvg ? "success" : "warning") : "neutral",
+      caption: hasBothAvgs ? t("HomeData.kpi.avgAngle.caption") : undefined,
     },
     {
       label: t("HomeData.kpi.warningCount.label"),
