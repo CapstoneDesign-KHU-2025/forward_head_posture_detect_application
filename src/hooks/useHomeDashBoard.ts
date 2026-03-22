@@ -61,7 +61,7 @@ export default function useHomeDashBoard({ weeklyData, user }: HomeClientProps) 
   useEffect(() => {
     const hasEverMeasured = localStorage.getItem("hasEverMeasured");
     setIsNewUser(!hasEverMeasured);
-  });
+  }, []);
   useEffect(() => {
     const hasCharacter = localStorage.getItem("selectedCharacter")?.trim();
     if (!hasCharacter) {
