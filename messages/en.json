@@ -749,6 +749,7 @@
     }
   },
   "MiniWarningPip": {
+    "getReady": "not estimating",
     "warning": "Warning!",
     "good": "Good Posture!"
   }

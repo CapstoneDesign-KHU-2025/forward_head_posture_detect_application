@@ -7,8 +7,8 @@ import LoadingSkeleton from "@/components/molecules/LoadingSkeleton";
 import { useTranslations } from "next-intl";
 import type { GuideColor } from "@/utils/types";
 import { useDocumentPiP } from "@/hooks/useDocumentPip";
-import { PipToggleButton } from "../atoms/PipToggleButton";
-import { MiniWarningPip } from "../atoms/MiniWarningPip";
+import { PipToggleButton } from "@/components/atoms/PipToggleButton";
+import { MiniWarningPip } from "@/components/atoms/MiniWarningPip";
 
 type EstimatePanelProps = {
   bannerType: StatusBannerType;
@@ -133,7 +133,7 @@ export default function EstimatePanel({
           <>
             <div id={canvasSlotId} className="absolute inset-0 w-full h-full" />
             <PipToggleButton isOpen={!!pipWindow} onClick={pipWindow ? closePiP : openPiP} />
-            <MiniWarningPip isTurtle={isTurtle} pipWindow={pipWindow} />
+            <MiniWarningPip isTurtle={isTurtle} pipWindow={pipWindow} measurementStarted={measurementStarted} />
             {showMeasurementStartedToast && (
               <div
                 role="status"

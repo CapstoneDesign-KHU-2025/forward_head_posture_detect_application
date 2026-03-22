@@ -31,10 +31,10 @@ export default function Estimate() {
   const bannerMessage = statusBannerMessage();
   const handleClickEstimateButton = () => {
     if (stopEstimating) {
-      closePiP();
       startMeasurement();
     } else {
       stopMeasurement();
+      closePiP();
     }
   };
   return (

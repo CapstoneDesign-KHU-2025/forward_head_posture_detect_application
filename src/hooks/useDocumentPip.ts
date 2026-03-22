@@ -3,6 +3,7 @@ import { useState, useCallback, useEffect } from "react";
 declare global {
   interface DocumentPictureInPicture {
     requestWindow(options?: { width?: number; height?: number }): Promise<Window>;
+    window: Window | null;
   }
 
   interface Window {
@@ -55,6 +56,8 @@ export function useDocumentPiP() {
     if (pipWindow) {
       pipWindow.close();
       setPipWindow(null);
+    } else if (window.documentPictureInPicture?.window) {
+      window.documentPictureInPicture.window.close();
     }
   }, [pipWindow]);
   useEffect(() => {
