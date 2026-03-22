@@ -35,12 +35,22 @@ export function HelpMessageModal({ isOpen, onClose }: HelpMessageModalProps) {
     },
   ];
 
+  if (!isOpen) return null;
+
   return (
-    <div
-      className={`relative bottom-16 w-[340px] sm:w-[380px] overflow-hidden rounded-[24px] bg-white shadow-[0_10px_40px_rgba(0,0,0,0.15)] ring-1 ring-gray-100 transition-all duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] origin-bottom-right ${
-        isOpen ? "scale-100 opacity-100 translate-y-0" : "scale-90 opacity-0 translate-y-4 pointer-events-none"
-      }`}
-    >
+    <>
+      {/* backdrop: click outside to close */}
+      <div
+        className="fixed inset-0 z-[99] bg-transparent"
+        aria-hidden
+        onClick={onClose}
+      />
+      <div
+        className={`fixed bottom-16 right-6 z-[100] w-[340px] sm:w-[380px] overflow-hidden rounded-[24px] bg-white shadow-[0_10px_40px_rgba(0,0,0,0.15)] ring-1 ring-gray-100 transition-all duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] origin-bottom-right ${
+          isOpen ? "scale-100 opacity-100 translate-y-0" : "scale-90 opacity-0 translate-y-4 pointer-events-none"
+        }`}
+        onClick={(e) => e.stopPropagation()}
+      >
       <div className="p-5">
         <header className="mb-4 flex items-center justify-between">
           <h2 className="text-[17px] font-bold text-[var(--green-dark)]">🐢 {t("header")}</h2>
@@ -111,5 +121,6 @@ export function HelpMessageModal({ isOpen, onClose }: HelpMessageModalProps) {
         </div>
       </div>
     </div>
+    </>
   );
 }
