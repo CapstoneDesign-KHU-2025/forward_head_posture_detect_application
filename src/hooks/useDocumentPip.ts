@@ -1,17 +1,26 @@
 "use client";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
+declare global {
+  interface DocumentPictureInPicture {
+    requestWindow(options?: { width?: number; height?: number }): Promise<Window>;
+  }
 
+  interface Window {
+    readonly documentPictureInPicture: DocumentPictureInPicture;
+  }
+}
 export function useDocumentPiP() {
   const [pipWindow, setPipWindow] = useState<Window | null>(null);
 
   const openPiP = useCallback(async () => {
+    if (pipWindow) return;
     if (!("documentPictureInPicture" in window)) {
       //지원하지 않는 브라우저임. 이때는 두번째 방식을 해야됨
       return;
     }
 
     try {
-      const pip = await (window as any).documentPictureInPicture.requestWindow({
+      const pip = await window.documentPictureInPicture.requestWindow({
         width: 100,
         height: 80,
       });
@@ -23,11 +32,13 @@ export function useDocumentPiP() {
           style.textContent = cssRules;
           pip.document.head.appendChild(style);
         } catch (e) {
-          //These property is blocked by cors so we send them in this way.
-          const link = document.createElement("link");
-          link.rel = "stylesheet";
-          link.href = styleSheet.href || "";
-          pip.document.head.appendChild(link);
+          if (styleSheet.href) {
+            //These property is blocked by cors so we send them in this way.
+            const link = document.createElement("link");
+            link.rel = "stylesheet";
+            link.href = styleSheet.href;
+            pip.document.head.appendChild(link);
+          }
         }
       });
 
@@ -46,6 +57,13 @@ export function useDocumentPiP() {
       setPipWindow(null);
     }
   }, [pipWindow]);
-
+  useEffect(() => {
+    //clean up
+    return () => {
+      if (pipWindow) {
+        pipWindow.close();
+      }
+    };
+  }, [pipWindow]);
   return { pipWindow, openPiP, closePiP };
 }
