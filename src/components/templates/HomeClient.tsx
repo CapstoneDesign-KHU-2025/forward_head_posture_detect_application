@@ -83,6 +83,7 @@ export default function HomeClient({ weeklyData, user }: HomeClientProps) {
         improvementValue,
         improvementText,
         loading,
+        isNewUser,
       },
       t,
     );

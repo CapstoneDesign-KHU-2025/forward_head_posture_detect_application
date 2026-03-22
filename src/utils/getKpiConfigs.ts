@@ -17,12 +17,16 @@ export function getKpiConfigs(
     improvementValue: number;
     improvementText: string;
     loading: boolean;
+    isNewUser: boolean;
   },
   t: (key: string) => string,
 ): KPIItem[] {
-  const { todayAvg, weeklyAvg, todayCount, todayHour, improvementValue, improvementText, loading } = data;
+  const { todayAvg, weeklyAvg, todayCount, todayHour, improvementValue, improvementText, loading, isNewUser } = data;
 
-  if (loading && todayAvg === null) {
+  if (loading) {
+    return [{ label: t("loading"), value: "..." }];
+  }
+  if (isNewUser) {
     return [
       {
         label: t("HomeData.empty.label"),
@@ -32,7 +36,9 @@ export function getKpiConfigs(
       },
     ];
   }
+
   const hasBothAvgs = todayAvg != null && weeklyAvg != null;
+
   return [
     {
       label: t("HomeData.kpi.avgAngle.label"),
