@@ -190,15 +190,58 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating }: UseTurtleNe
     return () => clearTimeout(timer);
   }, [showMeasurementStartedToast]);
 
-  // === Mediapipe 초기화 + 메인 루프 (Worker 또는 Main thread) ===
+  // Mediapipe initialization + main loop (Worker or Main thread)
   useEffect(() => {
     let cancelled = false;
 
     (async () => {
       try {
         if (stopEstimating) return;
+        const worker = USE_WORKER ? createPoseWorker() : null;
+        workerRef.current = worker;
+        let useWorkerMode = false;
+        let pendingCapture = false;
 
+        if (worker) {
+          worker.postMessage({ type: "init" });
+          worker.onmessage = async (e: MessageEvent) => {
+            if (cancelled) return;
+            const msg = e.data;
+
+            if (msg?.type === "initDone") {
+              if (!msg.payload?.error) useWorkerMode = true;
+            } else if (msg?.type === "requestFrame") {
+              const v = videoRef.current;
+              if (!v || v.videoWidth === 0 || pendingCapture) return;
+              pendingCapture = true;
+
+              if (!firstFrameDrawnRef.current) {
+                firstFrameDrawnRef.current = true;
+                setIsFirstFrameDrawn(true);
+              }
+
+              try {
+                const bitmap = await createImageBitmap(v);
+                worker.postMessage({ type: "frame", payload: { bitmap, timestamp: performance.now() } }, [bitmap]);
+              } catch {
+                pendingCapture = false;
+              }
+            } else if (msg?.type === "result" && msg?.payload?.landmarks) {
+              pendingCapture = false;
+              const v2 = videoRef.current;
+              const c2 = canvasRef.current;
+              if (!v2 || !c2 || cancelled) return;
+
+              const ctx2 = c2.getContext("2d");
+              if (ctx2) drawVideoToCanvas(v2, c2, ctx2);
+
+              const poses = msg.payload.landmarks as Pose[];
+              processPoseResult(poses, performance.now(), v2, c2, ctx2);
+            }
+          };
+        }
         const video = videoRef.current;
+
         if (!video) return;
 
         video.muted = true;
@@ -285,12 +328,12 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating }: UseTurtleNe
             });
           }
 
-          //onst allInside = faceInside && shoulderInside && isDistanceOk;
+          //const allInside = faceInside && shoulderInside && isDistanceOk;
           let nextGuideMessage: string | null = null;
           let nextGuideColor: GuideColor = lastGuideColorRef.current ?? "red";
           let nextCountdownRemain: number | null = null;
 
-          // --- 측정 시작 전: 가이드 + 카운트다운 ---
+          // before estimating: guide + countdown
           if (!measuringRef.current) {
             nextGuideMessage = t("Guide.initial");
             nextGuideColor = "red";
@@ -314,7 +357,7 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating }: UseTurtleNe
               const remain = Math.max(0, 3000 - elapsed);
               nextCountdownRemain = Math.ceil(remain / 1000);
 
-              // 베이스라인 좌표 저장(0.2초간)
+              // store baseline
               if (elapsed >= 2800 && elapsed < 3000) {
                 if (poses.length > 0) {
                   const p = poses[0];
@@ -339,7 +382,7 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating }: UseTurtleNe
                 lastGuideMessageRef.current = null;
                 setGuideMessage(null);
 
-                // 베이스라인 계산
+                // calculate baseline
                 const buf = baselineBufferRef.current;
                 if (buf.length > 0) {
                   const avg = (key: "earLeft" | "earRight" | "shoulderLeft" | "shoulderRight") => ({
@@ -374,7 +417,7 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating }: UseTurtleNe
             }
           }
 
-          // 가이드 메시지/색상 업데이트
+          // update guide message / color
           if (!measuringRef.current) {
             if (lastGuideMessageRef.current !== nextGuideMessage) {
               lastGuideMessageRef.current = nextGuideMessage;
@@ -403,7 +446,7 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating }: UseTurtleNe
             }
           }
 
-          // --- 측정 시작 후: 거북목 계산 + 경고음 ---
+          // after start : posture / beep
           for (const _ of poses) {
             processPoseBufferAndUpdateState({
               poseBufferRef,
@@ -435,92 +478,6 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating }: UseTurtleNe
           const poses = (result?.landmarks ?? []) as Pose[];
           processPoseResult(poses, nowPerformance, v, c, ctx);
         };
-
-        const worker = USE_WORKER ? createPoseWorker() : null;
-        workerRef.current = worker;
-        let useWorkerMode = false;
-        let pendingCapture = false;
-
-        if (worker) {
-          const initPromise = new Promise<boolean>((resolve) => {
-            worker.onmessage = (e: MessageEvent) => {
-              if (e.data?.type === "initDone") {
-                resolve(!e.data?.payload?.error);
-              }
-
-              const c = canvasRef.current;
-              let offscreen: OffscreenCanvas | undefined;
-              if (c) {
-                try {
-                  if (!(c as any).__transferred) {
-                    offscreen = c.transferControlToOffscreen();
-                    (c as any).__transferred = true;
-                  }
-                } catch (e) {
-                  console.warn("OffsccreenCanvas not supported or ");
-                }
-              }
-              if (offscreen) {
-                worker.postMessage({ type: "init", payload: { canvas: offscreen } }, [offscreen]);
-              } else {
-                worker.postMessage({ type: "init" });
-              }
-            };
-          });
-
-          const timeoutPromise = new Promise<boolean>((resolve) => {
-            setTimeout(() => resolve(false), 15000);
-          });
-
-          const initOk = await Promise.race([initPromise, timeoutPromise]);
-          if (cancelled) return;
-
-          if (initOk) {
-            useWorkerMode = true;
-            worker.onmessage = async (e: MessageEvent) => {
-              if (cancelled) return;
-              const msg = e.data;
-
-              if (msg?.type === "requestFrame") {
-                const v = videoRef.current;
-                if (!v || v.videoWidth === 0 || pendingCapture) return;
-                pendingCapture = true;
-                if (!firstFrameDrawnRef.current) {
-                  firstFrameDrawnRef.current = true;
-                  setIsFirstFrameDrawn(true);
-                }
-                try {
-                  const bitmap = await createImageBitmap(v);
-                  const ts = performance.now();
-                  worker.postMessage({ type: "frame", payload: { bitmap, timestamp: ts } }, [bitmap]);
-                } catch {
-                  pendingCapture = false;
-                }
-                return;
-              }
-
-              if (msg?.type === "result" && msg?.payload?.landmarks) {
-                pendingCapture = false;
-                const v2 = videoRef.current;
-                const c2 = canvasRef.current;
-                if (!v2 || !c2 || cancelled) return;
-
-                let ctx2: CanvasRenderingContext2D | null = null;
-                if (!useWorkerMode) {
-                  ctx2 = c2.getContext("2d");
-                  if (ctx2) drawVideoToCanvas(v2, c2, ctx2);
-                }
-
-                const poses = msg.payload.landmarks as Pose[];
-                processPoseResult(poses, performance.now(), v2, c2, ctx2);
-              }
-            };
-          } else {
-            worker.postMessage({ type: "stop" });
-            worker.terminate();
-            workerRef.current = null;
-          }
-        }
 
         if (!useWorkerMode) {
           const vision = await FilesetResolver.forVisionTasks(
