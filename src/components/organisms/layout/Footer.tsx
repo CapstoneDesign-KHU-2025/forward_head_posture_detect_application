@@ -1,13 +1,14 @@
+"use client";
 import Link from "next/link";
 import { cn } from "@/utils/cn";
-import { getTranslations } from "next-intl/server";
+import { useTranslations } from "next-intl";
 
 type FooterProps = {
   className?: string;
 };
 
-export default async function Footer({ className }: FooterProps) {
-  const t = await getTranslations("Footer");
+export default function Footer({ className }: FooterProps) {
+  const t = useTranslations("Footer");
   const FOOTER_LINKS = [
     { label: t("labels.terms"), href: "/terms" },
     { label: t("labels.privacy"), href: "/privacy" },

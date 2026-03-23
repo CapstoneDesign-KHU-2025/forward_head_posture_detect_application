@@ -9,6 +9,7 @@ import AsyncBoundary from "@/components/molecules/AsyncBoundary";
 import { MEASUREMENT_CANVAS_SLOT_ID } from "@/providers/MeasurementProvider";
 import { useTranslations } from "next-intl";
 import { useDocumentPiP } from "@/hooks/useDocumentPip";
+import { HelpPopUp } from "@/components/molecules/HelpPopUp";
 
 export default function Estimate() {
   const t = useTranslations("Estimate");
@@ -79,7 +80,7 @@ export default function Estimate() {
             guideColor={guideColor}
           />
         </AsyncBoundary>
-
+        <HelpPopUp />
         {error && <ErrorBanner error={error} />}
       </div>
     </div>

@@ -1,10 +1,3 @@
-/**
- * Pose detection Web Worker.
- * Uses worker-driven setInterval for frame requests — workers are less throttled
- * than the main thread in background tabs, which can improve real-time detection
- * when the tab is minimized or user switches to another tab.
- */
-
 import { FilesetResolver, PoseLandmarker } from "@mediapipe/tasks-vision";
 
 let poseLandmarker: PoseLandmarker | null = null;
@@ -72,7 +65,7 @@ self.onmessage = async (e: MessageEvent<WorkerMessage>) => {
   if (msg.type === "frame" && msg.payload?.bitmap) {
     const { bitmap, timestamp } = msg.payload;
     if (!isRunning) {
-      bitmap.close(); // 메모리 누수 방지
+      bitmap.close(); // block memory leakage
       return;
     }
     try {
