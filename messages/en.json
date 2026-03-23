@@ -744,7 +744,6 @@
       "linkText": "Go to feedback form ➔"
     }
   },
-<<<<<<< HEAD
   "PipToggleButton": {
     "title": {
       "close": "open Popup",
@@ -755,7 +754,7 @@
     "getReady": "not estimating",
     "warning": "Warning!",
     "good": "Good Posture!"
-=======
+  },
   "HelpMessageModal": {
     "header": "Measurement tip",
     "ariaLabel": "close guide",
@@ -782,6 +781,5 @@
         }
       }
     }
->>>>>>> develop
   }
 }

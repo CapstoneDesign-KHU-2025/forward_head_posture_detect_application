@@ -738,7 +738,6 @@
       "linkText": "피드백 작성하러 가기 ➔"
     }
   },
-<<<<<<< HEAD
   "PipToggleButton": {
     "title": {
       "close": "팝업 열기",
@@ -749,7 +748,7 @@
     "getReady": "측정 중이 아닙니다.",
     "warning": "거북목 경고!",
     "good": "완벽해요!"
-=======
+  },
   "HelpMessageModal": {
     "header": "측정 가이드 팁",
     "ariaLabel": "가이드 닫기",
@@ -776,6 +775,5 @@
         }
       }
     }
->>>>>>> develop
   }
 }
