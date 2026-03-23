@@ -17,15 +17,13 @@ interface PiPContextType {
   closePiP: () => void;
 }
 
-// 2. Context 생성
 const PiPContext = createContext<PiPContextType | null>(null);
 
-// 3. Provider 컴포넌트 (앱 전체를 감싸서 상태를 공유할 녀석)
 export function PiPProvider({ children }: { children: ReactNode }) {
   const [pipWindow, setPipWindow] = useState<Window | null>(null);
 
   const openPiP = useCallback(async () => {
-    if (pipWindow) return; // 이미 열려있으면 방어
+    if (pipWindow) return;
     if (!("documentPictureInPicture" in window)) return;
 
     try {
@@ -61,6 +59,8 @@ export function PiPProvider({ children }: { children: ReactNode }) {
     if (pipWindow) {
       pipWindow.close();
       setPipWindow(null);
+    } else if (window.documentPictureInPicture?.window) {
+      window.documentPictureInPicture.window.close();
     }
   }, [pipWindow]);
 
@@ -73,7 +73,6 @@ export function PiPProvider({ children }: { children: ReactNode }) {
   return <PiPContext.Provider value={{ pipWindow, openPiP, closePiP }}>{children}</PiPContext.Provider>;
 }
 
-// 4. 컴포넌트들에서 가져다 쓸 커스텀 훅!
 export function useDocumentPiP() {
   const context = useContext(PiPContext);
   if (!context) {

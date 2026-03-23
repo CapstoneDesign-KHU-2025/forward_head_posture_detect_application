@@ -8,7 +8,7 @@ import AsyncBoundary from "@/components/molecules/AsyncBoundary";
 
 import { MEASUREMENT_CANVAS_SLOT_ID } from "@/providers/MeasurementProvider";
 import { useTranslations } from "next-intl";
-import { useDocumentPiP } from "@/hooks/useDocumentPip";
+import { useDocumentPiP } from "@/providers/PipProvider";
 import { HelpPopUp } from "@/components/molecules/HelpPopUp";
 
 export default function Estimate() {

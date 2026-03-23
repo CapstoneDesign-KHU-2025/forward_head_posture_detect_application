@@ -1,7 +1,6 @@
 import "../globals.css";
 import Header from "@/components/organisms/layout/Header";
 import PageContainer from "@/components/organisms/layout/PageContainer";
-import TempFooter from "@/components/organisms/layout/TempFooter";
 import { auth } from "@/auth";
 
 import Providers from "../providers";
@@ -14,7 +13,8 @@ import { getTranslations } from "next-intl/server";
 import { SoundProvider } from "@/providers/SoundContext";
 import { Nunito } from "next/font/google";
 import { Metadata } from "next";
-
+import { PiPProvider } from "@/providers/PipProvider";
+import { GlobalPipRenderer } from "@/components/templates/GlobalPipRenderer";
 export const metadata: Metadata = {
   title: "BoogiBoogi",
   description: "Improve turtle neck posture with AI metrics",
@@ -53,15 +53,19 @@ export default async function LocaleLayout({ children, params }: Props) {
       <body>
         <NextIntlClientProvider key={locale} locale={locale} messages={messages}>
           <Providers session={session}>
-            <SoundProvider>
-              <MeasurementProvider>
-                <div className="h-dvh flex flex-col min-h-0">
-                  <Header user={user} />
-                  <PageContainer>{children}</PageContainer>
-                  <TempFooter />
-                </div>
-              </MeasurementProvider>
-            </SoundProvider>
+            <PiPProvider>
+              <SoundProvider>
+                <MeasurementProvider>
+                  <div className="h-dvh flex flex-col min-h-0">
+                    <Header user={user} />
+                    <PageContainer>
+                      {children}
+                      <GlobalPipRenderer />
+                    </PageContainer>
+                  </div>
+                </MeasurementProvider>
+              </SoundProvider>
+            </PiPProvider>
           </Providers>
         </NextIntlClientProvider>
       </body>

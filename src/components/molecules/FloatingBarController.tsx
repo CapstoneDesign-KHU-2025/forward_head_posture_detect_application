@@ -3,7 +3,7 @@
 import { usePathname } from "@/i18n/navigation";
 import { FloatingBar } from "@/components/molecules/FloatingBar";
 import { useMeasurement } from "@/providers/MeasurementProvider";
-import { useDocumentPiP } from "@/hooks/useDocumentPip";
+import { useDocumentPiP } from "@/providers/PipProvider";
 
 const FLOATING_BAR_ALLOWED_ROUTES = ["/", "/estimate"];
 
