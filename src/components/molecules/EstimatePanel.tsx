@@ -8,7 +8,6 @@ import { useTranslations } from "next-intl";
 import type { GuideColor } from "@/utils/types";
 import { useDocumentPiP } from "@/providers/PipProvider";
 import { PipToggleButton } from "@/components/atoms/PipToggleButton";
-import { MiniWarningPip } from "@/components/atoms/MiniWarningPip";
 
 type EstimatePanelProps = {
   bannerType: StatusBannerType;
