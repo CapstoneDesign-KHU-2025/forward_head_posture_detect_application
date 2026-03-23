@@ -5,6 +5,7 @@ import { createContext, useContext, useState, useCallback, useEffect, ReactNode 
 declare global {
   interface DocumentPictureInPicture {
     requestWindow(options?: { width?: number; height?: number }): Promise<Window>;
+    window: Window | null;
   }
   interface Window {
     readonly documentPictureInPicture: DocumentPictureInPicture;
