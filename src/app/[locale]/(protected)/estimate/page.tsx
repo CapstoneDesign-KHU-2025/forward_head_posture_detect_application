@@ -8,6 +8,7 @@ import AsyncBoundary from "@/components/molecules/AsyncBoundary";
 
 import { MEASUREMENT_CANVAS_SLOT_ID } from "@/providers/MeasurementProvider";
 import { useTranslations } from "next-intl";
+import { useDocumentPiP } from "@/hooks/useDocumentPip";
 import { HelpPopUp } from "@/components/molecules/HelpPopUp";
 
 export default function Estimate() {
@@ -26,19 +27,22 @@ export default function Estimate() {
     isFirstFrameDrawn,
     guideColor,
   } = useMeasurement();
-
+  const { closePiP } = useDocumentPiP();
   const bannerType = getStatusBannerType();
   const bannerMessage = statusBannerMessage();
-
+  const handleClickEstimateButton = () => {
+    if (stopEstimating) {
+      startMeasurement();
+    } else {
+      stopMeasurement();
+      closePiP();
+    }
+  };
   return (
     <div className="min-h-[calc(100dvh-var(--header-height))] bg-[var(--green-pale)] overflow-x-hidden">
       <div className="max-w-[1200px] mx-auto px-4 sm:px-6 md:px-8 pt-2 w-full min-w-0 mb-4">
         <div className="flex justify-center mb-14">
-          <Button
-            size="lg"
-            variant={stopEstimating ? "primary" : "danger"}
-            onClick={stopEstimating ? startMeasurement : stopMeasurement}
-          >
+          <Button size="lg" variant={stopEstimating ? "primary" : "danger"} onClick={handleClickEstimateButton}>
             {stopEstimating ? t("buttons.start") : t("buttons.stop")}
           </Button>
         </div>

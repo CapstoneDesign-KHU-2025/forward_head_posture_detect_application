@@ -738,6 +738,17 @@
       "linkText": "피드백 작성하러 가기 ➔"
     }
   },
+  "PipToggleButton": {
+    "title": {
+      "close": "팝업 열기",
+      "open": "팝업 닫기"
+    }
+  },
+  "MiniWarningPip": {
+    "getReady": "측정 중이 아닙니다.",
+    "warning": "거북목 경고!",
+    "good": "완벽해요!"
+  },
   "HelpMessageModal": {
     "header": "측정 가이드 팁",
     "ariaLabel": "가이드 닫기",

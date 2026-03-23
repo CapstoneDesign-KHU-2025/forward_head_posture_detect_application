@@ -22,7 +22,7 @@ export function HelpPopUp() {
   };
   return (
     <div className="fixed bottom-3 right-6 flex flex-col items-end gap-3 z-999">
-      <HelpMessageModal isOpen={isModalOpen} onClose={() => setIsModalOpen((prev) => !prev)} />
+      <HelpMessageModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
       <Button
         variant="primary"
         className={`flex fixed bottom-3 right-6 items-center justify-center !w-14 !h-14 rounded-full shadow-[0_4px_16px_rgba(74,124,89,0.3)] 

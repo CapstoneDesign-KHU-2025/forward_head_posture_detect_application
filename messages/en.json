@@ -744,6 +744,17 @@
       "linkText": "Go to feedback form ➔"
     }
   },
+  "PipToggleButton": {
+    "title": {
+      "close": "open Popup",
+      "open": "close Popup"
+    }
+  },
+  "MiniWarningPip": {
+    "getReady": "not estimating",
+    "warning": "Warning!",
+    "good": "Good Posture!"
+  },
   "HelpMessageModal": {
     "header": "Measurement tip",
     "ariaLabel": "close guide",
