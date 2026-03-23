@@ -3,7 +3,8 @@
     "title": "BoogiBoogi",
     "user": "User",
     "description": "Improve turtle neck posture with AI metrics",
-    "usermenu": "User Menu"
+    "usermenu": "User Menu",
+    "loading": "Loading..."
   },
   "Characters": {
     "remy": {
@@ -268,6 +269,7 @@
     "feedback": "Send Feedback 💬"
   },
   "HomeClient": {
+    "loading": "Loading...",
     "HomeData": {
       "empty": {
         "label": "No measurement records yet",
@@ -734,12 +736,50 @@
     "description": "Thank you for using the 'BoogiBoogi' service! If you have any questions or would like to leave feedback, please reach out using the methods below.",
     "email": {
       "title": "Email Us",
-      "address": "kge0211114@gmail.com"
+      "address": "boogieboogie.contact@gmail.com"
     },
     "feedback": {
       "title": "Send Feedback",
       "text": "Please leave your comments to help us improve the service.",
       "linkText": "Go to feedback form ➔"
+    }
+  },
+  "PipToggleButton": {
+    "title": {
+      "close": "open Popup",
+      "open": "close Popup"
+    }
+  },
+  "MiniWarningPip": {
+    "getReady": "not estimating",
+    "warning": "Warning!",
+    "good": "Good Posture!"
+  },
+  "HelpMessageModal": {
+    "header": "Measurement tip",
+    "ariaLabel": "close guide",
+    "messages": {
+      "1": {
+        "title": "Position your device directly in front of you.",
+        "description": {
+          "1": "Our AI model is optimized for front-facing postures to best suit typical laptop work environments!",
+          "2": "Please leave us feedback if you'd like to see a side-profile measurement feature! ☺️"
+        }
+      },
+      "2": {
+        "title": "Maintain your usual working or studying posture.",
+        "description": {
+          "1": "Turtle neck detection is based on your initial posture captured right when the measurement starts.",
+          "2": "Keeping the camera angle and direction steady will greatly improve the accuracy of our body tracking!"
+        }
+      },
+      "3": {
+        "title": "Light clothing and tied-up hair help improve accuracy.",
+        "description": {
+          "1": "Our AI calculates your posture angle by tracking the positions of your ears and shoulders.",
+          "2": "Accuracy may drop if your shoulder lines are hidden by bulky clothes or long, loose hair!"
+        }
+      }
     }
   }
 }
