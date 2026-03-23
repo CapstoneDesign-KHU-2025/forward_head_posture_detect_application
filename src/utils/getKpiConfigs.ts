@@ -24,7 +24,7 @@ export function getKpiConfigs(
   const { todayAvg, weeklyAvg, todayCount, todayHour, improvementValue, improvementText, loading, isNewUser } = data;
 
   if (loading) {
-    return [{ label: t("Basic.loading"), value: t() }];
+    return [{ label: t("Basic.loading"), value: "..." }];
   }
   if (isNewUser) {
     return [
