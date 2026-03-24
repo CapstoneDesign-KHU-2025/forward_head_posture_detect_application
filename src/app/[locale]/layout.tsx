@@ -19,6 +19,9 @@ export const metadata: Metadata = {
   title: "BoogiBoogi",
   description: "Improve turtle neck posture with AI metrics",
   icons: { icon: "/icons/turtle.png" },
+  verification: {
+    google: "VbZ7Nh4NBjx0xmjBQM6I7TQ-EcR_wN6rEJnh6cOpggM",
+  },
 };
 const nunito = Nunito({
   subsets: ["latin"],
