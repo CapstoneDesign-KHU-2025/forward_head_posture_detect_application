@@ -21,7 +21,7 @@ describe("getKpiConfigs edge case test", () => {
     const result = getKpiConfigs({ ...baseData, todayAvg: null, loading: true, isNewUser: false }, t);
 
     expect(result).toHaveLength(1);
-    expect(result[0].label).toBe("Basic.loading");
+    expect(result[0].label).toBe("loading");
   });
 
   it("3. empty data state but exist user: isLoading === false, todayData === null", () => {
