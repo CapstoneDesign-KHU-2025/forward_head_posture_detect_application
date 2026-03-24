@@ -11,6 +11,19 @@ const nextConfig: NextConfig = {
     };
     return config;
   },
+  async headers() {
+    return [
+      {
+        source: "/(.*)",
+        headers: [
+          {
+            key: "Content-Security-Policy",
+            value: "frame-ancestors 'self' https://www.notion.so https://www.notion.app;",
+          },
+        ],
+      },
+    ];
+  },
 };
 const nextConfigWithIntl = withNextIntl(nextConfig);
 export default withSentryConfig(nextConfigWithIntl, {
