@@ -1,4 +1,4 @@
-name: Jest Tests CI
+name: CI workflow
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
   pull_request:
 
 jobs:
-  test:
+  test-and-lighthouse:
     runs-on: ubuntu-latest
 
     steps:
@@ -21,5 +21,13 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run Jest tests
+      - name: Run jest test
         run: npm run test
+
+      - name: Build project for lighthouse checking
+        run: npm run build
+
+      - name: Run lighthouse CI
+        uses: treosh/lighthouse-ci-action@v12
+        with:
+          configPath: "./lighthouserc.json"
