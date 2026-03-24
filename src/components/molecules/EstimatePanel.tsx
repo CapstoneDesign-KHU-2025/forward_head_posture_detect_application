@@ -6,6 +6,8 @@ import { StatusPill } from "@/components/atoms/StatusPill";
 import LoadingSkeleton from "@/components/molecules/LoadingSkeleton";
 import { useTranslations } from "next-intl";
 import type { GuideColor } from "@/utils/types";
+import { useDocumentPiP } from "@/providers/PipProvider";
+import { PipToggleButton } from "@/components/atoms/PipToggleButton";
 
 type EstimatePanelProps = {
   bannerType: StatusBannerType;
@@ -69,12 +71,13 @@ export default function EstimatePanel({
   guideColor,
 }: EstimatePanelProps) {
   const t = useTranslations("EstimatePanel");
-
+  const isTurtle = bannerType === "warning";
+  const { pipWindow, openPiP, closePiP } = useDocumentPiP();
   const pillVariant = getStatusPillVariant({
     stopEstimating,
     countdownRemain,
     measurementStarted,
-    isTurtle: bannerType === "warning",
+    isTurtle,
     guideColor,
   });
   const headerIcon = getHeaderIcon(pillVariant);
@@ -128,6 +131,7 @@ export default function EstimatePanel({
         ) : (
           <>
             <div id={canvasSlotId} className="absolute inset-0 w-full h-full" />
+            <PipToggleButton isOpen={!!pipWindow} onClick={pipWindow ? closePiP : openPiP} />
 
             {showMeasurementStartedToast && (
               <div

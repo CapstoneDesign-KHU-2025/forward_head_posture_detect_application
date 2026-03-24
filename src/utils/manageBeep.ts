@@ -1,25 +1,35 @@
-export function startBeep(lastBeepIntervalRef: React.RefObject<NodeJS.Timeout | null>) {
-  // 이미 울리는 중이면 또 만들지 않기
+export type IntervalRef = React.RefObject<ReturnType<typeof setInterval> | null>;
+export type AudioGraph = { ctx: AudioContext; masterGain: GainNode };
+
+export function startBeep(lastBeepIntervalRef: IntervalRef, audio: AudioGraph | null) {
+  if (!audio) return;
   if (lastBeepIntervalRef.current) return;
 
-  const beepInterval = setInterval(() => {
-    const audioCtx = new AudioContext();
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-    osc.connect(gain);
-    gain.connect(audioCtx.destination);
+  const { ctx, masterGain } = audio;
+
+  if (ctx.state === "suspended") {
+    ctx.resume().catch(() => {});
+  }
+
+  const id = setInterval(() => {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+
     osc.type = "sine";
-    osc.frequency.setValueAtTime(880, audioCtx.currentTime);
-    gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+    osc.frequency.setValueAtTime(880, ctx.currentTime);
+    gain.gain.setValueAtTime(0.1, ctx.currentTime);
+
+    osc.connect(gain);
+    gain.connect(masterGain);
+
     osc.start();
-    osc.stop(audioCtx.currentTime + 0.2);
-    setTimeout(() => audioCtx.close(), 300);
+    osc.stop(ctx.currentTime + 0.2);
   }, 1000);
 
-  lastBeepIntervalRef.current = beepInterval;
+  lastBeepIntervalRef.current = id;
 }
 
-export function stopBeep(lastBeepIntervalRef: React.RefObject<NodeJS.Timeout | null>) {
+export function stopBeep(lastBeepIntervalRef: IntervalRef) {
   if (lastBeepIntervalRef.current) {
     clearInterval(lastBeepIntervalRef.current);
     lastBeepIntervalRef.current = null;

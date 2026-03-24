@@ -10,7 +10,13 @@ export type isTurtleNeckProp = {
   sensitivity?: Sensitivity;
 };
 
-export default function isTurtleNeck({ earLeft, earRight, shoulderLeft, shoulderRight, sensitivity = "normal" }: isTurtleNeckProp) {
+export default function isTurtleNeck({
+  earLeft,
+  earRight,
+  shoulderLeft,
+  shoulderRight,
+  sensitivity = "normal",
+}: isTurtleNeckProp) {
   // 귀 중앙 M
   const M = {
     x: (earLeft.x + earRight.x) / 2,
