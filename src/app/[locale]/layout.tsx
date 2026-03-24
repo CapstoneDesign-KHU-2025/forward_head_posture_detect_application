@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   description: "Improve turtle neck posture with AI metrics",
   icons: { icon: "/icons/turtle.png" },
   verification: {
-    google: "VbZ7Nh4NBjx0xmjBQM6I7TQ-EcR_wN6rEJnh6cOpggM",
+    google: process.env.GOOGLE_META_TAG,
   },
 };
 const nunito = Nunito({
