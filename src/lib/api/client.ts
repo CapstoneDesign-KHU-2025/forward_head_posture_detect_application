@@ -1,8 +1,8 @@
-export type ApiOk<T> = { ok: true; data: T };
-export type ApiFail = { ok: false; status: number; message: string; body?: unknown };
-export type ApiResult<T> = ApiOk<T> | ApiFail;
+type ApiOk<T> = { ok: true; data: T };
+type ApiFail = { ok: false; status: number; message: string; body?: unknown };
+type ApiResult<T> = ApiOk<T> | ApiFail;
 
-export type ApiRequestInit = Omit<RequestInit, "body"> & { body?: any };
+type ApiRequestInit = Omit<RequestInit, "body"> & { body?: any };
 
 async function readBody(res: Response): Promise<unknown> {
   if (res.status === 204 || res.status === 205) return null;

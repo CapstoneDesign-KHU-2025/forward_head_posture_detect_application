@@ -10,10 +10,10 @@ import { getTodayCount, storeMeasurementAndAccumulate } from "@/lib/postureLocal
 import { useTurtleNeckMeasurement } from "@/hooks/useTurtleNeckMeasurement";
 import { createISO } from "@/utils/createISO";
 import { postDailySummaryAction } from "@/app/actions/summaryActions";
-import { FloatingBarController } from "@/components/molecules/FloatingBarController";
-import { RecoveryNotice } from "@/components/molecules/RecoveryNotice";
+import { FloatingBarController } from "@/app/[locale]/(protected)/estimate/components/FloatingBarController";
+import { RecoveryNotice } from "@/app/[locale]/(protected)/estimate/components/RecoveryNotice";
 import { logger } from "@/lib/logger";
-import type { StatusBannerType } from "@/hooks/useTurtleNeckMeasurement";
+import { StatusBannerType } from "@/utils/types";
 import type { GuideColor } from "@/utils/types";
 
 export const MEASUREMENT_CANVAS_SLOT_ID = "measurement-canvas-slot";

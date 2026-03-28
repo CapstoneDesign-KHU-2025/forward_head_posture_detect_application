@@ -1,4 +1,5 @@
-import { checkGuidelinesAndDistance, Pose } from "@/utils/checkGuidelinesAndDistance";
+import { checkGuidelinesAndDistance } from "@/utils/checkGuidelinesAndDistance";
+import { Pose } from "../types";
 
 describe("checkGuidelinesAndDistance 테스트", () => {
   const mockCanvas = { width: 640, height: 480 } as HTMLCanvasElement;

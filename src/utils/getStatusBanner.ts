@@ -1,7 +1,6 @@
-import type { GuideColor } from "./types";
+import type { GuideColor, StatusBannerType } from "./types";
 
 type GeneralTranslator = (key: any, values?: Record<string, any>) => string;
-type StatusBannerType = "success" | "warning" | "info";
 
 export function getStatusBannerTypeCore(
   stopEstimating: boolean,

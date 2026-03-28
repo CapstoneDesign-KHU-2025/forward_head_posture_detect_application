@@ -1,18 +1,10 @@
 "use client";
 
 import { useState, useCallback, useEffect, useMemo, useRef, useActionState } from "react";
-import type { Friend, FriendRequestRow, RelationStatus, SearchUser } from "@/types/friends";
+import type { Friend, FriendRequestRow, SearchUser } from "@/utils/types";
 import { searchUsersAction } from "@/app/actions/friendsActions";
 import { useTranslations } from "next-intl";
-export type SearchResultItem = {
-  id: string;
-  name: string | null;
-  image: string | null;
-  email?: string | null;
-  initial: string;
-  color: string;
-  relation: RelationStatus | "NONE";
-};
+import { RelationStatus, SearchResultItem } from "@/utils/types";
 
 type FriendsApiResponse = {
   ok: boolean;

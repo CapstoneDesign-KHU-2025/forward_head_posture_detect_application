@@ -1,10 +1,7 @@
 import { logger } from "@/lib/logger";
-
-export type Sensitivity = "low" | "normal" | "high";
+import { Sensitivity } from "./types";
 
 const SENSITIVITY_STORAGE_KEY = "turtle-neck-sensitivity";
-
-// 민감도 설정을 로컬 스토리지에서 읽어옴 (기본값은 normal)
 
 export function getSensitivity(): Sensitivity {
   if (typeof window === "undefined") return "normal";
@@ -21,8 +18,6 @@ export function getSensitivity(): Sensitivity {
   return "normal";
 }
 
-// 민감도 설정을 로컬 스토리지에 저장
-
 export function setSensitivity(sensitivity: Sensitivity): void {
   if (typeof window === "undefined") return;
 
@@ -34,7 +29,6 @@ export function setSensitivity(sensitivity: Sensitivity): void {
   }
 }
 
-// 민감도 값을 한국어로 변환
 export function getSensitivityLabel(sensitivity: Sensitivity): string {
   switch (sensitivity) {
     case "low":
@@ -48,7 +42,6 @@ export function getSensitivityLabel(sensitivity: Sensitivity): string {
   }
 }
 
-// 민감도에 따른 임계값 가져오기 (turtleStabilizer용)
 export function getSensitivityThresholds(sensitivity: Sensitivity): { enter: number; exit: number } {
   switch (sensitivity) {
     case "low":

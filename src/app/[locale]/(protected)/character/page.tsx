@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "@/i18n/navigation";
-import { Button } from "@/components/atoms/Button";
-import CharacterGrid from "@/components/molecules/CharacterGrid";
+import { Button } from "@/components/Button";
+import CharacterGrid from "./components/CharacterGrid";
 import { useTranslations } from "next-intl";
 
 const CHARACTER_ASSETS = [
@@ -36,7 +36,6 @@ export default function CharacterSelectionPage() {
     router.push("/");
   };
 
-  // 이미 캐릭터가 선택돼 있으면 홈으로 바로 이동 (로그인 후 /character 콜백 시 스킵)
   useEffect(() => {
     const stored = localStorage.getItem("selectedCharacter");
     if (stored?.trim()) {

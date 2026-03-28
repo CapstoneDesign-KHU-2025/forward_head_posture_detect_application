@@ -1,7 +1,7 @@
 "use client";
 
 import { Link } from "@/i18n/navigation";
-import { Button } from "@/components/atoms/Button";
+import { Button } from "@/components/Button";
 import { useTranslations } from "next-intl";
 export default function NotFound() {
   const t = useTranslations("NotFound");

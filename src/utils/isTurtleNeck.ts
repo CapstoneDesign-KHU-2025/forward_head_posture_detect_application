@@ -1,14 +1,4 @@
-import type { Sensitivity } from "./sensitivity";
-
-export type Point3D = { x: number; y: number; z: number };
-
-export type isTurtleNeckProp = {
-  earLeft: Point3D;
-  earRight: Point3D;
-  shoulderLeft: Point3D;
-  shoulderRight: Point3D;
-  sensitivity?: Sensitivity;
-};
+import { isTurtleNeckProp } from "./types";
 
 export default function isTurtleNeck({
   earLeft,

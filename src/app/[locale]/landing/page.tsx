@@ -1,4 +1,4 @@
-import LandingTemplate from "@/components/templates/LandingTemplate";
+import LandingTemplate from "./components/LandingTemplate";
 import { redirect } from "@/i18n/navigation";
 import { auth } from "@/auth";
 import { getLocale } from "next-intl/server";

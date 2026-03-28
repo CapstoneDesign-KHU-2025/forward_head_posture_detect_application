@@ -3,16 +3,17 @@
 import { auth } from "@/auth";
 import { z } from "zod";
 import { getWeeklySummary, upsertDailySummary } from "@/services/summary.service";
-import { SERVER_MESSAGES, type ActionState } from "@/lib/api/utils";
+import { SERVER_MESSAGES } from "@/lib/api/utils";
 import { revalidateTag } from "next/cache";
 import { logger } from "@/lib/logger";
+import { ActionState } from "@/utils/types";
 
-// GET
+// GET: get
 const GetDailySummarySchema = z.object({
   days: z.number().min(1).max(30).default(7),
 });
 
-export type GetDailySummaryInput = z.infer<typeof GetDailySummarySchema>;
+type GetDailySummaryInput = z.infer<typeof GetDailySummarySchema>;
 
 export async function getDailySummaryAction(_prevState: ActionState<unknown>, data: GetDailySummaryInput) {
   const session = await auth();
@@ -43,7 +44,7 @@ const PostDailySummarySchema = z.object({
   count: z.number().int().nonnegative(),
 });
 
-export type PostDailySummaryInput = z.infer<typeof PostDailySummarySchema>;
+type PostDailySummaryInput = z.infer<typeof PostDailySummarySchema>;
 
 export async function postDailySummaryAction(_prevState: ActionState<unknown>, data: PostDailySummaryInput) {
   const session = await auth();

@@ -4,8 +4,9 @@ import { redirect } from "@/i18n/navigation";
 import { getTranslations } from "next-intl/server";
 
 import { getDailySummaryAction } from "../actions/summaryActions";
-import HomeClient, { WeeklySummaryData } from "@/components/templates/HomeClient";
-import LoadingSkeleton from "@/components/molecules/LoadingSkeleton";
+import HomeClient from "@/app/[locale]/components/HomeClient";
+import LoadingSkeleton from "@/components/LoadingSkeleton";
+import { WeeklySummaryData } from "@/utils/types";
 
 type Props = {
   params: Promise<{ locale: string }>;

@@ -3,21 +3,9 @@ import { NextResponse } from "next/server";
 import * as Sentry from "@sentry/nextjs";
 import { logger } from "../logger";
 
-export type ApiErrorBody = {
-  error: string;
-  code?: string;
-  details?: unknown;
-};
-
 export function orderUserPair(a: string, b: string): [string, string] {
   return a < b ? [a, b] : [b, a];
 }
-export type ActionState<T = undefined> = {
-  ok: boolean;
-  message?: { ko: string; en: string };
-  status?: number;
-  data?: T;
-} | null;
 
 export function json(data: unknown, status = 200) {
   return new NextResponse(
