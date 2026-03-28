@@ -69,24 +69,20 @@ type BodyOpts = {
   groundPadding?: number;
 };
 
-// ★ 캐릭터별 FBX 경로를 바꾸기 위해 추가한 props 타입
 type ThreeDModelProps = {
-  characterId?: string; // 선택한 캐릭터 ID (remy, jerry, jessica)
-  idealAng?: number; // 기준 목 각도
-  userAng?: number; // 사용자 목 각도
-  /** 상반신/전신 모드 (외부 SegmentToggle에서 제어) */
+  characterId?: string;
+  idealAng?: number;
+  userAng?: number;
   poseMode?: PoseMode;
 };
 
-// 공통 mixer (현재 모드에 따라 mixerUpper / mixerFull 중 하나를 가리킴)
 let mixer: THREE.AnimationMixer | null = null;
 let idleAction: THREE.AnimationAction | null = null;
 
-// Idle / Walking 따로
-let mixerUpper: THREE.AnimationMixer | null = null; // Idle.fbx용
-let mixerFull: THREE.AnimationMixer | null = null; // Walking.fbx용
-let remUpper: THREE.Object3D | null = null; // Idle.fbx 오브젝트
-let remFull: THREE.Object3D | null = null; // Walking.fbx 오브젝트
+let mixerUpper: THREE.AnimationMixer | null = null;
+let mixerFull: THREE.AnimationMixer | null = null;
+let remUpper: THREE.Object3D | null = null;
+let remFull: THREE.Object3D | null = null;
 
 declare global {
   interface Window {
@@ -102,14 +98,11 @@ declare global {
     SAMPLE_MP?: PoseResult;
     LAST_MP_RESULT?: PoseResult;
     __REM?: THREE.Object3D;
-
-    // 디버깅용(콘솔에서 카메라/컨트롤 확인)
     __CAMERA?: THREE.PerspectiveCamera;
     __CONTROLS?: OrbitControls;
   }
 }
 
-// ★ 캐릭터 ID를 받아서 해당 캐릭터의 프리셋 사용
 export default function ThreeDModel({
   characterId = "remy",
   idealAng = 52,
@@ -127,20 +120,17 @@ export default function ThreeDModel({
     if (!containerRef.current) return;
     const currentContainer = containerRef.current;
 
-    // 캐릭터 ID 매핑 (선택 페이지 ID → 프리셋 ID)
+    // mapping character ID (chosen ID → preset ID)
     const characterIdMap: Record<string, CharacterId> = {
       remy: "Remy",
       jerry: "Mouse",
       jessica: "Woman",
     };
 
-    // 선택한 캐릭터의 프리셋 가져오기 (기본값: Remy)
+    // get chosen character's preset
     const presetId = characterIdMap[characterId] || "Remy";
     const preset = CHARACTER_PRESETS[presetId];
 
-    /* ======================= *
-     * 인덱스/연결 정의
-     * ======================= */
     const BODY_CONNECTIONS: Array<[number, number]> = [
       [11, 13],
       [13, 15],
@@ -214,9 +204,6 @@ export default function ThreeDModel({
     const LOWER_SET = new Set<number>([23, 24, 25, 26, 27, 28, 29, 30, 31, 32]);
     const HIDE_INDICES = new Set<number>([17, 18, 19, 20, 21, 22]); // 손가락 숨김
 
-    /* ======================= *
-     * 시각화 옵션
-     * ======================= */
     const HEAD_POINT_SCALE = 1.1;
     const BODY_POINT_SCALE = 0.95;
     const ANGLE_SMOOTH_ALPHA = 0.2;
@@ -224,14 +211,12 @@ export default function ThreeDModel({
     let USER_NECK_ANGLE_DEG = userAng;
     const BOUNDS = { xMin: -5, xMax: 5, zMin: -5, zMax: 5 };
 
-    // ✅ 선택된 캐릭터 preset에서 카메라 값 가져오기
+    // get camera values from chosen preset
     const CAMERA_UPPER_POS = preset.camera.upperPos.clone();
     const CAMERA_UPPER_TARGET = preset.camera.upperTarget.clone();
     const CAMERA_FULL_POS = preset.camera.fullPos.clone();
     const CAMERA_FULL_TARGET = preset.camera.fullTarget.clone();
-    /* ======================= *
-     * Three.js 핵심 변수
-     * ======================= */
+
     let scene: THREE.Scene;
     let camera: THREE.PerspectiveCamera;
     let renderer: THREE.WebGLRenderer;
@@ -239,16 +224,13 @@ export default function ThreeDModel({
     let clock: THREE.Clock;
     let rafId: number;
 
-    // 점/선
     const jointSpheres: Array<THREE.Mesh<THREE.SphereGeometry, THREE.MeshBasicMaterial>> = [];
     let lineMesh: THREE.LineSegments;
     let guideLine: THREE.Line;
     let upRefLine: THREE.Line;
     let angleSprite: THREE.Sprite;
 
-    /* ======================= *
-     * 포즈 상태
-     * ======================= */
+    // pose
     let poseMode: PoseMode = "upper";
     const pose: THREE.Vector3[] = new Array(33).fill(0).map(() => new THREE.Vector3());
     let useExternalPose = false;
@@ -256,14 +238,11 @@ export default function ThreeDModel({
     let headProvider: (t: number) => THREE.Vector3[] = createDefaultHeadProvider();
 
     let angleSmoothed: number | null = null;
-    // 현재 활성 FBX 캐릭터에 붙는 목 기준선(노란/흰색) 관리
+    // neck line
     let neckLines: { yellow: THREE.Line; white: THREE.Line } | null = null;
 
     const pressedKeys = new Set<string>();
 
-    /* ======================= *
-     * 유틸
-     * ======================= */
     function makeTextSprite(text: string): THREE.Sprite {
       const canvas = document.createElement("canvas");
       canvas.width = 512;
@@ -323,12 +302,8 @@ export default function ThreeDModel({
       return sum.multiplyScalar(1 / n).normalize();
     }
 
-    /* ======================= *
-     * 초기화
-     * ======================= */
     function initSceneAndCamera() {
       scene = new THREE.Scene();
-      // 앱 전체 톤과 맞는 연한 그린 배경
       scene.background = new THREE.Color("#D8EEDE");
 
       camera = new THREE.PerspectiveCamera(
@@ -363,7 +338,6 @@ export default function ThreeDModel({
     function initFloor() {
       const floor = new THREE.Mesh(
         new THREE.PlaneGeometry(40, 40),
-        // 연한 그린 톤의 바닥 면 색
         new THREE.MeshStandardMaterial({ color: "#eef7f1", metalness: 0, roughness: 1 }),
       );
       floor.rotation.x = -Math.PI / 2;
@@ -386,12 +360,10 @@ export default function ThreeDModel({
       controls.rotateSpeed = 0.9;
       controls.target.copy(CAMERA_UPPER_TARGET);
 
-      // ★ 콘솔에서 카메라 위치 쉽게 읽으려고 window에 등록
       (window as any).__CAMERA = camera;
       (window as any).__CONTROLS = controls;
     }
     function initHelpers() {
-      // 바닥 격자를 green-border 톤으로 맞춤
       scene.add(new THREE.GridHelper(40, 40, 0xd4ead9, 0xd4ead9));
       const w = BOUNDS.xMax - BOUNDS.xMin;
       const depth = BOUNDS.zMax - BOUNDS.zMin;
@@ -408,7 +380,6 @@ export default function ThreeDModel({
       scene.add(mesh);
     }
 
-    // ★ FBX 공통 세팅 함수 (Idle / Walking 둘 다 여기 사용)
     function setupFBXCharacter(object: THREE.Object3D): THREE.AnimationMixer {
       object.traverse((child: any) => {
         if (child.isMesh) {
@@ -423,7 +394,6 @@ export default function ThreeDModel({
         }
       });
 
-      // 스케일/위치 마음에 안 들면 여기서 조정
       object.scale.setScalar(0.01);
       scene.add(object);
 
@@ -470,13 +440,12 @@ export default function ThreeDModel({
         localMixer.timeScale = 0.3;
         idleAction = action;
       } else {
-        console.warn("FBX 내 애니메이션이 없습니다.");
+        console.warn("Not animation found.");
       }
 
       return localMixer;
     }
 
-    // ★ 기존 캐릭터 모델 제거
     function cleanupCharacters() {
       if (remUpper) {
         scene.remove(remUpper);
@@ -495,14 +464,11 @@ export default function ThreeDModel({
       window.__REM = undefined;
     }
 
-    // ★ Idle(upper) + Walking(full) FBX 경로를 매개변수로 받도록 변경
     function loadCharacters(upperPath: string, fullPath: string) {
-      // 기존 모델 제거
       cleanupCharacters();
 
       const loader = new FBXLoader();
 
-      // upper 모드용 Idle.fbx
       loader.load(
         upperPath,
         (object) => {
@@ -510,12 +476,10 @@ export default function ThreeDModel({
           remUpper = object;
           mixerUpper = localMixer;
 
-          // 처음에는 upper 모드가 기본
           window.__REM = object;
           mixer = localMixer;
           object.visible = true;
 
-          // 현재 모드에 따라 visibility 설정
           if (poseMode === "upper") {
             object.visible = true;
           } else {
@@ -526,7 +490,6 @@ export default function ThreeDModel({
         (e) => logger.error("Idle/Upper FBX load error:", e),
       );
 
-      // full body 모드용 Walking.fbx
       loader.load(
         fullPath,
         (object) => {
@@ -534,7 +497,6 @@ export default function ThreeDModel({
           remFull = object;
           mixerFull = localMixer;
 
-          // 시작 때는 숨겨둠
           object.visible = false;
         },
         undefined,
@@ -548,11 +510,11 @@ export default function ThreeDModel({
         color: 0xff77ff,
         transparent: true,
         opacity: 0.0,
-      }); // 안 보이게
+      });
 
       for (let i = 0; i < 33; i++) {
         const m = new THREE.Mesh(sphereGeom, jointMat);
-        m.visible = false; // 관절 숨김
+        m.visible = false;
         m.scale.setScalar(i <= 10 ? HEAD_POINT_SCALE : BODY_POINT_SCALE);
         scene.add(m);
         jointSpheres.push(m);
@@ -587,13 +549,11 @@ export default function ThreeDModel({
       upRefLine.visible = false;
       scene.add(upRefLine);
 
-      // 상단 각도 텍스트 스프라이트는 생성만 해두고 씬에는 추가하지 않아서 화면에 보이지 않도록 함
       angleSprite = makeTextSprite(`0° (ideal ${IDEAL_NECK_ANGLE_DEG}°)\nΔ 0°`);
       angleSprite.visible = false;
     }
 
     function initUI() {
-      // world/landmarks 토글(지금은 숨김)
       const srcPanel = document.createElement("div");
       Object.assign(srcPanel.style, {
         position: "absolute",
@@ -687,9 +647,7 @@ export default function ThreeDModel({
         applyVisibilityForMode(mode);
         rebuildLinesNow();
 
-        // 모드에 따라 FBX / mixer / 카메라 동기화
         if (mode === "upper") {
-          // Idle.fbx 활성
           if (remUpper) {
             remUpper.visible = true;
             window.__REM = remUpper;
@@ -698,11 +656,9 @@ export default function ThreeDModel({
 
           mixer = mixerUpper ?? null;
 
-          // upper 카메라 프리셋
           camera.position.copy(CAMERA_UPPER_POS);
           controls.target.copy(CAMERA_UPPER_TARGET);
         } else {
-          // Walking.fbx 활성
           if (remUpper) remUpper.visible = false;
           if (remFull) {
             remFull.visible = true;
@@ -711,14 +667,12 @@ export default function ThreeDModel({
 
           mixer = mixerFull ?? null;
 
-          // full body 카메라 프리셋
           camera.position.copy(CAMERA_FULL_POS);
           controls.target.copy(CAMERA_FULL_TARGET);
         }
       };
       setPoseModeRef.current = setPoseModeUI;
 
-      // 초기 상태
       setPoseModeUI(poseModeProp);
       applyLandmarkSource(true);
     }
@@ -749,9 +703,6 @@ export default function ThreeDModel({
       };
     }
 
-    /* ======================= *
-     * 외부 API
-     * ======================= */
     function applyVisibilityForMode(mode: PoseMode): void {
       const hideLower = mode === "upper";
       for (let i = 0; i <= 32; i++) {
@@ -996,7 +947,6 @@ export default function ThreeDModel({
         headProvider = () => pts;
       };
 
-      // 샘플
       window.SAMPLE_MP = {
         landmarks: [
           { x: 0.5344623, y: 0.4381331, z: -2.0504346 },
@@ -1071,14 +1021,10 @@ export default function ThreeDModel({
       };
     }
 
-    /* ======================= *
-     * 프레임 업데이트
-     * ======================= */
     function updateFrame(t: number, dt: number): void {
       const BODY_SCALE = 1.15;
       const HEAD_SCALE = 1.35;
 
-      // 1) 포즈 점 업데이트 (필요 시)
       if (useExternalPose && typeof externalPoseProvider === "function") {
         const ext = externalPoseProvider();
         if (Array.isArray(ext) && ext.length >= 33) {
@@ -1110,7 +1056,6 @@ export default function ThreeDModel({
 
       applyVisibilityForMode(poseMode);
 
-      // 2) FBX 목/머리 회전 + 기준선/사용자선 (FBX 위에만 표시)
       const rem = (window as any).__REM as THREE.Object3D | undefined;
       if (rem && mixer) {
         const rig = rem.userData.__rig as Record<string, THREE.Bone | undefined>;
@@ -1127,7 +1072,6 @@ export default function ThreeDModel({
         const worldUp = new THREE.Vector3(0, 1, 0);
         const worldFwd = new THREE.Vector3(0, 0, 1);
 
-        // 사용자 각도와 기준 각도의 차이로 목/머리 굽힘 정도 결정
         const deltaDeg = USER_NECK_ANGLE_DEG - IDEAL_NECK_ANGLE_DEG;
         const bendRad = THREE.MathUtils.degToRad(THREE.MathUtils.clamp(deltaDeg, -45, 45));
         const qNeck = new THREE.Quaternion().setFromAxisAngle(shoulderAxis, bendRad * 0.7);
@@ -1152,11 +1096,8 @@ export default function ThreeDModel({
         applyExtraWorldRotationFromBind(rig.head, qHead);
 
         rem.updateMatrixWorld(true);
-
-        // === FBX에서 목 기준으로 기준선(흰색) + 사용자선(노란색) 표시하던 부분은 디자인상 숨김 처리 ===
       }
 
-      // 3) 패널/텍스트 갱신: 사용자 각도 vs 기준각
       const absNeckDeg = USER_NECK_ANGLE_DEG ?? IDEAL_NECK_ANGLE_DEG;
       const deltaWorldInstant = (USER_NECK_ANGLE_DEG ?? IDEAL_NECK_ANGLE_DEG) - IDEAL_NECK_ANGLE_DEG;
       const deltaAbs = Math.abs(deltaWorldInstant);
@@ -1169,7 +1110,6 @@ export default function ThreeDModel({
         `${absNeckDeg.toFixed(1)}° (ideal ${IDEAL_NECK_ANGLE_DEG.toFixed(0)}°)\nΔ ${angleSmoothed!.toFixed(1)}°`,
       );
 
-      // 4) 포즈 라인 갱신
       rebuildLinesNow();
     }
 
@@ -1191,9 +1131,6 @@ export default function ThreeDModel({
       renderer.render(scene, camera);
     }
 
-    /* ======================= *
-     * 실행
-     * ======================= */
     initSceneAndCamera();
     initRenderer();
     initLighting();
@@ -1202,7 +1139,6 @@ export default function ThreeDModel({
     initHelpers();
     initPoseVisuals();
     initAngleGuides();
-    // ★ 여기에서 props로 받은 경로 사용
     loadCharacters(preset.upperFbx, preset.fullFbx);
     initUI();
     const cleanupEvents = initEventListeners();
@@ -1242,7 +1178,7 @@ export default function ThreeDModel({
 
       cleanupCharacters();
     };
-  }, [characterId, userAng]); // ★ 캐릭터 ID가 바뀌면 전체를 다시 세팅
+  }, [characterId, userAng]);
 
   return <div ref={containerRef} style={{ position: "relative", width: "100%", height: "100%", overflow: "hidden" }} />;
 }

@@ -5,7 +5,7 @@ import { UserRow } from "@/app/[locale]/(protected)/friends/components/UserRow";
 import { EmptyState } from "@/components/EmptyState";
 import { IconButton } from "@/components/IconButton";
 import { X } from "lucide-react";
-import type { Friend } from "@/types/friends";
+import { Friend } from "@/utils/types";
 import { cn } from "@/utils/cn";
 import { useTranslations } from "next-intl";
 const AVATAR_COLORS = ["#ff9f6b", "#6b9fff", "#ffc46b", "#b06bff", "#6aab7a", "#ff8c8c"];
