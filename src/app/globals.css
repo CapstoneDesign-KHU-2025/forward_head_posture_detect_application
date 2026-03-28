@@ -58,6 +58,8 @@
   --animate-landing-pulse: landing-pulse 1.2s infinite;
   --animate-status-pulse: status-pulse 1.5s infinite;
   --animate-status-blink: status-blink 0.6s infinite;
+  --animate-turtle-float: float 3s ease-in-out infinite;
+  --animate-check-pulse: pulse 2s ease-in-out infinite;
 }
 
 html {
@@ -79,6 +81,29 @@ body {
 body[data-modal-open] header {
   padding-right: var(--scrollbar-width, 0px);
 }
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 0.2;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(1.1);
+  }
+}
+
 @keyframes shara-attention {
   0%,
   100% {

@@ -11,7 +11,7 @@ type WelcomeHeroProps = {
   className?: string;
 };
 
-export default function WelcomeHero({ userName = "사용자", onPrimaryAction, className }: WelcomeHeroProps) {
+export default function WelcomeHero({ userName = "User", onPrimaryAction, className }: WelcomeHeroProps) {
   const t = useTranslations("WelcomeHero");
   const router = useRouter();
   const handlePrimaryAction = useCallback(() => {

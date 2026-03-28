@@ -9,34 +9,6 @@ type TodayStatusCardProps = {
   isNewUser?: boolean;
 };
 
-const styleMap: Record<string, { card: string; title: string; message: string }> = {
-  excellent: {
-    card: "bg-gradient-to-br from-[#d4f0dc] to-[#e8f8ee] border-2 border-[#6aab7a]",
-    title: "text-green",
-    message: "text-text-sub",
-  },
-  normal: {
-    card: "bg-gradient-to-br from-[#fff8e6] to-[#fffcf0] border-2 border-[#f0c040]",
-    title: "text-[#b88a00]",
-    message: "text-text-sub",
-  },
-  bad: {
-    card: "bg-gradient-to-br from-[#fff0ee] to-[#fff5f4] border-2 border-[#ff8c8c]",
-    title: "text-[#c0392b]",
-    message: "text-text-sub",
-  },
-  "empty-new": {
-    card: "bg-gradient-to-br from-[#c8ecd4] to-[#e4f5e8] border-2 border-transparent",
-    title: "text-green-dark",
-    message: "text-text-sub",
-  },
-  "empty-old": {
-    card: "bg-gradient-to-br from-green to-green-mid border-2 border-transparent",
-    title: "text-white",
-    message: "text-text-sub",
-  },
-};
-
 export default function TodayStatusCard({ warningCount, isNewUser = false }: TodayStatusCardProps) {
   const t = useTranslations("TodayStatusCard");
 

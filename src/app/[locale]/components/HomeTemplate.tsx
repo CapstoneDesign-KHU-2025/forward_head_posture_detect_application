@@ -57,7 +57,7 @@ export default function HomeTemplate({
   const measureTimeLabel = t("kpi.measureTime.label");
   const measureTimeKpi = kpis?.find(
     (kpi) =>
-      kpi.label === "측정 시간" ||
+      kpi.label == t("measurementTime") ||
       kpi.label === measureTimeLabel ||
       (typeof kpi.label === "string" && kpi.label.includes(measureTimeLabel)),
   );

@@ -312,6 +312,7 @@
   },
 
   "HomeTemplate": {
+    "measurementTime": "측정 시간",
     "sections": {
       "todayStatus": "오늘의 거북목",
       "measurement": "측정 섹션"

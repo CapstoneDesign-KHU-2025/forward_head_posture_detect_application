@@ -309,6 +309,7 @@
     }
   },
   "HomeTemplate": {
+    "measurementTime": "measured time",
     "sections": {
       "todayStatus": "Today's Status",
       "measurement": "Measurement"

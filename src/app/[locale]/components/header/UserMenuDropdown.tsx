@@ -7,7 +7,7 @@ import SensitivitySettingsModal from "@/app/[locale]/components/SensitivitySetti
 import CharacterSelectionModal from "@/app/[locale]/components/CharacterSelectionModal";
 import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
-import { Button } from "@/components/Button";
+
 import Image from "next/image";
 type UserMenuDropdownProps = {
   userName: string;

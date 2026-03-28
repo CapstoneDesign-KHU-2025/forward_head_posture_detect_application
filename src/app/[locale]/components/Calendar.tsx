@@ -65,7 +65,7 @@ export function Calendar({ dayStatusMap = {}, className }: CalendarProps) {
       });
     };
 
-    // 이전 달 날짜
+    // previous month's dates
     for (let i = 0; i < firstDay; i++) {
       const d = prevMonthDays - firstDay + i + 1;
       const prevMonth = viewMonth === 0 ? 11 : viewMonth - 1;
@@ -73,12 +73,12 @@ export function Calendar({ dayStatusMap = {}, className }: CalendarProps) {
       push(prevYear, prevMonth, d, false);
     }
 
-    // 현재 달 날짜
+    // current month's dates
     for (let i = 1; i <= daysInMonth; i++) {
       push(viewYear, viewMonth, i, true);
     }
 
-    // 다음 달 날짜 (그리드 채우기)
+    // next month's dates
     const total = days.length;
     const remaining = total % 7 === 0 ? 0 : 7 - (total % 7);
     const nextMonth = viewMonth === 11 ? 0 : viewMonth + 1;

@@ -3,36 +3,11 @@ import { Card } from "@/components/Card";
 export default function TurtleLogo() {
   return (
     <Card className="p-8 text-center">
-      {" "}
-      <style jsx>{`
-        @keyframes float {
-          0%,
-          100% {
-            transform: translateY(0px);
-          }
-          50% {
-            transform: translateY(-10px);
-          }
-        }
-        @keyframes pulse {
-          0%,
-          100% {
-            opacity: 0.2;
-            transform: scale(1);
-          }
-          50% {
-            opacity: 0.4;
-            transform: scale(1.1);
-          }
-        }
-        .turtle-float {
-          animation: float 3s ease-in-out infinite;
-        }
-        .check-pulse {
-          animation: pulse 2s ease-in-out infinite;
-        }
-      `}</style>
-      <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg" className="w-full max-w-md mx-auto turtle-float">
+      <svg
+        viewBox="0 0 400 300"
+        xmlns="http://www.w3.org/2000/svg"
+        className="w-full max-w-md mx-auto animate-turtle-float"
+      >
         {/* turtle shell */}
         <ellipse cx="200" cy="180" rx="100" ry="80" fill="#4A9D4D" />
         <ellipse cx="200" cy="180" rx="85" ry="65" fill="#66BB6A" />
@@ -68,7 +43,7 @@ export default function TurtleLogo() {
         <ellipse cx="280" cy="190" rx="15" ry="12" fill="#7BC67E" />
 
         {/* check */}
-        <g className="check-pulse">
+        <g className="animate-check-pulse">
           <circle cx="320" cy="100" r="35" fill="#4A9D4D" opacity="0.2" />
           <path
             d="M 305 100 L 315 110 L 335 85"
