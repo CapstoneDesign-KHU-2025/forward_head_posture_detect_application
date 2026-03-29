@@ -94,25 +94,36 @@
       "next": "Next"
     },
     "spotlight": {
+      "ackButton": "Got it!",
       "step1": {
-        "badge": "1 / 4",
+        "badge": "1 / 6",
         "title": "Ready to start measuring? 🐢",
         "body": "Tap the button above to turn on the camera and try the turtle-neck check."
       },
       "step2": {
-        "badge": "2 / 4",
-        "title": "Allow camera access",
-        "body": "Please allow the camera when your browser asks. In trial mode, measurements are not saved to the server."
+        "badge": "2 / 6",
+        "title": "Allow camera permission to continue",
+        "body": "When your browser prompts you, allow camera access. In trial mode, measurements are not saved to the server."
       },
       "step3": {
-        "badge": "3 / 4",
+        "badge": "3 / 6",
         "title": "Match the guide on screen",
         "body": "Adjust your distance so your face and shoulders fit inside the oval, then hold steady while the countdown runs."
       },
       "step4": {
-        "badge": "4 / 4",
+        "badge": "4 / 6",
         "title": "You’re all set — measure freely",
-        "body": "Measurement is running. Check your posture in a comfortable position. Tap the button below to stop when you’re done."
+        "body": "Measurement is running. Check your posture in a comfortable position."
+      },
+      "step5": {
+        "badge": "5 / 6",
+        "title": "You can use a small window too",
+        "body": "Tap this button to open a floating popup so you can keep an eye on your measurement while doing other work."
+      },
+      "step6": {
+        "badge": "6 / 6",
+        "title": "To end the trial",
+        "body": "Tap this button to stop the trial measurement. You can start again anytime."
       }
     },
     "resultTitle": "Trial Results",
@@ -121,7 +132,8 @@
     "avgAngle": "Average Neck Angle",
     "warningUnit": "times",
     "angleUnit": "°",
-    "retryButton": "Measure Again"
+    "retryButton": "Measure Again",
+    "stopButton": "Stop trial measurement"
   },
   "EstimatePanel": {
     "cameraTitle": "Camera",
