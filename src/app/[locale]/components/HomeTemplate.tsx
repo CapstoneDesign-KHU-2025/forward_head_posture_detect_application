@@ -9,6 +9,7 @@ import TurtleEvolutionCard from "@/app/[locale]/components/TurtleEvolutionCard";
 import AsyncBoundary from "@/components/AsyncBoundary";
 import { useTranslations } from "next-intl";
 import { KPIItem } from "@/utils/types";
+import { formatMeasuredTime } from "./home.utils";
 
 type HomeTemplateProps = {
   user: { name: string; avgAng?: number | null; avatarSrc?: string } | null;
@@ -24,22 +25,6 @@ type HomeTemplateProps = {
   isMeasuring?: boolean;
   className?: string;
 };
-function formatMeasuredTime(totalSeconds: number): string {
-  if (totalSeconds == null) return "0m";
-
-  const sec = Math.floor(totalSeconds);
-
-  if (sec <= 0) return "0m";
-
-  const hours = Math.floor(sec / 3600);
-  const minutes = Math.floor((sec % 3600) / 60);
-
-  const parts: string[] = [];
-  if (hours > 0) parts.push(`${hours}h`);
-  parts.push(`${minutes}m`);
-
-  return parts.join("");
-}
 
 export default function HomeTemplate({
   user,

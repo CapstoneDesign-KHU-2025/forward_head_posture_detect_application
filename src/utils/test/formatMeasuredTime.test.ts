@@ -1,4 +1,4 @@
-import { formatMeasuredTime } from "@/utils/formatMeasuredTime";
+import { formatMeasuredTime } from "@/app/[locale]/components/home.utils";
 
 describe("utils/formatMeasuredTime test", () => {
   it("null/undefined => 0m", () => {
