@@ -747,7 +747,8 @@
   "MiniWarningPip": {
     "getReady": "측정 중이 아닙니다.",
     "warning": "거북목 경고!",
-    "good": "완벽해요!"
+    "good": "완벽해요!",
+    "stop": "측정 중단"
   },
   "HelpMessageModal": {
     "header": "측정 가이드 팁",
