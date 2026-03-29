@@ -50,7 +50,7 @@ export default async function PrivacyPolicyPage() {
             {t("description.5.text")}
             <br />
             <a href="mailto:your-email@example.com" className="text-blue-600 hover:underline mt-2 inline-block">
-              kge0211114@gmail.com
+              boogieboogie.contact@gmail.com
             </a>
           </p>
         </section>

@@ -51,14 +51,12 @@ export default async function LoginPage() {
         </div>
       </div>
 
-      {/* 카드 */}
       <Card
         className="relative z-10 w-[460px] max-w-full px-11 pt-12 pb-10 rounded-[28px]"
         style={{
           boxShadow: "0 24px 80px rgba(74,124,89,0.18), 0 4px 20px rgba(74,124,89,0.08)",
         }}
       >
-        {/* 브랜딩 */}
         <div className="flex flex-col items-center mb-7" style={{ fontFamily: "Nunito, sans-serif" }}>
           <div
             className="text-[56px] mb-3 login-turtle-bounce"

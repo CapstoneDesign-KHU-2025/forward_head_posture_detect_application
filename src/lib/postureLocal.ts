@@ -2,7 +2,6 @@ import { PostureMeasurement } from "@/utils/types";
 import { getDB } from "./idb";
 
 type StoredPostureRecord = PostureMeasurement & { id?: number; uploadedFlag: 0 | 1 };
-type StoredPostureDTO = Omit<StoredPostureRecord, "id" | "uploadedFlag">;
 
 export async function storeMeasurementAndAccumulate(data: PostureMeasurement) {
   const db = await getDB();
