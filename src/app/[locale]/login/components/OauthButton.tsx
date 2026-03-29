@@ -67,7 +67,7 @@ export default function OauthButton({ provider, variant = "default" }: OauthButt
   return (
     <Button
       type="button"
-      variant="ghost"
+      variant="secondary"
       onClick={provider === "google" ? () => handleSignIn("google") : () => handleSignIn("github")}
       className={styleClass}
     >

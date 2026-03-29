@@ -2,7 +2,6 @@
 
 import { useLocale } from "next-intl";
 import { useRouter, usePathname } from "@/i18n/navigation";
-import { Button } from "@/components/Button";
 
 export default function LanguageToggle() {
   const locale = useLocale();
@@ -21,27 +20,25 @@ export default function LanguageToggle() {
         }`}
       />
 
-      <Button
+      <button
         type="button"
-        variant="ghost"
         onClick={() => handleToggle("en")}
         className={`relative z-10 flex-1 flex justify-center text-sm font-bold transition-colors duration-300 hover:bg-transparent ${
           locale === "en" ? "text-[#2D5F2E]" : "text-[#8CA38D] hover:text-[#305b3d]"
         }`}
       >
         EN
-      </Button>
+      </button>
 
-      <Button
+      <button
         type="button"
-        variant="ghost"
         onClick={() => handleToggle("ko")}
         className={`relative z-10 flex-1 flex justify-center text-sm font-bold transition-colors duration-300 hover:bg-transparent ${
           locale === "ko" ? "text-[#2D5F2E]" : "text-[#8CA38D] hover:text-[#305b3d]"
         }`}
       >
         KR
-      </Button>
+      </button>
     </div>
   );
 }

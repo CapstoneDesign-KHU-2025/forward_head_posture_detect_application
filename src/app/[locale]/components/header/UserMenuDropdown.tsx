@@ -3,8 +3,8 @@
 import { Icon } from "@/components/Icon";
 import { Settings, LogOut, UserCircle } from "lucide-react";
 import { signOut } from "next-auth/react";
-import SensitivitySettingsModal from "@/app/[locale]/components/SensitivitySettingsModal";
-import CharacterSelectionModal from "@/app/[locale]/components/CharacterSelectionModal";
+import SensitivitySettingsModal from "@/app/[locale]/components/header/SensitivitySettingsModal";
+import CharacterSelectionModal from "@/app/[locale]/components/header/CharacterSelectionModal";
 import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 

@@ -4,7 +4,6 @@ import { FallbackProps } from "react-error-boundary";
 import { useRouter } from "@/i18n/navigation";
 import { startTransition } from "react";
 import { useTranslations } from "next-intl";
-import { Button } from "@/components/Button";
 export default function ErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
   const router = useRouter();
   const t = useTranslations("ErrorFallback");
@@ -20,9 +19,8 @@ export default function ErrorFallback({ error, resetErrorBoundary }: FallbackPro
       </p>
 
       <div className="flex gap-3">
-        <Button
+        <button
           type="button"
-          variant="ghost"
           onClick={() => {
             startTransition(() => {
               router.refresh();
@@ -32,15 +30,14 @@ export default function ErrorFallback({ error, resetErrorBoundary }: FallbackPro
           className="px-5 py-2 bg-gray-600 hover:bg-gray-500 rounded-lg text-sm font-medium transition-colors"
         >
           {t("ErrorFallback.button")}
-        </Button>
-        <Button
+        </button>
+        <button
           type="button"
-          variant="ghost"
           onClick={resetErrorBoundary}
           className="px-5 py-2 bg-red-500 hover:bg-red-600 rounded-lg text-sm font-medium transition-colors"
         >
           {t("ErrorFallback.tryAgain")}
-        </Button>
+        </button>
       </div>
     </div>
   );

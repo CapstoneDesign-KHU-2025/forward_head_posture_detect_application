@@ -20,4 +20,3 @@ export function UserAvatar({ initial, bgColor = "#6aab7a", className }: UserAvat
     </div>
   );
 }
-

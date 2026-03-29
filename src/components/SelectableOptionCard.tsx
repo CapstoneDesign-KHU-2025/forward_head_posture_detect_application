@@ -1,7 +1,6 @@
 "use client";
 
 import { cn } from "@/utils/cn";
-import { Button } from "@/components/Button";
 
 type SelectableOptionCardProps = {
   icon: React.ReactNode;
@@ -21,9 +20,8 @@ export function SelectableOptionCard({
   className,
 }: SelectableOptionCardProps) {
   return (
-    <Button
+    <button
       type="button"
-      variant="ghost"
       onClick={onClick}
       className={cn(
         "flex cursor-pointer items-center justify-between rounded-2xl border-[1.5px] px-4 py-3 transition-all duration-150",
@@ -49,6 +47,6 @@ export function SelectableOptionCard({
       >
         {isSelected && <span className="h-2 w-2 rounded-full bg-white" />}
       </div>
-    </Button>
+    </button>
   );
 }
