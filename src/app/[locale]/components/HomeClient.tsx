@@ -23,7 +23,7 @@ function computeImprovementPercent(weeklyAvg: number | null, todayAvg: number | 
   return rate;
 }
 
-function getKpiConfigs(
+export function getKpiConfigs(
   data: {
     todayAvg: number | null;
     weeklyAvg: number | null;

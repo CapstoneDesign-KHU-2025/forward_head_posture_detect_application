@@ -1,4 +1,4 @@
-import { getKpiConfigs } from "@/utils/getKpiConfigs";
+import { getKpiConfigs } from "@/app/[locale]/components/HomeClient";
 
 describe("getKpiConfigs edge case test", () => {
   const t = (key: string) => key;
