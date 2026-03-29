@@ -89,6 +89,32 @@
     "tryAgain": "Try Again"
   },
   "Trial": {
+    "intro": {
+      "subtitle": "Review the tips below, then tap Next.",
+      "next": "Next"
+    },
+    "spotlight": {
+      "step1": {
+        "badge": "1 / 4",
+        "title": "Ready to start measuring? 🐢",
+        "body": "Tap the button above to turn on the camera and try the turtle-neck check."
+      },
+      "step2": {
+        "badge": "2 / 4",
+        "title": "Allow camera access",
+        "body": "Please allow the camera when your browser asks. In trial mode, measurements are not saved to the server."
+      },
+      "step3": {
+        "badge": "3 / 4",
+        "title": "Match the guide on screen",
+        "body": "Adjust your distance so your face and shoulders fit inside the oval, then hold steady while the countdown runs."
+      },
+      "step4": {
+        "badge": "4 / 4",
+        "title": "You’re all set — measure freely",
+        "body": "Measurement is running. Check your posture in a comfortable position. Tap the button below to stop when you’re done."
+      }
+    },
     "resultTitle": "Trial Results",
     "measureTime": "Measurement Time",
     "warningCount": "Warnings",
@@ -563,7 +589,7 @@
         "2": "We detect your posture in real time and notify you instantly when it becomes unhealthy."
       },
       "buttons": {
-        "start": "Get Started",
+        "start": "Start trial",
         "howItWorks": "How It Works"
       }
     },
@@ -637,7 +663,7 @@
       "title": "Start Right Now",
       "description": "Build a healthier day without worrying about forward head posture."
     },
-    "button": "Get Started"
+    "button": "Start trial"
   },
   "DashboardMockupCard": {
     "title": "Hello, Boogi!",
