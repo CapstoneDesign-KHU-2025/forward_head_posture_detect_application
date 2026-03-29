@@ -12,21 +12,27 @@ import { useDocumentPiP } from "@/providers/PipProvider";
 import { TrialIntroGuideModal } from "@/components/molecules/TrialIntroGuideModal";
 
 const SPOTLIGHT_PAD = 10;
+const SPOTLIGHT_HOLE_RADIUS = 22;
 const PANEL_BUBBLE_GAP = 12;
 
-function DimPanels({ rect }: { rect: DOMRect }) {
+function SpotlightDim({ rect }: { rect: DOMRect }) {
   const t = rect.top - SPOTLIGHT_PAD;
   const l = rect.left - SPOTLIGHT_PAD;
   const w = rect.width + SPOTLIGHT_PAD * 2;
   const h = rect.height + SPOTLIGHT_PAD * 2;
-  const dim = "fixed z-[140] bg-black/60";
   return (
-    <>
-      <div className={dim} style={{ top: 0, left: 0, right: 0, height: Math.max(0, t) }} aria-hidden />
-      <div className={dim} style={{ top: t + h, left: 0, right: 0, bottom: 0 }} aria-hidden />
-      <div className={dim} style={{ top: t, left: 0, width: Math.max(0, l), height: h }} aria-hidden />
-      <div className={dim} style={{ top: t, left: l + w, right: 0, height: h }} aria-hidden />
-    </>
+    <div
+      aria-hidden
+      className="pointer-events-none fixed z-[140]"
+      style={{
+        top: t,
+        left: l,
+        width: w,
+        height: h,
+        borderRadius: SPOTLIGHT_HOLE_RADIUS,
+        boxShadow: "0 0 0 9999px rgba(0,0,0,0.6)",
+      }}
+    />
   );
 }
 
@@ -235,7 +241,7 @@ export default function TrialTemplate() {
     <div className="min-h-[calc(100dvh-var(--header-height))] bg-[var(--green-pale)] overflow-x-hidden">
       <TrialIntroGuideModal isOpen={trialPhase === "intro"} onNext={handleIntroNext} />
 
-      {showSpotlight && <DimPanels rect={spotlightRect} />}
+      {showSpotlight && <SpotlightDim rect={spotlightRect} />}
 
       {showSpotlight && spotlightRect && step1BubbleStyle && (
         <TrialCoachBubble
@@ -264,7 +270,7 @@ export default function TrialTemplate() {
           <div
             className={
               showSpotlight && stopEstimating
-                ? "rounded-[16px] p-1 ring-[3px] ring-white shadow-[0_0_0_1px_rgba(74,124,89,0.25),0_8px_32px_rgba(255,255,255,0.45)]"
+                ? "rounded-[22px] p-1 ring-[3px] ring-white shadow-[0_0_0_1px_rgba(74,124,89,0.25),0_8px_32px_rgba(255,255,255,0.45)]"
                 : ""
             }
           >
