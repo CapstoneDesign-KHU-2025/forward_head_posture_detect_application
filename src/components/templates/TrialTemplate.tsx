@@ -7,9 +7,11 @@ import EstimatePanel from "@/components/molecules/EstimatePanel";
 import ErrorBanner from "@/components/atoms/ErrorBanner";
 import AsyncBoundary from "@/components/molecules/AsyncBoundary";
 import { MEASUREMENT_CANVAS_SLOT_ID } from "@/providers/MeasurementProvider";
+import { useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import { useDocumentPiP } from "@/providers/PipProvider";
 import { TrialIntroGuideModal } from "@/components/molecules/TrialIntroGuideModal";
+import { TrialLoginPromptModal } from "@/components/molecules/TrialLoginPromptModal";
 import { PictureInPicture2 } from "lucide-react";
 
 const SPOTLIGHT_PAD = 10;
@@ -157,6 +159,7 @@ function TrialCoachBubble({
 }
 
 export default function TrialTemplate() {
+  const { data: session } = useSession();
   const t = useTranslations("Estimate");
   const tTrial = useTranslations("Trial");
   const bubbleTitleBaseId = useId();
@@ -181,6 +184,7 @@ export default function TrialTemplate() {
   const [coachAck4, setCoachAck4] = useState(false);
   const [coachAck5, setCoachAck5] = useState(false);
   const [coachAck6, setCoachAck6] = useState(false);
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
 
   const startBtnRef = useRef<HTMLButtonElement | null>(null);
   const panelWrapRef = useRef<HTMLDivElement | null>(null);
@@ -322,6 +326,7 @@ export default function TrialTemplate() {
     if (trialPhase === "intro") return;
 
     if (stopEstimating) {
+      setShowLoginPrompt(false);
       if (trialPhase === "spotlight") {
         startMeasurement();
         setTrialPhase("active");
@@ -333,6 +338,9 @@ export default function TrialTemplate() {
     } else {
       stopMeasurement();
       closePiP();
+      if (!session?.user) {
+        setShowLoginPrompt(true);
+      }
     }
   };
 
@@ -388,6 +396,7 @@ export default function TrialTemplate() {
   return (
     <div className="min-h-[calc(100dvh-var(--header-height))] bg-[var(--green-pale)] overflow-x-hidden">
       <TrialIntroGuideModal isOpen={trialPhase === "intro"} onNext={handleIntroNext} />
+      <TrialLoginPromptModal isOpen={showLoginPrompt} onClose={() => setShowLoginPrompt(false)} />
 
       {showSpotlight && <SpotlightDim rect={spotlightRect} />}
 

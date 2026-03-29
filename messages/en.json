@@ -133,7 +133,14 @@
     "warningUnit": "times",
     "angleUnit": "°",
     "retryButton": "Measure Again",
-    "stopButton": "Stop trial measurement"
+    "stopButton": "Stop trial measurement",
+    "loginPrompt": {
+      "title": "Sign in to keep your progress",
+      "body": "Trial measurements are not saved. Sign in for daily summaries, history, and the full experience.",
+      "login": "Sign in",
+      "close": "Close",
+      "closeAria": "Close dialog"
+    }
   },
   "EstimatePanel": {
     "cameraTitle": "Camera",
