@@ -97,11 +97,7 @@
   "EvolutionTooltip": {
     "ariaLabel": "진화 조건 안내"
   },
-  "FloatingBar": {
-    "title": "측정 중",
-    "elapsedTime": "경과",
-    "stop": "중단"
-  },
+
   "FriendsButton": {
     "ariaLabel": "친구 관리"
   },
