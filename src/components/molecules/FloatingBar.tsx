@@ -26,6 +26,7 @@ export type FloatingBarProps = {
 export function FloatingBar({ visible, title, elapsedSeconds = 0, onStop, className }: FloatingBarProps) {
   const t = useTranslations("FloatingBar");
   const titleText = title || t("title");
+
   return (
     <div
       role="status"

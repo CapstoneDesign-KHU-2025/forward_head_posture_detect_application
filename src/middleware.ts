@@ -8,8 +8,6 @@ const intlMiddleware = createMiddleware(routing);
 export default function middleware(request: NextRequest) {
   const response = intlMiddleware(request);
 
-  // 2) 보안 헤더 추가
-  response.headers.set("X-Frame-Options", "DENY");
   response.headers.set("X-Content-Type-Options", "nosniff");
   response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
   response.headers.set("Permissions-Policy", "camera=(self), microphone=(), geolocation=(self), interest-cohort=()");

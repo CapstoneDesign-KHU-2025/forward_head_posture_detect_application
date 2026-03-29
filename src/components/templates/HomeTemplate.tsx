@@ -63,7 +63,6 @@ export default function HomeTemplate({
       (typeof kpi.label === "string" && kpi.label.includes(measureTimeLabel)),
   );
 
-  const todayWarningCount = warningCount ?? 0;
   const avgAngle = user?.avgAng ?? null;
   const idealAngle = 52;
   const deltaFromIdeal = avgAngle != null && Number.isFinite(avgAngle) ? avgAngle - idealAngle : null;
