@@ -90,7 +90,7 @@ export function MeasurementProvider({ children }: { children: ReactNode }) {
       if (isProcessing) return;
       try {
         setIsProcessing(true);
-        if (!stopEstimating) {
+        if (!stopEstimating && userId) {
           await storeMeasurementAndAccumulate({
             userId,
             ts: Date.now(),
@@ -141,15 +141,15 @@ export function MeasurementProvider({ children }: { children: ReactNode }) {
     handleStopMeasurement();
   }, [handleStopMeasurement]);
 
-  // 실제 측정 시작 시에만 중단 플래그 설정 (가이드라인 단계에서 나가면 복구 제안 안 함)
+  // 실제 측정 시작 시에만 중단 플래그 설정 (가이드라인 단계에서 나가면 복구 제안 안 함, 체험 모드는 제외)
   useEffect(() => {
-    if (typeof window === "undefined" || !measurementStarted) return;
+    if (typeof window === "undefined" || !measurementStarted || !userId) return;
     sessionStorage.setItem(SESSION_STORAGE_MEASUREMENT_INTERRUPTED, "1");
-  }, [measurementStarted]);
+  }, [measurementStarted, userId]);
 
   // pathname 변경 시: 측정 페이지 밖으로 나가면 카메라 끄기
   useEffect(() => {
-    if (pathname !== "/estimate" && pathname !== "/") {
+    if (pathname !== "/estimate" && pathname !== "/" && pathname !== "/trial") {
       if (measurementStarted) {
         handleStopMeasurement(true);
       }
