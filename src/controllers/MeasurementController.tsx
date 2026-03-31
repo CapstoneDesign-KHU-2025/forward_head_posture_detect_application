@@ -35,7 +35,6 @@ type MeasurementContextValue = {
   statusBannerMessage: () => string;
   isTurtle: boolean;
   angle: number;
-  // 🚨 렌더링 폭탄 해결을 위해 elapsedSeconds는 Context에서 뺐습니다! (Zustand에서 직접 꺼내 쓰세요)
   isProcessing: boolean;
   canvasSlotId: string;
   isFirstFrameDrawn: boolean;
@@ -276,8 +275,6 @@ export function MeasurementController({ children }: { children: ReactNode }) {
         )}
 
       <video ref={videoRef} className="absolute -left-[9999px]" muted playsInline />
-
-      <FloatingBarController />
 
       <RecoveryNotice
         isVisible={showRecoveryNotice}
