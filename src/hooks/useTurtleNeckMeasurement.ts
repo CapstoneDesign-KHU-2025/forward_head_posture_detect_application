@@ -10,7 +10,7 @@ import { getStatusBannerMessageCore, getStatusBannerTypeCore } from "@/utils/get
 import { checkGuidelinesAndDistance } from "@/utils/checkGuidelinesAndDistance";
 import { useTranslations } from "next-intl";
 import { incrementTurtleCount } from "@/lib/postureLocal";
-import { useSoundContext } from "@/providers/SoundProvider";
+import { useSoundContext } from "@/controllers/SoundProvider";
 import type { GuideColor, Pose } from "@/utils/types";
 
 const USE_WORKER = true;
