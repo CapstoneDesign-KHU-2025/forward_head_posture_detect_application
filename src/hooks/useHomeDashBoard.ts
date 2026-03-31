@@ -3,10 +3,49 @@ import { apiRequest } from "@/lib/api/client";
 import { computeTodaySoFarAverage } from "@/lib/hourlyOps";
 import { getTodayCount, getTodayMeasuredSeconds } from "@/lib/postureLocal";
 import { useMeasurement } from "@/providers/MeasurementProvider";
-import { computeDayStatusMap } from "@/utils/computeDayStatusMap";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { useEffect, useMemo, useState } from "react";
+import { UserProfile, WeeklySummaryData } from "@/utils/types";
+import { DayStatus } from "@/utils/types";
+
+const MIN_MEASURE_SECONDS = 300;
+const GOOD_DAY_MAX_WARNINGS = 10;
+const BAD_DAY_MIN_WARNINGS = 16;
+
+type DailyRow = {
+  date: string | Date;
+  weightSeconds: number;
+  count: number;
+};
+
+function toDateKey(date: string | Date): string {
+  const d = typeof date === "string" ? new Date(date) : date;
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
+function computeDayStatusMap(rows: DailyRow[]): Record<string, DayStatus> {
+  const map: Record<string, DayStatus> = {};
+
+  for (const row of rows) {
+    const weightSeconds = Number(row.weightSeconds ?? 0);
+    const count = Number(row.count ?? 0);
+
+    if (weightSeconds < MIN_MEASURE_SECONDS) continue;
+
+    const key = toDateKey(row.date);
+    if (count <= GOOD_DAY_MAX_WARNINGS) {
+      map[key] = "good";
+    } else if (count >= BAD_DAY_MIN_WARNINGS) {
+      map[key] = "bad";
+    }
+  }
+
+  return map;
+}
 
 type WeeklySummaryRow = {
   id: number;
@@ -20,20 +59,7 @@ type WeeklySummaryRow = {
   createdAt: string | Date;
   updatedAt: string | Date;
 };
-export type WeeklySummaryData = {
-  mode: "weekly" | "dynamic";
-  requestedDays: number;
-  actualDataDays: number;
-  weightedAvg: number | null;
-  safeRows: WeeklySummaryRow[];
-  goodDays: number;
-};
 
-type UserProfile = {
-  id: string;
-  name: string;
-  image?: string;
-};
 type HomeClientProps = {
   weeklyData: WeeklySummaryData | null;
   user: UserProfile;

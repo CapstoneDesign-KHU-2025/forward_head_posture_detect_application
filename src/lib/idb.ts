@@ -1,7 +1,5 @@
 import { openDB, DBSchema, IDBPDatabase } from "idb";
 
-const HOUR_MS = 60 * 60 * 1000;
-
 export function getHourStartTs(d: Date) {
   const x = new Date(d);
   x.setMinutes(0, 0, 0);

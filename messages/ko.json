@@ -308,6 +308,7 @@
   },
 
   "HomeTemplate": {
+    "measurementTime": "측정 시간",
     "sections": {
       "todayStatus": "오늘의 거북목",
       "measurement": "측정 섹션"
@@ -741,10 +742,17 @@
     }
   },
   "MiniWarningPip": {
+<<<<<<< HEAD
     "getReadyTitle": "준비 중",
     "warningTitle": "거북목 감지",
     "goodTitle": "좋은 자세예요",
     "stop": "중단"
+=======
+    "getReady": "측정 중이 아닙니다.",
+    "warning": "거북목 경고!",
+    "good": "완벽해요!",
+    "stop": "측정 중단"
+>>>>>>> develop
   },
   "HelpMessageModal": {
     "header": "측정 가이드 팁",

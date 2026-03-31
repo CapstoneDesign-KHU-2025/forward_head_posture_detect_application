@@ -1,7 +1,7 @@
 // src/middleware.ts
 import createMiddleware from "next-intl/middleware";
 import { routing } from "@/i18n/routing";
-import { NextResponse, type NextRequest } from "next/server";
+import { type NextRequest } from "next/server";
 
 const intlMiddleware = createMiddleware(routing);
 

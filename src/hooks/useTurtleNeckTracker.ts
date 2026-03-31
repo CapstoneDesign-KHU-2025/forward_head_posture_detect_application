@@ -6,7 +6,7 @@ import analyzeTurtleNeck from "@/utils/isTurtleNeck";
 import turtleStabilizer from "@/utils/turtleStabilizer";
 import { useAppStore } from "@/app/store/app";
 import { useTranslations } from "next-intl";
-export type UseTurtleNeckTrackerOptions = {
+type UseTurtleNeckTrackerOptions = {
   autoStart?: boolean;
   wasmBaseUrl?: string;
   modelAssetPath?: string;

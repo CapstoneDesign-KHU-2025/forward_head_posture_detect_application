@@ -1,54 +1,36 @@
+import { PostureMeasurement } from "@/utils/types";
 import { getDB } from "./idb";
 
-export type PostureMeasurement = {
-  userId: string;
-  ts: number;
-  angleDeg: number;
-  isTurtle: boolean;
-  hasPose: boolean;
-  sessionId?: string;
-  sampleGapS?: number;
-};
-
-export type StoredPostureRecord = PostureMeasurement & { id?: number; uploadedFlag: 0 | 1 };
-export type StoredPostureDTO = Omit<StoredPostureRecord, "id" | "uploadedFlag">;
+type StoredPostureRecord = PostureMeasurement & { id?: number; uploadedFlag: 0 | 1 };
 
 export async function storeMeasurementAndAccumulate(data: PostureMeasurement) {
   const db = await getDB();
 
-  // 이 샘플이 대표하는 시간 간격(초) — 기본 10초
   const w = data.sampleGapS ?? 10;
 
-  // 이 샘플이 속한 "시" 단위 구간 시작 시각 (예: 13:27 → 13:00:00.000)
   const hourStart = new Date(data.ts);
   hourStart.setMinutes(0, 0, 0);
   const hourStartTs = +hourStart;
 
-  // samples 스토어에 넣을 레코드
   const record: StoredPostureRecord = {
     ...data,
-    // sessionId가 숫자/기타 타입이어도 문자열로 강제
     sessionId: data.sessionId != null ? String(data.sessionId) : undefined,
     uploadedFlag: 0,
   };
 
-  // samples + hourly 두 스토어를 한 트랜잭션에서 처리
   const tx = db.transaction(["samples", "hourly"], "readwrite");
 
-  // 1) samples 스토어에 개별 샘플 저장
   await tx.objectStore("samples").put(record);
 
-  // 2) hourly 스토어에 가중 평균용 누적
   const hourlyStore = tx.objectStore("hourly");
   const key: [string, number] = [data.userId, hourStartTs];
 
-  // hourly 레코드 타입 (IndexedDB에 실제로 저장되는 구조)
   type HourlyRecord = {
     userId: string;
     hourStartTs: number;
-    sumWeighted: number; // 각도 * 시간 의 합
-    weight: number; // 시간(초) 누적
-    count: number; // 거북목 감지 횟수
+    sumWeighted: number;
+    weight: number;
+    count: number;
     avgAngle: number | null;
     finalized: 0 | 1;
   };
@@ -56,20 +38,17 @@ export async function storeMeasurementAndAccumulate(data: PostureMeasurement) {
   const cur = (await hourlyStore.get(key)) as HourlyRecord | undefined;
 
   if (cur) {
-    // 이미 이 시간대(hourStartTs)에 레코드가 있으면 누적
     cur.sumWeighted += data.angleDeg * w;
     cur.weight += w;
-    // count는 거북목 진입 시점(incrementTurtleCount)에서만 증가
-    cur.finalized = 0; // 새 데이터 들어왔으니 다시 미확정 상태
+    cur.finalized = 0;
     await hourlyStore.put(cur);
   } else {
-    // 이 시간대 첫 레코드면 새로 생성
     const newRow: HourlyRecord = {
       userId: record.userId,
       hourStartTs,
       sumWeighted: data.angleDeg * w,
       weight: w,
-      count: 0, // count는 incrementTurtleCount에서만 증가
+      count: 0,
       avgAngle: null,
       finalized: 0,
     };
@@ -79,10 +58,6 @@ export async function storeMeasurementAndAccumulate(data: PostureMeasurement) {
   await tx.done;
 }
 
-/**
- * 거북목 진입 시점에 count 증가 (경고음과 동기화)
- * 10초 샘플이 아닌 이벤트 기반으로 경고 횟수를 기록
- */
 type HourlyRecord = {
   userId: string;
   hourStartTs: number;
@@ -93,17 +68,15 @@ type HourlyRecord = {
   finalized: 0 | 1;
 };
 
-// ✅ key 단위로 직렬화하기 위한 간단 큐 (in-memory)
 const hourlyKeyQueue = new Map<string, Promise<void>>();
 
 function serializeByKey(keyStr: string, fn: () => Promise<void>): Promise<void> {
   const prev = hourlyKeyQueue.get(keyStr) ?? Promise.resolve();
 
   const next = prev
-    .catch(() => {}) // 이전 작업 실패가 체인을 끊지 않게
+    .catch(() => {})
     .then(fn)
     .finally(() => {
-      // 현재 작업이 map에 남아있을 때만 정리 (경합 방지)
       if (hourlyKeyQueue.get(keyStr) === next) hourlyKeyQueue.delete(keyStr);
     });
 
@@ -194,7 +167,6 @@ export async function getTodayCount(userId: string | undefined): Promise<number>
   const store = tx.objectStore("hourly");
   const index = store.index("byUserHour");
 
-  // 오늘 00:00 ~ 내일 00:00 - 1ms 범위
   const start = new Date();
   start.setHours(0, 0, 0, 0);
   const startTs = +start;
@@ -219,7 +191,6 @@ export async function getTodayMeasuredSeconds(userId: string | undefined): Promi
   const store = tx.objectStore("hourly");
   const index = store.index("byUserHour");
 
-  // 오늘 00:00 ~ 내일 00:00 - 1ms 범위
   const start = new Date();
   start.setHours(0, 0, 0, 0);
   const startTs = +start;
@@ -231,7 +202,7 @@ export async function getTodayMeasuredSeconds(userId: string | undefined): Promi
 
   for await (const cursor of index.iterate(range)) {
     const row = cursor.value;
-    totalSeconds += row.weight ?? 0; // weight = 초 단위 측정 시간
+    totalSeconds += row.weight ?? 0;
   }
 
   return totalSeconds;

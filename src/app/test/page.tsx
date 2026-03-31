@@ -4,20 +4,13 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type { PoseLandmarker } from "@mediapipe/tasks-vision";
 import { FilesetResolver } from "@mediapipe/tasks-vision";
 import isTurtleNeck from "@/utils/isTurtleNeck";
-import { Button } from "@/components/atoms/Button";
+import { Button } from "@/components/Button";
 import { logger } from "@/lib/logger";
+import { TestInfo } from "@/utils/types";
 
 type TurtleStatus = "idle" | "good" | "turtle" | "no-pose";
 
-export type TestInfo = {
-  monitorDistance: number; // cm
-  monitorHight: number; // cm (오타 원문 유지: Hight)
-  angleBetweenBodyAndCam: number; // deg
-  isHairTied: boolean;
-  turtleNeckLevel: "none" | "mild" | "severe";
-};
-
-export type Period = { start: number; end: number; duration: number };
+type Period = { start: number; end: number; duration: number };
 
 export default function TurtleNeckUploadPage() {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -46,7 +39,6 @@ export default function TurtleNeckUploadPage() {
   const [lmReady, setLmReady] = useState(false);
   const [lastErr, setLastErr] = useState<string | null>(null);
 
-  // ====== testInfo 입력 상태 & 저장 리스트 ======
   const [testInfo, setTestInfo] = useState<TestInfo>({
     monitorDistance: 0,
     monitorHight: 0,
@@ -55,17 +47,15 @@ export default function TurtleNeckUploadPage() {
     turtleNeckLevel: "none",
   });
 
-  // 저장해둔 testInfo들을 쌓아두는 리스트
   const [savedTestInfos, setSavedTestInfos] = useState<Array<TestInfo & { savedAt: string }>>([]);
 
-  // ====== 거북목 구간 수집 ======
   const [turtleNeckPeriods, setTurtleNeckPeriods] = useState<Period[]>([]);
   const turtleStartTimeRef = useRef<number | null>(null);
 
   const wasmBaseUrl = useMemo(() => "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm", []);
 
   function resetTimestamps() {
-    lastTsRef.current = 0; // first ts will be > 0
+    lastTsRef.current = 0;
   }
 
   function nextMonotonicTs(): number {
@@ -502,27 +492,33 @@ export default function TurtleNeckUploadPage() {
             />
 
             <div className="mt-4 flex gap-2 items-center">
-              <button
+              <Button
+                type="button"
+                variant="ghost"
                 onClick={playProcess}
                 disabled={!fileUrl || !loaded || running}
                 className="rounded-xl bg-black text-white px-4 py-2 disabled:opacity-40"
               >
                 Play & Analyze
-              </button>
-              <button
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
                 onClick={pauseProcess}
                 disabled={!fileUrl || !loaded || !running}
                 className="rounded-xl bg-slate-200 px-4 py-2 disabled:opacity-40"
               >
                 Pause
-              </button>
-              <button
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
                 onClick={stopAndReset}
                 disabled={!fileUrl || !loaded}
                 className="rounded-xl bg-slate-200 px-4 py-2 disabled:opacity-40"
               >
                 Stop
-              </button>
+              </Button>
             </div>
 
             {/* ===== 테스트 정보 입력 ===== */}
@@ -586,12 +582,14 @@ export default function TurtleNeckUploadPage() {
                     </select>
                   </div>
 
-                  <button
+                  <Button
+                    type="button"
+                    variant="ghost"
                     onClick={saveTestData}
                     className="w-full bg-blue-500 text-white py-2 rounded-xl hover:bg-blue-600"
                   >
                     테스트 정보 저장
-                  </button>
+                  </Button>
                 </div>
               </div>
             </div>
@@ -621,30 +619,37 @@ export default function TurtleNeckUploadPage() {
             </div>
 
             <div className="mt-4 space-y-2">
-              <button
+              <Button
+                type="button"
+                variant="ghost"
                 onClick={downloadCSVLog}
                 disabled={logRows.length <= 1}
                 className="rounded-xl bg-emerald-600 text-white px-4 py-2 disabled:opacity-40"
               >
                 Download CSV log
-              </button>
+              </Button>
 
               <div className="flex gap-2">
-                <button
+                <Button
+                  type="button"
+                  variant="ghost"
                   onClick={downloadPeriodsCSV}
                   disabled={turtleNeckPeriods.length === 0}
                   className="rounded-xl bg-indigo-600 text-white px-4 py-2 disabled:opacity-40"
                 >
                   Download Turtle Periods CSV
-                </button>
-                <button onClick={downloadSessionJSON} className="rounded-xl bg-slate-800 text-white px-4 py-2">
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={downloadSessionJSON}
+                  className="rounded-xl bg-slate-800 text-white px-4 py-2"
+                >
                   Download Session JSON
-                </button>
+                </Button>
               </div>
 
-              {/* <button onClick={saveToServerFiles} className="rounded-xl bg-amber-600 text-white px-4 py-2">
-                서버에 파일 저장(개발/자체 호스팅용)
-              </button> */}
+              {/* dev only: saveToServerFiles trigger (disabled) */}
             </div>
           </div>
 

@@ -1,5 +1,4 @@
-type PosePoint = { x: number; y: number; z: number };
-export type Pose = PosePoint[];
+import { Pose } from "./types";
 
 interface GuidelineCheckResult {
   faceInside: boolean;
@@ -14,9 +13,8 @@ export function checkGuidelinesAndDistance(
   canvas: HTMLCanvasElement,
   centerX: number,
   centerY: number,
-  offsetY: number
+  offsetY: number,
 ): GuidelineCheckResult {
-  // 포즈가 없으면(카메라 가림 등) 가이드라인 통과 불가
   let faceInside = false;
   let shoulderInside = false;
   let isDistanceOk = false;
@@ -69,7 +67,7 @@ export function checkGuidelinesAndDistance(
 
     if (lm11 && lm12) {
       const shoulderWidth = Math.sqrt(
-        Math.pow((lm12.x - lm11.x) * canvas.width, 2) + Math.pow((lm12.y - lm11.y) * canvas.height, 2)
+        Math.pow((lm12.x - lm11.x) * canvas.width, 2) + Math.pow((lm12.y - lm11.y) * canvas.height, 2),
       );
 
       const referenceShoulderWidth = 380;

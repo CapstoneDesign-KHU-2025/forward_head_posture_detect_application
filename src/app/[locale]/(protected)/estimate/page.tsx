@@ -1,15 +1,15 @@
 "use client";
 
 import { useMeasurement } from "@/providers/MeasurementProvider";
-import { Button } from "@/components/atoms/Button";
-import EstimatePanel from "@/components/molecules/EstimatePanel";
-import ErrorBanner from "@/components/atoms/ErrorBanner";
-import AsyncBoundary from "@/components/molecules/AsyncBoundary";
+import { Button } from "@/components/Button";
+import EstimatePanel from "./components/EstimatePanel";
+import ErrorBanner from "@/components/ErrorBanner";
+import AsyncBoundary from "@/components/AsyncBoundary";
 
 import { MEASUREMENT_CANVAS_SLOT_ID } from "@/providers/MeasurementProvider";
 import { useTranslations } from "next-intl";
 import { useDocumentPiP } from "@/providers/PipProvider";
-import { HelpPopUp } from "@/components/molecules/HelpPopUp";
+import { HelpPopUp } from "./components/HelpPopUp";
 
 export default function Estimate() {
   const t = useTranslations("Estimate");

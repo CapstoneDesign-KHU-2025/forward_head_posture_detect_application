@@ -1,5 +1,6 @@
 import { storeMeasurementAndAccumulate } from "@/lib/postureLocal";
-import isTurtleNeck, { isTurtleNeckProp } from "@/utils/isTurtleNeck";
+import isTurtleNeck from "@/utils/isTurtleNeck";
+import { isTurtleNeckProp } from "@/utils/types";
 
 let intervalId: any = null;
 

@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "@/i18n/navigation";
-import { Button } from "@/components/atoms/Button";
-import CharacterGrid from "@/components/molecules/CharacterGrid";
+import { Button } from "@/components/Button";
+import CharacterGrid from "./components/CharacterGrid";
 import { useTranslations } from "next-intl";
 
 const CHARACTER_ASSETS = [
@@ -11,6 +11,7 @@ const CHARACTER_ASSETS = [
   { id: "jerry", icon: "/icons/cat.png" },
   { id: "jessica", icon: "/icons/girl.png" },
 ];
+
 export default function CharacterSelectionPage() {
   const t = useTranslations("Characters");
   const [selectedCharacter, setSelectedCharacter] = useState<string | null>(null);
@@ -36,7 +37,6 @@ export default function CharacterSelectionPage() {
     router.push("/");
   };
 
-  // 이미 캐릭터가 선택돼 있으면 홈으로 바로 이동 (로그인 후 /character 콜백 시 스킵)
   useEffect(() => {
     const stored = localStorage.getItem("selectedCharacter");
     if (stored?.trim()) {
@@ -60,7 +60,7 @@ export default function CharacterSelectionPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-[var(--green-pale)] to-[#E8F5E9] flex items-center justify-center p-8">
       <div className="max-w-[1200px] w-full bg-white rounded-[24px] p-12 shadow-[0_10px_40px_rgba(45,95,46,0.15)]">
-        {/* 헤더 */}
+        {/* header */}
         <div className="text-center mb-12">
           <div className="text-[3rem] mb-4 animate-bounce">🐢</div>
           <h1 className="text-[2rem] text-[#2D5F2E] mb-2 font-bold">{t("header.title")}</h1>

@@ -1,6 +1,5 @@
-import type { Friend, FriendRequestRow, SearchUser } from "@/types/friends";
+import { SearchUser, FriendRequestRow, Friend } from "@/utils/types";
 
-// 친구 목록
 export const MOCK_FRIENDS: Friend[] = [
   {
     friendshipId: "fr-jisu",

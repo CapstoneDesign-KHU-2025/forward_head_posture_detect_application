@@ -10,6 +10,6 @@ export const logger = {
       });
       return;
     }
-    console.error(`🚩 [${context}]`, error);
+    console.error(context, error);
   },
 };

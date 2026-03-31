@@ -38,6 +38,70 @@
   --warning-text: #ffb347; /* "ideal 대비 +2.2°" 주황 */
   --cal-sun: #e05030; /* 캘린더 일요일 */
   --cal-sat: #6b9fff; /* 캘린더 토요일 */
+
+  --shadow-soft-card: 0 4px 20px rgba(74, 124, 89, 0.12);
+
+  --animate-shara-attention: shara-attention 1.9s ease-in-out infinite;
+  --animate-bounce-slow: bounce-slow 2s infinite;
+  --animate-rotate-slow: rotate-slow 3s ease-in-out infinite;
+  --animate-glow: glow 2.5s ease-in-out infinite;
+  --animate-fade-up: fade-up 0.7s both;
+  --animate-float: float-gentle 3s ease-in-out infinite;
+  --animate-dot-bounce: dotBounce 1.2s ease-in-out infinite;
+  --animate-turtle-walk: turtle-walk 0.6s ease-in-out infinite alternate;
+  --animate-loading-dot-pulse: loading-dot-pulse 1.2s ease-in-out infinite;
+  --animate-landing-hero-fade-up-1: landing-hero-fade-up 0.6s 0.15s both;
+  --animate-landing-hero-fade-up-2: landing-hero-fade-up 0.6s 0.25s both;
+  --animate-landing-hero-fade-up-3: landing-hero-fade-up 0.6s 0.35s both;
+  --animate-landing-hero-scale-in: landing-hero-scale-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both;
+  --animate-landing-float: landing-float 4s ease-in-out infinite;
+  --animate-landing-pulse: landing-pulse 1.2s infinite;
+  --animate-status-pulse: status-pulse 1.5s infinite;
+  --animate-status-blink: status-blink 0.6s infinite;
+  --animate-turtle-float: float 3s ease-in-out infinite;
+  --animate-check-pulse: pulse 2s ease-in-out infinite;
+}
+
+html {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  scroll-behavior: smooth;
+}
+
+body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--green-pale);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+body[data-modal-open] header {
+  padding-right: var(--scrollbar-width, 0px);
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 0.2;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(1.1);
+  }
 }
 
 @keyframes shara-attention {
@@ -96,43 +160,6 @@
     filter: brightness(1);
   }
 }
-
-.animate-shara-attention {
-  animation: shara-attention 1.9s ease-in-out infinite;
-  will-change: transform, box-shadow, filter;
-}
-
-/* @media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-} */
-
-html {
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  scroll-behavior: smooth;
-}
-
-body {
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-}
-
-body {
-  background: var(--green-pale);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
-}
-
-/* 모달 열릴 때 fixed 헤더도 함께 padding 적용 (스크롤바 영역 보정) */
-body[data-modal-open] header {
-  padding-right: var(--scrollbar-width, 0px);
-}
-
 @keyframes slideDown {
   from {
     opacity: 0;
@@ -166,20 +193,6 @@ body[data-modal-open] header {
     transform: rotate(10deg);
   }
 }
-
-.animate-bounce-slow {
-  animation: bounce-slow 2s infinite;
-}
-
-.animate-rotate-slow {
-  animation: rotate-slow 3s ease-in-out infinite;
-}
-
-/* 공통 카드 그림자 */
-.shadow-soft-card {
-  box-shadow: 0 4px 20px rgba(74, 124, 89, 0.12);
-}
-
 @keyframes glow {
   0%,
   100% {
@@ -188,10 +201,6 @@ body[data-modal-open] header {
   50% {
     box-shadow: 0 8px 32px rgba(74, 124, 89, 0.52);
   }
-}
-
-.evo-badge-circle {
-  animation: glow 2.5s ease-in-out infinite;
 }
 
 @keyframes fade-up {
@@ -215,15 +224,6 @@ body[data-modal-open] header {
   }
 }
 
-.animate-fade-up {
-  animation: fade-up 0.7s both;
-}
-
-.animate-float {
-  animation: float-gentle 3s ease-in-out infinite;
-}
-
-/* 로딩 스켈레톤 점 애니메이션 */
 @keyframes dotBounce {
   0%,
   80%,
@@ -237,11 +237,6 @@ body[data-modal-open] header {
   }
 }
 
-.animate-dot-bounce {
-  animation: dotBounce 1.2s ease-in-out infinite;
-}
-
-/* 홈 로딩 스크린 */
 @keyframes turtle-walk {
   from {
     transform: translateY(0) rotate(-5deg);
@@ -263,15 +258,6 @@ body[data-modal-open] header {
   }
 }
 
-.animate-turtle-walk {
-  animation: turtle-walk 0.6s ease-in-out infinite alternate;
-}
-
-.animate-loading-dot-pulse {
-  animation: loading-dot-pulse 1.2s ease-in-out infinite;
-}
-
-/* 랜딩 페이지 */
 @keyframes landing-hero-fade-up {
   from {
     opacity: 0;
@@ -294,19 +280,6 @@ body[data-modal-open] header {
   }
 }
 
-.landing-hero-fade-up-1 {
-  animation: landing-hero-fade-up 0.6s 0.15s both;
-}
-.landing-hero-fade-up-2 {
-  animation: landing-hero-fade-up 0.6s 0.25s both;
-}
-.landing-hero-fade-up-3 {
-  animation: landing-hero-fade-up 0.6s 0.35s both;
-}
-.landing-hero-scale-in {
-  animation: landing-hero-scale-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both;
-}
-
 @keyframes landing-float {
   0%,
   100% {
@@ -327,15 +300,6 @@ body[data-modal-open] header {
   }
 }
 
-.landing-float {
-  animation: landing-float 4s ease-in-out infinite;
-}
-
-.landing-pulse {
-  animation: landing-pulse 1.2s infinite;
-}
-
-/* StatusPill dot animations */
 @keyframes status-pulse {
   0%,
   100% {
@@ -359,15 +323,6 @@ body[data-modal-open] header {
   }
 }
 
-.animate-status-pulse {
-  animation: status-pulse 1.5s infinite;
-}
-
-.animate-status-blink {
-  animation: status-blink 0.6s infinite;
-}
-
-/* 랜딩 스크롤 리빌 */
 .reveal {
   opacity: 0;
   transform: translateY(32px);

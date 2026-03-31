@@ -15,7 +15,7 @@ generator client {
 }
 
 model User {
-  id            String    @id @default(cuid()) // 문자열 ID (cuid)
+  id            String    @id @default(cuid()) 
   name          String?
   email         String?   @unique
   emailVerified DateTime?
@@ -35,7 +35,7 @@ model User {
 }
 
 model Account {
-  // 복합 PK (provider + providerAccountId) — NextAuth 표준
+
   provider          String
   providerAccountId String
   type              String

@@ -305,6 +305,7 @@
     }
   },
   "HomeTemplate": {
+    "measurementTime": "measured time",
     "sections": {
       "todayStatus": "Today's Status",
       "measurement": "Measurement"
@@ -747,10 +748,17 @@
     }
   },
   "MiniWarningPip": {
+<<<<<<< HEAD
     "getReadyTitle": "Getting ready",
     "warningTitle": "Turtle neck",
     "goodTitle": "Good posture",
     "stop": "Stop"
+=======
+    "getReady": "not estimating",
+    "warning": "Warning!",
+    "good": "Good Posture!",
+    "stop": "stop"
+>>>>>>> develop
   },
   "HelpMessageModal": {
     "header": "Measurement tip",

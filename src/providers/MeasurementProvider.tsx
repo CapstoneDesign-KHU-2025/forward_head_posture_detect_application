@@ -10,9 +10,9 @@ import { getTodayCount, storeMeasurementAndAccumulate } from "@/lib/postureLocal
 import { useTurtleNeckMeasurement } from "@/hooks/useTurtleNeckMeasurement";
 import { createISO } from "@/utils/createISO";
 import { postDailySummaryAction } from "@/app/actions/summaryActions";
-import { RecoveryNotice } from "@/components/molecules/RecoveryNotice";
+import { RecoveryNotice } from "@/app/[locale]/(protected)/estimate/components/RecoveryNotice";
 import { logger } from "@/lib/logger";
-import type { StatusBannerType } from "@/hooks/useTurtleNeckMeasurement";
+import { StatusBannerType } from "@/utils/types";
 import type { GuideColor } from "@/utils/types";
 
 export const MEASUREMENT_CANVAS_SLOT_ID = "measurement-canvas-slot";
@@ -122,7 +122,7 @@ export function MeasurementProvider({ children }: { children: ReactNode }) {
         if (!forced) setStopEstimating((prev) => !prev);
         setIsProcessing(false);
         resetForNewMeasurement();
-        // 정상 종료 시 중단 플래그 제거 (새로고침 후 복구 제안 방지)
+        // delete flag when it's ended normally
         if (typeof window !== "undefined") {
           sessionStorage.removeItem(SESSION_STORAGE_MEASUREMENT_INTERRUPTED);
         }
@@ -140,13 +140,13 @@ export function MeasurementProvider({ children }: { children: ReactNode }) {
     handleStopMeasurement();
   }, [handleStopMeasurement]);
 
-  // 실제 측정 시작 시에만 중단 플래그 설정 (가이드라인 단계에서 나가면 복구 제안 안 함)
+  // set flag when the measurement started
   useEffect(() => {
     if (typeof window === "undefined" || !measurementStarted) return;
     sessionStorage.setItem(SESSION_STORAGE_MEASUREMENT_INTERRUPTED, "1");
   }, [measurementStarted]);
 
-  // pathname 변경 시: 측정 페이지 밖으로 나가면 카메라 끄기
+  // when user moves to other pages
   useEffect(() => {
     if (pathname !== "/estimate" && pathname !== "/") {
       if (measurementStarted) {
@@ -158,7 +158,7 @@ export function MeasurementProvider({ children }: { children: ReactNode }) {
     }
   }, [pathname, measurementStarted, handleStopMeasurement]);
 
-  // 새로고침 후 이전 측정 중단 감지 → 복구 제안 표시 (로그인된 사용자에게만)
+  // restart measuring
   useEffect(() => {
     if (typeof window === "undefined" || !userId) return;
     const interrupted = sessionStorage.getItem(SESSION_STORAGE_MEASUREMENT_INTERRUPTED);
@@ -247,7 +247,6 @@ export function MeasurementProvider({ children }: { children: ReactNode }) {
     <MeasurementContext.Provider value={value}>
       {children}
 
-      {/* 캔버스 - estimate 페이지 슬롯에 포탈, 없으면 body에 숨김 */}
       {typeof document !== "undefined" &&
         portalTarget &&
         createPortal(
@@ -259,7 +258,7 @@ export function MeasurementProvider({ children }: { children: ReactNode }) {
           portalTarget,
         )}
 
-      {/* 비디오 - 항상 숨김 */}
+      {/* video - hide always */}
       <video ref={videoRef} className="absolute -left-[9999px]" muted playsInline />
 
       <RecoveryNotice

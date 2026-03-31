@@ -1,0 +1,129 @@
+"use client";
+
+import { usePathname, Link } from "@/i18n/navigation";
+
+import { Button } from "@/components/Button";
+import { BrandLink } from "@/app/[locale]/components/header/BrandLink";
+import { useSession, signIn } from "next-auth/react";
+/* import { FriendsButton } from "@/components/molecules/FriendsButton"; */
+import { UserButton } from "@/app/[locale]/components/header/UserButton";
+/* import { FriendsModal } from "@/components/organisms/friends/FriendsModal"; */
+//import { useFriendsData } from "@/hooks/useFriendsData";
+//import { useState } from "react";
+import { useTranslations } from "next-intl";
+
+import LanguageToggle from "@/app/[locale]/components/header/LanguageToggle";
+import { SoundButton } from "@/app/[locale]/components/header/SoundButton";
+
+type HeaderProps = {
+  user?: { name: string; avatarSrc?: string } | null;
+  className?: string;
+};
+export default function Header({ user: initialUser, className }: HeaderProps) {
+  const t = useTranslations("Header");
+  const t_basic = useTranslations("Basic");
+  const pathname = usePathname();
+  const { data: session, status } = useSession();
+  // const [isFriendsModalOpen, setIsFriendsModalOpen] = useState(false);
+  //const friendsData = useFriendsData();
+
+  const navItems = [
+    { label: t("navItems.home"), href: "/" },
+    { label: t("navItems.estimate"), href: "/estimate" },
+  ];
+
+  const isLoading = status === "loading";
+  const user = session?.user ?? initialUser ?? null;
+  const isLandingPage = pathname === "/landing";
+  const isLoginPage = pathname === "/login";
+  const isCharacterPage = pathname === "/character";
+  const UserActions = () => {
+    if (isLoading) {
+      return <span className="text-sm text-black/40">...</span>;
+    }
+
+    if (!user) {
+      return <Button onClick={() => signIn()}>{t("login_button")}</Button>;
+    }
+
+    return (
+      <>
+        {/* <FriendsButton requestCount={friendsData?.incomingCount || 0} onClick={() => setIsFriendsModalOpen(true)} /> */}
+        <SoundButton />
+        <UserButton
+          user={{
+            name: user.name ?? t("UserButton.name"),
+            email: (user as any)?.email,
+            image: (user as any)?.image,
+            avatarSrc: (user as any)?.avatarSrc,
+          }}
+        />
+        {/*    <FriendsModal
+          isOpen={isFriendsModalOpen}
+          onClose={() => setIsFriendsModalOpen(false)}
+          friendsData={friendsData || undefined}
+        /> */}
+      </>
+    );
+  };
+
+  if (isLoginPage || isCharacterPage) return null;
+
+  return (
+    <header
+      className={["fixed top-0 left-0 right-0 w-full z-50 bg-[var(--green-pale)]", className].filter(Boolean).join(" ")}
+    >
+      <div className="w-full px-6 md:px-8">
+        {isLandingPage ? (
+          <div className="flex h-[var(--header-height)] w-full items-center justify-between">
+            <BrandLink
+              icon={<img src="/icons/turtle.png" alt="" className="object-contain shrink-0" />}
+              label={t_basic("title")}
+            />
+            <div className="flex items-center gap-2">
+              <LanguageToggle />
+              <UserActions />
+            </div>
+          </div>
+        ) : (
+          <div className="relative flex h-[var(--header-height)] w-full items-center justify-between">
+            {/* Left: Logo & brand */}
+            <BrandLink
+              icon={<img src="/icons/turtle.png" alt="" className="object-contain shrink-0" />}
+              label={t_basic("title")}
+            />
+
+            {/* Center */}
+            <nav className="absolute left-1/2 flex -translate-x-1/2 items-center gap-1">
+              {navItems.map((item) => {
+                const isActive = (pathname ?? "/") === item.href;
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={[
+                      "px-4 py-[7px] rounded-[10px] text-base font-semibold transition-colors duration-150",
+                      isActive
+                        ? "bg-[var(--green-light)] text-[var(--green)]"
+                        : "text-[var(--text-sub)] hover:bg-[var(--green-light)] hover:text-[var(--green)]",
+                    ]
+                      .filter(Boolean)
+                      .join(" ")}
+                    style={{ textDecoration: "none" }}
+                  >
+                    {item.label}
+                  </Link>
+                );
+              })}
+            </nav>
+
+            <div className="flex items-center gap-2">
+              <LanguageToggle />
+              <UserActions />
+            </div>
+          </div>
+        )}
+      </div>
+    </header>
+  );
+}

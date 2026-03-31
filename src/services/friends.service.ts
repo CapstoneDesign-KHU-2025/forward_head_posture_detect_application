@@ -1,6 +1,20 @@
-import { prisma } from "@/lib/db";
 import { orderUserPair } from "@/lib/api/utils";
 import { unstable_cache } from "next/cache";
+import {
+  acceptFriendRequestTransaction,
+  createFriendRequestRow,
+  findFriendRequests,
+  findFriendRequestById,
+  findFriendshipById,
+  findFriendshipByOrderedPair,
+  findFriendshipsForUser,
+  findPendingFriendRequestBetween,
+  findUserId,
+  cancelFriendRequestRow,
+  deleteFriendshipById,
+  rejectFriendRequest,
+  searchUsers as searchUsersRepository,
+} from "@/repositories/friends.repository";
 export interface FriendItem {
   friendshipId: string;
   createdAt: Date;
@@ -11,217 +25,89 @@ export interface FriendItem {
     email: string | null;
   };
 }
-export const getFriends: (userId: string) => Promise<FriendItem[]> = unstable_cache(
-  async (userId: string): Promise<FriendItem[]> => {
-    const friendships = await prisma.friendship.findMany({
-      where: {
-        OR: [{ userAId: userId }, { userBId: userId }],
-      },
-      orderBy: { createdAt: "desc" },
-      take: 200,
-      select: {
-        id: true,
-        createdAt: true,
-        userAId: true,
-        userBId: true,
-        userA: { select: { id: true, name: true, image: true, email: true } },
-        userB: { select: { id: true, name: true, image: true, email: true } },
-      },
-    });
+export async function getFriends(userId: string): Promise<FriendItem[]> {
+  const getCachedFriends = unstable_cache(
+    async () => {
+      const friendships = await findFriendshipsForUser(userId);
+      return friendships.map((f) => {
+        const other = f.userAId === userId ? f.userB : f.userA;
+        return {
+          friendshipId: f.id,
+          createdAt: f.createdAt,
+          user: other,
+        };
+      });
+    },
+    ["friend-list", userId],
+    { tags: ["friends_list"], revalidate: 3600 },
+  );
 
-    type FriendshipRow = (typeof friendships)[number];
-    return friendships.map((f: FriendshipRow) => {
-      const other = f.userAId === userId ? f.userB : f.userA;
-      return {
-        friendshipId: f.id,
-        createdAt: f.createdAt,
-        user: other,
-      };
-    });
-  },
-  ["friend-list"],
-  { tags: ["friends_list"], revalidate: 3600 },
-);
+  return getCachedFriends();
+}
 
 export async function getFriendRequests(
   userId: string,
   type: "incoming" | "outgoing",
   status?: "PENDING" | "ACCEPTED" | "REJECTED" | "CANCELED" | null,
 ) {
-  const where =
-    type === "incoming"
-      ? { toUserId: userId, ...(status ? { status } : {}) }
-      : { fromUserId: userId, ...(status ? { status } : {}) };
-
-  const rows = await prisma.friendRequest.findMany({
-    where,
-    orderBy: { createdAt: "desc" },
-    take: 50,
-    select: {
-      id: true,
-      status: true,
-      createdAt: true,
-      respondedAt: true,
-      fromUser: { select: { id: true, name: true, image: true, email: true } },
-      toUser: { select: { id: true, name: true, image: true, email: true } },
-    },
-  });
-
-  return rows;
+  return findFriendRequests({ userId, type, status });
 }
 
 export async function createFriendRequest(fromUserId: string, toUserId: string) {
   if (fromUserId === toUserId) throw new Error("Cannot friend-request yourself");
 
-  const target = await prisma.user.findUnique({
-    where: { id: toUserId },
-    select: { id: true },
-  });
+  const target = await findUserId(toUserId);
   if (!target) throw new Error("User not found");
 
   const [userAId, userBId] = orderUserPair(fromUserId, toUserId);
-  const alreadyFriends = await prisma.friendship.findUnique({
-    where: { userAId_userBId: { userAId, userBId } },
-    select: { id: true },
-  });
+  const alreadyFriends = await findFriendshipByOrderedPair({ userAId, userBId });
   if (alreadyFriends) throw new Error("You are already friends");
 
-  const existingPending = await prisma.friendRequest.findFirst({
-    where: {
-      status: "PENDING",
-      OR: [
-        { fromUserId: fromUserId, toUserId },
-        { fromUserId: toUserId, toUserId: fromUserId },
-      ],
-    },
-    select: { id: true },
-  });
+  const existingPending = await findPendingFriendRequestBetween({ fromUserId, toUserId });
   if (existingPending) throw new Error("Friend request is already pending");
 
-  return prisma.friendRequest.create({
-    data: { fromUserId, toUserId, status: "PENDING" },
-    select: { id: true, status: true, createdAt: true, fromUserId: true, toUserId: true },
-  });
+  return createFriendRequestRow({ fromUserId, toUserId });
 }
 
 export async function respondToFriendRequest(userId: string, requestId: string, action: "ACCEPT" | "REJECT") {
-  const friendRequest = await prisma.friendRequest.findUnique({
-    where: { id: requestId },
-    select: { id: true, status: true, fromUserId: true, toUserId: true },
-  });
+  const friendRequest = await findFriendRequestById(requestId);
 
   if (!friendRequest) throw new Error("Friend request not found");
   if (friendRequest.toUserId !== userId) throw new Error("Forbidden: Not your request");
   if (friendRequest.status !== "PENDING") throw new Error("Request already handled");
 
   if (action === "REJECT") {
-    const updated = await prisma.friendRequest.update({
-      where: { id: requestId },
-      data: { status: "REJECTED", respondedAt: new Date() },
-      select: { id: true, status: true, respondedAt: true },
-    });
-    return { request: updated };
+    return rejectFriendRequest(requestId);
   }
 
   const [userAId, userBId] = orderUserPair(friendRequest.fromUserId, friendRequest.toUserId);
 
-  return prisma.$transaction(async (tx) => {
-    const updated = await tx.friendRequest.update({
-      where: { id: requestId },
-      data: { status: "ACCEPTED", respondedAt: new Date() },
-      select: { id: true, status: true, respondedAt: true, fromUserId: true, toUserId: true },
-    });
-
-    const friendship = await tx.friendship.upsert({
-      where: { userAId_userBId: { userAId, userBId } },
-      create: { userAId, userBId },
-      update: {},
-      select: { id: true, userAId: true, userBId: true, createdAt: true },
-    });
-
-    return { updated, friendship };
-  });
+  return acceptFriendRequestTransaction({ requestId, userAId, userBId });
 }
 
 export async function cancelFriendRequest(userId: string, requestId: string) {
-  const friendRequest = await prisma.friendRequest.findUnique({
-    where: { id: requestId },
-    select: { id: true, status: true, fromUserId: true },
-  });
+  const friendRequest = await findFriendRequestById(requestId);
 
   if (!friendRequest) throw new Error("Friend request not found");
   if (friendRequest.fromUserId !== userId) throw new Error("Forbidden: Not your request");
   if (friendRequest.status !== "PENDING") throw new Error("Request already handled");
 
-  const updated = await prisma.friendRequest.update({
-    where: { id: requestId },
-    data: { status: "CANCELED", respondedAt: new Date() },
-    select: { id: true, status: true, respondedAt: true },
-  });
-
-  return { request: updated };
+  return cancelFriendRequestRow(requestId);
 }
 
 export async function deleteFriendship(userId: string, friendshipId: string) {
-  const friendship = await prisma.friendship.findUnique({
-    where: { id: friendshipId },
-    select: { id: true, userAId: true, userBId: true },
-  });
+  const friendship = await findFriendshipById(friendshipId);
 
   if (!friendship) throw new Error("Friendship not found");
   if (friendship.userAId !== userId && friendship.userBId !== userId) {
     throw new Error("Forbidden: Not your friendship");
   }
 
-  const deleted = await prisma.friendship.delete({
-    where: { id: friendshipId },
-    select: { id: true },
-  });
-
-  return { friendship: deleted };
+  return deleteFriendshipById(friendshipId);
 }
 
 export async function searchUsers(currentUserId: string, query: string) {
   if (!query || query.trim().length < 2) return [];
 
-  const trimmedQuery = query.trim();
-
-  const users = await prisma.user.findMany({
-    where: {
-      AND: [
-        {
-          OR: [
-            { name: { contains: trimmedQuery, mode: "insensitive" } },
-            { email: { contains: trimmedQuery, mode: "insensitive" } },
-          ],
-        },
-        {
-          NOT: [
-            { id: currentUserId },
-            {
-              OR: [
-                { friendshipsA: { some: { userBId: currentUserId } } },
-                { friendshipsB: { some: { userAId: currentUserId } } },
-              ],
-            },
-            {
-              OR: [
-                /*  { incomingFriendRequests: { some: { fromUserId: currentUserId, status: "PENDING" } } }, */
-                { outgoingFriendRequests: { some: { toUserId: currentUserId, status: "PENDING" } } },
-              ],
-            },
-          ],
-        },
-      ],
-    },
-    select: {
-      id: true,
-      name: true,
-      image: true,
-      email: true,
-    },
-    take: 20,
-  });
-
-  return users;
+  return searchUsersRepository({ currentUserId, query });
 }

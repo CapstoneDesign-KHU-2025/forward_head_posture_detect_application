@@ -16,8 +16,8 @@ export const useAppStore = create<AppState>()(
       resetTurtleNeckNumberInADay: () => set({ turtleNeckNumberInADay: 0 }),
     }),
     {
-      name: "app-store", // sessionStorage 키
-      storage: createJSONStorage(() => sessionStorage), // ← 세션 지속
-    }
-  )
+      name: "app-store",
+      storage: createJSONStorage(() => sessionStorage),
+    },
+  ),
 );

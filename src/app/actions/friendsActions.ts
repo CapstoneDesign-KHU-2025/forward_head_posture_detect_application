@@ -10,8 +10,9 @@ import {
   respondToFriendRequest,
   searchUsers,
 } from "@/services/friends.service";
-import { ActionState, SERVER_MESSAGES } from "@/lib/api/utils";
+import { SERVER_MESSAGES } from "@/lib/api/utils";
 import { logger } from "@/lib/logger";
+import { ActionState } from "@/utils/types";
 
 // GET: get my friends
 export async function getFriendsAction() {
@@ -31,7 +32,7 @@ const GetRequestsSchema = z.object({
   type: z.enum(["incoming", "outgoing"]).default("incoming"),
   status: z.enum(["PENDING", "ACCEPTED", "REJECTED", "CANCELED"]).nullable().default(null),
 });
-export type GetRequestsInput = z.infer<typeof GetRequestsSchema>;
+type GetRequestsInput = z.infer<typeof GetRequestsSchema>;
 
 // GET: get friend requests
 export async function getFriendRequestsAction(data: GetRequestsInput) {
@@ -55,7 +56,7 @@ export async function getFriendRequestsAction(data: GetRequestsInput) {
 const PostFriendRequestSchema = z.object({
   toUserId: z.string().min(1, { message: SERVER_MESSAGES.FRIEND_NOT_FOUND.en }),
 });
-export type PostFriendRequestInput = z.infer<typeof PostFriendRequestSchema>;
+type PostFriendRequestInput = z.infer<typeof PostFriendRequestSchema>;
 
 export async function postFriendRequestAction(_prevState: ActionState<unknown>, data: PostFriendRequestInput) {
   const session = await auth();
@@ -80,7 +81,7 @@ const RespondRequestSchema = z.object({
   requestId: z.string().min(1, { message: SERVER_MESSAGES.STALE_REQUEST.en }),
   action: z.enum(["ACCEPT", "REJECT"], { message: SERVER_MESSAGES.REQUEST_FAILED.en }),
 });
-export type RespondRequestInput = z.infer<typeof RespondRequestSchema>;
+type RespondRequestInput = z.infer<typeof RespondRequestSchema>;
 
 export async function respondFriendRequestAction(_prevState: ActionState<unknown>, data: RespondRequestInput) {
   const session = await auth();
@@ -105,7 +106,7 @@ export async function respondFriendRequestAction(_prevState: ActionState<unknown
 const SearchUsersSchema = z.object({
   query: z.string().min(2, { message: "검색어는 최소 2글자 이상이어야 합니다." }),
 });
-export type SearchUsersInput = z.infer<typeof SearchUsersSchema>;
+type SearchUsersInput = z.infer<typeof SearchUsersSchema>;
 
 export async function searchUsersAction(_prevState: ActionState<unknown>, data: SearchUsersInput) {
   const session = await auth();
