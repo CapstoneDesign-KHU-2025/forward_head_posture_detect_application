@@ -3,8 +3,8 @@
 import { AlertTriangle, CheckCircle2 } from "lucide-react";
 import { createPortal } from "react-dom";
 import { useTranslations } from "next-intl";
-import { useDocumentPiP } from "@/providers/PipProvider";
-import { useMeasurement } from "@/providers/MeasurementProvider";
+import { useDocumentPiP } from "@/controllers/PipController";
+import { useMeasurement } from "@/controllers/MeasurementController";
 
 type MiniWarningPipProps = {
   isTurtle: boolean;
