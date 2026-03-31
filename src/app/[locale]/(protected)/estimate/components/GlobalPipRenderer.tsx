@@ -1,6 +1,6 @@
 "use client";
 
-import { useDocumentPiP } from "@/controllers/PipProvider";
+import { useDocumentPiP } from "@/controllers/PipController";
 import { useMeasurement } from "@/controllers/MeasurementController";
 import { MiniWarningPip } from "@/app/[locale]/(protected)/estimate/components/MiniWarningPip";
 import { useMeasurementStore } from "@/app/store/useMeasurementStore";

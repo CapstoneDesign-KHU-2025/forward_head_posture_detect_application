@@ -4,7 +4,7 @@
 import { usePathname } from "@/i18n/navigation";
 import { FloatingBar } from "@/app/[locale]/(protected)/estimate/components/FloatingBar";
 import { useMeasurement } from "@/controllers/MeasurementController";
-import { useDocumentPiP } from "@/controllers/PipProvider";
+import { useDocumentPiP } from "@/controllers/PipController";
 import { useMeasurementStore } from "@/app/store/useMeasurementStore";
 
 const FLOATING_BAR_ALLOWED_ROUTES = ["/", "/estimate"];

@@ -1,6 +1,7 @@
 "use client";
 
-import { createContext, useContext, useState, useCallback, useEffect, ReactNode } from "react";
+import { createContext, useContext, useCallback, useEffect, ReactNode } from "react";
+import { usePiPStore } from "@/app/store/usePipStore";
 
 declare global {
   interface DocumentPictureInPicture {
@@ -13,15 +14,15 @@ declare global {
 }
 
 interface PiPContextType {
-  pipWindow: Window | null;
   openPiP: () => Promise<void>;
   closePiP: () => void;
 }
 
 const PiPContext = createContext<PiPContextType | null>(null);
 
-export function PiPProvider({ children }: { children: ReactNode }) {
-  const [pipWindow, setPipWindow] = useState<Window | null>(null);
+export function PiPController({ children }: { children: ReactNode }) {
+  const pipWindow = usePiPStore((state) => state.pipWindow);
+  const setPipWindow = usePiPStore((state) => state.setPipWindow);
 
   const openPiP = useCallback(async () => {
     if (pipWindow) return;
@@ -54,7 +55,7 @@ export function PiPProvider({ children }: { children: ReactNode }) {
     } catch (error) {
       console.error("clientSide Error: Popup", error);
     }
-  }, [pipWindow]);
+  }, [pipWindow, setPipWindow]);
 
   const closePiP = useCallback(() => {
     if (pipWindow) {
@@ -63,7 +64,7 @@ export function PiPProvider({ children }: { children: ReactNode }) {
     } else if (window.documentPictureInPicture?.window) {
       window.documentPictureInPicture.window.close();
     }
-  }, [pipWindow]);
+  }, [pipWindow, setPipWindow]);
 
   useEffect(() => {
     return () => {
@@ -71,13 +72,13 @@ export function PiPProvider({ children }: { children: ReactNode }) {
     };
   }, [pipWindow]);
 
-  return <PiPContext.Provider value={{ pipWindow, openPiP, closePiP }}>{children}</PiPContext.Provider>;
+  return <PiPContext.Provider value={{ openPiP, closePiP }}>{children}</PiPContext.Provider>;
 }
 
 export function useDocumentPiP() {
   const context = useContext(PiPContext);
   if (!context) {
-    throw new Error("useDocumentPiP must be used within a PiPProvider");
+    throw new Error("[PipController] : useDocumentPiP must be used within a PiPController");
   }
   return context;
 }

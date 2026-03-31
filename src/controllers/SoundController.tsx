@@ -1,19 +1,16 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
+import React, { createContext, useContext, useEffect, useMemo, useRef } from "react";
+import { useSoundStore } from "@/app/store/useSoundStore";
 
 type SoundContextType = {
-  isMuted: boolean;
-  toggleMute: () => void;
-  setMuted: (v: boolean) => void;
   getAudio: () => { ctx: AudioContext; masterGain: GainNode } | null;
 };
 
 const SoundContext = createContext<SoundContextType | null>(null);
 
-export function SoundProvider({ children }: { children: React.ReactNode }) {
-  const [isMuted, setMuted] = useState(false);
-
+export function SoundController({ children }: { children: React.ReactNode }) {
+  const isMuted = useSoundStore((state) => state.isMuted);
   const audioRef = useRef<{ ctx: AudioContext; masterGain: GainNode } | null>(null);
 
   useEffect(() => {
@@ -37,12 +34,9 @@ export function SoundProvider({ children }: { children: React.ReactNode }) {
 
   const value = useMemo<SoundContextType>(
     () => ({
-      isMuted,
-      toggleMute: () => setMuted((p) => !p),
-      setMuted,
       getAudio: () => audioRef.current,
     }),
-    [isMuted],
+    [],
   );
 
   return <SoundContext.Provider value={value}>{children}</SoundContext.Provider>;
@@ -50,6 +44,6 @@ export function SoundProvider({ children }: { children: React.ReactNode }) {
 
 export function useSoundContext() {
   const ctx = useContext(SoundContext);
-  if (!ctx) throw new Error("[soundProvider] : useSoundContext should be used only in SoundProvider");
+  if (!ctx) throw new Error("[SoundController] : useSoundContext should be used only in SoundController");
   return ctx;
 }

@@ -5,7 +5,7 @@ import type { StatusPillVariant } from "@/utils/types";
 import { StatusPill } from "./StatusPill";
 import LoadingSkeleton from "@/components/LoadingSkeleton";
 import type { GuideColor, StatusBannerType } from "@/utils/types";
-import { useDocumentPiP } from "@/controllers/PipProvider";
+import { useDocumentPiP } from "@/controllers/PipController";
 import { PipToggleButton } from "./PipToggleButton";
 
 type EstimatePanelProps = {

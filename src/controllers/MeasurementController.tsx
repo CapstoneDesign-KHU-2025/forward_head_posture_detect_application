@@ -47,7 +47,7 @@ const MeasurementContext = createContext<MeasurementContextValue | null>(null);
 
 export function useMeasurement() {
   const ctx = useContext(MeasurementContext);
-  if (!ctx) throw new Error("useMeasurement must be used within MeasurementController");
+  if (!ctx) throw new Error("[MeasurementController] : useMeasurement must be used within MeasurementController");
   return ctx;
 }
 

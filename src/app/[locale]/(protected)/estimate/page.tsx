@@ -8,7 +8,7 @@ import AsyncBoundary from "@/components/AsyncBoundary";
 
 import { MEASUREMENT_CANVAS_SLOT_ID } from "@/controllers/MeasurementController";
 import { useTranslations } from "next-intl";
-import { useDocumentPiP } from "@/controllers/PipProvider";
+import { useDocumentPiP } from "@/controllers/PipController";
 import { HelpPopUp } from "./components/HelpPopUp";
 import { useMeasurementStore } from "@/app/store/useMeasurementStore";
 
