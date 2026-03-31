@@ -14,7 +14,7 @@ type MiniWarningPipProps = {
 export function MiniWarningPip({ isTurtle, pipWindow, measurementStarted }: MiniWarningPipProps) {
   const { closePiP } = useDocumentPiP();
   const { stopMeasurement } = useMeasurement();
-  const onStop = () => {
+  const onStop = async () => {
     stopMeasurement();
     closePiP();
   };
@@ -56,6 +56,6 @@ export function MiniWarningPip({ isTurtle, pipWindow, measurementStarted }: Mini
         </>
       )}
     </div>,
-    pipWindow.document.body, // destination of portal
+    pipWindow.document.body,
   );
 }
