@@ -44,18 +44,18 @@ export default function LoadingSkeleton({ variant = "card" }: LoadingSkeletonPro
         aria-live="polite"
         className="flex h-full w-full flex-col items-center justify-center gap-6 rounded-[20px] bg-white"
       >
-        {/* 카메라 아이콘 */}
+        {/* camera icon */}
         <Icon size="2xl" className="text-[var(--green)]">
           <Video strokeWidth={2} />
         </Icon>
 
-        {/* 텍스트 */}
+        {/* text */}
         <div className="flex flex-col items-center gap-2 text-center">
           <p className="text-[18px] font-bold text-[var(--text)]">{t("message")}</p>
           <p className="text-[14px] text-[var(--text-muted)]">{t("description")}</p>
         </div>
 
-        {/* 점 3개 */}
+        {/* three dots */}
         <div className="flex items-center gap-2.5">
           {[0, 1, 2].map((i) => (
             <span
@@ -69,7 +69,6 @@ export default function LoadingSkeleton({ variant = "card" }: LoadingSkeletonPro
     );
   }
 
-  // variant="card" (기본값)
   return (
     <div role="status" aria-live="polite" className="flex h-full w-full items-center justify-center">
       <div className="flex items-center gap-1.5">

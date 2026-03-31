@@ -10,7 +10,6 @@ import { getTodayCount, storeMeasurementAndAccumulate } from "@/lib/postureLocal
 import { useTurtleNeckMeasurement } from "@/hooks/useTurtleNeckMeasurement";
 import { createISO } from "@/utils/createISO";
 import { postDailySummaryAction } from "@/app/actions/summaryActions";
-import { FloatingBarController } from "@/app/[locale]/(protected)/estimate/components/FloatingBarController";
 import { RecoveryNotice } from "@/app/[locale]/(protected)/estimate/components/RecoveryNotice";
 import { logger } from "@/lib/logger";
 import { StatusBannerType } from "@/utils/types";
@@ -153,8 +152,8 @@ export function MeasurementController({ children }: { children: ReactNode }) {
     setStopEstimating(false);
   }, [setStopEstimating]);
 
-  const stopMeasurement = useCallback(() => {
-    handleStopMeasurement();
+  const stopMeasurement = useCallback(async () => {
+    await handleStopMeasurement();
   }, [handleStopMeasurement]);
 
   useEffect(() => {

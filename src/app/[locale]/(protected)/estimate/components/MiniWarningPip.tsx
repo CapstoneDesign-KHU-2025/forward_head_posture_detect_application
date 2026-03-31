@@ -1,10 +1,11 @@
 "use client";
 
-import { AlertTriangle, CheckCircle2 } from "lucide-react";
+import { AlertTriangle, CheckCircle2, Loader2 } from "lucide-react";
 import { createPortal } from "react-dom";
 import { useTranslations } from "next-intl";
 import { useDocumentPiP } from "@/controllers/PipController";
 import { useMeasurement } from "@/controllers/MeasurementController";
+import { useMeasurementStore } from "@/app/store/useMeasurementStore";
 
 type MiniWarningPipProps = {
   isTurtle: boolean;
@@ -14,6 +15,7 @@ type MiniWarningPipProps = {
 export function MiniWarningPip({ isTurtle, pipWindow, measurementStarted }: MiniWarningPipProps) {
   const { closePiP } = useDocumentPiP();
   const { stopMeasurement } = useMeasurement();
+  const isProcessing = useMeasurementStore((state) => state.isProcessing);
   const onStop = () => {
     stopMeasurement();
     closePiP();
@@ -37,9 +39,10 @@ export function MiniWarningPip({ isTurtle, pipWindow, measurementStarted }: Mini
           <button
             type="button"
             onClick={onStop}
+            disabled={isProcessing}
             className="flex-shrink-0 whitespace-nowrap rounded-[10px] border border-[rgba(255,92,92,0.25)] bg-[rgb(255,180,180)] px-3.5 py-1.5 text-xs font-bold text-[#ab1a1a] transition-colors hover:bg-[rgba(245,144,144,0.86)]"
           >
-            {t("stop")}
+            {isProcessing ? <Loader2 /> : t("stop")}
           </button>
         </>
       ) : (
@@ -49,9 +52,10 @@ export function MiniWarningPip({ isTurtle, pipWindow, measurementStarted }: Mini
           <button
             type="button"
             onClick={onStop}
+            disabled={isProcessing}
             className="flex-shrink-0 whitespace-nowrap rounded-[10px] border border-[rgba(255,92,92,0.25)] bg-[rgba(255,92,92,0.15)] px-3.5 py-1.5 text-xs font-bold text-[#ff8c8c] transition-colors hover:bg-[rgba(255,92,92,0.28)]"
           >
-            {t("stop")}
+            {isProcessing ? <Loader2 /> : t("stop")}
           </button>
         </>
       )}
