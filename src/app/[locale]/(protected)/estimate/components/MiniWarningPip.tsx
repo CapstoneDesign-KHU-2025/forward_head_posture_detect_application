@@ -12,16 +12,22 @@ type MiniWarningPipProps = {
   pipWindow: Window | null;
   measurementStarted: boolean;
 };
+
 export function MiniWarningPip({ isTurtle, pipWindow, measurementStarted }: MiniWarningPipProps) {
   const { closePiP } = useDocumentPiP();
   const { stopMeasurement } = useMeasurement();
   const isProcessing = useMeasurementStore((state) => state.isProcessing);
-  const onStop = () => {
+
+  const onStop = async () => {
     stopMeasurement();
     closePiP();
   };
   const t = useTranslations("MiniWarningPip");
+
   if (!pipWindow) return null;
+
+  const phase = !measurementStarted ? "ready" : isTurtle ? "warn" : "good";
+
   return createPortal(
     <div
       className={`flex h-screen w-screen flex-col items-center justify-center transition-colors duration-500 ${

@@ -97,11 +97,7 @@
   "EvolutionTooltip": {
     "ariaLabel": "진화 조건 안내"
   },
-  "FloatingBar": {
-    "title": "측정 중",
-    "elapsedTime": "경과",
-    "stop": "중단"
-  },
+
   "FriendsButton": {
     "ariaLabel": "친구 관리"
   },
@@ -746,10 +742,10 @@
     }
   },
   "MiniWarningPip": {
-    "getReady": "측정 중이 아닙니다.",
-    "warning": "거북목 경고!",
-    "good": "완벽해요!",
-    "stop": "측정 중단"
+    "getReadyTitle": "준비 중",
+    "warningTitle": "거북목 감지",
+    "goodTitle": "좋은 자세예요",
+    "stop": "중단"
   },
   "HelpMessageModal": {
     "header": "측정 가이드 팁",
