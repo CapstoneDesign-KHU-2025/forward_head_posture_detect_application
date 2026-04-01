@@ -6,6 +6,7 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { FBXLoader } from "three/examples/jsm/loaders/FBXLoader.js";
 import { logger } from "@/lib/logger";
 import { PoseMode } from "@/utils/types";
+import { throttle } from "es-toolkit";
 
 type CharacterId = "Mouse" | "Remy" | "Woman";
 
@@ -678,11 +679,11 @@ export default function ThreeDModel({
     }
 
     function initEventListeners() {
-      const onResize = () => {
+      const onResize = throttle(() => {
         camera.aspect = (currentContainer.clientWidth || 1) / (currentContainer.clientHeight || 1);
         camera.updateProjectionMatrix();
         renderer.setSize(currentContainer.clientWidth, currentContainer.clientHeight);
-      };
+      }, 100);
       const onKeydown = (e: KeyboardEvent) => {
         if (["INPUT", "TEXTAREA", "SELECT"].includes((document.activeElement as HTMLElement | null)?.tagName ?? ""))
           return;
@@ -698,6 +699,7 @@ export default function ThreeDModel({
       window.addEventListener("keyup", onKeyup);
       return () => {
         window.removeEventListener("resize", onResize);
+        onResize.cancel();
         window.removeEventListener("keydown", onKeydown);
         window.removeEventListener("keyup", onKeyup);
       };
