@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useEffectEvent } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { Button } from "@/components/Button";
 import CharacterGrid from "./components/CharacterGrid";
@@ -36,7 +36,7 @@ export default function CharacterSelectionPage() {
     }
   };
   const handleSkip = () => {
-    saveCharacterAndRedirect("remy");
+    saveCharacterAndRedirect(CHARACTER_ASSETS[1].id);
   };
 
   useEffect(() => {
@@ -46,18 +46,18 @@ export default function CharacterSelectionPage() {
     }
   }, [router]);
 
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Enter" && selectedCharacter) {
-        handleConfirm();
-      } else if (e.key === "Escape") {
-        handleSkip();
-      }
-    };
+  const onKeyDown = useEffectEvent((e: KeyboardEvent) => {
+    if (e.key === "Enter" && selectedCharacter) {
+      handleConfirm();
+    } else if (e.key === "Escape") {
+      handleSkip();
+    }
+  });
 
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [selectedCharacter, handleConfirm, handleSkip]);
+  useEffect(() => {
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, []);
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-[var(--green-pale)] to-[var(--green-light)] p-8">
