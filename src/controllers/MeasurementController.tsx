@@ -1,12 +1,23 @@
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from "react";
 import { createPortal } from "react-dom";
 import { usePathname, useRouter } from "@/i18n/navigation";
 import { useSession } from "next-auth/react";
 import { startTransition, useActionState } from "react";
 import { getTodayHourly } from "@/lib/hourlyOps";
-import { getTodayCount, storeMeasurementAndAccumulate } from "@/lib/postureLocal";
+import {
+  getTodayCount,
+  storeMeasurementAndAccumulate,
+} from "@/lib/postureLocal";
 import { useTurtleNeckMeasurement } from "@/hooks/useTurtleNeckMeasurement";
 import { createISO } from "@/utils/createISO";
 import { postDailySummaryAction } from "@/app/actions/summaryActions";
@@ -23,7 +34,7 @@ const SESSION_STORAGE_MEASUREMENT_INTERRUPTED = "measurement_interrupted";
 type MeasurementContextValue = {
   stopEstimating: boolean;
   startMeasurement: () => void;
-  stopMeasurement: () => void;
+  stopMeasurement: () => Promise<void>;
   videoRef: React.RefObject<HTMLVideoElement | null>;
   canvasRef: React.RefObject<HTMLCanvasElement | null>;
   countdownRemain: number | null;
@@ -45,7 +56,10 @@ const MeasurementContext = createContext<MeasurementContextValue | null>(null);
 
 export function useMeasurement() {
   const ctx = useContext(MeasurementContext);
-  if (!ctx) throw new Error("[MeasurementController] : useMeasurement must be used within MeasurementController");
+  if (!ctx)
+    throw new Error(
+      "[MeasurementController] : useMeasurement must be used within MeasurementController",
+    );
   return ctx;
 }
 
@@ -58,14 +72,23 @@ export function MeasurementController({ children }: { children: ReactNode }) {
   //elapsedSecond is not called here cause if it's called this controller will be rendered every single second.
   const stopEstimating = useMeasurementStore((state) => state.stopEstimating);
   const isProcessing = useMeasurementStore((state) => state.isProcessing);
-  const setStopEstimating = useMeasurementStore((state) => state.setStopEstimating);
+  const setStopEstimating = useMeasurementStore(
+    (state) => state.setStopEstimating,
+  );
   const setIsProcessing = useMeasurementStore((state) => state.setIsProcessing);
-  const incrementElapsedSeconds = useMeasurementStore((state) => state.incrementElapsedSeconds);
-  const resetElapsedSeconds = useMeasurementStore((state) => state.resetElapsedSeconds);
+  const incrementElapsedSeconds = useMeasurementStore(
+    (state) => state.incrementElapsedSeconds,
+  );
+  const resetElapsedSeconds = useMeasurementStore(
+    (state) => state.resetElapsedSeconds,
+  );
 
   const [showRecoveryNotice, setShowRecoveryNotice] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const [_dailySumState, dailySumAction] = useActionState(postDailySummaryAction, null);
+  const [_dailySumState, dailySumAction] = useActionState(
+    postDailySummaryAction,
+    null,
+  );
   const [slotEl, setSlotEl] = useState<HTMLElement | null>(null);
   const [portalTarget, setPortalTarget] = useState<HTMLElement | null>(null);
 
@@ -106,8 +129,14 @@ export function MeasurementController({ children }: { children: ReactNode }) {
             sampleGapS: 10,
           });
           const rows = await getTodayHourly(userId);
-          const dailySumWeighted = rows?.reduce((acc: number, r: any) => acc + (r?.sumWeighted ?? 0), 0) ?? 0;
-          const dailyWeightSeconds = rows?.reduce((acc: number, r: any) => acc + (r?.weight ?? 0), 0) ?? 0;
+          const dailySumWeighted =
+            rows?.reduce(
+              (acc: number, r: any) => acc + (r?.sumWeighted ?? 0),
+              0,
+            ) ?? 0;
+          const dailyWeightSeconds =
+            rows?.reduce((acc: number, r: any) => acc + (r?.weight ?? 0), 0) ??
+            0;
           const count = await getTodayCount(userId);
           const dateISO = createISO();
           const postData = {
@@ -174,7 +203,9 @@ export function MeasurementController({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (typeof window === "undefined" || !userId) return;
-    const interrupted = sessionStorage.getItem(SESSION_STORAGE_MEASUREMENT_INTERRUPTED);
+    const interrupted = sessionStorage.getItem(
+      SESSION_STORAGE_MEASUREMENT_INTERRUPTED,
+    );
     if (interrupted === "1") {
       setShowRecoveryNotice(true);
     }
@@ -204,7 +235,12 @@ export function MeasurementController({ children }: { children: ReactNode }) {
       incrementElapsedSeconds();
     }, 1000);
     return () => clearInterval(interval);
-  }, [stopEstimating, measurementStarted, incrementElapsedSeconds, resetElapsedSeconds]);
+  }, [
+    stopEstimating,
+    measurementStarted,
+    incrementElapsedSeconds,
+    resetElapsedSeconds,
+  ]);
 
   const value = useMemo(
     () => ({
@@ -252,9 +288,13 @@ export function MeasurementController({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!mounted) return;
-    const slotEl = typeof document !== "undefined" ? document.getElementById(MEASUREMENT_CANVAS_SLOT_ID) : null;
+    const slotEl =
+      typeof document !== "undefined"
+        ? document.getElementById(MEASUREMENT_CANVAS_SLOT_ID)
+        : null;
     setSlotEl(slotEl);
-    const portalTarget = slotEl || (typeof document !== "undefined" ? document.body : null);
+    const portalTarget =
+      slotEl || (typeof document !== "undefined" ? document.body : null);
     setPortalTarget(portalTarget);
   }, [mounted, pathname, stopEstimating]);
 
@@ -267,13 +307,22 @@ export function MeasurementController({ children }: { children: ReactNode }) {
         createPortal(
           <canvas
             ref={canvasRef}
-            className={slotEl ? "h-full w-full block bg-[#2C3E50]" : "absolute -left-[9999px]"}
+            className={
+              slotEl
+                ? "block h-full w-full bg-[#2C3E50]"
+                : "absolute -left-[9999px]"
+            }
             style={slotEl ? undefined : { visibility: "hidden" }}
           />,
           portalTarget,
         )}
 
-      <video ref={videoRef} className="absolute -left-[9999px]" muted playsInline />
+      <video
+        ref={videoRef}
+        className="absolute -left-[9999px]"
+        muted
+        playsInline
+      />
 
       <RecoveryNotice
         isVisible={showRecoveryNotice}
