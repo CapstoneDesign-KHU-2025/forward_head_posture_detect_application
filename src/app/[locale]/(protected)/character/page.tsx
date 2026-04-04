@@ -15,13 +15,17 @@ const CHARACTER_ASSETS = [
 export default function CharacterSelectionPage() {
   const t = useTranslations("Characters");
   const router = useRouter();
-  const [selectedCharacter, setSelectedCharacter] = useState<string | null>(null);
+  const [selectedCharacter, setSelectedCharacter] = useState<string | null>(
+    null,
+  );
 
   const saveCharacterAndRedirect = (characterId: string) => {
     if (typeof window != "undefined") {
       localStorage.setItem("selectedCharacter", characterId);
     }
+    router.replace("/");
   };
+
   const handleCharacterSelect = (characterId: string) => {
     setSelectedCharacter(characterId);
   };
@@ -56,16 +60,20 @@ export default function CharacterSelectionPage() {
   }, [selectedCharacter, handleConfirm, handleSkip]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[var(--green-pale)] to-[var(--green-light)] flex items-center justify-center p-8">
-      <div className="max-w-[1200px] w-full bg-white rounded-[24px] p-12 shadow-[0_10px_40px_rgba(45,95,46,0.15)]">
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-[var(--green-pale)] to-[var(--green-light)] p-8">
+      <div className="w-full max-w-[1200px] rounded-[24px] bg-white p-12 shadow-[0_10px_40px_rgba(45,95,46,0.15)]">
         {/* header */}
-        <div className="text-center mb-12">
-          <div className="text-[3rem] mb-4 animate-bounce">🐢</div>
-          <h1 className="text-[2rem] text-[var(--green)] mb-2 font-bold">{t("header.title")}</h1>
-          <p className="text-[1.1rem] text-[bar(--text)]">{t("header.description")}</p>
+        <div className="mb-12 text-center">
+          <div className="mb-4 animate-bounce text-[3rem]">🐢</div>
+          <h1 className="mb-2 text-[2rem] font-bold text-[var(--green)]">
+            {t("header.title")}
+          </h1>
+          <p className="text-[1.1rem] text-[bar(--text)]">
+            {t("header.description")}
+          </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12 max-w-[900px] mx-auto">
+        <div className="mx-auto mb-12 grid max-w-[900px] grid-cols-1 gap-12 md:grid-cols-3">
           {CHARACTER_ASSETS.map((character) => (
             <CharacterGrid
               key={character.id}
@@ -80,11 +88,11 @@ export default function CharacterSelectionPage() {
           ))}
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+        <div className="flex flex-col justify-center gap-4 sm:flex-row">
           <Button
             variant="secondary"
             onClick={handleSkip}
-            className="px-12 py-4 text-[1.1rem] font-semibold border-2 border-[var(--green-border-dark)]"
+            className="border-2 border-[var(--green-border)] px-12 py-4 text-[1.1rem] font-semibold"
           >
             {t("buttons.skip")}
           </Button>
@@ -92,8 +100,12 @@ export default function CharacterSelectionPage() {
             variant="primary"
             onClick={handleConfirm}
             disabled={!selectedCharacter}
-            className="px-12 py-4 text-[1.1rem] font-semibold disabled:bg-[var(--disabled-bg)] disabled:cursor-not-allowed disabled:hover:bg-[var(--disabled-bg-hover)] disabled:hover:transform-none disabled:shadow-none"
-            style={!selectedCharacter ? {} : { boxShadow: "0 4px 15px rgba(45, 95, 46, 0.3)" }}
+            className="px-12 py-4 text-[1.1rem] font-semibold disabled:cursor-not-allowed disabled:bg-[var(--disabled-bg)] disabled:shadow-none disabled:hover:transform-none disabled:hover:bg-[var(--disabled-bg-hover)]"
+            style={
+              !selectedCharacter
+                ? {}
+                : { boxShadow: "0 4px 15px rgba(45, 95, 46, 0.3)" }
+            }
           >
             {t("buttons.done")}
           </Button>
