@@ -12,23 +12,16 @@ import {
 import { createPortal } from "react-dom";
 import { usePathname, useRouter } from "@/i18n/navigation";
 import { useSession } from "next-auth/react";
-import { startTransition, useActionState } from "react";
-import { getTodayHourly } from "@/lib/hourlyOps";
-import {
-  getTodayCount,
-  storeMeasurementAndAccumulate,
-} from "@/lib/postureLocal";
+import { useActionState } from "react";
+import { useMeasurementSave } from "@/hooks/useMeasurementSave";
 import { useTurtleNeckMeasurement } from "@/hooks/useTurtleNeckMeasurement";
-import { createISO } from "@/utils/createISO";
 import { postDailySummaryAction } from "@/app/actions/summaryActions";
 import { RecoveryNotice } from "@/app/[locale]/(protected)/estimate/components/RecoveryNotice";
-import { logger } from "@/lib/logger";
-import { StatusBannerType } from "@/utils/types";
-import type { GuideColor } from "@/utils/types";
-
 import { useMeasurementStore } from "@/app/store/useMeasurementStore";
-export const MEASUREMENT_CANVAS_SLOT_ID = "measurement-canvas-slot";
+import { cn } from "@/utils/cn";
+import { StatusBannerType, type GuideColor } from "@/utils/types";
 
+export const MEASUREMENT_CANVAS_SLOT_ID = "measurement-canvas-slot";
 const SESSION_STORAGE_MEASUREMENT_INTERRUPTED = "measurement_interrupted";
 
 type MeasurementContextValue = {
@@ -62,128 +55,10 @@ export function useMeasurement() {
     );
   return ctx;
 }
-
-export function MeasurementController({ children }: { children: ReactNode }) {
+function useMeasurementRecovery(userId: string, measurementStarted: boolean) {
   const router = useRouter();
   const pathname = usePathname();
-  const { data: session } = useSession();
-  const userId = (session?.user as any)?.id as string;
-
-  //elapsedSecond is not called here cause if it's called this controller will be rendered every single second.
-  const stopEstimating = useMeasurementStore((state) => state.stopEstimating);
-  const isProcessing = useMeasurementStore((state) => state.isProcessing);
-  const setStopEstimating = useMeasurementStore(
-    (state) => state.setStopEstimating,
-  );
-  const setIsProcessing = useMeasurementStore((state) => state.setIsProcessing);
-  const incrementElapsedSeconds = useMeasurementStore(
-    (state) => state.incrementElapsedSeconds,
-  );
-  const resetElapsedSeconds = useMeasurementStore(
-    (state) => state.resetElapsedSeconds,
-  );
-
   const [showRecoveryNotice, setShowRecoveryNotice] = useState(false);
-  const [mounted, setMounted] = useState(false);
-  const [_dailySumState, dailySumAction] = useActionState(
-    postDailySummaryAction,
-    null,
-  );
-  const [slotEl, setSlotEl] = useState<HTMLElement | null>(null);
-  const [portalTarget, setPortalTarget] = useState<HTMLElement | null>(null);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  const {
-    videoRef,
-    canvasRef,
-    countdownRemain,
-    measurementStarted,
-    showMeasurementStartedToast,
-    error,
-    getStatusBannerType,
-    statusBannerMessage,
-    isTurtle,
-    angle,
-    isFirstFrameDrawn,
-    guideMessage,
-    guideColor,
-    resetForNewMeasurement,
-  } = useTurtleNeckMeasurement({ userId, stopEstimating });
-
-  const handleStopMeasurement = useCallback(
-    async (forced?: boolean) => {
-      if (isProcessing) return;
-      try {
-        setIsProcessing(true);
-        if (!stopEstimating) {
-          await storeMeasurementAndAccumulate({
-            userId,
-            ts: Date.now(),
-            angleDeg: angle,
-            isTurtle,
-            hasPose: true,
-            sessionId: session?.user?.id,
-            sampleGapS: 10,
-          });
-          const rows = await getTodayHourly(userId);
-          const dailySumWeighted =
-            rows?.reduce(
-              (acc: number, r: any) => acc + (r?.sumWeighted ?? 0),
-              0,
-            ) ?? 0;
-          const dailyWeightSeconds =
-            rows?.reduce((acc: number, r: any) => acc + (r?.weight ?? 0), 0) ??
-            0;
-          const count = await getTodayCount(userId);
-          const dateISO = createISO();
-          const postData = {
-            userId,
-            dateISO,
-            sumWeighted: dailySumWeighted,
-            weightSeconds: dailyWeightSeconds,
-            count,
-          };
-          startTransition(() => dailySumAction(postData));
-          resetForNewMeasurement();
-          if (forced) return;
-        }
-      } catch (err) {
-        logger.error("[handleStopMeasurement] error:", err);
-        resetForNewMeasurement();
-      } finally {
-        if (!forced) setStopEstimating(!stopEstimating);
-        setIsProcessing(false);
-        resetForNewMeasurement();
-        if (typeof window !== "undefined") {
-          sessionStorage.removeItem(SESSION_STORAGE_MEASUREMENT_INTERRUPTED);
-        }
-      }
-    },
-    [
-      userId,
-      stopEstimating,
-      angle,
-      isTurtle,
-      isProcessing,
-      session?.user?.id,
-      dailySumAction,
-      setIsProcessing,
-      setStopEstimating,
-      resetForNewMeasurement,
-    ],
-  );
-
-  const startMeasurement = useCallback(() => {
-    setShowRecoveryNotice(false);
-    setStopEstimating(false);
-  }, [setStopEstimating]);
-
-  const stopMeasurement = useCallback(async () => {
-    await handleStopMeasurement();
-  }, [handleStopMeasurement]);
 
   useEffect(() => {
     if (typeof window === "undefined" || !measurementStarted) return;
@@ -191,22 +66,10 @@ export function MeasurementController({ children }: { children: ReactNode }) {
   }, [measurementStarted]);
 
   useEffect(() => {
-    if (pathname !== "/estimate" && pathname !== "/") {
-      if (measurementStarted) {
-        handleStopMeasurement(true);
-      }
-      setStopEstimating(true);
-    } else if (pathname === "/" && !measurementStarted) {
-      setStopEstimating(true);
-    }
-  }, [pathname, measurementStarted, handleStopMeasurement, setStopEstimating]);
-
-  useEffect(() => {
     if (typeof window === "undefined" || !userId) return;
-    const interrupted = sessionStorage.getItem(
-      SESSION_STORAGE_MEASUREMENT_INTERRUPTED,
-    );
-    if (interrupted === "1") {
+    if (
+      sessionStorage.getItem(SESSION_STORAGE_MEASUREMENT_INTERRUPTED) === "1"
+    ) {
       setShowRecoveryNotice(true);
     }
   }, [userId]);
@@ -225,7 +88,20 @@ export function MeasurementController({ children }: { children: ReactNode }) {
     }
   }, [dismissRecoveryNotice, pathname, router]);
 
-  // fixed logic : now component is not rendered every time!
+  return { showRecoveryNotice, dismissRecoveryNotice, handleRecoveryRestart };
+}
+
+function useMeasurementTimer(
+  stopEstimating: boolean,
+  measurementStarted: boolean,
+) {
+  const incrementElapsedSeconds = useMeasurementStore(
+    (state) => state.incrementElapsedSeconds,
+  );
+  const resetElapsedSeconds = useMeasurementStore(
+    (state) => state.resetElapsedSeconds,
+  );
+
   useEffect(() => {
     if (stopEstimating || !measurementStarted) {
       resetElapsedSeconds();
@@ -241,84 +117,130 @@ export function MeasurementController({ children }: { children: ReactNode }) {
     incrementElapsedSeconds,
     resetElapsedSeconds,
   ]);
+}
+
+function useCanvasPortal(stopEstimating: boolean) {
+  const pathname = usePathname();
+  const [mounted, setMounted] = useState(false);
+  const [slotEl, setSlotEl] = useState<HTMLElement | null>(null);
+  const [portalTarget, setPortalTarget] = useState<HTMLElement | null>(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
+    const el =
+      typeof document !== "undefined"
+        ? document.getElementById(MEASUREMENT_CANVAS_SLOT_ID)
+        : null;
+    setSlotEl(el);
+    setPortalTarget(
+      el || (typeof document !== "undefined" ? document.body : null),
+    );
+  }, [mounted, pathname, stopEstimating]);
+
+  return { slotEl, portalTarget };
+}
+
+export function MeasurementController({ children }: { children: ReactNode }) {
+  const pathname = usePathname();
+  const { data: session } = useSession();
+  const userId = (session?.user as any)?.id as string;
+
+  const stopEstimating = useMeasurementStore((state) => state.stopEstimating);
+  const setStopEstimating = useMeasurementStore(
+    (state) => state.setStopEstimating,
+  );
+  const isProcessing = useMeasurementStore((state) => state.isProcessing);
+
+  const [_dailySumState, dailySumAction] = useActionState(
+    postDailySummaryAction,
+    null,
+  );
+
+  const coreMeasurement = useTurtleNeckMeasurement({ userId, stopEstimating });
+
+  const { handleStopMeasurement } = useMeasurementSave({
+    userId,
+    sessionId: session?.user?.id,
+    angle: coreMeasurement.angle,
+    isTurtle: coreMeasurement.isTurtle,
+    dailySumAction,
+    resetForNewMeasurement: coreMeasurement.resetForNewMeasurement,
+  });
+
+  const { showRecoveryNotice, dismissRecoveryNotice, handleRecoveryRestart } =
+    useMeasurementRecovery(userId, coreMeasurement.measurementStarted);
+  const { slotEl, portalTarget } = useCanvasPortal(stopEstimating);
+  useMeasurementTimer(stopEstimating, coreMeasurement.measurementStarted);
+
+  const startMeasurement = useCallback(() => {
+    dismissRecoveryNotice();
+    setStopEstimating(false);
+  }, [setStopEstimating, dismissRecoveryNotice]);
+
+  const stopMeasurement = useCallback(async () => {
+    await handleStopMeasurement();
+  }, [handleStopMeasurement]);
+
+  useEffect(() => {
+    if (pathname !== "/estimate" && pathname !== "/") {
+      if (coreMeasurement.measurementStarted) {
+        handleStopMeasurement(true);
+      }
+      setStopEstimating(true);
+    } else if (pathname === "/" && !coreMeasurement.measurementStarted) {
+      setStopEstimating(true);
+    }
+  }, [
+    pathname,
+    coreMeasurement.measurementStarted,
+    handleStopMeasurement,
+    setStopEstimating,
+  ]);
 
   const value = useMemo(
     () => ({
       stopEstimating,
       startMeasurement,
       stopMeasurement,
-      videoRef,
-      canvasRef,
-      countdownRemain,
-      measurementStarted,
-      showMeasurementStartedToast,
-      error,
-      getStatusBannerType,
-      statusBannerMessage,
-      isTurtle,
-      angle,
+      ...coreMeasurement,
       isProcessing,
       canvasSlotId: MEASUREMENT_CANVAS_SLOT_ID,
-      isFirstFrameDrawn,
-      guideMessage,
-      guideColor,
-      resetForNewMeasurement,
     }),
     [
       stopEstimating,
       startMeasurement,
       stopMeasurement,
-      videoRef,
-      canvasRef,
-      countdownRemain,
-      measurementStarted,
-      showMeasurementStartedToast,
-      error,
-      getStatusBannerType,
-      statusBannerMessage,
-      isTurtle,
-      angle,
+      coreMeasurement,
       isProcessing,
-      isFirstFrameDrawn,
-      guideMessage,
-      guideColor,
-      resetForNewMeasurement,
     ],
   );
-
-  useEffect(() => {
-    if (!mounted) return;
-    const slotEl =
-      typeof document !== "undefined"
-        ? document.getElementById(MEASUREMENT_CANVAS_SLOT_ID)
-        : null;
-    setSlotEl(slotEl);
-    const portalTarget =
-      slotEl || (typeof document !== "undefined" ? document.body : null);
-    setPortalTarget(portalTarget);
-  }, [mounted, pathname, stopEstimating]);
 
   return (
     <MeasurementContext.Provider value={value}>
       {children}
 
+      {/* Canvas Portal */}
       {typeof document !== "undefined" &&
         portalTarget &&
         createPortal(
           <canvas
-            ref={canvasRef}
-            className={
+            ref={coreMeasurement.canvasRef}
+            className={cn(
               slotEl
                 ? "block h-full w-full bg-[#2C3E50]"
-                : "absolute -left-[9999px]"
-            }
+                : "absolute -left-[9999px]",
+            )}
             style={slotEl ? undefined : { visibility: "hidden" }}
           />,
           portalTarget,
         )}
 
       <video
-        ref={videoRef}
+        ref={coreMeasurement.videoRef}
         className="absolute -left-[9999px]"
         muted
         playsInline
