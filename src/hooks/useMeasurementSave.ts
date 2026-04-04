@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, startTransition } from "react";
+import { useCallback, startTransition, useActionState } from "react";
 import { getTodayHourly } from "@/lib/hourlyOps";
 import {
   getTodayCount,
@@ -9,6 +9,7 @@ import {
 import { createISO } from "@/utils/createISO";
 import { logger } from "@/lib/logger";
 import { useMeasurementStore } from "@/app/store/useMeasurementStore";
+import { postDailySummaryAction } from "@/app/actions/summaryActions";
 
 const SESSION_STORAGE_MEASUREMENT_INTERRUPTED = "measurement_interrupted";
 
@@ -17,7 +18,6 @@ type UseMeasurementSaveProps = {
   sessionId?: string;
   angle: number;
   isTurtle: boolean;
-  dailySumAction: (payload: any) => void;
   resetForNewMeasurement: () => void;
 };
 
@@ -26,7 +26,6 @@ export function useMeasurementSave({
   sessionId,
   angle,
   isTurtle,
-  dailySumAction,
   resetForNewMeasurement,
 }: UseMeasurementSaveProps) {
   const stopEstimating = useMeasurementStore((state) => state.stopEstimating);
@@ -35,7 +34,10 @@ export function useMeasurementSave({
   );
   const isProcessing = useMeasurementStore((state) => state.isProcessing);
   const setIsProcessing = useMeasurementStore((state) => state.setIsProcessing);
-
+  const [_dailySumState, dailySumAction] = useActionState(
+    postDailySummaryAction,
+    null,
+  );
   const handleStopMeasurement = useCallback(
     async (forced?: boolean) => {
       if (isProcessing) return;
@@ -67,7 +69,6 @@ export function useMeasurementSave({
 
           startTransition(() => {
             dailySumAction({
-              userId,
               dateISO: createISO(),
               sumWeighted: dailySumWeighted,
               weightSeconds: dailyWeightSeconds,

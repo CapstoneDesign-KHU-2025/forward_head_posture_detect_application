@@ -1,3 +1,4 @@
+"use client";
 import { useEffect, useEffectEvent } from "react";
 
 export function useHandleHotKey(key: string, callback: () => void) {

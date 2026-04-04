@@ -12,14 +12,13 @@ import {
 import { createPortal } from "react-dom";
 import { usePathname, useRouter } from "@/i18n/navigation";
 import { useSession } from "next-auth/react";
-import { useActionState } from "react";
 import { useMeasurementSave } from "@/hooks/useMeasurementSave";
 import { useTurtleNeckMeasurement } from "@/hooks/useTurtleNeckMeasurement";
-import { postDailySummaryAction } from "@/app/actions/summaryActions";
 import { RecoveryNotice } from "@/app/[locale]/(protected)/estimate/components/RecoveryNotice";
 import { useMeasurementStore } from "@/app/store/useMeasurementStore";
 import { cn } from "@/utils/cn";
 import { StatusBannerType, type GuideColor } from "@/utils/types";
+import useAutoStopOnNavigation from "@/hooks/useAutoStopOnNavigation";
 
 export const MEASUREMENT_CANVAS_SLOT_ID = "measurement-canvas-slot";
 const SESSION_STORAGE_MEASUREMENT_INTERRUPTED = "measurement_interrupted";
@@ -155,11 +154,6 @@ export function MeasurementController({ children }: { children: ReactNode }) {
   );
   const isProcessing = useMeasurementStore((state) => state.isProcessing);
 
-  const [_dailySumState, dailySumAction] = useActionState(
-    postDailySummaryAction,
-    null,
-  );
-
   const coreMeasurement = useTurtleNeckMeasurement({ userId, stopEstimating });
 
   const { handleStopMeasurement } = useMeasurementSave({
@@ -167,7 +161,6 @@ export function MeasurementController({ children }: { children: ReactNode }) {
     sessionId: session?.user?.id,
     angle: coreMeasurement.angle,
     isTurtle: coreMeasurement.isTurtle,
-    dailySumAction,
     resetForNewMeasurement: coreMeasurement.resetForNewMeasurement,
   });
 
@@ -175,7 +168,12 @@ export function MeasurementController({ children }: { children: ReactNode }) {
     useMeasurementRecovery(userId, coreMeasurement.measurementStarted);
   const { slotEl, portalTarget } = useCanvasPortal(stopEstimating);
   useMeasurementTimer(stopEstimating, coreMeasurement.measurementStarted);
-
+  useAutoStopOnNavigation(
+    pathname,
+    coreMeasurement.measurementStarted,
+    handleStopMeasurement,
+    setStopEstimating,
+  );
   const startMeasurement = useCallback(() => {
     dismissRecoveryNotice();
     setStopEstimating(false);
@@ -184,22 +182,6 @@ export function MeasurementController({ children }: { children: ReactNode }) {
   const stopMeasurement = useCallback(async () => {
     await handleStopMeasurement();
   }, [handleStopMeasurement]);
-
-  useEffect(() => {
-    if (pathname !== "/estimate" && pathname !== "/") {
-      if (coreMeasurement.measurementStarted) {
-        handleStopMeasurement(true);
-      }
-      setStopEstimating(true);
-    } else if (pathname === "/" && !coreMeasurement.measurementStarted) {
-      setStopEstimating(true);
-    }
-  }, [
-    pathname,
-    coreMeasurement.measurementStarted,
-    handleStopMeasurement,
-    setStopEstimating,
-  ]);
 
   const value = useMemo(
     () => ({
