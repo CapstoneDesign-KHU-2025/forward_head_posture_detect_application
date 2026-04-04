@@ -5,7 +5,7 @@ import { useRouter } from "@/i18n/navigation";
 import { Button } from "@/components/Button";
 import CharacterGrid from "./components/CharacterGrid";
 import { useTranslations } from "next-intl";
-
+import { useHandleHotKey } from "@/hooks/useHandleHotKey";
 const CHARACTER_ASSETS = [
   { id: "remy", icon: "/icons/remy.png" },
   { id: "jerry", icon: "/icons/cat.png" },
@@ -46,18 +46,14 @@ export default function CharacterSelectionPage() {
     }
   }, [router]);
 
-  const onKeyDown = useEffectEvent((e: KeyboardEvent) => {
-    if (e.key === "Enter" && selectedCharacter) {
+  useHandleHotKey("Enter", () => {
+    if (selectedCharacter) {
       handleConfirm();
-    } else if (e.key === "Escape") {
-      handleSkip();
     }
   });
-
-  useEffect(() => {
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, []);
+  useHandleHotKey("Escape", () => {
+    handleSkip();
+  });
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-[var(--green-pale)] to-[var(--green-light)] p-8">
