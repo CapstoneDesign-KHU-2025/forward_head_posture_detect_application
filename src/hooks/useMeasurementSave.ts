@@ -6,12 +6,11 @@ import {
   getTodayCount,
   storeMeasurementAndAccumulate,
 } from "@/lib/postureLocal";
+import { clearMeasurementInterruptedInSession } from "@/lib/measurementSession";
 import { createISO } from "@/utils/createISO";
 import { logger } from "@/lib/logger";
 import { useMeasurementStore } from "@/app/store/useMeasurementStore";
 import { postDailySummaryAction } from "@/app/actions/summaryActions";
-
-const SESSION_STORAGE_MEASUREMENT_INTERRUPTED = "measurement_interrupted";
 
 type HourlyRowLike = { sumWeighted: number; weight: number };
 
@@ -25,32 +24,26 @@ function aggregateHourlyTotals(rows: HourlyRowLike[]) {
   return { sumWeighted, weightSeconds };
 }
 
-function clearMeasurementInterruptedSessionStorage() {
-  if (typeof window !== "undefined") {
-    sessionStorage.removeItem(SESSION_STORAGE_MEASUREMENT_INTERRUPTED);
-  }
-}
+type DailySummaryAction = (formData: {
+  dateISO: string;
+  sumWeighted: number;
+  weightSeconds: number;
+  count: number;
+}) => void;
 
-type PersistAndPostDailySummaryParams = {
+type LocalSampleParams = {
   userId: string;
   sessionId: string | undefined;
   angle: number;
   isTurtle: boolean;
-  dailySumAction: (formData: {
-    dateISO: string;
-    sumWeighted: number;
-    weightSeconds: number;
-    count: number;
-  }) => void;
 };
 
-async function persistSampleAndEnqueueDailySummary({
+async function persistPostureSampleToLocal({
   userId,
   sessionId,
   angle,
   isTurtle,
-  dailySumAction,
-}: PersistAndPostDailySummaryParams) {
+}: LocalSampleParams) {
   await storeMeasurementAndAccumulate({
     userId,
     ts: Date.now(),
@@ -60,7 +53,12 @@ async function persistSampleAndEnqueueDailySummary({
     sessionId,
     sampleGapS: 10,
   });
+}
 
+async function postDailySummaryFromLocalHourly(
+  userId: string,
+  dailySumAction: DailySummaryAction,
+) {
   const rows = await getTodayHourly(userId);
   const { sumWeighted, weightSeconds } = aggregateHourlyTotals(rows);
   const count = await getTodayCount(userId);
@@ -75,6 +73,14 @@ async function persistSampleAndEnqueueDailySummary({
   });
 }
 
+async function persistSampleAndEnqueueDailySummary(
+  sample: LocalSampleParams,
+  dailySumAction: DailySummaryAction,
+) {
+  await persistPostureSampleToLocal(sample);
+  await postDailySummaryFromLocalHourly(sample.userId, dailySumAction);
+}
+
 type FinalizeStopParams = {
   forced: boolean | undefined;
   stopEstimating: boolean;
@@ -83,6 +89,18 @@ type FinalizeStopParams = {
   resetForNewMeasurement: () => void;
 };
 
+function applyStopEstimatingToggle(
+  forced: boolean | undefined,
+  stopEstimating: boolean,
+  setStopEstimating: (value: boolean) => void,
+) {
+  if (!forced) setStopEstimating(!stopEstimating);
+}
+
+function clearProcessingFlag(setIsProcessing: (value: boolean) => void) {
+  setIsProcessing(false);
+}
+
 function finalizeMeasurementStop({
   forced,
   stopEstimating,
@@ -90,10 +108,10 @@ function finalizeMeasurementStop({
   setIsProcessing,
   resetForNewMeasurement,
 }: FinalizeStopParams) {
-  if (!forced) setStopEstimating(!stopEstimating);
-  setIsProcessing(false);
+  applyStopEstimatingToggle(forced, stopEstimating, setStopEstimating);
+  clearProcessingFlag(setIsProcessing);
   resetForNewMeasurement();
-  clearMeasurementInterruptedSessionStorage();
+  clearMeasurementInterruptedInSession();
 }
 
 type UseMeasurementSaveProps = {
@@ -130,13 +148,10 @@ export function useMeasurementSave({
         setIsProcessing(true);
 
         if (!stopEstimating) {
-          await persistSampleAndEnqueueDailySummary({
-            userId,
-            sessionId,
-            angle,
-            isTurtle,
+          await persistSampleAndEnqueueDailySummary(
+            { userId, sessionId, angle, isTurtle },
             dailySumAction,
-          });
+          );
           if (forced) return;
         }
       } catch (err) {
