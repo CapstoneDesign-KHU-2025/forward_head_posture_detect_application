@@ -13,6 +13,89 @@ import { postDailySummaryAction } from "@/app/actions/summaryActions";
 
 const SESSION_STORAGE_MEASUREMENT_INTERRUPTED = "measurement_interrupted";
 
+type HourlyRowLike = { sumWeighted: number; weight: number };
+
+function aggregateHourlyTotals(rows: HourlyRowLike[]) {
+  let sumWeighted = 0;
+  let weightSeconds = 0;
+  for (const r of rows) {
+    sumWeighted += r.sumWeighted;
+    weightSeconds += r.weight;
+  }
+  return { sumWeighted, weightSeconds };
+}
+
+function clearMeasurementInterruptedSessionStorage() {
+  if (typeof window !== "undefined") {
+    sessionStorage.removeItem(SESSION_STORAGE_MEASUREMENT_INTERRUPTED);
+  }
+}
+
+type PersistAndPostDailySummaryParams = {
+  userId: string;
+  sessionId: string | undefined;
+  angle: number;
+  isTurtle: boolean;
+  dailySumAction: (formData: {
+    dateISO: string;
+    sumWeighted: number;
+    weightSeconds: number;
+    count: number;
+  }) => void;
+};
+
+async function persistSampleAndEnqueueDailySummary({
+  userId,
+  sessionId,
+  angle,
+  isTurtle,
+  dailySumAction,
+}: PersistAndPostDailySummaryParams) {
+  await storeMeasurementAndAccumulate({
+    userId,
+    ts: Date.now(),
+    angleDeg: angle,
+    isTurtle,
+    hasPose: true,
+    sessionId,
+    sampleGapS: 10,
+  });
+
+  const rows = await getTodayHourly(userId);
+  const { sumWeighted, weightSeconds } = aggregateHourlyTotals(rows);
+  const count = await getTodayCount(userId);
+
+  startTransition(() => {
+    dailySumAction({
+      dateISO: createISO(),
+      sumWeighted,
+      weightSeconds,
+      count,
+    });
+  });
+}
+
+type FinalizeStopParams = {
+  forced: boolean | undefined;
+  stopEstimating: boolean;
+  setStopEstimating: (value: boolean) => void;
+  setIsProcessing: (value: boolean) => void;
+  resetForNewMeasurement: () => void;
+};
+
+function finalizeMeasurementStop({
+  forced,
+  stopEstimating,
+  setStopEstimating,
+  setIsProcessing,
+  resetForNewMeasurement,
+}: FinalizeStopParams) {
+  if (!forced) setStopEstimating(!stopEstimating);
+  setIsProcessing(false);
+  resetForNewMeasurement();
+  clearMeasurementInterruptedSessionStorage();
+}
+
 type UseMeasurementSaveProps = {
   userId: string;
   sessionId?: string;
@@ -38,6 +121,7 @@ export function useMeasurementSave({
     postDailySummaryAction,
     null,
   );
+
   const handleStopMeasurement = useCallback(
     async (forced?: boolean) => {
       if (isProcessing) return;
@@ -46,50 +130,25 @@ export function useMeasurementSave({
         setIsProcessing(true);
 
         if (!stopEstimating) {
-          await storeMeasurementAndAccumulate({
+          await persistSampleAndEnqueueDailySummary({
             userId,
-            ts: Date.now(),
-            angleDeg: angle,
-            isTurtle,
-            hasPose: true,
             sessionId,
-            sampleGapS: 10,
+            angle,
+            isTurtle,
+            dailySumAction,
           });
-
-          const rows = await getTodayHourly(userId);
-          const dailySumWeighted =
-            rows?.reduce(
-              (acc: number, r: any) => acc + (r?.sumWeighted ?? 0),
-              0,
-            ) ?? 0;
-          const dailyWeightSeconds =
-            rows?.reduce((acc: number, r: any) => acc + (r?.weight ?? 0), 0) ??
-            0;
-          const count = await getTodayCount(userId);
-
-          startTransition(() => {
-            dailySumAction({
-              dateISO: createISO(),
-              sumWeighted: dailySumWeighted,
-              weightSeconds: dailyWeightSeconds,
-              count,
-            });
-          });
-
-          resetForNewMeasurement();
           if (forced) return;
         }
       } catch (err) {
         logger.error("[handleStopMeasurement] error:", err);
-        resetForNewMeasurement();
       } finally {
-        if (!forced) setStopEstimating(!stopEstimating);
-        setIsProcessing(false);
-        resetForNewMeasurement();
-
-        if (typeof window !== "undefined") {
-          sessionStorage.removeItem(SESSION_STORAGE_MEASUREMENT_INTERRUPTED);
-        }
+        finalizeMeasurementStop({
+          forced,
+          stopEstimating,
+          setStopEstimating,
+          setIsProcessing,
+          resetForNewMeasurement,
+        });
       }
     },
     [
