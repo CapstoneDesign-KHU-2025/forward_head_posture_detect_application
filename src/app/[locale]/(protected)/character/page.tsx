@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useEffectEvent } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { Button } from "@/components/Button";
 import CharacterGrid from "./components/CharacterGrid";
@@ -64,7 +64,7 @@ export default function CharacterSelectionPage() {
           <h1 className="mb-2 text-[2rem] font-bold text-[var(--green)]">
             {t("header.title")}
           </h1>
-          <p className="text-[1.1rem] text-[bar(--text)]">
+          <p className="text-[1.1rem] text-[var(--text)]">
             {t("header.description")}
           </p>
         </div>
