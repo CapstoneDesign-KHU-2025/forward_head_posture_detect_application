@@ -8,6 +8,7 @@ import {
   useMemo,
   useState,
   type ReactNode,
+  type RefObject,
 } from "react";
 import { createPortal } from "react-dom";
 import { usePathname, useRouter } from "@/i18n/navigation";
@@ -19,9 +20,13 @@ import { useMeasurementStore } from "@/app/store/useMeasurementStore";
 import { cn } from "@/utils/cn";
 import { StatusBannerType, type GuideColor } from "@/utils/types";
 import useAutoStopOnNavigation from "@/hooks/useAutoStopOnNavigation";
+import {
+  clearMeasurementInterruptedInSession,
+  isMeasurementInterruptedInSession,
+  markMeasurementInterruptedInSession,
+} from "@/lib/measurementSession";
 
 export const MEASUREMENT_CANVAS_SLOT_ID = "measurement-canvas-slot";
-const SESSION_STORAGE_MEASUREMENT_INTERRUPTED = "measurement_interrupted";
 
 type MeasurementContextValue = {
   stopEstimating: boolean;
@@ -54,29 +59,24 @@ export function useMeasurement() {
     );
   return ctx;
 }
+
 function useMeasurementRecovery(userId: string, measurementStarted: boolean) {
   const router = useRouter();
   const pathname = usePathname();
   const [showRecoveryNotice, setShowRecoveryNotice] = useState(false);
 
   useEffect(() => {
-    if (typeof window === "undefined" || !measurementStarted) return;
-    sessionStorage.setItem(SESSION_STORAGE_MEASUREMENT_INTERRUPTED, "1");
+    if (!measurementStarted) return;
+    markMeasurementInterruptedInSession();
   }, [measurementStarted]);
 
   useEffect(() => {
-    if (typeof window === "undefined" || !userId) return;
-    if (
-      sessionStorage.getItem(SESSION_STORAGE_MEASUREMENT_INTERRUPTED) === "1"
-    ) {
-      setShowRecoveryNotice(true);
-    }
+    if (!userId) return;
+    if (isMeasurementInterruptedInSession()) setShowRecoveryNotice(true);
   }, [userId]);
 
   const dismissRecoveryNotice = useCallback(() => {
-    if (typeof window !== "undefined") {
-      sessionStorage.removeItem(SESSION_STORAGE_MEASUREMENT_INTERRUPTED);
-    }
+    clearMeasurementInterruptedInSession();
     setShowRecoveryNotice(false);
   }, []);
 
@@ -143,10 +143,50 @@ function useCanvasPortal(stopEstimating: boolean) {
   return { slotEl, portalTarget };
 }
 
+type MeasurementCanvasPortalProps = {
+  canvasRef: RefObject<HTMLCanvasElement | null>;
+  slotEl: HTMLElement | null;
+  portalTarget: HTMLElement;
+};
+
+function MeasurementCanvasPortal({
+  canvasRef,
+  slotEl,
+  portalTarget,
+}: MeasurementCanvasPortalProps) {
+  return createPortal(
+    <canvas
+      ref={canvasRef}
+      className={cn(
+        slotEl
+          ? "block h-full w-full bg-[var(--green-dark)]"
+          : "absolute -left-[9999px]",
+      )}
+      style={slotEl ? undefined : { visibility: "hidden" }}
+    />,
+    portalTarget,
+  );
+}
+
+type HiddenMeasurementVideoProps = {
+  videoRef: RefObject<HTMLVideoElement | null>;
+};
+
+function HiddenMeasurementVideo({ videoRef }: HiddenMeasurementVideoProps) {
+  return (
+    <video
+      ref={videoRef}
+      className="absolute -left-[9999px]"
+      muted
+      playsInline
+    />
+  );
+}
+
 export function MeasurementController({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const { data: session } = useSession();
-  const userId = (session?.user as any)?.id as string;
+  const userId = (session?.user as { id?: string })?.id ?? "";
 
   const stopEstimating = useMeasurementStore((state) => state.stopEstimating);
   const setStopEstimating = useMeasurementStore(
@@ -166,14 +206,17 @@ export function MeasurementController({ children }: { children: ReactNode }) {
 
   const { showRecoveryNotice, dismissRecoveryNotice, handleRecoveryRestart } =
     useMeasurementRecovery(userId, coreMeasurement.measurementStarted);
+
   const { slotEl, portalTarget } = useCanvasPortal(stopEstimating);
   useMeasurementTimer(stopEstimating, coreMeasurement.measurementStarted);
+
   useAutoStopOnNavigation(
     pathname,
     coreMeasurement.measurementStarted,
     handleStopMeasurement,
     setStopEstimating,
   );
+
   const startMeasurement = useCallback(() => {
     dismissRecoveryNotice();
     setStopEstimating(false);
@@ -201,32 +244,22 @@ export function MeasurementController({ children }: { children: ReactNode }) {
     ],
   );
 
+  const canRenderPortal =
+    typeof document !== "undefined" && portalTarget !== null;
+
   return (
     <MeasurementContext.Provider value={value}>
       {children}
 
-      {/* Canvas Portal */}
-      {typeof document !== "undefined" &&
-        portalTarget &&
-        createPortal(
-          <canvas
-            ref={coreMeasurement.canvasRef}
-            className={cn(
-              slotEl
-                ? "block h-full w-full bg-[#2C3E50]"
-                : "absolute -left-[9999px]",
-            )}
-            style={slotEl ? undefined : { visibility: "hidden" }}
-          />,
-          portalTarget,
-        )}
+      {canRenderPortal && (
+        <MeasurementCanvasPortal
+          canvasRef={coreMeasurement.canvasRef}
+          slotEl={slotEl}
+          portalTarget={portalTarget}
+        />
+      )}
 
-      <video
-        ref={coreMeasurement.videoRef}
-        className="absolute -left-[9999px]"
-        muted
-        playsInline
-      />
+      <HiddenMeasurementVideo videoRef={coreMeasurement.videoRef} />
 
       <RecoveryNotice
         isVisible={showRecoveryNotice}
