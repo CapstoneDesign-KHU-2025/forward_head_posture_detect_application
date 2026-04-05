@@ -1,8 +1,7 @@
 "use client";
 
-import { useState, useCallback, useEffect, useMemo, useRef, useActionState } from "react";
+import { useState, useCallback, useEffect, useMemo, useRef } from "react";
 import type { Friend, FriendRequestRow, SearchUser } from "@/utils/types";
-import { searchUsersAction } from "@/app/actions/friendsActions";
 import { useTranslations } from "next-intl";
 import { RelationStatus, SearchResultItem } from "@/utils/types";
 
@@ -54,6 +53,93 @@ function buildRelationMap(
   return map;
 }
 
+type FriendsBundle = {
+  friends: Friend[];
+  incoming: FriendRequestRow[];
+  outgoing: FriendRequestRow[];
+};
+
+function assertFriendsOk(res: Response, json: FriendsApiResponse) {
+  if (!res.ok || !json.ok) {
+    throw new Error(json.error || "Failed to load friends");
+  }
+}
+
+function assertRequestsOk(
+  res: Response,
+  json: FriendRequestsApiResponse,
+  label: string,
+) {
+  if (!res.ok || !json.ok) {
+    throw new Error(json.error || label);
+  }
+}
+
+async function fetchFriendsBundle(): Promise<FriendsBundle> {
+  const [friendsRes, incomingRes, outgoingRes] = await Promise.all([
+    fetch("/api/friends", { cache: "no-store" }),
+    fetch("/api/friends/requests?type=incoming&status=PENDING", {
+      cache: "no-store",
+    }),
+    fetch("/api/friends/requests?type=outgoing&status=PENDING", {
+      cache: "no-store",
+    }),
+  ]);
+
+  const [friendsJson, incomingJson, outgoingJson] = await Promise.all([
+    friendsRes.json() as Promise<FriendsApiResponse>,
+    incomingRes.json() as Promise<FriendRequestsApiResponse>,
+    outgoingRes.json() as Promise<FriendRequestsApiResponse>,
+  ]);
+
+  assertFriendsOk(friendsRes, friendsJson);
+  assertRequestsOk(
+    incomingRes,
+    incomingJson,
+    "Failed to load incoming requests",
+  );
+  assertRequestsOk(
+    outgoingRes,
+    outgoingJson,
+    "Failed to load outgoing requests",
+  );
+
+  return {
+    friends: friendsJson.friends ?? [],
+    incoming: incomingJson.rows ?? [],
+    outgoing: outgoingJson.rows ?? [],
+  };
+}
+
+function toSearchResultItem(
+  u: SearchUser,
+  relation: Record<string, RelationStatus>,
+): SearchResultItem {
+  return {
+    id: u.id,
+    name: u.name,
+    image: u.image,
+    email: u.email,
+    initial: u.name?.charAt(0) ?? "?",
+    color: "#6aab7a",
+    relation: (relation[u.id] ?? "NONE") as RelationStatus | "NONE",
+  };
+}
+
+function shouldIncludeUserInSearchPicker(
+  userId: string,
+  relation: Record<string, RelationStatus>,
+) {
+  const status = relation[userId] ?? "NONE";
+  return status !== "FRIEND" && status !== "INCOMING";
+}
+
+function matchesSearchQuery(u: SearchResultItem, q: string) {
+  const matchName = (u.name ?? "").toLowerCase().includes(q);
+  const matchId = u.id.toLowerCase().includes(q);
+  return matchName || matchId;
+}
+
 export function useFriendsData() {
   const [friends, setFriends] = useState<Friend[]>([]);
   const [incoming, setIncoming] = useState<FriendRequestRow[]>([]);
@@ -63,8 +149,8 @@ export function useFriendsData() {
   const lastSearchQueryRef = useRef<string>("");
   const [toastMessage, setToastMessage] = useState("");
   const [isToastVisible, setIsToastVisible] = useState(false);
-  const [searchState, searchAction, isSearching] = useActionState(searchUsersAction, null);
   const t = useTranslations("Friends");
+
   const showToast = useCallback((msg: string) => {
     setToastMessage(msg);
     setIsToastVisible(true);
@@ -76,42 +162,17 @@ export function useFriendsData() {
 
   const refreshAll = useCallback(async () => {
     try {
-      const [friendsRes, incomingRes, outgoingRes] = await Promise.all([
-        fetch("/api/friends", { cache: "no-store" }),
-        fetch("/api/friends/requests?type=incoming&status=PENDING", { cache: "no-store" }),
-        fetch("/api/friends/requests?type=outgoing&status=PENDING", { cache: "no-store" }),
-      ]);
-
-      const [friendsJson, incomingJson, outgoingJson] = await Promise.all([
-        friendsRes.json() as Promise<FriendsApiResponse>,
-        incomingRes.json() as Promise<FriendRequestsApiResponse>,
-        outgoingRes.json() as Promise<FriendRequestsApiResponse>,
-      ]);
-
-      if (!friendsRes.ok || !(friendsJson as FriendsApiResponse).ok) {
-        throw new Error((friendsJson as FriendsApiResponse).error || "Failed to load friends");
-      }
-
-      if (!incomingRes.ok || !(incomingJson as FriendRequestsApiResponse).ok) {
-        throw new Error((incomingJson as FriendRequestsApiResponse).error || "Failed to load incoming requests");
-      }
-
-      if (!outgoingRes.ok || !(outgoingJson as FriendRequestsApiResponse).ok) {
-        throw new Error((outgoingJson as FriendRequestsApiResponse).error || "Failed to load outgoing requests");
-      }
-
-      const friendsData = (friendsJson as FriendsApiResponse).friends ?? [];
-      const incomingRows = (incomingJson as FriendRequestsApiResponse).rows ?? [];
-      const outgoingRows = (outgoingJson as FriendRequestsApiResponse).rows ?? [];
-
-      setFriends(friendsData);
-      setIncoming(incomingRows);
-      setOutgoing(outgoingRows);
-      setRelation(buildRelationMap(friendsData, incomingRows, outgoingRows));
-    } catch (error) {
+      const bundle = await fetchFriendsBundle();
+      setFriends(bundle.friends);
+      setIncoming(bundle.incoming);
+      setOutgoing(bundle.outgoing);
+      setRelation(
+        buildRelationMap(bundle.friends, bundle.incoming, bundle.outgoing),
+      );
+    } catch {
       showToast(t("Messages.loadError"));
     }
-  }, [showToast]);
+  }, [showToast, t]);
 
   useEffect(() => {
     void refreshAll();
@@ -130,10 +191,15 @@ export function useFriendsData() {
       lastSearchQueryRef.current = trimmed;
 
       try {
-        const res = await fetch(`/api/users/search?q=${encodeURIComponent(trimmed)}`, {
-          cache: "no-store",
-        });
-        const json = (await res.json().catch(() => ({}))) as SearchUsersApiResponse;
+        const res = await fetch(
+          `/api/users/search?q=${encodeURIComponent(trimmed)}`,
+          {
+            cache: "no-store",
+          },
+        );
+        const json = (await res
+          .json()
+          .catch(() => ({}))) as SearchUsersApiResponse;
 
         if (!res.ok || !json.ok) {
           showToast(t("Messages.searchError"));
@@ -147,26 +213,15 @@ export function useFriendsData() {
         setSearchUsers([]);
       }
     },
-    [showToast],
+    [showToast, t],
   );
 
   const processedSearchResults = useMemo<SearchResultItem[]>(() => {
     if (!searchUsers || searchUsers.length === 0) return [];
 
     return searchUsers
-      .filter((u) => {
-        const status = relation[u.id] ?? "NONE";
-        return status !== "FRIEND" && status !== "INCOMING";
-      })
-      .map((u) => ({
-        id: u.id,
-        name: u.name,
-        image: u.image,
-        email: u.email,
-        initial: u.name?.charAt(0) ?? "?",
-        color: "#6aab7a",
-        relation: (relation[u.id] ?? "NONE") as RelationStatus | "NONE",
-      }));
+      .filter((u) => shouldIncludeUserInSearchPicker(u.id, relation))
+      .map((u) => toSearchResultItem(u, relation));
   }, [searchUsers, relation]);
 
   const incomingCount = incoming.filter((r) => r.status === "PENDING").length;
@@ -178,25 +233,9 @@ export function useFriendsData() {
 
       void fetchSearchUsers(query);
 
-      return processedSearchResults
-        .filter((u) => {
-          const status = relation[u.id] ?? "NONE";
-          if (status === "FRIEND" || status === "INCOMING") return false;
-          const matchName = (u.name ?? "").toLowerCase().includes(q);
-          const matchId = u.id.toLowerCase().includes(q);
-          return matchName || matchId;
-        })
-        .map((u) => ({
-          id: u.id,
-          name: u.name,
-          image: u.image,
-          email: u.email,
-          initial: u.initial ?? u.name?.charAt(0) ?? "?",
-          color: u.color ?? "#6aab7a",
-          relation: (relation[u.id] ?? "NONE") as RelationStatus | "NONE",
-        }));
+      return processedSearchResults.filter((u) => matchesSearchQuery(u, q));
     },
-    [fetchSearchUsers, processedSearchResults, relation],
+    [fetchSearchUsers, processedSearchResults],
   );
 
   const sendRequest = useCallback(
@@ -217,20 +256,25 @@ export function useFriendsData() {
         }
 
         await refreshAll();
-        showToast(`${user.name ?? t("Messages.defaultName")}${t("Messages.sendRequestSuccess")}`);
+        showToast(
+          `${user.name ?? t("Messages.defaultName")}${t("Messages.sendRequestSuccess")}`,
+        );
       } catch {
         showToast(t("Messages.sendREquestProblem"));
       }
     },
-    [refreshAll, showToast],
+    [refreshAll, showToast, t],
   );
 
   const cancelRequest = useCallback(
     async (requestId: string, toUserId: string, toUserName: string | null) => {
       try {
-        const res = await fetch(`/api/friends/requests/${encodeURIComponent(requestId)}/cancel`, {
-          method: "POST",
-        });
+        const res = await fetch(
+          `/api/friends/requests/${encodeURIComponent(requestId)}/cancel`,
+          {
+            method: "POST",
+          },
+        );
 
         const json = await res.json().catch(() => ({}));
 
@@ -242,22 +286,30 @@ export function useFriendsData() {
 
         await refreshAll();
         setRelation((prev) => ({ ...prev, [toUserId]: "NONE" }));
-        showToast(`${toUserName ?? t("Messages.defaultName")}${t("Messages.cancelSuccess")}`);
+        showToast(
+          `${toUserName ?? t("Messages.defaultName")}${t("Messages.cancelSuccess")}`,
+        );
       } catch {
         showToast(t("Messages.cancelProblem"));
       }
     },
-    [refreshAll, showToast],
+    [refreshAll, showToast, t],
   );
 
   const acceptRequest = useCallback(
-    async (requestId: string, fromUser: { id: string; name: string | null; image: string | null }) => {
+    async (
+      requestId: string,
+      fromUser: { id: string; name: string | null; image: string | null },
+    ) => {
       try {
-        const res = await fetch(`/api/friends/requests/${encodeURIComponent(requestId)}/respond`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ action: "ACCEPT" }),
-        });
+        const res = await fetch(
+          `/api/friends/requests/${encodeURIComponent(requestId)}/respond`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ action: "ACCEPT" }),
+          },
+        );
 
         const json = await res.json().catch(() => ({}));
 
@@ -268,22 +320,27 @@ export function useFriendsData() {
         }
 
         await refreshAll();
-        showToast(`${fromUser.name ?? t("Messages.defaultName")}${t("Messages.acceptSuccess")}`);
+        showToast(
+          `${fromUser.name ?? t("Messages.defaultName")}${t("Messages.acceptSuccess")}`,
+        );
       } catch {
         showToast(t("Messages.acceptProblem"));
       }
     },
-    [refreshAll, showToast],
+    [refreshAll, showToast, t],
   );
 
   const declineRequest = useCallback(
     async (requestId: string, fromUserId: string) => {
       try {
-        const res = await fetch(`/api/friends/requests/${encodeURIComponent(requestId)}/respond`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ action: "REJECT" }),
-        });
+        const res = await fetch(
+          `/api/friends/requests/${encodeURIComponent(requestId)}/respond`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ action: "REJECT" }),
+          },
+        );
 
         const json = await res.json().catch(() => ({}));
 
@@ -300,15 +357,18 @@ export function useFriendsData() {
         showToast(t("Messages.declineProblem"));
       }
     },
-    [refreshAll, showToast],
+    [refreshAll, showToast, t],
   );
 
   const deleteFriend = useCallback(
     async (friendshipId: string, user: { id: string; name: string | null }) => {
       try {
-        const res = await fetch(`/api/friends/${encodeURIComponent(friendshipId)}`, {
-          method: "DELETE",
-        });
+        const res = await fetch(
+          `/api/friends/${encodeURIComponent(friendshipId)}`,
+          {
+            method: "DELETE",
+          },
+        );
 
         const json = await res.json().catch(() => ({}));
 
@@ -320,12 +380,14 @@ export function useFriendsData() {
 
         await refreshAll();
         setRelation((prev) => ({ ...prev, [user.id]: "NONE" }));
-        showToast(`${user.name ?? t("Messages.defaultName")}${t("Messages.deleteSuccess")}`);
+        showToast(
+          `${user.name ?? t("Messages.defaultName")}${t("Messages.deleteSuccess")}`,
+        );
       } catch {
         showToast(t("Messages.deleteProblem"));
       }
     },
-    [refreshAll, showToast],
+    [refreshAll, showToast, t],
   );
 
   return {
