@@ -8,8 +8,7 @@ import { usePiPStore } from "@/app/store/usePipStore";
 export function GlobalPipRenderer() {
   const pipWindow = usePiPStore((state) => state.pipWindow);
   const stopEstimating = useMeasurementStore((state) => state.stopEstimating);
-  const measurementStarted = useMeasurementStore((state) => state.measurementStarted);
-  const { getStatusBannerType } = useMeasurement();
+  const { measurementStarted, getStatusBannerType } = useMeasurement();
 
   if (!pipWindow) return null;
 
@@ -17,5 +16,11 @@ export function GlobalPipRenderer() {
 
   const isTurtle = getStatusBannerType() === "warning";
 
-  return <MiniWarningPip isTurtle={isTurtle} pipWindow={pipWindow} measurementStarted={measurementStarted} />;
+  return (
+    <MiniWarningPip
+      isTurtle={isTurtle}
+      pipWindow={pipWindow}
+      measurementStarted={measurementStarted}
+    />
+  );
 }
