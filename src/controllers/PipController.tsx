@@ -1,11 +1,21 @@
 "use client";
 
-import { createContext, useContext, useCallback, useEffect, ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useCallback,
+  useEffect,
+  ReactNode,
+} from "react";
 import { usePiPStore } from "@/app/store/usePipStore";
+import { logger } from "@/lib/logger";
 
 declare global {
   interface DocumentPictureInPicture {
-    requestWindow(options?: { width?: number; height?: number }): Promise<Window>;
+    requestWindow(options?: {
+      width?: number;
+      height?: number;
+    }): Promise<Window>;
     window: Window | null;
   }
   interface Window {
@@ -13,10 +23,34 @@ declare global {
   }
 }
 
-interface PiPContextType {
+function copyDocumentStylesToPictureInPicture(targetDoc: Document) {
+  [...document.styleSheets].forEach((styleSheet) => {
+    try {
+      const cssRules = [...styleSheet.cssRules]
+        .map((rule) => rule.cssText)
+        .join("");
+      const style = document.createElement("style");
+      style.textContent = cssRules;
+      targetDoc.head.appendChild(style);
+    } catch {
+      if (styleSheet.href) {
+        const link = document.createElement("link");
+        link.rel = "stylesheet";
+        link.href = styleSheet.href;
+        targetDoc.head.appendChild(link);
+      }
+    }
+  });
+}
+
+function subscribePipWindowPagehide(pip: Window, onClose: () => void) {
+  pip.addEventListener("pagehide", onClose);
+}
+
+type PiPContextType = {
   openPiP: () => Promise<void>;
   closePiP: () => void;
-}
+};
 
 const PiPContext = createContext<PiPContextType | null>(null);
 
@@ -34,26 +68,11 @@ export function PiPController({ children }: { children: ReactNode }) {
         height: 80,
       });
 
-      [...document.styleSheets].forEach((styleSheet) => {
-        try {
-          const cssRules = [...styleSheet.cssRules].map((rule) => rule.cssText).join("");
-          const style = document.createElement("style");
-          style.textContent = cssRules;
-          pip.document.head.appendChild(style);
-        } catch (e) {
-          if (styleSheet.href) {
-            const link = document.createElement("link");
-            link.rel = "stylesheet";
-            link.href = styleSheet.href;
-            pip.document.head.appendChild(link);
-          }
-        }
-      });
-
-      pip.addEventListener("pagehide", () => setPipWindow(null));
+      copyDocumentStylesToPictureInPicture(pip.document);
+      subscribePipWindowPagehide(pip, () => setPipWindow(null));
       setPipWindow(pip);
     } catch (error) {
-      console.error("clientSide Error: Popup", error);
+      logger.error("[PiPController] requestWindow failed:", error);
     }
   }, [pipWindow, setPipWindow]);
 
@@ -72,13 +91,19 @@ export function PiPController({ children }: { children: ReactNode }) {
     };
   }, [pipWindow]);
 
-  return <PiPContext.Provider value={{ openPiP, closePiP }}>{children}</PiPContext.Provider>;
+  return (
+    <PiPContext.Provider value={{ openPiP, closePiP }}>
+      {children}
+    </PiPContext.Provider>
+  );
 }
 
 export function useDocumentPiP() {
   const context = useContext(PiPContext);
   if (!context) {
-    throw new Error("[PipController] : useDocumentPiP must be used within a PiPController");
+    throw new Error(
+      "[PipController] : useDocumentPiP must be used within a PiPController",
+    );
   }
   return context;
 }
