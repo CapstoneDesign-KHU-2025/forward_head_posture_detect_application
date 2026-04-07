@@ -4,9 +4,7 @@ import { useState } from "react";
 import { ChevronDown, X } from "lucide-react";
 import { Button } from "@/components/Button";
 import { useTranslations } from "next-intl";
-import { cn } from "@/utils/cn";
 import { tv } from "tailwind-variants";
-import { contain } from "three/src/extras/TextureUtils.js";
 
 const accordionStyles = tv({
   slots: {
