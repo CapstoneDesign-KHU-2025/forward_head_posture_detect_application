@@ -100,13 +100,13 @@ export default function CharacterSelectionPage() {
   });
 
   return (
-    <div className={wrapper()}>
-      <div className={card()}>
-        <div className={headerWrapper()}>
+    <main className={wrapper()}>
+      <section className={card()}>
+        <header className={headerWrapper()}>
           <div className={emoji()}>🐢</div>
           <h1 className={title()}>{t("header.title")}</h1>
           <p className={description()}>{t("header.description")}</p>
-        </div>
+        </header>
 
         <div className={gridWrapper()}>
           {CHARACTER_ASSETS.map((character) => (
@@ -140,7 +140,7 @@ export default function CharacterSelectionPage() {
             {t("buttons.done")}
           </Button>
         </div>
-      </div>
-    </div>
+      </section>
+    </main>
   );
 }
