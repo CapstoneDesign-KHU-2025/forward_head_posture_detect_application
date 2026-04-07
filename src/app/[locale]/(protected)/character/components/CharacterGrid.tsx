@@ -3,6 +3,7 @@
 import Image from "next/image";
 import React from "react";
 import { tv } from "tailwind-variants";
+
 const cardVariants = tv({
   base: [
     "relative cursor-pointer rounded-2xl border-[3px] px-6 py-8 text-center",

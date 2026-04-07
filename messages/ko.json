@@ -92,7 +92,8 @@
     "cameraTitle": "카메라",
     "message": "🐢\n측정이 준비됐어요!\n버튼을 눌러 시작해주세요",
     "messageText": "측정이 준비됐어요!\n버튼을 눌러 시작해주세요",
-    "startMeasurementToast": "거북목 측정을 시작합니다"
+    "startMeasurementToast": "거북목 측정을 시작합니다",
+    "secondLeft": "초 남았습니다."
   },
   "EvolutionTooltip": {
     "ariaLabel": "진화 조건 안내"
@@ -127,10 +128,22 @@
       "title": "환영합니다!",
       "message": "첫 측정을 시작해서\n건강한 자세 습관을 만들어보세요!"
     },
-    "empty": { "title": "오늘도 화이팅!", "message": "오늘의 측정을 시작해서\n좋은 기록을 만들어보세요!" },
-    "excellent": { "title": "오늘은 최고예요!", "message": "목이 시원하시겠어요!" },
-    "normal": { "title": "조금만 더 신경 써볼까요?", "message": "목을 좀 펴주세요!" },
-    "bad": { "title": "오늘은 많이 힘드시겠어요", "message": "목을 쉬게 해주세요!" }
+    "empty": {
+      "title": "오늘도 화이팅!",
+      "message": "오늘의 측정을 시작해서\n좋은 기록을 만들어보세요!"
+    },
+    "excellent": {
+      "title": "오늘은 최고예요!",
+      "message": "목이 시원하시겠어요!"
+    },
+    "normal": {
+      "title": "조금만 더 신경 써볼까요?",
+      "message": "목을 좀 펴주세요!"
+    },
+    "bad": {
+      "title": "오늘은 많이 힘드시겠어요",
+      "message": "목을 쉬게 해주세요!"
+    }
   },
   "TurtleEvolutionCard": {
     "stages": {
@@ -231,8 +244,14 @@
   },
   "SensitivitySettingsModal": {
     "sense_options": {
-      "low": { "name": "낮음", "description": "자세가 많이 틀어졌을 때만 알림" },
-      "normal": { "name": "보통", "description": "적당한 수준에서 알림 (권장)" },
+      "low": {
+        "name": "낮음",
+        "description": "자세가 많이 틀어졌을 때만 알림"
+      },
+      "normal": {
+        "name": "보통",
+        "description": "적당한 수준에서 알림 (권장)"
+      },
       "high": {
         "name": "높음",
         "description": "자세가 조금만 틀어져도 바로 알림"
@@ -559,9 +578,15 @@
       }
     },
     "problem": {
-      "title": { "1": "현대인의 건강은 잦은 컴퓨터 사용으로", "2": "위협받고 있어요" }
+      "title": {
+        "1": "현대인의 건강은 잦은 컴퓨터 사용으로",
+        "2": "위협받고 있어요"
+      }
     },
-    "description": { "1": "어떻게 하면 업무를 하는 동안", "2": "올바른 자세를 유지할 수 있을까?" },
+    "description": {
+      "1": "어떻게 하면 업무를 하는 동안",
+      "2": "올바른 자세를 유지할 수 있을까?"
+    },
 
     "proof": [
       {
@@ -574,7 +599,11 @@
         "label": "현대인 거북목 유병률",
         "source": "출처 | 질병관리청"
       },
-      { "num": "15kg+", "label": "잘못된 자세로 인한 목 부담", "source": "출처 | 질병관리청" }
+      {
+        "num": "15kg+",
+        "label": "잘못된 자세로 인한 목 부담",
+        "source": "출처 | 질병관리청"
+      }
     ],
     "mockup": {
       "title": {
