@@ -47,12 +47,14 @@ export default function TurtleNeckUploadPage() {
     turtleNeckLevel: "none",
   });
 
-  const [savedTestInfos, setSavedTestInfos] = useState<Array<TestInfo & { savedAt: string }>>([]);
+  const [savedTestInfos, setSavedTestInfos] = useState<
+    Array<TestInfo & { savedAt: string }>
+  >([]);
 
   const [turtleNeckPeriods, setTurtleNeckPeriods] = useState<Period[]>([]);
   const turtleStartTimeRef = useRef<number | null>(null);
 
-  const wasmBaseUrl = useMemo(() => "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm", []);
+  const wasmBaseUrl = useMemo(() => process.env.NEXT_PUBLIC_WASM_BASEURL, []);
 
   function resetTimestamps() {
     lastTsRef.current = 0;
@@ -74,8 +76,7 @@ export default function TurtleNeckUploadPage() {
       const vision = await FilesetResolver.forVisionTasks(wasmBaseUrl);
       landmarkerRef.current = await PoseLandmarker.createFromOptions(vision, {
         baseOptions: {
-          modelAssetPath:
-            "https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task",
+          modelAssetPath: process.env.NEXT_PUBLIC_MODEL_ASSET_PATH,
         },
         runningMode: "VIDEO",
         numPoses: 1,
@@ -157,7 +158,13 @@ export default function TurtleNeckUploadPage() {
     const lm = landmarkerRef.current;
 
     // Only proceed if we have data & are playing
-    if (!lm || !v || v.readyState < HTMLMediaElement.HAVE_CURRENT_DATA || v.paused || v.ended) {
+    if (
+      !lm ||
+      !v ||
+      v.readyState < HTMLMediaElement.HAVE_CURRENT_DATA ||
+      v.paused ||
+      v.ended
+    ) {
       rafRef.current = requestAnimationFrame(loop);
       return;
     }
@@ -189,7 +196,9 @@ export default function TurtleNeckUploadPage() {
 
     if (!poses.length) {
       setStatus("no-pose");
-      setLogRows((rows) => rows.concat(`${ts},${Math.floor(v.currentTime * 1000)},0,0,,,,,,,,,,,`));
+      setLogRows((rows) =>
+        rows.concat(`${ts},${Math.floor(v.currentTime * 1000)},0,0,,,,,,,,,,,`),
+      );
       // 포즈가 없으면 거북목 종료로 간주(열려 있던 구간 닫기)
       handleTurtleTimeline(false, v.currentTime);
     } else {
@@ -259,7 +268,8 @@ export default function TurtleNeckUploadPage() {
 
   function waitForCanPlay(video: HTMLVideoElement) {
     return new Promise<void>((resolve) => {
-      if (video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) return resolve();
+      if (video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA)
+        return resolve();
       const on = () => {
         cleanup();
         resolve();
@@ -359,7 +369,9 @@ export default function TurtleNeckUploadPage() {
 
   function buildPeriodsCSV(periods: Period[]) {
     const header = "start_time,end_time,duration";
-    const lines = periods.map((p) => [p.start.toFixed(2), p.end.toFixed(2), p.duration.toFixed(2)].join(","));
+    const lines = periods.map((p) =>
+      [p.start.toFixed(2), p.end.toFixed(2), p.duration.toFixed(2)].join(","),
+    );
     return [header, ...lines].join("\n");
   }
 
@@ -382,7 +394,9 @@ export default function TurtleNeckUploadPage() {
       testInfo,
       turtleNeckPeriods,
     };
-    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+    const blob = new Blob([JSON.stringify(payload, null, 2)], {
+      type: "application/json",
+    });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
     a.download = "turtleneck_session.json";
@@ -425,7 +439,10 @@ export default function TurtleNeckUploadPage() {
   }
 
   // ====== testInfo UI 핸들러 ======
-  function updateTestInfo<K extends keyof TestInfo>(key: K, value: TestInfo[K]) {
+  function updateTestInfo<K extends keyof TestInfo>(
+    key: K,
+    value: TestInfo[K],
+  ) {
     setTestInfo((prev) => ({ ...prev, [key]: value }));
   }
 
@@ -436,7 +453,10 @@ export default function TurtleNeckUploadPage() {
     try {
       const prevRaw = localStorage.getItem("turtleneck_testinfos");
       const prevArr: any[] = prevRaw ? JSON.parse(prevRaw) : [];
-      localStorage.setItem("turtleneck_testinfos", JSON.stringify([entry, ...prevArr]));
+      localStorage.setItem(
+        "turtleneck_testinfos",
+        JSON.stringify([entry, ...prevArr]),
+      );
     } catch {}
   }
 
@@ -457,7 +477,12 @@ export default function TurtleNeckUploadPage() {
           ? "Turtle neck"
           : "Good posture";
 
-  const statusColor = status === "turtle" ? "bg-red-500" : status === "good" ? "bg-emerald-500" : "bg-slate-500";
+  const statusColor =
+    status === "turtle"
+      ? "bg-red-500"
+      : status === "good"
+        ? "bg-emerald-500"
+        : "bg-slate-500";
 
   const v = videoRef.current;
   const dur = v?.duration ?? 0;
@@ -465,39 +490,28 @@ export default function TurtleNeckUploadPage() {
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8">
-      <h1 className="text-2xl md:text-3xl font-semibold mb-4">TurtleNeck – Video Upload (Front-View)</h1>
+      <h1 className="mb-4 text-2xl font-semibold md:text-3xl">
+        TurtleNeck – Video Upload (Front-View)
+      </h1>
 
-      <div className="grid md:grid-cols-[320px_1fr] gap-6 items-start">
+      <div className="grid items-start gap-6 md:grid-cols-[320px_1fr]">
         <div className="space-y-4">
-          <div className="p-4 rounded-2xl border border-slate-200 shadow-sm">
-            <label className="block text-sm mb-1">Video file</label>
+          <div className="rounded-2xl border border-slate-200 p-4 shadow-sm">
+            <label className="mb-1 block text-sm">Video file</label>
             <input
               type="file"
               accept="video/*"
               onChange={onPickFile}
-              className="
-    block w-full cursor-pointer
-    rounded-2xl border-2 border-dashed border-slate-300
-    bg-white/70 p-6 text-sm shadow-sm
-    transition
-    hover:border-slate-400 hover:bg-white
-    focus:outline-none focus:ring-4 focus:ring-slate-200/60
-
-    /* 파일 버튼 커스터마이즈 */
-    file:mr-4 file:rounded-md
-    file:border-0 file:bg-black file:px-4 file:py-2 file:text-white
-    hover:file:bg-slate-800
-    file:transition
-  "
+              className="/* 파일 버튼 커스터마이즈 */ block w-full cursor-pointer rounded-2xl border-2 border-dashed border-slate-300 bg-white/70 p-6 text-sm shadow-sm transition file:mr-4 file:rounded-md file:border-0 file:bg-black file:px-4 file:py-2 file:text-white file:transition hover:border-slate-400 hover:bg-white hover:file:bg-slate-800 focus:ring-4 focus:ring-slate-200/60 focus:outline-none"
             />
 
-            <div className="mt-4 flex gap-2 items-center">
+            <div className="mt-4 flex items-center gap-2">
               <Button
                 type="button"
                 variant="ghost"
                 onClick={playProcess}
                 disabled={!fileUrl || !loaded || running}
-                className="rounded-xl bg-black text-white px-4 py-2 disabled:opacity-40"
+                className="rounded-xl bg-black px-4 py-2 text-white disabled:opacity-40"
               >
                 Play & Analyze
               </Button>
@@ -522,38 +536,56 @@ export default function TurtleNeckUploadPage() {
             </div>
 
             {/* ===== 테스트 정보 입력 ===== */}
-            <div className="space-y-4 mt-4">
-              <div className="p-4 border rounded-2xl">
-                <h3 className="font-semibold mb-3">테스트 정보 입력</h3>
+            <div className="mt-4 space-y-4">
+              <div className="rounded-2xl border p-4">
+                <h3 className="mb-3 font-semibold">테스트 정보 입력</h3>
 
                 <div className="space-y-3">
                   <div>
-                    <label className="block text-sm mb-1">모니터와의 거리 (cm)</label>
+                    <label className="mb-1 block text-sm">
+                      모니터와의 거리 (cm)
+                    </label>
                     <input
                       type="number"
                       value={testInfo.monitorDistance}
-                      onChange={(e) => updateTestInfo("monitorDistance", Number(e.target.value))}
-                      className="w-full p-2 border rounded"
+                      onChange={(e) =>
+                        updateTestInfo(
+                          "monitorDistance",
+                          Number(e.target.value),
+                        )
+                      }
+                      className="w-full rounded border p-2"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm mb-1">모니터 높이 (cm)</label>
+                    <label className="mb-1 block text-sm">
+                      모니터 높이 (cm)
+                    </label>
                     <input
                       type="number"
                       value={testInfo.monitorHight}
-                      onChange={(e) => updateTestInfo("monitorHight", Number(e.target.value))}
-                      className="w-full p-2 border rounded"
+                      onChange={(e) =>
+                        updateTestInfo("monitorHight", Number(e.target.value))
+                      }
+                      className="w-full rounded border p-2"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm mb-1">카메라와의 각도 (deg)</label>
+                    <label className="mb-1 block text-sm">
+                      카메라와의 각도 (deg)
+                    </label>
                     <input
                       type="number"
                       value={testInfo.angleBetweenBodyAndCam}
-                      onChange={(e) => updateTestInfo("angleBetweenBodyAndCam", Number(e.target.value))}
-                      className="w-full p-2 border rounded"
+                      onChange={(e) =>
+                        updateTestInfo(
+                          "angleBetweenBodyAndCam",
+                          Number(e.target.value),
+                        )
+                      }
+                      className="w-full rounded border p-2"
                     />
                   </div>
 
@@ -562,7 +594,9 @@ export default function TurtleNeckUploadPage() {
                       id="hair"
                       type="checkbox"
                       checked={testInfo.isHairTied}
-                      onChange={(e) => updateTestInfo("isHairTied", e.target.checked)}
+                      onChange={(e) =>
+                        updateTestInfo("isHairTied", e.target.checked)
+                      }
                     />
                     <label htmlFor="hair" className="text-sm">
                       머리 묶음 여부
@@ -570,11 +604,16 @@ export default function TurtleNeckUploadPage() {
                   </div>
 
                   <div>
-                    <label className="block text-sm mb-1">거북목 레벨</label>
+                    <label className="mb-1 block text-sm">거북목 레벨</label>
                     <select
                       value={testInfo.turtleNeckLevel}
-                      onChange={(e) => updateTestInfo("turtleNeckLevel", e.target.value as TestInfo["turtleNeckLevel"])}
-                      className="w-full p-2 border rounded"
+                      onChange={(e) =>
+                        updateTestInfo(
+                          "turtleNeckLevel",
+                          e.target.value as TestInfo["turtleNeckLevel"],
+                        )
+                      }
+                      className="w-full rounded border p-2"
                     >
                       <option value="none">none</option>
                       <option value="mild">mild</option>
@@ -586,7 +625,7 @@ export default function TurtleNeckUploadPage() {
                     type="button"
                     variant="ghost"
                     onClick={saveTestData}
-                    className="w-full bg-blue-500 text-white py-2 rounded-xl hover:bg-blue-600"
+                    className="w-full rounded-xl bg-blue-500 py-2 text-white hover:bg-blue-600"
                   >
                     테스트 정보 저장
                   </Button>
@@ -595,13 +634,21 @@ export default function TurtleNeckUploadPage() {
             </div>
 
             <div className="mt-3 flex items-center gap-2">
-              <span className={`inline-flex items-center gap-2 rounded-full ${statusColor} text-white px-3 py-1`}>
+              <span
+                className={`inline-flex items-center gap-2 rounded-full ${statusColor} px-3 py-1 text-white`}
+              >
                 {statusText}
               </span>
-              <span className="text-sm text-slate-600">{fps ? `${fps.toFixed(1)} FPS` : ""}</span>
+              <span className="text-sm text-slate-600">
+                {fps ? `${fps.toFixed(1)} FPS` : ""}
+              </span>
             </div>
 
-            {lastErr && <div className="mt-3 text-xs text-red-600 whitespace-pre-wrap">{lastErr}</div>}
+            {lastErr && (
+              <div className="mt-3 text-xs whitespace-pre-wrap text-red-600">
+                {lastErr}
+              </div>
+            )}
 
             <div className="mt-3 text-sm text-slate-600">
               <div className="flex items-center gap-2">
@@ -613,8 +660,10 @@ export default function TurtleNeckUploadPage() {
                 />
                 <label htmlFor="drawlm">Draw landmarks (7,8,11,12)</label>
               </div>
-              <div className="text-xs text-slate-500 mt-1">
-                {lmReady ? "Pose model ready" : "Loading pose model… (first run may take a moment)"}
+              <div className="mt-1 text-xs text-slate-500">
+                {lmReady
+                  ? "Pose model ready"
+                  : "Loading pose model… (first run may take a moment)"}
               </div>
             </div>
 
@@ -624,7 +673,7 @@ export default function TurtleNeckUploadPage() {
                 variant="ghost"
                 onClick={downloadCSVLog}
                 disabled={logRows.length <= 1}
-                className="rounded-xl bg-emerald-600 text-white px-4 py-2 disabled:opacity-40"
+                className="rounded-xl bg-emerald-600 px-4 py-2 text-white disabled:opacity-40"
               >
                 Download CSV log
               </Button>
@@ -635,7 +684,7 @@ export default function TurtleNeckUploadPage() {
                   variant="ghost"
                   onClick={downloadPeriodsCSV}
                   disabled={turtleNeckPeriods.length === 0}
-                  className="rounded-xl bg-indigo-600 text-white px-4 py-2 disabled:opacity-40"
+                  className="rounded-xl bg-indigo-600 px-4 py-2 text-white disabled:opacity-40"
                 >
                   Download Turtle Periods CSV
                 </Button>
@@ -643,7 +692,7 @@ export default function TurtleNeckUploadPage() {
                   type="button"
                   variant="ghost"
                   onClick={downloadSessionJSON}
-                  className="rounded-xl bg-slate-800 text-white px-4 py-2"
+                  className="rounded-xl bg-slate-800 px-4 py-2 text-white"
                 >
                   Download Session JSON
                 </Button>
@@ -653,27 +702,36 @@ export default function TurtleNeckUploadPage() {
             </div>
           </div>
 
-          <div className="text-xs text-slate-500 space-y-1">
+          <div className="space-y-1 text-xs text-slate-500">
             <p>• Processing occurs during playback; seek/scrub is supported.</p>
-            <p>• Landmarks used: 7, 8, 11, 12 → fed into your isTurtleNeck().</p>
-            <p>• Timestamps are strictly monotonic to satisfy MediaPipe VIDEO mode.</p>
+            <p>
+              • Landmarks used: 7, 8, 11, 12 → fed into your isTurtleNeck().
+            </p>
+            <p>
+              • Timestamps are strictly monotonic to satisfy MediaPipe VIDEO
+              mode.
+            </p>
           </div>
 
           {/* ===== 저장된 TestInfo 리스트 ===== */}
-          <div className="p-4 rounded-2xl border border-slate-200 shadow-sm">
-            <h3 className="font-semibold mb-2">저장된 테스트 정보</h3>
+          <div className="rounded-2xl border border-slate-200 p-4 shadow-sm">
+            <h3 className="mb-2 font-semibold">저장된 테스트 정보</h3>
             {savedTestInfos.length === 0 ? (
-              <p className="text-sm text-slate-500">아직 저장된 항목이 없습니다.</p>
+              <p className="text-sm text-slate-500">
+                아직 저장된 항목이 없습니다.
+              </p>
             ) : (
               <ul className="space-y-2 text-sm">
                 {savedTestInfos.map((t, i) => (
-                  <li key={i} className="p-2 border rounded-xl">
+                  <li key={i} className="rounded-xl border p-2">
                     <div className="text-xs text-slate-500">{t.savedAt}</div>
                     <div>
-                      거리: {t.monitorDistance} cm, 높이: {t.monitorHight} cm, 각도: {t.angleBetweenBodyAndCam}°
+                      거리: {t.monitorDistance} cm, 높이: {t.monitorHight} cm,
+                      각도: {t.angleBetweenBodyAndCam}°
                     </div>
                     <div>
-                      머리 묶음: {t.isHairTied ? "예" : "아니오"}, 레벨: {t.turtleNeckLevel}
+                      머리 묶음: {t.isHairTied ? "예" : "아니오"}, 레벨:{" "}
+                      {t.turtleNeckLevel}
                     </div>
                   </li>
                 ))}
@@ -682,8 +740,10 @@ export default function TurtleNeckUploadPage() {
           </div>
 
           {/* ===== 거북목 구간 표 & CSV 텍스트 미리보기 ===== */}
-          <div className="p-4 rounded-2xl border border-slate-200 shadow-sm">
-            <h3 className="font-semibold mb-2">거북목 구간 (start, end, duration)</h3>
+          <div className="rounded-2xl border border-slate-200 p-4 shadow-sm">
+            <h3 className="mb-2 font-semibold">
+              거북목 구간 (start, end, duration)
+            </h3>
             {turtleNeckPeriods.length === 0 ? (
               <p className="text-sm text-slate-500">추출된 구간이 없습니다.</p>
             ) : (
@@ -691,10 +751,10 @@ export default function TurtleNeckUploadPage() {
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b">
-                      <th className="text-left py-1">#</th>
-                      <th className="text-left py-1">start</th>
-                      <th className="text-left py-1">end</th>
-                      <th className="text-left py-1">duration</th>
+                      <th className="py-1 text-left">#</th>
+                      <th className="py-1 text-left">start</th>
+                      <th className="py-1 text-left">end</th>
+                      <th className="py-1 text-left">duration</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -710,8 +770,10 @@ export default function TurtleNeckUploadPage() {
                 </table>
 
                 <div className="mt-3">
-                  <label className="block text-xs text-slate-500 mb-1">CSV 미리보기</label>
-                  <pre className="text-xs p-2 bg-slate-50 rounded-xl overflow-auto">
+                  <label className="mb-1 block text-xs text-slate-500">
+                    CSV 미리보기
+                  </label>
+                  <pre className="overflow-auto rounded-xl bg-slate-50 p-2 text-xs">
                     {`start_time,end_time,duration
 ${turtleNeckPeriods.map((p) => `${p.start.toFixed(2)},${p.end.toFixed(2)},${p.duration.toFixed(2)}`).join("\n")}`}
                   </pre>
@@ -721,9 +783,9 @@ ${turtleNeckPeriods.map((p) => `${p.start.toFixed(2)},${p.end.toFixed(2)},${p.du
           </div>
         </div>
 
-        <div className="relative w/full">
-          <div className="rounded-2xl overflow-hidden border border-slate-200 shadow-sm">
-            <canvas ref={canvasRef} className="w-full h-auto block" />
+        <div className="w/full relative">
+          <div className="overflow-hidden rounded-2xl border border-slate-200 shadow-sm">
+            <canvas ref={canvasRef} className="block h-auto w-full" />
           </div>
 
           <video
@@ -741,7 +803,7 @@ ${turtleNeckPeriods.map((p) => `${p.start.toFixed(2)},${p.end.toFixed(2)},${p.du
           />
 
           {dur > 0 && (
-            <div className="text-xs text-slate-500 mt-2">
+            <div className="mt-2 text-xs text-slate-500">
               {cur.toFixed(2)} / {dur.toFixed(2)} sec
             </div>
           )}
