@@ -34,7 +34,8 @@ type UseTurtleNeckTrackerOptions = {
 export function useTurtleNeckTracker(opts: UseTurtleNeckTrackerOptions = {}) {
   const {
     autoStart = true,
-    wasmBaseUrl = process.env.WASM_BASEURL || "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm",
+    wasmBaseUrl = process.env.WASM_BASEURL ||
+      "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm",
     modelAssetPath = process.env.MODEL_ASSET_PATH ||
       "https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task",
     logIntervalMs = 200,
@@ -49,6 +50,7 @@ export function useTurtleNeckTracker(opts: UseTurtleNeckTrackerOptions = {}) {
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const audioCtxRef = useRef<AudioContext | null>(null);
 
   const landmarkerRef = useRef<PoseLandmarker | null>(null);
   const rafRef = useRef<number | null>(null);
@@ -57,27 +59,40 @@ export function useTurtleNeckTracker(opts: UseTurtleNeckTrackerOptions = {}) {
   const lastStateRef = useRef<boolean | null>(null);
   const beepIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const setTurtleNeckNumberInADay = useAppStore((s) => s.setTurtleNeckNumberInADay);
+  const setTurtleNeckNumberInADay = useAppStore(
+    (s) => s.setTurtleNeckNumberInADay,
+  );
   const [isTurtle, setIsTurtle] = useState(false);
   const [angle, setAngle] = useState(0);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {}, [isTurtle]);
   const startBeep = useCallback(() => {
     if (!enableBeep) return;
     if (beepIntervalRef.current) return;
+
+    if (!audioCtxRef.current) {
+      audioCtxRef.current = new AudioContext();
+    }
+
     beepIntervalRef.current = setInterval(() => {
-      const audioCtx = new AudioContext();
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
+      const ctx = audioCtxRef.current!;
+
+      if (ctx.state === "suspended") {
+        ctx.resume().catch(() => {});
+      }
+
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
       osc.connect(gain);
-      gain.connect(audioCtx.destination);
+      gain.connect(ctx.destination);
+
       osc.type = "sine";
-      osc.frequency.setValueAtTime(880, audioCtx.currentTime);
-      gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+      osc.frequency.setValueAtTime(880, ctx.currentTime);
+      gain.gain.setValueAtTime(0.1, ctx.currentTime);
+
       osc.start();
-      osc.stop(audioCtx.currentTime + 0.2);
-      setTimeout(() => audioCtx.close(), 300);
+      osc.stop(ctx.currentTime + 0.2);
     }, 1000);
   }, [enableBeep]);
 
@@ -88,7 +103,12 @@ export function useTurtleNeckTracker(opts: UseTurtleNeckTrackerOptions = {}) {
     }
   }, []);
 
-  const drawGuides = (ctx: CanvasRenderingContext2D, w: number, h: number, ok: boolean) => {
+  const drawGuides = (
+    ctx: CanvasRenderingContext2D,
+    w: number,
+    h: number,
+    ok: boolean,
+  ) => {
     const centerX = w / 2;
     const centerY = h / 2;
     const offsetY = 30;
@@ -97,12 +117,12 @@ export function useTurtleNeckTracker(opts: UseTurtleNeckTrackerOptions = {}) {
     ctx.strokeStyle = guidelineColor;
     ctx.lineWidth = 3;
 
-    // 얼굴 타원
+    // face
     ctx.beginPath();
     ctx.ellipse(centerX, centerY - 80 + offsetY, 90, 110, 0, 0, Math.PI * 2);
     ctx.stroke();
 
-    // 목
+    // neck
     ctx.beginPath();
     ctx.moveTo(centerX - 40, centerY + 10 + offsetY);
     ctx.lineTo(centerX - 35, centerY + 40 + offsetY);
@@ -110,7 +130,7 @@ export function useTurtleNeckTracker(opts: UseTurtleNeckTrackerOptions = {}) {
     ctx.lineTo(centerX + 35, centerY + 40 + offsetY);
     ctx.stroke();
 
-    // 어깨
+    // shoulder
     ctx.beginPath();
     ctx.moveTo(centerX - 35, centerY + 40 + offsetY);
     ctx.lineTo(centerX - 190, centerY + 60 + offsetY);
@@ -118,7 +138,7 @@ export function useTurtleNeckTracker(opts: UseTurtleNeckTrackerOptions = {}) {
     ctx.lineTo(centerX + 190, centerY + 60 + offsetY);
     ctx.stroke();
 
-    // 상체 윤곽 + 하단
+    // upper body
     ctx.beginPath();
     ctx.moveTo(centerX - 190, centerY + 60 + offsetY);
     ctx.bezierCurveTo(
@@ -237,20 +257,28 @@ export function useTurtleNeckTracker(opts: UseTurtleNeckTrackerOptions = {}) {
           const pose = poses[0];
           const faceLandmarks = pose.slice(0, 11);
           if (faceLandmarks.length > 0) {
-            faceInside = faceLandmarks.every((p: any) => isInsideFaceGuideline(p.x, p.y));
+            faceInside = faceLandmarks.every((p: any) =>
+              isInsideFaceGuideline(p.x, p.y),
+            );
           }
           const shoulderLandmarks = pose.slice(11, 13);
           if (shoulderLandmarks.length > 0) {
-            shoulderInside = shoulderLandmarks.every((p: any) => isInsideUpperBodyGuideline(p.x, p.y));
+            shoulderInside = shoulderLandmarks.every((p: any) =>
+              isInsideUpperBodyGuideline(p.x, p.y),
+            );
           }
 
           const lm11 = pose[11];
           const lm12 = pose[12];
           if (lm11 && lm12) {
-            const shoulderWidth = Math.hypot((lm12.x - lm11.x) * c.width, (lm12.y - lm11.y) * c.height);
+            const shoulderWidth = Math.hypot(
+              (lm12.x - lm11.x) * c.width,
+              (lm12.y - lm11.y) * c.height,
+            );
             const referenceShoulderWidth = 380;
             distanceRatio = shoulderWidth / referenceShoulderWidth;
-            isDistanceOk = distanceRatio >= tooFarRatio && distanceRatio <= tooCloseRatio;
+            isDistanceOk =
+              distanceRatio >= tooFarRatio && distanceRatio <= tooCloseRatio;
 
             if (distanceRatio >= tooCloseRatio) {
               distanceMessage = t("distanceMessage.close");
@@ -320,7 +348,9 @@ export function useTurtleNeckTracker(opts: UseTurtleNeckTrackerOptions = {}) {
             angleDeg: turtleData.angleDeg ?? 0,
             isTurtle: turtleData.isTurtle,
             avgAngle,
-            landmarks: pose.slice(1, 13).map((p: any) => ({ x: p.x, y: p.y, z: p.z })),
+            landmarks: pose
+              .slice(1, 13)
+              .map((p: any) => ({ x: p.x, y: p.y, z: p.z })),
             insideGuide: allInside,
             distanceRatio,
             distanceMessage,
@@ -331,7 +361,9 @@ export function useTurtleNeckTracker(opts: UseTurtleNeckTrackerOptions = {}) {
             onSend({
               angleDeg: turtleData.angleDeg ?? 0,
               isTurtle: turtleData.isTurtle,
-              landmarks: pose.slice(1, 13).map((p: any) => ({ x: p.x, y: p.y, z: p.z })),
+              landmarks: pose
+                .slice(1, 13)
+                .map((p: any) => ({ x: p.x, y: p.y, z: p.z })),
             });
             lastSendTimeRef.current = now;
           }
@@ -364,7 +396,8 @@ export function useTurtleNeckTracker(opts: UseTurtleNeckTrackerOptions = {}) {
     stopBeep();
     landmarkerRef.current?.close?.();
     landmarkerRef.current = null;
-    const tracks = (videoRef.current?.srcObject as MediaStream | null)?.getTracks() || [];
+    const tracks =
+      (videoRef.current?.srcObject as MediaStream | null)?.getTracks() || [];
     tracks.forEach((t) => t.stop());
   }, [stopBeep]);
 
