@@ -1,12 +1,14 @@
 "use client";
 
-import { useDocumentPiP } from "@/providers/PipProvider";
-import { useMeasurement } from "@/providers/MeasurementProvider";
+import { useMeasurement } from "@/controllers/MeasurementController";
 import { MiniWarningPip } from "@/app/[locale]/(protected)/estimate/components/MiniWarningPip";
+import { useMeasurementStore } from "@/app/store/useMeasurementStore";
+import { usePiPStore } from "@/app/store/usePipStore";
 
 export function GlobalPipRenderer() {
-  const { pipWindow } = useDocumentPiP();
-  const { getStatusBannerType, stopEstimating, measurementStarted } = useMeasurement();
+  const pipWindow = usePiPStore((state) => state.pipWindow);
+  const stopEstimating = useMeasurementStore((state) => state.stopEstimating);
+  const { measurementStarted, getStatusBannerType } = useMeasurement();
 
   if (!pipWindow) return null;
 
@@ -14,5 +16,11 @@ export function GlobalPipRenderer() {
 
   const isTurtle = getStatusBannerType() === "warning";
 
-  return <MiniWarningPip isTurtle={isTurtle} pipWindow={pipWindow} measurementStarted={measurementStarted} />;
+  return (
+    <MiniWarningPip
+      isTurtle={isTurtle}
+      pipWindow={pipWindow}
+      measurementStarted={measurementStarted}
+    />
+  );
 }

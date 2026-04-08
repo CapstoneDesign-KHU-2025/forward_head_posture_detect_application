@@ -10,8 +10,9 @@ import { getStatusBannerMessageCore, getStatusBannerTypeCore } from "@/utils/get
 import { checkGuidelinesAndDistance } from "@/utils/checkGuidelinesAndDistance";
 import { useTranslations } from "next-intl";
 import { incrementTurtleCount } from "@/lib/postureLocal";
-import { useSoundContext } from "@/providers/SoundProvider";
+import { useSoundContext } from "@/controllers/SoundController";
 import type { GuideColor, Pose } from "@/utils/types";
+import { useSoundStore } from "@/app/store/useSoundStore";
 
 const USE_WORKER = true;
 
@@ -84,12 +85,12 @@ export function drawGuidelines(
   ctx.lineCap = "round";
   ctx.lineJoin = "round";
 
-  // 얼굴
+  // face
   ctx.beginPath();
   ctx.ellipse(centerX, centerY - 80 + offsetY, 90, 110, 0, 0, Math.PI * 2);
   ctx.stroke();
 
-  // 목
+  // neck
   ctx.beginPath();
   ctx.moveTo(centerX - 40, centerY + 10 + offsetY);
   ctx.lineTo(centerX - 35, centerY + 40 + offsetY);
@@ -97,7 +98,7 @@ export function drawGuidelines(
   ctx.lineTo(centerX + 35, centerY + 40 + offsetY);
   ctx.stroke();
 
-  // 어깨
+  // shoulder
   ctx.beginPath();
   ctx.moveTo(centerX - 35, centerY + 40 + offsetY);
   ctx.lineTo(centerX - 190, centerY + 60 + offsetY);
@@ -105,7 +106,7 @@ export function drawGuidelines(
   ctx.lineTo(centerX + 190, centerY + 60 + offsetY);
   ctx.stroke();
 
-  // 상체
+  // upper body
   ctx.beginPath();
   ctx.moveTo(centerX - 190, centerY + 60 + offsetY);
   ctx.bezierCurveTo(
@@ -135,12 +136,10 @@ export function drawGuidelines(
 }
 
 export function useTurtleNeckMeasurement({ userId, stopEstimating }: UseTurtleNeckMeasurementOptions) {
-  // === DOM refs (외부에서 써야 해서 반환 예정) ===
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const t = useTranslations("Measurement");
   const t_banner = useTranslations("getStatusBanner");
-  // === 내부 제어용 refs (훅 안에 숨김) ===
   const landmarkerRef = useRef<PoseLandmarker | null>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -151,8 +150,8 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating }: UseTurtleNe
   const poseBufferRef = useRef<any[]>([]);
   const lastBufferTimeRef = useRef<number>(performance.now());
   const visibilityChangeHandlerRef = useRef<(() => void) | null>(null);
-
-  const { isMuted, getAudio } = useSoundContext();
+  const isMuted = useSoundStore((state) => state.isMuted);
+  const { getAudio } = useSoundContext();
   const countdownStartRef = useRef<number | null>(null);
   const measuringRef = useRef<boolean>(false);
   const lastGuideMessageRef = useRef<string | null>(null);
@@ -163,7 +162,7 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating }: UseTurtleNe
       if (!userId) return;
     }, [userId, stopEstimating]);
   }
-  // === 상태값들 (UI + 측정) ===
+
   const [isTurtle, setIsTurtle] = useState(false);
   const [angle, setAngle] = useState(0);
   const [guideMessage, setGuideMessage] = useState<string | null>(null);
@@ -174,12 +173,10 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating }: UseTurtleNe
   const [error, setError] = useState<string | null>(null);
   const [isFirstFrameDrawn, setIsFirstFrameDrawn] = useState(false);
 
-  // 초기 각도 베이스라인용 상태
   const baselineAngleRef = useRef<number | null>(null);
-  const targetBaseline = 55; // 가이드라인 시점의 정상 각도를 55로 설정 -> 이후 베이스라인(기준점)이 됨
+  const targetBaseline = 55;
   const baselineBufferRef = useRef<any[]>([]);
 
-  // 세션 ID (측정 세션 식별용)
   const sessionIdRef = useRef<string | null>(null);
   if (!sessionIdRef.current) {
     sessionIdRef.current = `measure-${userId ?? "guest"}-${Date.now()}`;
@@ -190,7 +187,7 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating }: UseTurtleNe
       stopBeep(lastBeepIntervalRef);
     }
   }, [isMuted]);
-  // === IndexedDB 저장 훅 (각도/거북목 상태를 10초 단위로 저장) ===
+
   usePostureStorageManager(userId, angle, isTurtle, sessionId, measuringRef.current);
   function processPoseBufferAndUpdateState(options: {
     poseBufferRef: React.RefObject<any[]>;
@@ -283,7 +280,6 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating }: UseTurtleNe
     }
   }
 
-  // === "거북목 측정을 시작합니다" 토스트 자동 숨김 ===
   useEffect(() => {
     if (!showMeasurementStartedToast) return;
     const timer = setTimeout(() => setShowMeasurementStartedToast(false), 1500);
@@ -659,7 +655,6 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating }: UseTurtleNe
     };
   }, [stopEstimating, userId]);
 
-  // stopEstimating 시 첫 프레임 플래그 리셋
   useEffect(() => {
     if (stopEstimating) {
       firstFrameDrawnRef.current = false;
@@ -667,7 +662,6 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating }: UseTurtleNe
     }
   }, [stopEstimating]);
 
-  // === 외부에서 "다시 측정 시작"할 때 쓸 리셋 함수 ===
   const resetForNewMeasurement = () => {
     measuringRef.current = false;
     countdownStartRef.current = null;
@@ -679,7 +673,6 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating }: UseTurtleNe
     setIsTurtle(false);
   };
 
-  // === 상태 배너 계산 ===
   const bannerType = getStatusBannerTypeCore(stopEstimating, isTurtle, measurementStarted, guideColor, guideMessage);
 
   const bannerMessage = getStatusBannerMessageCore(
@@ -691,11 +684,9 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating }: UseTurtleNe
   );
 
   return {
-    // DOM refs
     videoRef,
     canvasRef,
 
-    // 측정 상태
     isTurtle,
     angle,
     guideMessage,
@@ -705,12 +696,10 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating }: UseTurtleNe
     showMeasurementStartedToast,
     error,
 
-    // UI helper
     getStatusBannerType: () => bannerType,
     statusBannerMessage: () => bannerMessage,
     isFirstFrameDrawn,
 
-    // 외부에서 사용할 메서드
     resetForNewMeasurement,
   };
 }

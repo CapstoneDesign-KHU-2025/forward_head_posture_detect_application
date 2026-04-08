@@ -5,7 +5,7 @@ import { useRouter } from "@/i18n/navigation";
 import { Button } from "@/components/Button";
 import CharacterGrid from "./components/CharacterGrid";
 import { useTranslations } from "next-intl";
-
+import { useHandleHotKey } from "@/hooks/useHandleHotKey";
 const CHARACTER_ASSETS = [
   { id: "remy", icon: "/icons/remy.png" },
   { id: "jerry", icon: "/icons/cat.png" },
@@ -14,8 +14,17 @@ const CHARACTER_ASSETS = [
 
 export default function CharacterSelectionPage() {
   const t = useTranslations("Characters");
-  const [selectedCharacter, setSelectedCharacter] = useState<string | null>(null);
   const router = useRouter();
+  const [selectedCharacter, setSelectedCharacter] = useState<string | null>(
+    null,
+  );
+
+  const saveCharacterAndRedirect = (characterId: string) => {
+    if (typeof window != "undefined") {
+      localStorage.setItem("selectedCharacter", characterId);
+    }
+    router.replace("/");
+  };
 
   const handleCharacterSelect = (characterId: string) => {
     setSelectedCharacter(characterId);
@@ -23,18 +32,11 @@ export default function CharacterSelectionPage() {
 
   const handleConfirm = () => {
     if (selectedCharacter) {
-      if (typeof window !== "undefined") {
-        localStorage.setItem("selectedCharacter", selectedCharacter);
-      }
-      router.push("/");
+      saveCharacterAndRedirect(selectedCharacter);
     }
   };
-
   const handleSkip = () => {
-    if (typeof window !== "undefined") {
-      localStorage.setItem("selectedCharacter", "remy");
-    }
-    router.push("/");
+    saveCharacterAndRedirect(CHARACTER_ASSETS[1].id);
   };
 
   useEffect(() => {
@@ -44,30 +46,30 @@ export default function CharacterSelectionPage() {
     }
   }, [router]);
 
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Enter" && selectedCharacter) {
-        handleConfirm();
-      } else if (e.key === "Escape") {
-        handleSkip();
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [selectedCharacter]);
+  useHandleHotKey("Enter", () => {
+    if (selectedCharacter) {
+      handleConfirm();
+    }
+  });
+  useHandleHotKey("Escape", () => {
+    handleSkip();
+  });
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[var(--green-pale)] to-[#E8F5E9] flex items-center justify-center p-8">
-      <div className="max-w-[1200px] w-full bg-white rounded-[24px] p-12 shadow-[0_10px_40px_rgba(45,95,46,0.15)]">
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-[var(--green-pale)] to-[var(--green-light)] p-8">
+      <div className="w-full max-w-[1200px] rounded-[24px] bg-white p-12 shadow-[0_10px_40px_rgba(45,95,46,0.15)]">
         {/* header */}
-        <div className="text-center mb-12">
-          <div className="text-[3rem] mb-4 animate-bounce">🐢</div>
-          <h1 className="text-[2rem] text-[#2D5F2E] mb-2 font-bold">{t("header.title")}</h1>
-          <p className="text-[1.1rem] text-[#4F4F4F]">{t("header.description")}</p>
+        <div className="mb-12 text-center">
+          <div className="mb-4 animate-bounce text-[3rem]">🐢</div>
+          <h1 className="mb-2 text-[2rem] font-bold text-[var(--green)]">
+            {t("header.title")}
+          </h1>
+          <p className="text-[1.1rem] text-[var(--text)]">
+            {t("header.description")}
+          </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12 max-w-[900px] mx-auto">
+        <div className="mx-auto mb-12 grid max-w-[900px] grid-cols-1 gap-12 md:grid-cols-3">
           {CHARACTER_ASSETS.map((character) => (
             <CharacterGrid
               key={character.id}
@@ -82,11 +84,11 @@ export default function CharacterSelectionPage() {
           ))}
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+        <div className="flex flex-col justify-center gap-4 sm:flex-row">
           <Button
             variant="secondary"
             onClick={handleSkip}
-            className="px-12 py-4 text-[1.1rem] font-semibold border-2 border-[#2D5F2E]"
+            className="border-2 border-[var(--green-border)] px-12 py-4 text-[1.1rem] font-semibold"
           >
             {t("buttons.skip")}
           </Button>
@@ -94,8 +96,12 @@ export default function CharacterSelectionPage() {
             variant="primary"
             onClick={handleConfirm}
             disabled={!selectedCharacter}
-            className="px-12 py-4 text-[1.1rem] font-semibold disabled:bg-[#9CA3AF] disabled:cursor-not-allowed disabled:hover:bg-[#9CA3AF] disabled:hover:transform-none disabled:shadow-none"
-            style={!selectedCharacter ? {} : { boxShadow: "0 4px 15px rgba(45, 95, 46, 0.3)" }}
+            className="px-12 py-4 text-[1.1rem] font-semibold disabled:cursor-not-allowed disabled:bg-[var(--disabled-bg)] disabled:shadow-none disabled:hover:transform-none disabled:hover:bg-[var(--disabled-bg-hover)]"
+            style={
+              !selectedCharacter
+                ? {}
+                : { boxShadow: "0 4px 15px rgba(45, 95, 46, 0.3)" }
+            }
           >
             {t("buttons.done")}
           </Button>

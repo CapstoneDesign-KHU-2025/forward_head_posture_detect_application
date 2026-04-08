@@ -2,12 +2,12 @@
 import { apiRequest } from "@/lib/api/client";
 import { computeTodaySoFarAverage } from "@/lib/hourlyOps";
 import { getTodayCount, getTodayMeasuredSeconds } from "@/lib/postureLocal";
-import { useMeasurement } from "@/providers/MeasurementProvider";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { UserProfile, WeeklySummaryData } from "@/utils/types";
 import { DayStatus } from "@/utils/types";
+import { useMeasurementStore } from "@/app/store/useMeasurementStore";
 
 const MIN_MEASURE_SECONDS = 300;
 const GOOD_DAY_MAX_WARNINGS = 10;
@@ -66,7 +66,9 @@ type HomeClientProps = {
 };
 
 export default function useHomeDashBoard({ weeklyData, user }: HomeClientProps) {
-  const { stopEstimating, measurementStarted } = useMeasurement();
+  const stopEstimating = useMeasurementStore((state) => state.stopEstimating);
+  const measurementStarted = useMeasurementStore((state) => state.measurementStarted);
+
   const isMeasuring = !stopEstimating && measurementStarted;
 
   const [todayAvg, setTodayAvg] = useState<number | null>(null);

@@ -21,7 +21,11 @@
   --green-light: #e8f5ec; /* 버튼 hover 배경, 칩 배경 */
   --green-pale: #f4faf6; /* 페이지 배경, 카드 배경 */
   --green-border: #d4ead9; /* 테두리, 구분선 */
+  --green-border-dark: #6a9c5f;
 
+  /* Disabled */
+  --disabled-bg: #9ca3af;
+  --disabled-bg-hover: #9ca3af;
   /* Text */
   --text: #2d3b35; /* 기본 텍스트 */
   --text-sub: #7a9585; /* 보조 텍스트 */
@@ -35,9 +39,9 @@
   --danger-soft: #fde0d8; /* 캘린더 bad-day 배경 */
   --danger-mid: #ff8c6b; /* 알림 배지, 알림 dot */
 
-  --warning-text: #ffb347; /* "ideal 대비 +2.2°" 주황 */
-  --cal-sun: #e05030; /* 캘린더 일요일 */
-  --cal-sat: #6b9fff; /* 캘린더 토요일 */
+  --warning-text: #ffb347;
+  --cal-sun: #e05030;
+  --cal-sat: #6b9fff;
 
   --shadow-soft-card: 0 4px 20px rgba(74, 124, 89, 0.12);
 

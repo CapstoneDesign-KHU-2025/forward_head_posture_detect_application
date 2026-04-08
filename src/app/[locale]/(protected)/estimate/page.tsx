@@ -1,25 +1,25 @@
 "use client";
 
-import { useMeasurement } from "@/providers/MeasurementProvider";
+import { useMeasurement } from "@/controllers/MeasurementController";
 import { Button } from "@/components/Button";
 import EstimatePanel from "./components/EstimatePanel";
 import ErrorBanner from "@/components/ErrorBanner";
 import AsyncBoundary from "@/components/AsyncBoundary";
 
-import { MEASUREMENT_CANVAS_SLOT_ID } from "@/providers/MeasurementProvider";
+import { MEASUREMENT_CANVAS_SLOT_ID } from "@/controllers/MeasurementController";
 import { useTranslations } from "next-intl";
-import { useDocumentPiP } from "@/providers/PipProvider";
+import { useDocumentPiP } from "@/controllers/PipController";
 import { HelpPopUp } from "./components/HelpPopUp";
+import { useMeasurementStore } from "@/app/store/useMeasurementStore";
 
 export default function Estimate() {
   const t = useTranslations("Estimate");
-
+  const stopEstimating = useMeasurementStore((state) => state.stopEstimating);
+  const measurementStarted = useMeasurementStore((state) => state.measurementStarted);
+  const startMeasurement = useMeasurementStore((state) => state.startMeasurement);
   const {
-    stopEstimating,
-    startMeasurement,
     stopMeasurement,
     countdownRemain,
-    measurementStarted,
     showMeasurementStartedToast,
     error,
     getStatusBannerType,

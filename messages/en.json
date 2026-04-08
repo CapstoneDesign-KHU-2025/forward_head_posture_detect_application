@@ -97,11 +97,7 @@
   "EvolutionTooltip": {
     "ariaLabel": "Evolution Requirements"
   },
-  "FloatingBar": {
-    "title": "Measuring",
-    "elapsedTime": "Elapsed",
-    "stop": "Stop"
-  },
+
   "FriendsButton": {
     "ariaLabel": "Manage Friends"
   },
@@ -752,9 +748,10 @@
     }
   },
   "MiniWarningPip": {
-    "getReady": "not estimating",
-    "warning": "Warning!",
-    "good": "Good Posture!"
+    "getReadyTitle": "not estimating",
+    "warningTitle": "Warning!",
+    "goodTitle": "Good Posture!",
+    "stop": "stop"
   },
   "HelpMessageModal": {
     "header": "Measurement tip",

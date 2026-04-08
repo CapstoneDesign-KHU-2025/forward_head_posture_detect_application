@@ -4,16 +4,16 @@ import PageContainer from "@/app/[locale]/components/header/PageContainer";
 import { auth } from "@/auth";
 
 import Providers from "../providers";
-import { MeasurementProvider } from "@/providers/MeasurementProvider";
+import { MeasurementController } from "@/controllers/MeasurementController";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import { getTranslations } from "next-intl/server";
-import { SoundProvider } from "@/providers/SoundProvider";
+import { SoundController } from "@/controllers/SoundController";
 import { Nunito } from "next/font/google";
 import { Metadata } from "next";
-import { PiPProvider } from "@/providers/PipProvider";
+import { PiPController } from "@/controllers/PipController";
 import { GlobalPipRenderer } from "@/app/[locale]/(protected)/estimate/components/GlobalPipRenderer";
 import { Props } from "@/utils/types";
 export const metadata: Metadata = {
@@ -52,9 +52,9 @@ export default async function LocaleLayout({ children, params }: Props) {
       <body>
         <NextIntlClientProvider key={locale} locale={locale} messages={messages}>
           <Providers session={session}>
-            <PiPProvider>
-              <SoundProvider>
-                <MeasurementProvider>
+            <PiPController>
+              <SoundController>
+                <MeasurementController>
                   <div className="h-dvh flex flex-col min-h-0">
                     <Header user={user} />
                     <PageContainer>
@@ -62,9 +62,9 @@ export default async function LocaleLayout({ children, params }: Props) {
                       <GlobalPipRenderer />
                     </PageContainer>
                   </div>
-                </MeasurementProvider>
-              </SoundProvider>
-            </PiPProvider>
+                </MeasurementController>
+              </SoundController>
+            </PiPController>
           </Providers>
         </NextIntlClientProvider>
       </body>

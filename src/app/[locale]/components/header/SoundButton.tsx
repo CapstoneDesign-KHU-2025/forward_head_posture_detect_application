@@ -5,10 +5,11 @@ import muteIcon from "@/../public/icons/mute.png";
 import unMuteIcon from "@/../public/icons/unmute.png";
 
 import Image from "next/image";
-import { useSoundContext } from "@/providers/SoundProvider";
+import { useSoundStore } from "@/app/store/useSoundStore";
 
 export function SoundButton() {
-  const { isMuted, toggleMute } = useSoundContext();
+  const isMuted = useSoundStore((state) => state.isMuted);
+  const toggleMute = useSoundStore((state) => state.toggleMute);
 
   return (
     <IconButton
