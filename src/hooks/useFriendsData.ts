@@ -4,6 +4,7 @@ import { useState, useCallback, useEffect, useMemo, useRef } from "react";
 import type { Friend, FriendRequestRow, SearchUser } from "@/utils/types";
 import { useTranslations } from "next-intl";
 import { RelationStatus, SearchResultItem } from "@/utils/types";
+import { debounce, keyBy, mapValues } from "es-toolkit";
 
 type FriendsApiResponse = {
   ok: boolean;
@@ -23,41 +24,41 @@ type SearchUsersApiResponse = {
   error?: string | { ko: string; en: string };
 };
 
-function buildRelationMap(
-  friendsList: Friend[],
-  incomingList: FriendRequestRow[],
-  outgoingList: FriendRequestRow[],
-): Record<string, RelationStatus> {
-  const map: Record<string, RelationStatus> = {};
-
-  friendsList.forEach((f) => {
-    map[f.user.id] = "FRIEND";
-  });
-
-  incomingList
-    .filter((r) => r.status === "PENDING")
-    .forEach((r) => {
-      if (!map[r.fromUser.id]) {
-        map[r.fromUser.id] = "INCOMING";
-      }
-    });
-
-  outgoingList
-    .filter((r) => r.status === "PENDING")
-    .forEach((r) => {
-      if (!map[r.toUser.id]) {
-        map[r.toUser.id] = "OUTGOING";
-      }
-    });
-
-  return map;
-}
-
 type FriendsBundle = {
   friends: Friend[];
   incoming: FriendRequestRow[];
   outgoing: FriendRequestRow[];
 };
+
+function buildRelationMap(
+  friendsList: Friend[],
+  incomingList: FriendRequestRow[],
+  outgoingList: FriendRequestRow[],
+): Record<string, RelationStatus> {
+  const friendsMap = mapValues(
+    keyBy(friendsList, (f) => f.user.id),
+    () => "FRIEND" as const,
+  );
+  const map: Record<string, RelationStatus> = { ...friendsMap };
+
+  /*   friendsList.forEach((f) => {
+    map[f.user.id] = "FRIEND";
+  });
+ */
+  incomingList.forEach((r) => {
+    if (r.status === "PENDING" && !map[r.fromUser.id]) {
+      map[r.fromUser.id] = "INCOMING";
+    }
+  });
+
+  outgoingList.forEach((r) => {
+    if (r.status === "PENDING" && !map[r.toUser.id]) {
+      map[r.toUser.id] = "OUTGOING";
+    }
+  });
+
+  return map;
+}
 
 function assertFriendsOk(res: Response, json: FriendsApiResponse) {
   if (!res.ok || !json.ok) {
@@ -178,41 +179,42 @@ export function useFriendsData() {
     void refreshAll();
   }, [refreshAll]);
 
-  const fetchSearchUsers = useCallback(
-    async (query: string) => {
-      const trimmed = query.trim();
-      if (trimmed.length < 2) {
-        setSearchUsers([]);
-        lastSearchQueryRef.current = "";
-        return;
-      }
-
-      if (trimmed === lastSearchQueryRef.current) return;
-      lastSearchQueryRef.current = trimmed;
-
-      try {
-        const res = await fetch(
-          `/api/users/search?q=${encodeURIComponent(trimmed)}`,
-          {
-            cache: "no-store",
-          },
-        );
-        const json = (await res
-          .json()
-          .catch(() => ({}))) as SearchUsersApiResponse;
-
-        if (!res.ok || !json.ok) {
-          showToast(t("Messages.searchError"));
+  const fetchSearchUsers = useMemo(
+    () =>
+      debounce(async (query: string) => {
+        const trimmed = query.trim();
+        if (trimmed.length < 2) {
           setSearchUsers([]);
+          lastSearchQueryRef.current = "";
           return;
         }
 
-        setSearchUsers(json.users ?? []);
-      } catch {
-        showToast(t("Messages.searchProblem"));
-        setSearchUsers([]);
-      }
-    },
+        if (trimmed === lastSearchQueryRef.current) return;
+        lastSearchQueryRef.current = trimmed;
+
+        try {
+          const res = await fetch(
+            `/api/users/search?q=${encodeURIComponent(trimmed)}`,
+            {
+              cache: "no-store",
+            },
+          );
+          const json = (await res
+            .json()
+            .catch(() => ({}))) as SearchUsersApiResponse;
+
+          if (!res.ok || !json.ok) {
+            showToast(t("Messages.searchError"));
+            setSearchUsers([]);
+            return;
+          }
+
+          setSearchUsers(json.users ?? []);
+        } catch {
+          showToast(t("Messages.searchProblem"));
+          setSearchUsers([]);
+        }
+      }, 300),
     [showToast, t],
   );
 
@@ -231,7 +233,7 @@ export function useFriendsData() {
       const q = query.trim().toLowerCase();
       if (q.length < 2) return [];
 
-      void fetchSearchUsers(query);
+      fetchSearchUsers(query);
 
       return processedSearchResults.filter((u) => matchesSearchQuery(u, q));
     },
