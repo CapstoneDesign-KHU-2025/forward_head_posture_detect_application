@@ -12,4 +12,8 @@ export const logger = {
     }
     console.error(context, error);
   },
+
+  info: (message: string, ...args: any[]) => {
+    console.log(`[INFO] ${message}`, ...args);
+  },
 };

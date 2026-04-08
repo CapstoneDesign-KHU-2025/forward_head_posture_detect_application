@@ -1,30 +1,22 @@
 "use client";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { logger } from "@/lib/logger";
 
 async function clearIndexedDB(dbName = "posture-db") {
-  await new Promise<void>((resolve, reject) => {
+  if (typeof window === "undefined" || !window.indexedDB) return;
+
+  return new Promise<void>((resolve, reject) => {
     const req = indexedDB.deleteDatabase(dbName);
+
     req.onsuccess = () => resolve();
     req.onerror = () => reject(req.error);
     req.onblocked = () => {
       console.warn(
-        "IndexedDB delete blocked. Close other tabs using this site.",
+        `IndexedDB [${dbName}]delete blocked. Close other tabs using this site.`,
       );
+      resolve();
     };
   });
-}
-
-async function runClearPostureDB(dbName: string = "posture-db") {
-  try {
-    await clearIndexedDB(dbName);
-
-    sessionStorage.setItem("__posture_db_cleared__", "1");
-    return true;
-  } catch (e) {
-    logger.error("Failed to drop IndexedDB:", e);
-    return false;
-  }
 }
 
 export function useClearDBOnLoad(options?: {
@@ -33,10 +25,30 @@ export function useClearDBOnLoad(options?: {
 }) {
   const { oncePerTab = true, dbName = "posture-db" } = options ?? {};
 
-  useEffect(() => {
-    const FLAG = "__posture_db_cleared__";
-    if (oncePerTab && sessionStorage.getItem(FLAG) === "1") return;
+  const isClearing = useRef(false);
 
-    runClearPostureDB(dbName);
+  useEffect(() => {
+    const FLAG_KEY = `__cleared_db_${dbName}__`;
+
+    if (oncePerTab && sessionStorage.getItem(FLAG_KEY) === "1") return;
+    if (isClearing.current) return;
+
+    const dropDB = async () => {
+      isClearing.current = true;
+
+      try {
+        if (oncePerTab) sessionStorage.setItem(FLAG_KEY, "1");
+
+        await clearIndexedDB(dbName);
+        logger.info(`[${dbName}] successfully cleared on load.`);
+      } catch (e) {
+        logger.error(`Failed to drop IndexedDB [${dbName}]:`, e);
+        if (oncePerTab) sessionStorage.removeItem(FLAG_KEY);
+      } finally {
+        isClearing.current = false;
+      }
+    };
+
+    dropDB();
   }, [oncePerTab, dbName]);
 }
