@@ -60,15 +60,17 @@ export async function finalizeUpToNow(
   const tx = db.transaction("hourly", "readwrite");
   const store = tx.store;
 
+  const index = store.index("byUser");
+
   const currentHourStart = new Date(now);
   currentHourStart.setMinutes(0, 0, 0);
   const currentHourStartTs = +currentHourStart;
 
-  let cursor = await store.openCursor();
+  let cursor = await store.openCursor(IDBKeyRange.only(userId));
   while (cursor) {
     const row = cursor.value;
 
-    if (row.userId !== userId || row.weight <= 0) {
+    if (row.weight <= 0 || row.finalized === 1) {
       cursor = await cursor.continue();
       continue;
     }
@@ -77,12 +79,10 @@ export async function finalizeUpToNow(
     const isPastHour = rowEnd <= +now;
     const isCurrentHour = row.hourStartTs === currentHourStartTs;
 
-    if (row.finalized !== 1) {
-      if (isPastHour || (includeCurrentHour && isCurrentHour)) {
-        row.avgAngle = row.sumWeighted / row.weight;
-        row.finalized = 1;
-        await cursor.update(row);
-      }
+    if (isPastHour || (includeCurrentHour && isCurrentHour)) {
+      row.avgAngle = row.sumWeighted / row.weight;
+      row.finalized = 1;
+      await cursor.update(row);
     }
 
     cursor = await cursor.continue();
