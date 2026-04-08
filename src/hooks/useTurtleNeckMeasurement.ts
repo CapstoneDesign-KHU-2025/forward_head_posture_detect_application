@@ -6,22 +6,29 @@ import analyzeTurtleNeck from "@/utils/isTurtleNeck";
 import turtleStabilizer from "@/utils/turtleStabilizer";
 import { getSensitivity } from "@/utils/sensitivity";
 import { usePostureStorageManager } from "@/hooks/usePostureStorageManager";
-import { getStatusBannerMessageCore, getStatusBannerTypeCore } from "@/utils/getStatusBanner";
+import {
+  getStatusBannerMessageCore,
+  getStatusBannerTypeCore,
+} from "@/utils/getStatusBanner";
 import { checkGuidelinesAndDistance } from "@/utils/checkGuidelinesAndDistance";
 import { useTranslations } from "next-intl";
 import { incrementTurtleCount } from "@/lib/postureLocal";
 import { useSoundContext } from "@/controllers/SoundController";
 import type { GuideColor, Pose } from "@/utils/types";
 import { useSoundStore } from "@/app/store/useSoundStore";
+import { meanBy } from "es-toolkit";
 
 const USE_WORKER = true;
 
 function createPoseWorker(): Worker | null {
   if (typeof window === "undefined") return null;
   try {
-    return new Worker(new URL("../workers/poseDetection.worker.ts", import.meta.url), {
-      type: "module",
-    });
+    return new Worker(
+      new URL("../workers/poseDetection.worker.ts", import.meta.url),
+      {
+        type: "module",
+      },
+    );
   } catch {
     return null;
   }
@@ -77,7 +84,9 @@ export function drawGuidelines(
   offsetY: number,
   allInside: boolean,
 ) {
-  const guidelineColor = allInside ? "rgba(0, 255, 0, 0.6)" : "rgba(255, 0, 0, 0.6)";
+  const guidelineColor = allInside
+    ? "rgba(0, 255, 0, 0.6)"
+    : "rgba(255, 0, 0, 0.6)";
 
   ctx.save();
   ctx.strokeStyle = guidelineColor;
@@ -135,7 +144,10 @@ export function drawGuidelines(
   ctx.restore();
 }
 
-export function useTurtleNeckMeasurement({ userId, stopEstimating }: UseTurtleNeckMeasurementOptions) {
+export function useTurtleNeckMeasurement({
+  userId,
+  stopEstimating,
+}: UseTurtleNeckMeasurementOptions) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const t = useTranslations("Measurement");
@@ -146,7 +158,9 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating }: UseTurtleNe
   const workerRef = useRef<Worker | null>(null);
 
   const lastStateRef = useRef<boolean | null>(null);
-  const lastBeepIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const lastBeepIntervalRef = useRef<ReturnType<typeof setInterval> | null>(
+    null,
+  );
   const poseBufferRef = useRef<any[]>([]);
   const lastBufferTimeRef = useRef<number>(performance.now());
   const visibilityChangeHandlerRef = useRef<(() => void) | null>(null);
@@ -169,7 +183,8 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating }: UseTurtleNe
   const [guideColor, setGuideColor] = useState<GuideColor>("red");
   const [countdownRemain, setCountdownRemain] = useState<number | null>(null);
   const [measurementStarted, setMeasurementStarted] = useState<boolean>(false);
-  const [showMeasurementStartedToast, setShowMeasurementStartedToast] = useState<boolean>(false);
+  const [showMeasurementStartedToast, setShowMeasurementStartedToast] =
+    useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [isFirstFrameDrawn, setIsFirstFrameDrawn] = useState(false);
 
@@ -188,7 +203,13 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating }: UseTurtleNe
     }
   }, [isMuted]);
 
-  usePostureStorageManager(userId, angle, isTurtle, sessionId, measuringRef.current);
+  usePostureStorageManager(
+    userId,
+    angle,
+    isTurtle,
+    sessionId,
+    measuringRef.current,
+  );
   function processPoseBufferAndUpdateState(options: {
     poseBufferRef: React.RefObject<any[]>;
     lastBufferTimeRef: React.RefObject<number>;
@@ -227,11 +248,13 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating }: UseTurtleNe
     if (buf.length === 0) return;
     poseBufferRef.current = [];
 
-    const avg = (key: "earLeft" | "earRight" | "shoulderLeft" | "shoulderRight") => {
+    const avg = (
+      key: "earLeft" | "earRight" | "shoulderLeft" | "shoulderRight",
+    ) => {
       return {
-        x: buf.reduce((a, b) => a + b[key].x, 0) / buf.length,
-        y: buf.reduce((a, b) => a + b[key].y, 0) / buf.length,
-        z: buf.reduce((a, b) => a + b[key].z, 0) / buf.length,
+        x: meanBy(buf, (item) => item[key].x),
+        y: meanBy(buf, (item) => item[key].y),
+        z: meanBy(buf, (item) => item[key].z),
       };
     };
 
@@ -318,7 +341,13 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating }: UseTurtleNe
 
               try {
                 const bitmap = await createImageBitmap(v);
-                worker.postMessage({ type: "frame", payload: { bitmap, timestamp: performance.now() } }, [bitmap]);
+                worker.postMessage(
+                  {
+                    type: "frame",
+                    payload: { bitmap, timestamp: performance.now() },
+                  },
+                  [bitmap],
+                );
               } catch {
                 pendingCapture = false;
               }
@@ -363,7 +392,11 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating }: UseTurtleNe
         await video.play();
         if (cancelled) return;
 
-        const drawVideoToCanvas = (v: HTMLVideoElement, c: HTMLCanvasElement, ctx: CanvasRenderingContext2D) => {
+        const drawVideoToCanvas = (
+          v: HTMLVideoElement,
+          c: HTMLCanvasElement,
+          ctx: CanvasRenderingContext2D,
+        ) => {
           if (c.width !== v.videoWidth || c.height !== v.videoHeight) {
             c.width = v.videoWidth;
             c.height = v.videoHeight;
@@ -403,13 +436,14 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating }: UseTurtleNe
           const centerY = c.height / 2;
           const offsetY = 30;
 
-          const { isDistanceOk, distanceRatio, allInside } = checkGuidelinesAndDistance(
-            poses as Pose[],
-            c,
-            centerX,
-            centerY,
-            offsetY,
-          );
+          const { isDistanceOk, distanceRatio, allInside } =
+            checkGuidelinesAndDistance(
+              poses as Pose[],
+              c,
+              centerX,
+              centerY,
+              offsetY,
+            );
 
           const tooCloseThreshold = 1.05;
           const tooFarThreshold = 0.7;
@@ -481,7 +515,13 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating }: UseTurtleNe
                 // calculate baseline
                 const buf = baselineBufferRef.current;
                 if (buf.length > 0) {
-                  const avg = (key: "earLeft" | "earRight" | "shoulderLeft" | "shoulderRight") => ({
+                  const avg = (
+                    key:
+                      | "earLeft"
+                      | "earRight"
+                      | "shoulderLeft"
+                      | "shoulderRight",
+                  ) => ({
                     x: buf.reduce((s, a) => s + a[key].x, 0) / buf.length,
                     y: buf.reduce((s, a) => s + a[key].y, 0) / buf.length,
                     z: buf.reduce((s, a) => s + a[key].z, 0) / buf.length,
@@ -579,17 +619,20 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating }: UseTurtleNe
           const vision = await FilesetResolver.forVisionTasks(
             "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.22-rc.20250304/wasm",
           );
-          landmarkerRef.current = await PoseLandmarker.createFromOptions(vision, {
-            baseOptions: {
-              modelAssetPath:
-                "https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task",
+          landmarkerRef.current = await PoseLandmarker.createFromOptions(
+            vision,
+            {
+              baseOptions: {
+                modelAssetPath:
+                  "https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task",
+              },
+              runningMode: "VIDEO",
+              numPoses: 1,
+              minPoseDetectionConfidence: 0.5,
+              minPosePresenceConfidence: 0.5,
+              minTrackingConfidence: 0.5,
             },
-            runningMode: "VIDEO",
-            numPoses: 1,
-            minPoseDetectionConfidence: 0.5,
-            minPosePresenceConfidence: 0.5,
-            minTrackingConfidence: 0.5,
-          });
+          );
           if (cancelled) return;
 
           const getFPS = () => (document.hidden ? 5 : 10);
@@ -622,7 +665,10 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating }: UseTurtleNe
       cancelled = true;
 
       if (visibilityChangeHandlerRef.current) {
-        document.removeEventListener("visibilitychange", visibilityChangeHandlerRef.current);
+        document.removeEventListener(
+          "visibilitychange",
+          visibilityChangeHandlerRef.current,
+        );
         visibilityChangeHandlerRef.current = null;
       }
       if (intervalRef.current) {
@@ -649,7 +695,9 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating }: UseTurtleNe
           lastBeepIntervalRef.current = null;
         }
 
-        const tracks = (videoRef.current?.srcObject as MediaStream | null)?.getTracks() || [];
+        const tracks =
+          (videoRef.current?.srcObject as MediaStream | null)?.getTracks() ||
+          [];
         tracks.forEach((t) => t.stop());
       }, 50);
     };
@@ -673,7 +721,13 @@ export function useTurtleNeckMeasurement({ userId, stopEstimating }: UseTurtleNe
     setIsTurtle(false);
   };
 
-  const bannerType = getStatusBannerTypeCore(stopEstimating, isTurtle, measurementStarted, guideColor, guideMessage);
+  const bannerType = getStatusBannerTypeCore(
+    stopEstimating,
+    isTurtle,
+    measurementStarted,
+    guideColor,
+    guideMessage,
+  );
 
   const bannerMessage = getStatusBannerMessageCore(
     t_banner,
