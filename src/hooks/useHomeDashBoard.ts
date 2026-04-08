@@ -65,9 +65,14 @@ type HomeClientProps = {
   user: UserProfile;
 };
 
-export default function useHomeDashBoard({ weeklyData, user }: HomeClientProps) {
+export default function useHomeDashBoard({
+  weeklyData,
+  user,
+}: HomeClientProps) {
   const stopEstimating = useMeasurementStore((state) => state.stopEstimating);
-  const measurementStarted = useMeasurementStore((state) => state.measurementStarted);
+  const measurementStarted = useMeasurementStore(
+    (state) => state.measurementStarted,
+  );
 
   const isMeasuring = !stopEstimating && measurementStarted;
 
@@ -100,9 +105,12 @@ export default function useHomeDashBoard({ weeklyData, user }: HomeClientProps) 
     }
     let cancelled = false;
 
-    apiRequest<{ safeRows: WeeklySummaryRow[] }>({ requestPath: "/summaries/daily?days=90" })
+    apiRequest<{ safeRows: WeeklySummaryRow[] }>({
+      requestPath: "/summaries/daily?days=90",
+    })
       .then((result) => {
-        if (!cancelled && result.ok && result.data?.safeRows) setCalendarRows(result.data.safeRows);
+        if (!cancelled && result.ok && result.data?.safeRows)
+          setCalendarRows(result.data.safeRows);
       })
       .catch(() => {});
     return () => {
@@ -110,7 +118,10 @@ export default function useHomeDashBoard({ weeklyData, user }: HomeClientProps) 
     };
   }, [router]);
 
-  const dayStatusMap = useMemo(() => computeDayStatusMap(calendarRows), [calendarRows]);
+  const dayStatusMap = useMemo(
+    () => computeDayStatusMap(calendarRows),
+    [calendarRows],
+  );
 
   useEffect(() => {
     let cancelled = false;
@@ -120,9 +131,11 @@ export default function useHomeDashBoard({ weeklyData, user }: HomeClientProps) 
         setLoading(true);
         setError(null);
 
-        const avg = await computeTodaySoFarAverage(user.id);
-        const count = await getTodayCount(user.id);
-        const hours = await getTodayMeasuredSeconds(user.id);
+        const [avg, count, hours] = await Promise.all([
+          computeTodaySoFarAverage(user.id),
+          getTodayCount(user.id),
+          getTodayMeasuredSeconds(user.id),
+        ]);
 
         if (!cancelled) {
           setTodayAvg(avg);
@@ -146,7 +159,10 @@ export default function useHomeDashBoard({ weeklyData, user }: HomeClientProps) 
   }, [user.id]);
 
   useEffect(() => {
-    if ((todayCount != null && todayCount > 0) || (todayHour !== null && todayHour > 0)) {
+    if (
+      (todayCount != null && todayCount > 0) ||
+      (todayHour !== null && todayHour > 0)
+    ) {
       localStorage.setItem("hasEverMeasured", "true");
       setIsNewUser(false);
     }
