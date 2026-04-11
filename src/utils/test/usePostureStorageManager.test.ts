@@ -37,9 +37,8 @@ describe("usePostureStorageManager Hook test", () => {
     expect(finalizeUpToNow).toHaveBeenCalledWith("user123", true);
     await flushPromises();
     await act(async () => {
-      jest.advanceTimersByTime(60 * 60 * 1000);
+      await jest.advanceTimersByTime(60 * 60 * 1000);
     });
-    await flushPromises();
 
     expect(finalizeUpToNow).toHaveBeenCalledTimes(2);
   });
