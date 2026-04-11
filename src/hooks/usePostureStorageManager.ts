@@ -54,6 +54,7 @@ export function usePostureStorageManager(
     let isFinalizing = false;
     const runFinalize = async () => {
       if (isFinalizing) return;
+      isFinalizing = true;
       try {
         await finalizeUpToNow(userId, true);
       } finally {

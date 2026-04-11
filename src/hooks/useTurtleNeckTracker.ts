@@ -394,6 +394,10 @@ export function useTurtleNeckTracker(opts: UseTurtleNeckTrackerOptions = {}) {
     if (rafRef.current) cancelAnimationFrame(rafRef.current);
     rafRef.current = null;
     stopBeep();
+    if (audioCtxRef.current) {
+      audioCtxRef.current.close().catch(() => {});
+      audioCtxRef.current = null;
+    }
     landmarkerRef.current?.close?.();
     landmarkerRef.current = null;
     const tracks =

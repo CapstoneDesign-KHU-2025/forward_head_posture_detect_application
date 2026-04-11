@@ -66,7 +66,7 @@ export async function finalizeUpToNow(
   currentHourStart.setMinutes(0, 0, 0);
   const currentHourStartTs = +currentHourStart;
 
-  let cursor = await store.openCursor(IDBKeyRange.only(userId));
+  let cursor = await index.openCursor(IDBKeyRange.only(userId));
   while (cursor) {
     const row = cursor.value;
 
