@@ -169,6 +169,7 @@ export function HelpMessageModal({ isOpen, onClose }: HelpMessageModalProps) {
   ];
   const { backdrop, panel, panelInner, header, title, closeBtn, scrollArea } =
     modalStyles({ isOpen });
+
   return (
     <>
       {isOpen && <div className={backdrop()} aria-hidden onClick={onClose} />}
