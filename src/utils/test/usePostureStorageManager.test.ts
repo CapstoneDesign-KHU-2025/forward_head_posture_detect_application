@@ -1,100 +1,113 @@
-import { getDB } from "@/lib/idb";
+import { renderHook, act } from "@testing-library/react";
+import { usePostureStorageManager } from "@/hooks/usePostureStorageManager";
+import { storeMeasurementAndAccumulate } from "@/lib/postureLocal";
+import { finalizeUpToNow } from "@/lib/hourlyOps";
 
-export type HourlyRow = {
-  userId: string;
-  hourStartTs: number;
-  sumWeighted: number;
-  weight: number;
-  count: number;
-  avgAngle?: number | null;
-  finalized: 0 | 1;
-};
+jest.mock("@/lib/postureLocal", () => ({
+  storeMeasurementAndAccumulate: jest.fn().mockResolvedValue(undefined),
+}));
 
-export async function getHourlyRange(
-  userId: string,
-  startTs: number,
-  endTs: number,
-): Promise<HourlyRow[]> {
-  const db = await getDB();
-  const idx = db.transaction("hourly").store.index("byUserHour");
-  const range = IDBKeyRange.bound([userId, startTs], [userId, endTs]);
-  const rows = (await idx.getAll(range)) as HourlyRow[];
-  rows.sort((a, b) => a.hourStartTs - b.hourStartTs);
-  return rows;
-}
+jest.mock("@/lib/hourlyOps", () => ({
+  finalizeUpToNow: jest.fn().mockResolvedValue(undefined),
+}));
 
-export async function getTodayHourly(userId: string, now = new Date()) {
-  const dayStart = new Date(now);
-  dayStart.setHours(0, 0, 0, 0);
-  const startTs = +dayStart;
-  const endTs = +now;
-  return getHourlyRange(userId, startTs, endTs);
-}
+describe("usePostureStorageManager Hook test", () => {
+  beforeEach(() => {
+    jest.useFakeTimers();
+    jest.clearAllMocks();
+  });
 
-export async function computeTodaySoFarAverage(
-  userId: string | undefined,
-  now = new Date(),
-) {
-  if (!userId) return null;
-  const rows = await getTodayHourly(userId, now);
-  let totalSum = 0;
-  let totalWeight = 0;
+  afterEach(() => {
+    jest.runOnlyPendingTimers();
+    jest.useRealTimers();
+  });
 
-  for (const r of rows) {
-    if (r.weight > 0) {
-      totalSum += r.sumWeighted;
-      totalWeight += r.weight;
-    }
-  }
+  const flushPromises = async () => {
+    await act(async () => {
+      await Promise.resolve();
+    });
+  };
 
-  if (totalWeight === 0) return null;
-  return totalSum / totalWeight;
-}
+  it("when the app starts(mount) run finalizeUpToNow one time, run it again in an hour", async () => {
+    renderHook(() =>
+      usePostureStorageManager("user123", 40, false, "sess-1", true),
+    );
 
-export async function finalizeUpToNow(
-  userId: string,
-  includeCurrentHour = false,
-  now = new Date(),
-) {
-  const db = await getDB();
-  const tx = db.transaction("hourly", "readwrite");
-  const store = tx.store;
+    expect(finalizeUpToNow).toHaveBeenCalledTimes(1);
+    expect(finalizeUpToNow).toHaveBeenCalledWith("user123", true);
+    await flushPromises();
+    await act(async () => {
+      jest.advanceTimersByTime(60 * 60 * 1000);
+    });
+    await flushPromises();
 
-  const index = store.index("byUser");
+    expect(finalizeUpToNow).toHaveBeenCalledTimes(2);
+  });
 
-  const currentHourStart = new Date(now);
-  currentHourStart.setMinutes(0, 0, 0);
-  const currentHourStartTs = +currentHourStart;
+  it("if measuring is true, every 10 secs, store newest angle", async () => {
+    const { rerender } = renderHook(
+      ({ angle, isTurtle }) =>
+        usePostureStorageManager("user123", angle, isTurtle, "sess-1", true),
+      {
+        initialProps: { angle: 40, isTurtle: false },
+      },
+    );
 
-  // 💡 리뷰어 피드백 반영: index.openCursor 사용 (Full Table Scan 방지)
-  let cursor = await index.openCursor(IDBKeyRange.only(userId));
+    await act(async () => {
+      jest.advanceTimersByTime(10000);
+    });
+    await flushPromises();
 
-  while (cursor) {
-    const row = cursor.value;
+    expect(storeMeasurementAndAccumulate).toHaveBeenCalledTimes(1);
+    expect(storeMeasurementAndAccumulate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        angleDeg: 40,
+        isTurtle: false,
+        sampleGapS: 10,
+      }),
+    );
 
-    if (row.weight <= 0 || row.finalized === 1) {
-      cursor = await cursor.continue();
-      continue;
-    }
+    rerender({ angle: 55, isTurtle: true });
 
-    const rowEnd = row.hourStartTs + 60 * 60 * 1000;
-    const isPastHour = rowEnd <= +now;
-    const isCurrentHour = row.hourStartTs === currentHourStartTs;
+    await act(async () => {
+      jest.advanceTimersByTime(10000);
+    });
+    await flushPromises();
 
-    if (isPastHour || (includeCurrentHour && isCurrentHour)) {
-      row.avgAngle = row.sumWeighted / row.weight;
-      row.finalized = 1;
-      await cursor.update(row);
-    }
+    expect(storeMeasurementAndAccumulate).toHaveBeenCalledTimes(2);
+    expect(storeMeasurementAndAccumulate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        angleDeg: 55,
+        isTurtle: true,
+      }),
+    );
+  });
 
-    cursor = await cursor.continue();
-  }
+  it("measuring === false => don't store", async () => {
+    renderHook(() =>
+      usePostureStorageManager("user123", 40, false, "sess-1", false),
+    );
 
-  await tx.done;
-}
+    await act(async () => {
+      jest.advanceTimersByTime(10000);
+    });
+    await flushPromises();
 
-export function getTodayStartTs(now = new Date()) {
-  const d = new Date(now);
-  d.setHours(0, 0, 0, 0);
-  return +d;
-}
+    expect(storeMeasurementAndAccumulate).not.toHaveBeenCalled();
+  });
+
+  it("without userId, sessionId => timer doesn't work", async () => {
+    renderHook(() =>
+      usePostureStorageManager(undefined, 40, false, undefined, true),
+    );
+
+    expect(finalizeUpToNow).not.toHaveBeenCalled();
+
+    await act(async () => {
+      jest.advanceTimersByTime(10000);
+    });
+    await flushPromises();
+
+    expect(storeMeasurementAndAccumulate).not.toHaveBeenCalled();
+  });
+});
