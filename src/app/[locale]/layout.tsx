@@ -16,6 +16,8 @@ import { Metadata } from "next";
 import { PiPController } from "@/controllers/PipController";
 import { GlobalPipRenderer } from "@/app/[locale]/(protected)/estimate/components/GlobalPipRenderer";
 import { Props } from "@/utils/types";
+import { GoogleAnalytics } from "@next/third-parties/google";
+
 export const metadata: Metadata = {
   title: "BoogiBoogi",
   description: "Improve turtle neck posture with AI metrics",
@@ -44,18 +46,26 @@ export default async function LocaleLayout({ children, params }: Props) {
   const messages = await getMessages();
 
   const user = session?.user
-    ? { name: session.user.name || t("user"), avatarSrc: session.user.image || undefined }
+    ? {
+        name: session.user.name || t("user"),
+        avatarSrc: session.user.image || undefined,
+      }
     : null;
 
+  const gaId = process.env.NEXT_PUBLIC_GA_ID;
   return (
     <html lang={locale} className={`${nunito.variable} font-sans`}>
       <body>
-        <NextIntlClientProvider key={locale} locale={locale} messages={messages}>
+        <NextIntlClientProvider
+          key={locale}
+          locale={locale}
+          messages={messages}
+        >
           <Providers session={session}>
             <PiPController>
               <SoundController>
                 <MeasurementController>
-                  <div className="h-dvh flex flex-col min-h-0">
+                  <div className="flex h-dvh min-h-0 flex-col">
                     <Header user={user} />
                     <PageContainer>
                       {children}
@@ -68,6 +78,7 @@ export default async function LocaleLayout({ children, params }: Props) {
           </Providers>
         </NextIntlClientProvider>
       </body>
+      {gaId ? <GoogleAnalytics gaId={gaId} /> : null}
     </html>
   );
 }
