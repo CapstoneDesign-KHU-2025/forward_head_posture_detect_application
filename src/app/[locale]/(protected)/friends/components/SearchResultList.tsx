@@ -13,11 +13,11 @@ import { Button } from "@/components/Button";
 import { tv } from "tailwind-variants";
 
 const addButton = tv({
-  base: "rounded-[10px] border-none bg-[#4a7c59] px-3.5 py-1.5 whitespace-nowrap text-[14px] font-semibold text-white transition-colors hover:bg-[#3a6147]",
+  base: "rounded-[10px] border-none bg-[var(--green)] px-3.5 py-1.5 whitespace-nowrap text-[14px] font-semibold text-white transition-colors hover:bg-[var(--green-dark)]",
 });
 
 const outgoingBadge = tv({
-  base: "rounded-[10px] border border-[#c2dfc9] bg-[#e8f5ec] px-3.5 py-1.5 whitespace-nowrap text-[14px] font-semibold text-[#4a7c59]",
+  base: "rounded-[10px] border border-[var(--green-pale)] bg-[#e8f5ec] px-3.5 py-1.5 whitespace-nowrap text-[14px] font-semibold text-[var(--green)]",
 });
 
 const searchIcon = (

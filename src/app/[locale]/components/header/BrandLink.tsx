@@ -1,5 +1,3 @@
-"use client";
-
 import { Link } from "@/i18n/navigation";
 import { Icon } from "@/components/Icon";
 import { cn } from "@/utils/cn";
@@ -18,10 +16,10 @@ export function BrandLink({ href = "/", icon, label, className }: BrandLinkProps
       className={cn(
         "inline-flex items-center gap-2 select-none",
         "focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--green)] focus-visible:ring-offset-2 ring-offset-white",
+        "no-underline",
         className,
       )}
       aria-label={`${label} home`}
-      style={{ textDecoration: "none" }}
     >
       <Icon size="lg">{icon}</Icon>
 
