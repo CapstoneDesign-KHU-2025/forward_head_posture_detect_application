@@ -73,7 +73,25 @@ Use this skill when the task involves:
 
 ## style rules
 - Separate styling from JSX: use `tv` for variants, `clsx` for conditions, and `cn` for composing readable class names.
-- If there are more than one tv varients in a file, put them in to a one const variable.
+- If there are more than one tv varients in a file, put them in to a one const object variable so that there is just one style variable in a file. For example, if there are two tv variants, `cardVariants` and `buttonVariants`, put them in to one variable like below:
+```tsx   
+const styles = tv({
+  card: {
+    base: "base styles",
+    variants: {
+      selected: "selected styles",
+    },
+  },
+  button: {
+    base: "base styles",
+    variants: {
+      primary: "primary styles",
+      secondary: "secondary styles",
+    },
+  },
+});
+```   
+
 
 ## Output style
 
