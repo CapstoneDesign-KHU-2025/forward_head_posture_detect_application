@@ -8,27 +8,39 @@ import { SelectableOptionCard } from "@/components/SelectableOptionCard";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import { tv } from "tailwind-variants";
-
-const styles = {
-  contents: tv({
-    base: "w-full max-w-[420px] rounded-[22px] shadow-[0_20px_60px_rgba(45,59,53,0.18)]"
-  }), 
-  footerButton: tv({
-  base: "flex-1 py-3 text-[14px]",
-  variants: {
-    weight: { semibold: "font-semibold" },
+const modalStyles = tv({
+  slots: {
+    content:
+      "w-full max-w-[420px] rounded-[22px] shadow-[0_20px_60px_rgba(45,59,53,0.18)]",
+    body: "flex flex-1 flex-col overflow-y-auto px-6 py-[22px]",
+    list: "flex flex-col gap-2",
+    footer: "flex shrink-0 gap-2.5 px-6 py-3.5",
+    footerButton: "flex-1 py-3 text-[14px]",
+    characterIcon:
+      "relative flex h-[52px] w-[52px] shrink-0 items-center justify-center overflow-hidden rounded-xl bg-[#e8f5ec]",
   },
-})
-}
 
+  variants: {
+    weight: {
+      semibold: {
+        footerButton: "font-semibold",
+      },
+    },
+  },
+});
+
+const { content, body, list, footer, footerButton, characterIcon } =
+  modalStyles();
 
 function CharacterIcon({ src, alt }: { src: string; alt: string }) {
   return (
-    <div className="relative flex h-[52px] w-[52px] shrink-0 items-center justify-center overflow-hidden rounded-xl bg-[#e8f5ec]">
+    <div className={characterIcon()}>
       <Image src={src} alt={alt} width={52} height={52} className="object-cover" />
     </div>
   );
 }
+
+
 
 type CharacterSelectionModalProps = {
   isOpen: boolean;
@@ -66,10 +78,10 @@ export default function CharacterSelectionModal({ isOpen, onClose }: CharacterSe
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} contentClassName={styles.contents()}>
+    <Modal isOpen={isOpen} onClose={onClose} contentClassName={content()}>
       <ModalHeader title={t("ModalHeader.title")} subtitle={t("ModalHeader.subtitle")} onClose={onClose} />
-      <div className="flex flex-1 flex-col overflow-y-auto px-6 py-[22px]">
-        <div className="flex flex-col gap-2">
+      <div className={body()}>
+        <div className={list()}>
           {characters.map((character) => (
             <SelectableOptionCard
               key={character.id}
@@ -82,11 +94,11 @@ export default function CharacterSelectionModal({ isOpen, onClose }: CharacterSe
           ))}
         </div>
       </div>
-      <div className="flex shrink-0 gap-2.5 px-6 py-3.5">
-        <Button type="button" variant="secondary" className={styles.footerButton({ weight: "semibold" })} onClick={onClose}>
+      <div className={footer()}>
+        <Button type="button" variant="secondary" className={footerButton({ weight: "semibold" })} onClick={onClose}>
           {t("button.close")}
         </Button>
-        <Button type="button" variant="primary" className={styles.footerButton()} onClick={handleConfirm}>
+        <Button type="button" variant="primary" className={footerButton()} onClick={handleConfirm}>
           {t("button.confirm")}
         </Button>
       </div>

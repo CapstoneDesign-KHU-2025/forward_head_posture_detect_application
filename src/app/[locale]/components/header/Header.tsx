@@ -19,22 +19,15 @@ const headerStyles = tv({
   slots: {
     header:
       "fixed top-0 left-0 right-0 z-50 w-full bg-[var(--green-pale)]",
-
     inner: "w-full px-6 md:px-8",
-
     landingLayout:
       "flex h-[var(--header-height)] w-full items-center justify-between",
-
     defaultLayout:
       "relative flex h-[var(--header-height)] w-full items-center justify-between",
-
     nav:
       "absolute left-1/2 flex -translate-x-1/2 items-center gap-1",
-
     rightActions: "flex items-center gap-2",
-
     turtleIcon: "shrink-0 object-contain",
-
     navLink:
       "rounded-[10px] px-4 py-[7px] text-base font-semibold no-underline transition-colors duration-150",
   },

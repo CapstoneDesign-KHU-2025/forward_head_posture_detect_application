@@ -91,7 +91,17 @@ const styles = tv({
   },
 });
 ```   
+-Use `slots` when styles belong to one connected multi-part component; use a plain `styles` object when you only want to group independent `tv()` styles for organization.
 
+Use slots when:
+- A component contains multiple styled parts (e.g. wrapper, header, body, footer, buttons)
+- Styles are closely related and belong to the same component
+- You want to share variants across multiple elements (e.g. state affects several parts)
+
+Use tv() variable when:
+- Styles belong to different or reusable components
+- The styled element is used independently
+- There is no shared state or relationship between styles
 
 ## Output style
 
