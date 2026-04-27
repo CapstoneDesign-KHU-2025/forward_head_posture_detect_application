@@ -1,6 +1,6 @@
 "use client";
 
-import { AlertTriangle, Check, Loader2 } from "lucide-react";
+import { AlertTriangle, Check, Loader2, type LucideIcon } from "lucide-react";
 import { createPortal } from "react-dom";
 import { useTranslations } from "next-intl";
 import { useDocumentPiP } from "@/controllers/PipController";
@@ -14,6 +14,48 @@ type MiniWarningPipProps = {
   measurementStarted: boolean;
 };
 
+type Phase = "ready" | "good" | "warn";
+
+type PhaseConfig = {
+  Icon: LucideIcon;
+  iconClass: string;
+  strokeWidth: number;
+  wrapperBg: string;
+  textColor: string;
+  titleKey: "getReadyTitle" | "goodTitle" | "warningTitle";
+  buttonVariant: "danger" | "primary";
+};
+
+const phaseConfig: Record<Phase, PhaseConfig> = {
+  ready: {
+    Icon: Loader2,
+    iconClass: "animate-spin text-[var(--green)]",
+    strokeWidth: 2.2,
+    wrapperBg: "",
+    textColor: "text-[var(--text)]",
+    titleKey: "getReadyTitle",
+    buttonVariant: "primary",
+  },
+  good: {
+    Icon: Check,
+    iconClass: "text-[var(--green-dark)]",
+    strokeWidth: 2.5,
+    wrapperBg: "bg-[var(--green-mid)]",
+    textColor: "text-[var(--green-dark)]",
+    titleKey: "goodTitle",
+    buttonVariant: "primary",
+  },
+  warn: {
+    Icon: AlertTriangle,
+    iconClass: "text-[#e07a72]",
+    strokeWidth: 2.2,
+    wrapperBg: "bg-[var(--danger-mid)]",
+    textColor: "text-[var(--danger-text)]",
+    titleKey: "warningTitle",
+    buttonVariant: "danger",
+  },
+};
+
 export function MiniWarningPip({
   isTurtle,
   pipWindow,
@@ -21,81 +63,46 @@ export function MiniWarningPip({
 }: MiniWarningPipProps) {
   const { closePiP } = useDocumentPiP();
   const { stopMeasurement } = useMeasurement();
+  const t = useTranslations("MiniWarningPip");
 
   const onStop = async () => {
     await stopMeasurement();
     closePiP();
   };
 
-  const t = useTranslations("MiniWarningPip");
-
   if (!pipWindow) return null;
 
-  const phase = !measurementStarted ? "ready" : isTurtle ? "warn" : "good";
+  const phase: Phase = !measurementStarted ? "ready" : isTurtle ? "warn" : "good";
+  const { Icon, iconClass, strokeWidth, wrapperBg, textColor, titleKey, buttonVariant } =
+    phaseConfig[phase];
 
   return createPortal(
     <div className="flex min-h-screen w-screen items-center px-3 py-2.5">
       <div className="flex w-full items-center gap-2.5">
         <div className="flex min-w-0 flex-1 items-center gap-2.5">
-          {phase === "ready" ? (
-            <div
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl"
-              aria-hidden
-            >
-              <Loader2
-                size={20}
-                className="animate-spin text-[var(--green)]"
-                strokeWidth={2.2}
-              />
-            </div>
-          ) : phase === "good" ? (
-            <div
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--green-mid)]"
-              aria-hidden
-            >
-              <Check
-                size={20}
-                className="text-[var(--green-dark)]"
-                strokeWidth={2.5}
-              />
-            </div>
-          ) : (
-            <div
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--danger-mid)]"
-              aria-hidden
-            >
-              <AlertTriangle
-                size={20}
-                className="text-[#e07a72]"
-                strokeWidth={2.2}
-              />
-            </div>
-          )}
+          <div
+            className={cn(
+              "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl",
+              wrapperBg,
+            )}
+            aria-hidden
+          >
+            <Icon size={20} className={iconClass} strokeWidth={strokeWidth} />
+          </div>
           <h2
             className={cn(
               "min-w-0 flex-1 text-[14px] leading-snug font-bold",
-              phase === "ready" && "text-[var(--text)]",
-              phase === "good" && "text-[var(--green-dark)]",
-              phase === "warn" && "text-[var(--danger-text)]",
+              textColor,
             )}
           >
-            {phase === "ready"
-              ? t("getReadyTitle")
-              : phase === "good"
-                ? t("goodTitle")
-                : t("warningTitle")}
+            {t(titleKey)}
           </h2>
         </div>
-        <Button
-          onClick={onStop}
-          size="sm"
-          variant={phase == "warn" ? "danger" : "primary"}
-        >
+        <Button onClick={onStop} size="sm" variant={buttonVariant}>
           {t("stop")}
         </Button>
       </div>
     </div>,
-
     pipWindow.document.body,
   );
 }

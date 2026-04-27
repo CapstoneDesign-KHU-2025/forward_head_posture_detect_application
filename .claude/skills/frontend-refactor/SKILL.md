@@ -71,6 +71,9 @@ Use this skill when the task involves:
 - Avoid passing unnecessary props through many layers.
 - Avoid putting database/API logic inside UI components.
 
+## style rules
+- Separate styling from JSX: use `tv` for variants, `clsx` for conditions, and `cn` for composing readable class names.
+
 ## Output style
 
 - Show the refactored code first.
