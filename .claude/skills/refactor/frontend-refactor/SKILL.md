@@ -1,5 +1,5 @@
 ---
-name: refactor
+name: frontend-refactor
 description: Use when refactoring existing code without changing behavior. Use for improving readability, structure, naming, duplication, separation of concerns, and maintainability.
 ---
 
