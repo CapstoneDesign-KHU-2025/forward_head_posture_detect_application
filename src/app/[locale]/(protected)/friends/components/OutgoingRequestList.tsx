@@ -8,7 +8,7 @@ import type { FriendRequestRow } from "@/utils/types";
 import { cn } from "@/utils/cn";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/Button";
-const AVATAR_COLORS = ["#ff9f6b", "#6b9fff", "#ffc46b", "#b06bff", "#6aab7a", "#ff8c8c"];
+import { AVATAR_COLORS } from "./FriendList";
 
 function getAvatarStyle(id: string | null | undefined) {
   const safeId = (id ?? "").toString();
