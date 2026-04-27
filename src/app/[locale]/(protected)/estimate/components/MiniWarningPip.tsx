@@ -26,7 +26,7 @@ type PhaseConfig = {
   buttonVariant: "danger" | "primary";
 };
 
-const phaseConfig: Record<Phase, PhaseConfig> = {
+const phaseConfig = {
   ready: {
     Icon: Loader2,
     iconClass: "animate-spin text-[var(--green)]",
@@ -54,7 +54,7 @@ const phaseConfig: Record<Phase, PhaseConfig> = {
     titleKey: "warningTitle",
     buttonVariant: "danger",
   },
-};
+} satisfies Record<Phase, PhaseConfig>;
 
 export function MiniWarningPip({
   isTurtle,
