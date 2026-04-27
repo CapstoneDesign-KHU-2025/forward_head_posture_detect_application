@@ -73,6 +73,7 @@ Use this skill when the task involves:
 
 ## style rules
 - Separate styling from JSX: use `tv` for variants, `clsx` for conditions, and `cn` for composing readable class names.
+- If there are more than one tv varients in a file, put them in to a one const variable.
 
 ## Output style
 
