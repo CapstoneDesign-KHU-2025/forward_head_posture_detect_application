@@ -6,8 +6,8 @@ import { SectionLabel } from "@/components/SectionLabel";
 import type { FriendRequestRow } from "@/utils/types";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/Button";
-import { getAvatarColor, getInitial } from "./FriendList";
 import { tv } from "tailwind-variants";
+import { getAvatarColor, getInitial } from "./friends.utils";
 
 const actionButton = tv({
   base: "rounded-[10px] whitespace-nowrap text-[14px] font-semibold transition-colors py-1.5",
@@ -18,7 +18,6 @@ const actionButton = tv({
     },
   },
 });
-
 
 type IncomingRequestListProps = {
   items: FriendRequestRow[];
