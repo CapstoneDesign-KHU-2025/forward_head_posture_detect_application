@@ -11,14 +11,14 @@ import { Search } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/Button";
 import { tv } from "tailwind-variants";
-
-const addButton = tv({
-  base: "rounded-[10px] border-none bg-[var(--green)] px-3.5 py-1.5 whitespace-nowrap text-[14px] font-semibold text-white transition-colors hover:bg-[var(--green-dark)]",
-});
-
-const outgoingBadge = tv({
-  base: "rounded-[10px] border border-[var(--green-pale)] bg-[#e8f5ec] px-3.5 py-1.5 whitespace-nowrap text-[14px] font-semibold text-[var(--green)]",
-});
+const styles = {
+  addButton: tv({
+    base: "rounded-[10px] border-none bg-[var(--green)] px-3.5 py-1.5 whitespace-nowrap text-[14px] font-semibold text-white transition-colors hover:bg-[var(--green-dark)]",
+  }),
+  outgoingBadge: tv({
+    base: "rounded-[10px] border border-[var(--green-pale)] bg-[#e8f5ec] px-3.5 py-1.5 whitespace-nowrap text-[14px] font-semibold text-[var(--green)]",
+  }), 
+}
 
 const searchIcon = (
   <Icon size="lg">
@@ -59,7 +59,7 @@ export function SearchResultList({ searchResults, onSendRequest }: SearchResultL
                   bgColor={u.color}
                   actions={
                     u.relation === "OUTGOING" ? (
-                      <span className={outgoingBadge()}>
+                      <span className={styles.outgoingBadge()}>
                         {t("UserRow.actions_outgoing")}
                       </span>
                     ) : (
@@ -67,7 +67,7 @@ export function SearchResultList({ searchResults, onSendRequest }: SearchResultL
                         type="button"
                         variant="ghost"
                         onClick={() => onSendRequest(u)}
-                        className={addButton()}
+                        className={styles.addButton()}
                       >
                         {t("UserRow.actions_adding")}
                       </Button>

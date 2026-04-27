@@ -3,9 +3,14 @@
 import { Icon } from "@/components/Icon";
 import { Badge } from "@/app/[locale]/(protected)/friends/components/Badge";
 import { Users } from "lucide-react";
-import { cn } from "@/utils/cn";
+import { tv } from "tailwind-variants";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/Button";
+
+const friendsButton = tv({
+  base: "relative flex h-11 w-11 shrink-0 items-center justify-center rounded-[12px] text-[var(--text-sub)] transition-all duration-150 hover:bg-[var(--green-light)] hover:text-[var(--green)]",
+});
+
 type FriendsButtonProps = {
   requestCount: number;
   onClick: () => void;
@@ -20,12 +25,7 @@ export function FriendsButton({ requestCount, onClick, className }: FriendsButto
       variant="ghost"
       onClick={onClick}
       title={t("ariaLabel")}
-      className={cn(
-        "relative flex h-11 w-11 shrink-0 items-center justify-center rounded-[12px]",
-        "text-[var(--text-sub)] transition-all duration-150",
-        "hover:bg-[var(--green-light)] hover:text-[var(--green)]",
-        className,
-      )}
+      className={friendsButton({ class: className })}
     >
       <Icon size="md">
         <Users strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" />

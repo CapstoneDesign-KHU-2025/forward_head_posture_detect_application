@@ -14,7 +14,7 @@ const CHARACTER_ASSETS = [
   { id: "jessica", icon: "/icons/girl.png" },
 ];
 
-const pageStyles = tv({
+const styles = tv({
   slots: {
     wrapper:
       "flex min-h-screen items-center justify-center bg-gradient-to-br from-[var(--green-pale)] to-[var(--green-light)] p-8",
@@ -95,7 +95,7 @@ export default function CharacterSelectionPage() {
     buttonWrapper,
     skipBtn,
     doneBtn,
-  } = pageStyles({
+  } = styles({
     isReady: !!selectedCharacter,
   });
 

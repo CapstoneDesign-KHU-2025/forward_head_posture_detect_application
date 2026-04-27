@@ -9,8 +9,8 @@ import { useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import { tv } from "tailwind-variants";
 
-const modalStyles = {
-  content: tv({
+const styles = {
+  contents: tv({
     base: "w-full max-w-[420px] rounded-[22px] shadow-[0_20px_60px_rgba(45,59,53,0.18)]"
   }), 
   footerButton: tv({
@@ -66,7 +66,7 @@ export default function CharacterSelectionModal({ isOpen, onClose }: CharacterSe
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} contentClassName={modalStyles.content()}>
+    <Modal isOpen={isOpen} onClose={onClose} contentClassName={styles.contents()}>
       <ModalHeader title={t("ModalHeader.title")} subtitle={t("ModalHeader.subtitle")} onClose={onClose} />
       <div className="flex flex-1 flex-col overflow-y-auto px-6 py-[22px]">
         <div className="flex flex-col gap-2">
@@ -83,10 +83,10 @@ export default function CharacterSelectionModal({ isOpen, onClose }: CharacterSe
         </div>
       </div>
       <div className="flex shrink-0 gap-2.5 px-6 py-3.5">
-        <Button type="button" variant="secondary" className={modalStyles.footerButton({ weight: "semibold" })} onClick={onClose}>
+        <Button type="button" variant="secondary" className={styles.footerButton({ weight: "semibold" })} onClick={onClose}>
           {t("button.close")}
         </Button>
-        <Button type="button" variant="primary" className={modalStyles.footerButton()} onClick={handleConfirm}>
+        <Button type="button" variant="primary" className={styles.footerButton()} onClick={handleConfirm}>
           {t("button.confirm")}
         </Button>
       </div>

@@ -10,7 +10,7 @@ import { PipToggleButton } from "./PipToggleButton";
 import { usePiPStore } from "@/app/store/usePipStore";
 import { tv } from "tailwind-variants";
 
-const panelStyles = tv({
+const styles = tv({
   slots: {
     wrapper:
       "relative mx-auto w-full max-w-[600px] min-w-0 overflow-hidden rounded-[16px] bg-white shadow-[0_2px_16px_rgba(74,124,89,0.13)]",
@@ -151,7 +151,7 @@ export default function EstimatePanel({
     canvasSlot,
     toast,
     countdown,
-  } = panelStyles({ isStopped: stopEstimating });
+  } = styles({ isStopped: stopEstimating });
 
   return (
     <section className={wrapper()}>
