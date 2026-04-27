@@ -12,41 +12,38 @@ export function usePostureStorageManager(
   sessionId: string | undefined,
   measuring: boolean,
 ) {
-  const angleRef = useRef(currentAngle);
-  const turtleRef = useRef(isTurtle);
-  const measuringRef = useRef(measuring);
+  const stateRef = useRef({ currentAngle, isTurtle, measuring });
 
   useEffect(() => {
-    angleRef.current = currentAngle;
-  }, [currentAngle]);
-
-  useEffect(() => {
-    turtleRef.current = isTurtle;
-  }, [isTurtle]);
-
-  useEffect(() => {
-    measuringRef.current = measuring;
-  }, [measuring]);
+    stateRef.current = { currentAngle, isTurtle, measuring };
+  }, [currentAngle, isTurtle, measuring]);
 
   useEffect(() => {
     if (!userId || !sessionId) return;
     const SAMPLE_GAP_S = 10;
 
+    let isSaving = false;
+
     const interval = setInterval(async () => {
-      if (!measuringRef.current) return;
+      if (!stateRef.current.measuring || isSaving) return;
 
-      const now = Date.now();
-      const sample: PostureMeasurement = {
-        userId,
-        ts: now,
-        angleDeg: angleRef.current,
-        isTurtle: turtleRef.current,
-        hasPose: true,
-        sessionId,
-        sampleGapS: SAMPLE_GAP_S,
-      };
+      isSaving = true;
 
-      await storeMeasurementAndAccumulate(sample);
+      try {
+        const sample: PostureMeasurement = {
+          userId,
+          ts: Date.now(),
+          angleDeg: stateRef.current.currentAngle,
+          isTurtle: stateRef.current.isTurtle,
+          hasPose: true,
+          sessionId,
+          sampleGapS: SAMPLE_GAP_S,
+        };
+
+        await storeMeasurementAndAccumulate(sample);
+      } finally {
+        isSaving = false;
+      }
     }, SAMPLE_GAP_S * 1000);
 
     return () => clearInterval(interval);
@@ -54,15 +51,19 @@ export function usePostureStorageManager(
 
   useEffect(() => {
     if (!userId) return;
-
-    const hourlyTimer = setInterval(
-      async () => {
+    let isFinalizing = false;
+    const runFinalize = async () => {
+      if (isFinalizing) return;
+      isFinalizing = true;
+      try {
         await finalizeUpToNow(userId, true);
-      },
-      60 * 60 * 1000,
-    );
+      } finally {
+        isFinalizing = false;
+      }
+    };
 
-    finalizeUpToNow(userId, true);
+    const hourlyTimer = setInterval(runFinalize, 60 * 60 * 1000);
+    void runFinalize();
 
     return () => clearInterval(hourlyTimer);
   }, [userId]);

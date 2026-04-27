@@ -48,6 +48,7 @@ export function useTurtleNeckTracker(opts: UseTurtleNeckTrackerOptions = {}) {
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const audioCtxRef = useRef<AudioContext | null>(null);
 
   const landmarkerRef = useRef<PoseLandmarker | null>(null);
   const rafRef = useRef<number | null>(null);
@@ -63,22 +64,33 @@ export function useTurtleNeckTracker(opts: UseTurtleNeckTrackerOptions = {}) {
   const [angle, setAngle] = useState(0);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {}, [isTurtle]);
   const startBeep = useCallback(() => {
     if (!enableBeep) return;
     if (beepIntervalRef.current) return;
+
+    if (!audioCtxRef.current) {
+      audioCtxRef.current = new AudioContext();
+    }
+
     beepIntervalRef.current = setInterval(() => {
-      const audioCtx = new AudioContext();
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
+      const ctx = audioCtxRef.current!;
+
+      if (ctx.state === "suspended") {
+        ctx.resume().catch(() => {});
+      }
+
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
       osc.connect(gain);
-      gain.connect(audioCtx.destination);
+      gain.connect(ctx.destination);
+
       osc.type = "sine";
-      osc.frequency.setValueAtTime(880, audioCtx.currentTime);
-      gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+      osc.frequency.setValueAtTime(880, ctx.currentTime);
+      gain.gain.setValueAtTime(0.1, ctx.currentTime);
+
       osc.start();
-      osc.stop(audioCtx.currentTime + 0.2);
-      setTimeout(() => audioCtx.close(), 300);
+      osc.stop(ctx.currentTime + 0.2);
     }, 1000);
   }, [enableBeep]);
 
@@ -103,12 +115,12 @@ export function useTurtleNeckTracker(opts: UseTurtleNeckTrackerOptions = {}) {
     ctx.strokeStyle = guidelineColor;
     ctx.lineWidth = 3;
 
-    // 얼굴 타원
+    // face
     ctx.beginPath();
     ctx.ellipse(centerX, centerY - 80 + offsetY, 90, 110, 0, 0, Math.PI * 2);
     ctx.stroke();
 
-    // 목
+    // neck
     ctx.beginPath();
     ctx.moveTo(centerX - 40, centerY + 10 + offsetY);
     ctx.lineTo(centerX - 35, centerY + 40 + offsetY);
@@ -116,7 +128,7 @@ export function useTurtleNeckTracker(opts: UseTurtleNeckTrackerOptions = {}) {
     ctx.lineTo(centerX + 35, centerY + 40 + offsetY);
     ctx.stroke();
 
-    // 어깨
+    // shoulder
     ctx.beginPath();
     ctx.moveTo(centerX - 35, centerY + 40 + offsetY);
     ctx.lineTo(centerX - 190, centerY + 60 + offsetY);
@@ -124,7 +136,7 @@ export function useTurtleNeckTracker(opts: UseTurtleNeckTrackerOptions = {}) {
     ctx.lineTo(centerX + 190, centerY + 60 + offsetY);
     ctx.stroke();
 
-    // 상체 윤곽 + 하단
+    // upper body
     ctx.beginPath();
     ctx.moveTo(centerX - 190, centerY + 60 + offsetY);
     ctx.bezierCurveTo(
@@ -380,6 +392,10 @@ export function useTurtleNeckTracker(opts: UseTurtleNeckTrackerOptions = {}) {
     if (rafRef.current) cancelAnimationFrame(rafRef.current);
     rafRef.current = null;
     stopBeep();
+    if (audioCtxRef.current) {
+      audioCtxRef.current.close().catch(() => {});
+      audioCtxRef.current = null;
+    }
     landmarkerRef.current?.close?.();
     landmarkerRef.current = null;
     const tracks =

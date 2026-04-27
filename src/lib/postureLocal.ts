@@ -1,8 +1,19 @@
 import { PostureMeasurement } from "@/utils/types";
 import { getDB } from "./idb";
 
-type StoredPostureRecord = PostureMeasurement & { id?: number; uploadedFlag: 0 | 1 };
-
+type StoredPostureRecord = PostureMeasurement & {
+  id?: number;
+  uploadedFlag: 0 | 1;
+};
+type HourlyRecord = {
+  userId: string;
+  hourStartTs: number;
+  sumWeighted: number;
+  weight: number;
+  count: number;
+  avgAngle: number | null;
+  finalized: 0 | 1;
+};
 export async function storeMeasurementAndAccumulate(data: PostureMeasurement) {
   const db = await getDB();
 
@@ -24,16 +35,6 @@ export async function storeMeasurementAndAccumulate(data: PostureMeasurement) {
 
   const hourlyStore = tx.objectStore("hourly");
   const key: [string, number] = [data.userId, hourStartTs];
-
-  type HourlyRecord = {
-    userId: string;
-    hourStartTs: number;
-    sumWeighted: number;
-    weight: number;
-    count: number;
-    avgAngle: number | null;
-    finalized: 0 | 1;
-  };
 
   const cur = (await hourlyStore.get(key)) as HourlyRecord | undefined;
 
@@ -58,67 +59,43 @@ export async function storeMeasurementAndAccumulate(data: PostureMeasurement) {
   await tx.done;
 }
 
-type HourlyRecord = {
-  userId: string;
-  hourStartTs: number;
-  sumWeighted: number;
-  weight: number;
-  count: number;
-  avgAngle: number | null;
-  finalized: 0 | 1;
-};
-
-const hourlyKeyQueue = new Map<string, Promise<void>>();
-
-function serializeByKey(keyStr: string, fn: () => Promise<void>): Promise<void> {
-  const prev = hourlyKeyQueue.get(keyStr) ?? Promise.resolve();
-
-  const next = prev
-    .catch(() => {})
-    .then(fn)
-    .finally(() => {
-      if (hourlyKeyQueue.get(keyStr) === next) hourlyKeyQueue.delete(keyStr);
-    });
-
-  hourlyKeyQueue.set(keyStr, next);
-  return next;
-}
-
-export async function incrementTurtleCount(userId: string | undefined): Promise<void> {
+export async function incrementTurtleCount(
+  userId: string | undefined,
+): Promise<void> {
   if (!userId) return;
 
   const db = await getDB();
   const hourStart = new Date();
   hourStart.setMinutes(0, 0, 0);
   const hourStartTs = +hourStart;
-  const keyStr = `${userId}:${hourStartTs}`;
-  return serializeByKey(keyStr, async () => {
-    const tx = db.transaction("hourly", "readwrite");
-    const store = tx.objectStore("hourly");
-    const key: [string, number] = [userId, hourStartTs];
 
-    const cur = (await store.get(key)) as HourlyRecord | undefined;
+  const tx = db.transaction("hourly", "readwrite");
+  const store = tx.objectStore("hourly");
+  const key: [string, number] = [userId, hourStartTs];
 
-    if (cur) {
-      cur.count += 1;
-      await store.put(cur);
-    } else {
-      await store.put({
-        userId,
-        hourStartTs,
-        sumWeighted: 0,
-        weight: 0,
-        count: 1,
-        avgAngle: null,
-        finalized: 0,
-      } satisfies HourlyRecord);
-    }
+  const cur = (await store.get(key)) as HourlyRecord | undefined;
 
-    await tx.done;
-  });
+  if (cur) {
+    cur.count += 1;
+    await store.put(cur);
+  } else {
+    await store.put({
+      userId,
+      hourStartTs,
+      sumWeighted: 0,
+      weight: 0,
+      count: 1,
+      avgAngle: null,
+      finalized: 0,
+    });
+  }
+
+  await tx.done;
 }
 
-export async function getPendingPostureRecords(limit = 200): Promise<StoredPostureRecord[]> {
+export async function getPendingPostureRecords(
+  limit = 200,
+): Promise<StoredPostureRecord[]> {
   const db = await getDB();
   const idx = db.transaction("samples").store.index("byUploadedFlag");
   const cursor = await idx.openCursor(0);
@@ -150,7 +127,9 @@ export async function getHourlyAverage(userId: string, date = new Date()) {
   hourStart.setMinutes(0, 0, 0);
   const hourStartTs = +hourStart;
 
-  const record = await db.transaction("hourly").store.get([userId, hourStartTs]);
+  const record = await db
+    .transaction("hourly")
+    .store.get([userId, hourStartTs]);
   if (!record || record.weight === 0) return null;
   if (record.finalized === 1 && record.avgAngle != null) {
     return record.avgAngle;
@@ -159,7 +138,9 @@ export async function getHourlyAverage(userId: string, date = new Date()) {
   return record.sumWeighted / record.weight;
 }
 
-export async function getTodayCount(userId: string | undefined): Promise<number> {
+export async function getTodayCount(
+  userId: string | undefined,
+): Promise<number> {
   if (!userId) return 0;
 
   const db = await getDB();
@@ -183,7 +164,9 @@ export async function getTodayCount(userId: string | undefined): Promise<number>
   return total;
 }
 
-export async function getTodayMeasuredSeconds(userId: string | undefined): Promise<number> {
+export async function getTodayMeasuredSeconds(
+  userId: string | undefined,
+): Promise<number> {
   if (!userId) return 0;
 
   const db = await getDB();

@@ -1,14 +1,14 @@
-import { renderHook } from "@testing-library/react";
+import { renderHook, act } from "@testing-library/react";
 import { usePostureStorageManager } from "@/hooks/usePostureStorageManager";
 import { storeMeasurementAndAccumulate } from "@/lib/postureLocal";
 import { finalizeUpToNow } from "@/lib/hourlyOps";
 
 jest.mock("@/lib/postureLocal", () => ({
-  storeMeasurementAndAccumulate: jest.fn(),
+  storeMeasurementAndAccumulate: jest.fn().mockResolvedValue(undefined),
 }));
 
 jest.mock("@/lib/hourlyOps", () => ({
-  finalizeUpToNow: jest.fn(),
+  finalizeUpToNow: jest.fn().mockResolvedValue(undefined),
 }));
 
 describe("usePostureStorageManager Hook test", () => {
@@ -18,29 +18,45 @@ describe("usePostureStorageManager Hook test", () => {
   });
 
   afterEach(() => {
+    jest.runOnlyPendingTimers();
     jest.useRealTimers();
   });
 
-  it("when the app starts(mount) run finalizeUpToNow one time, run it again in an hour", () => {
-    renderHook(() => usePostureStorageManager("user123", 40, false, "sess-1", true));
+  const flushPromises = async () => {
+    await act(async () => {
+      await Promise.resolve();
+    });
+  };
+
+  it("when the app starts(mount) run finalizeUpToNow one time, run it again in an hour", async () => {
+    renderHook(() =>
+      usePostureStorageManager("user123", 40, false, "sess-1", true),
+    );
 
     expect(finalizeUpToNow).toHaveBeenCalledTimes(1);
     expect(finalizeUpToNow).toHaveBeenCalledWith("user123", true);
-
-    jest.advanceTimersByTime(60 * 60 * 1000);
+    await flushPromises();
+    await act(async () => {
+      jest.advanceTimersByTime(60 * 60 * 1000);
+    });
+    await flushPromises();
 
     expect(finalizeUpToNow).toHaveBeenCalledTimes(2);
   });
 
-  it("if measuring is true, every 10 secs, store newest angle", () => {
+  it("if measuring is true, every 10 secs, store newest angle", async () => {
     const { rerender } = renderHook(
-      ({ angle, isTurtle }) => usePostureStorageManager("user123", angle, isTurtle, "sess-1", true),
+      ({ angle, isTurtle }) =>
+        usePostureStorageManager("user123", angle, isTurtle, "sess-1", true),
       {
         initialProps: { angle: 40, isTurtle: false },
       },
     );
 
-    jest.advanceTimersByTime(10000);
+    await act(async () => {
+      jest.advanceTimersByTime(10000);
+    });
+    await flushPromises();
 
     expect(storeMeasurementAndAccumulate).toHaveBeenCalledTimes(1);
     expect(storeMeasurementAndAccumulate).toHaveBeenCalledWith(
@@ -53,7 +69,10 @@ describe("usePostureStorageManager Hook test", () => {
 
     rerender({ angle: 55, isTurtle: true });
 
-    jest.advanceTimersByTime(10000);
+    await act(async () => {
+      jest.advanceTimersByTime(10000);
+    });
+    await flushPromises();
 
     expect(storeMeasurementAndAccumulate).toHaveBeenCalledTimes(2);
     expect(storeMeasurementAndAccumulate).toHaveBeenCalledWith(
@@ -64,19 +83,31 @@ describe("usePostureStorageManager Hook test", () => {
     );
   });
 
-  it("measuring === false => don't store", () => {
-    renderHook(() => usePostureStorageManager("user123", 40, false, "sess-1", false));
-    jest.advanceTimersByTime(10000);
+  it("measuring === false => don't store", async () => {
+    renderHook(() =>
+      usePostureStorageManager("user123", 40, false, "sess-1", false),
+    );
+
+    await act(async () => {
+      jest.advanceTimersByTime(10000);
+    });
+    await flushPromises();
 
     expect(storeMeasurementAndAccumulate).not.toHaveBeenCalled();
   });
 
-  it("without userId, sessionId => timer doesn't work", () => {
-    renderHook(() => usePostureStorageManager(undefined, 40, false, undefined, true));
+  it("without userId, sessionId => timer doesn't work", async () => {
+    renderHook(() =>
+      usePostureStorageManager(undefined, 40, false, undefined, true),
+    );
 
     expect(finalizeUpToNow).not.toHaveBeenCalled();
 
-    jest.advanceTimersByTime(10000);
+    await act(async () => {
+      jest.advanceTimersByTime(10000);
+    });
+    await flushPromises();
+
     expect(storeMeasurementAndAccumulate).not.toHaveBeenCalled();
   });
 });

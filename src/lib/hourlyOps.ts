@@ -1,10 +1,24 @@
 import { getDB } from "./idb";
 
-export async function getHourlyRange(userId: string, startTs: number, endTs: number) {
+export type HourlyRow = {
+  userId: string;
+  hourStartTs: number;
+  sumWeighted: number;
+  weight: number;
+  count: number;
+  avgAngle?: number | null;
+  finalized: 0 | 1;
+};
+
+export async function getHourlyRange(
+  userId: string,
+  startTs: number,
+  endTs: number,
+): Promise<HourlyRow[]> {
   const db = await getDB();
   const idx = db.transaction("hourly").store.index("byUserHour");
   const range = IDBKeyRange.bound([userId, startTs], [userId, endTs]);
-  const rows = await idx.getAll(range);
+  const rows = (await idx.getAll(range)) as HourlyRow[];
   rows.sort((a, b) => a.hourStartTs - b.hourStartTs);
   return rows;
 }
@@ -17,7 +31,10 @@ export async function getTodayHourly(userId: string, now = new Date()) {
   return getHourlyRange(userId, startTs, endTs);
 }
 
-export async function computeTodaySoFarAverage(userId: string | undefined, now = new Date()) {
+export async function computeTodaySoFarAverage(
+  userId: string | undefined,
+  now = new Date(),
+) {
   if (!userId) return null;
   const rows = await getTodayHourly(userId, now);
   let totalSum = 0;
@@ -34,20 +51,26 @@ export async function computeTodaySoFarAverage(userId: string | undefined, now =
   return totalSum / totalWeight;
 }
 
-export async function finalizeUpToNow(userId: string, includeCurrentHour = false, now = new Date()) {
+export async function finalizeUpToNow(
+  userId: string,
+  includeCurrentHour = false,
+  now = new Date(),
+) {
   const db = await getDB();
   const tx = db.transaction("hourly", "readwrite");
   const store = tx.store;
+
+  const index = store.index("byUser");
 
   const currentHourStart = new Date(now);
   currentHourStart.setMinutes(0, 0, 0);
   const currentHourStartTs = +currentHourStart;
 
-  let cursor = await store.openCursor();
+  let cursor = await index.openCursor(IDBKeyRange.only(userId));
   while (cursor) {
     const row = cursor.value;
 
-    if (row.userId !== userId || row.weight <= 0) {
+    if (row.weight <= 0 || row.finalized === 1) {
       cursor = await cursor.continue();
       continue;
     }
@@ -56,12 +79,10 @@ export async function finalizeUpToNow(userId: string, includeCurrentHour = false
     const isPastHour = rowEnd <= +now;
     const isCurrentHour = row.hourStartTs === currentHourStartTs;
 
-    if (row.finalized !== 1) {
-      if (isPastHour || (includeCurrentHour && isCurrentHour)) {
-        row.avgAngle = row.sumWeighted / row.weight;
-        row.finalized = 1;
-        await cursor.update(row);
-      }
+    if (isPastHour || (includeCurrentHour && isCurrentHour)) {
+      row.avgAngle = row.sumWeighted / row.weight;
+      row.finalized = 1;
+      await cursor.update(row);
     }
 
     cursor = await cursor.continue();

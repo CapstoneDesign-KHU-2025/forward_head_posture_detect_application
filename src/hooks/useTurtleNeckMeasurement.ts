@@ -17,6 +17,7 @@ import { useSoundContext } from "@/controllers/SoundController";
 import type { GuideColor, Pose } from "@/utils/types";
 import { useSoundStore } from "@/app/store/useSoundStore";
 import { env } from "process";
+import { meanBy } from "es-toolkit";
 
 const USE_WORKER = true;
 
@@ -252,9 +253,9 @@ export function useTurtleNeckMeasurement({
       key: "earLeft" | "earRight" | "shoulderLeft" | "shoulderRight",
     ) => {
       return {
-        x: buf.reduce((a, b) => a + b[key].x, 0) / buf.length,
-        y: buf.reduce((a, b) => a + b[key].y, 0) / buf.length,
-        z: buf.reduce((a, b) => a + b[key].z, 0) / buf.length,
+        x: meanBy(buf, (item) => item[key].x),
+        y: meanBy(buf, (item) => item[key].y),
+        z: meanBy(buf, (item) => item[key].z),
       };
     };
 

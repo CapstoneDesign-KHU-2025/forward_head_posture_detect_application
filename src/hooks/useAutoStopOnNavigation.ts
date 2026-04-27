@@ -8,10 +8,15 @@ export default function useAutoStopOnNavigation(
   setStopEstimating: (val: boolean) => void,
 ) {
   useEffect(() => {
-    if (pathname !== "/estimate" && pathname !== "/") {
+    const isAllowedPage = ["/estimate", "/"].includes(pathname);
+
+    if (!isAllowedPage) {
       if (measurementStarted) handleStopMeasurement(true);
       setStopEstimating(true);
-    } else if (pathname === "/" && !measurementStarted) {
+      return;
+    }
+
+    if (pathname === "/" && !measurementStarted) {
       setStopEstimating(true);
     }
   }, [pathname, measurementStarted, handleStopMeasurement, setStopEstimating]);
