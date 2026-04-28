@@ -5,6 +5,9 @@ import { useRouter, usePathname } from "@/i18n/navigation";
 import { tv } from "tailwind-variants";
 
 const styles = {
+  wrapper: tv({
+    base: "relative inline-flex items-center bg-[#E8F5E9] rounded-full p-1 w-32 h-10 shadow-inner cursor-pointer",
+  }),
   slider: tv({
     base: "absolute top-1 bottom-1 w-[60px] bg-white rounded-full shadow-md transition-transform duration-300 ease-in-out",
     variants: {
@@ -41,7 +44,7 @@ export default function LanguageToggle() {
   };
 
   return (
-    <div className="relative inline-flex items-center bg-[#E8F5E9] rounded-full p-1 w-32 h-10 shadow-inner cursor-pointer">
+    <div className={styles.wrapper()}>
       <div className={styles.slider({ shifted: locale === "ko" })} />
       {LOCALES.map(({ value, label }) => (
         <button

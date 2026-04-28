@@ -14,7 +14,6 @@ import LanguageToggle from "@/app/[locale]/components/header/LanguageToggle";
 import { SoundButton } from "@/app/[locale]/components/header/SoundButton";
 import { tv } from "tailwind-variants";
 
-
 const headerStyles = tv({
   slots: {
     header:
