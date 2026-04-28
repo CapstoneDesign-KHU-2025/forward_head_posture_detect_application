@@ -183,7 +183,18 @@ function HiddenMeasurementVideo({ videoRef }: HiddenMeasurementVideoProps) {
   );
 }
 
-export function MeasurementController({ children }: { children: ReactNode }) {
+type MeasurementSetup = {
+  value: MeasurementContextValue;
+  slotEl: HTMLElement | null;
+  portalTarget: HTMLElement | null;
+  canvasRef: React.RefObject<HTMLCanvasElement | null>;
+  videoRef: React.RefObject<HTMLVideoElement | null>;
+  showRecoveryNotice: boolean;
+  dismissRecoveryNotice: () => void;
+  handleRecoveryRestart: () => void;
+};
+
+function useMeasurementSetup(): MeasurementSetup {
   const pathname = usePathname();
   const { data: session } = useSession();
   const userId = (session?.user as { id?: string })?.id ?? "";
@@ -244,6 +255,30 @@ export function MeasurementController({ children }: { children: ReactNode }) {
     ],
   );
 
+  return {
+    value,
+    slotEl,
+    portalTarget,
+    canvasRef: coreMeasurement.canvasRef,
+    videoRef: coreMeasurement.videoRef,
+    showRecoveryNotice,
+    dismissRecoveryNotice,
+    handleRecoveryRestart,
+  };
+}
+
+export function MeasurementController({ children }: { children: ReactNode }) {
+  const {
+    value,
+    slotEl,
+    portalTarget,
+    canvasRef,
+    videoRef,
+    showRecoveryNotice,
+    dismissRecoveryNotice,
+    handleRecoveryRestart,
+  } = useMeasurementSetup();
+
   const canRenderPortal =
     typeof document !== "undefined" && portalTarget !== null;
 
@@ -253,13 +288,13 @@ export function MeasurementController({ children }: { children: ReactNode }) {
 
       {canRenderPortal && (
         <MeasurementCanvasPortal
-          canvasRef={coreMeasurement.canvasRef}
+          canvasRef={canvasRef}
           slotEl={slotEl}
           portalTarget={portalTarget}
         />
       )}
 
-      <HiddenMeasurementVideo videoRef={coreMeasurement.videoRef} />
+      <HiddenMeasurementVideo videoRef={videoRef} />
 
       <RecoveryNotice
         isVisible={showRecoveryNotice}
