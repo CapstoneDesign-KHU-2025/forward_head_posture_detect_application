@@ -1,15 +1,21 @@
 "use client";
-import { useEffect, useEffectEvent } from "react";
+import { useEffect, useRef } from "react";
 
 export function useHandleHotKey(key: string, callback: () => void) {
-  const onKeyDown = useEffectEvent((e: KeyboardEvent) => {
-    if (e.key === key) {
-      callback();
-    }
-  });
+  const callbackRef = useRef(callback);
 
   useEffect(() => {
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
+    callbackRef.current = callback;
+  }, [callback]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key == key) {
+        callbackRef.current();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, [key]);
 }

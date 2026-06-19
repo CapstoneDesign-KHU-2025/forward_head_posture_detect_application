@@ -92,7 +92,8 @@
     "cameraTitle": "Camera",
     "message": "🐢\nMeasurement is ready!\nPress the button to start",
     "messageText": "Measurement is ready!\nPress the button to start",
-    "startMeasurementToast": "Starting posture measurement"
+    "startMeasurementToast": "Starting posture measurement",
+    "secondLeft": "seconds left."
   },
   "EvolutionTooltip": {
     "ariaLabel": "Evolution Requirements"
@@ -127,10 +128,22 @@
       "title": "Welcome!",
       "message": "Start your first measurement\nto build healthy posture habits!"
     },
-    "empty": { "title": "Keep it up!", "message": "Start measuring today\nto create a great record!" },
-    "excellent": { "title": "Excellent today!", "message": "Your neck must feel great!" },
-    "normal": { "title": "Need a bit more focus?", "message": "Try to straighten your neck!" },
-    "bad": { "title": "Tough day for your neck", "message": "Please give your neck a rest!" }
+    "empty": {
+      "title": "Keep it up!",
+      "message": "Start measuring today\nto create a great record!"
+    },
+    "excellent": {
+      "title": "Excellent today!",
+      "message": "Your neck must feel great!"
+    },
+    "normal": {
+      "title": "Need a bit more focus?",
+      "message": "Try to straighten your neck!"
+    },
+    "bad": {
+      "title": "Tough day for your neck",
+      "message": "Please give your neck a rest!"
+    }
   },
   "TurtleEvolutionCard": {
     "stages": {
@@ -230,8 +243,14 @@
   },
   "SensitivitySettingsModal": {
     "sense_options": {
-      "low": { "name": "Low", "description": "Alert only for severe slouching" },
-      "normal": { "name": "Normal", "description": "Alert at a moderate level (Recommended)" },
+      "low": {
+        "name": "Low",
+        "description": "Alert only for severe slouching"
+      },
+      "normal": {
+        "name": "Normal",
+        "description": "Alert at a moderate level (Recommended)"
+      },
       "high": {
         "name": "High",
         "description": "Alert even for slight slouching"

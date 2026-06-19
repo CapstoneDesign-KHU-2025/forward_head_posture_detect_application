@@ -16,6 +16,7 @@ import { incrementTurtleCount } from "@/lib/postureLocal";
 import { useSoundContext } from "@/controllers/SoundController";
 import type { GuideColor, Pose } from "@/utils/types";
 import { useSoundStore } from "@/app/store/useSoundStore";
+import { env } from "process";
 import { meanBy } from "es-toolkit";
 
 const USE_WORKER = true;
@@ -617,14 +618,13 @@ export function useTurtleNeckMeasurement({
 
         if (!useWorkerMode) {
           const vision = await FilesetResolver.forVisionTasks(
-            "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.22-rc.20250304/wasm",
+            process.env.NEXT_PUBLIC_WASM_BASEURL,
           );
           landmarkerRef.current = await PoseLandmarker.createFromOptions(
             vision,
             {
               baseOptions: {
-                modelAssetPath:
-                  "https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task",
+                modelAssetPath: process.env.NEXT_PUBLIC_MODEL_ASSET_PATH,
               },
               runningMode: "VIDEO",
               numPoses: 1,

@@ -6,11 +6,40 @@ import { Button } from "@/components/Button";
 import CharacterGrid from "./components/CharacterGrid";
 import { useTranslations } from "next-intl";
 import { useHandleHotKey } from "@/hooks/useHandleHotKey";
+import { tv } from "tailwind-variants";
+
 const CHARACTER_ASSETS = [
   { id: "remy", icon: "/icons/remy.png" },
   { id: "jerry", icon: "/icons/cat.png" },
   { id: "jessica", icon: "/icons/girl.png" },
 ];
+
+const styles = tv({
+  slots: {
+    wrapper:
+      "flex min-h-screen items-center justify-center bg-gradient-to-br from-[var(--green-pale)] to-[var(--green-light)] p-8",
+    card: "w-full max-w-[1200px] rounded-[24px] bg-white p-12 shadow-[0_10px_40px_rgba(45,95,46,0.15)]",
+
+    headerWrapper: "mb-12 text-center",
+    emoji: "mb-4 animate-bounce text-[3rem]",
+    title: "mb-2 text-[2rem] font-bold text-[var(--green)]",
+    description: "text-[1.1rem] text-[var(--text)]",
+
+    gridWrapper:
+      "mx-auto mb-12 grid max-w-[900px] grid-cols-1 gap-12 md:grid-cols-3",
+
+    buttonWrapper: "flex flex-col justify-center gap-4 sm:flex-row",
+    skipBtn:
+      "border-2 border-[var(--green-border)] px-12 py-4 text-[1.1rem] font-semibold",
+    doneBtn:
+      "px-12 py-4 text-[1.1rem] font-semibold disabled:cursor-not-allowed disabled:bg-[var(--disabled-bg)] disabled:shadow-none disabled:hover:transform-none disabled:hover:bg-[var(--disabled-bg-hover)]",
+  },
+  variants: {
+    isReady: {
+      true: { doneBtn: "shadow-[0_4px_15px_rgba(45,95,46,0.3)]" },
+    },
+  },
+});
 
 export default function CharacterSelectionPage() {
   const t = useTranslations("Characters");
@@ -55,21 +84,31 @@ export default function CharacterSelectionPage() {
     handleSkip();
   });
 
-  return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-[var(--green-pale)] to-[var(--green-light)] p-8">
-      <div className="w-full max-w-[1200px] rounded-[24px] bg-white p-12 shadow-[0_10px_40px_rgba(45,95,46,0.15)]">
-        {/* header */}
-        <div className="mb-12 text-center">
-          <div className="mb-4 animate-bounce text-[3rem]">🐢</div>
-          <h1 className="mb-2 text-[2rem] font-bold text-[var(--green)]">
-            {t("header.title")}
-          </h1>
-          <p className="text-[1.1rem] text-[var(--text)]">
-            {t("header.description")}
-          </p>
-        </div>
+  const {
+    wrapper,
+    card,
+    headerWrapper,
+    emoji,
+    title,
+    description,
+    gridWrapper,
+    buttonWrapper,
+    skipBtn,
+    doneBtn,
+  } = styles({
+    isReady: !!selectedCharacter,
+  });
 
-        <div className="mx-auto mb-12 grid max-w-[900px] grid-cols-1 gap-12 md:grid-cols-3">
+  return (
+    <main className={wrapper()}>
+      <section className={card()}>
+        <header className={headerWrapper()}>
+          <div className={emoji()}>🐢</div>
+          <h1 className={title()}>{t("header.title")}</h1>
+          <p className={description()}>{t("header.description")}</p>
+        </header>
+
+        <div className={gridWrapper()}>
           {CHARACTER_ASSETS.map((character) => (
             <CharacterGrid
               key={character.id}
@@ -84,11 +123,11 @@ export default function CharacterSelectionPage() {
           ))}
         </div>
 
-        <div className="flex flex-col justify-center gap-4 sm:flex-row">
+        <div className={buttonWrapper()}>
           <Button
             variant="secondary"
             onClick={handleSkip}
-            className="border-2 border-[var(--green-border)] px-12 py-4 text-[1.1rem] font-semibold"
+            className={skipBtn()}
           >
             {t("buttons.skip")}
           </Button>
@@ -96,17 +135,12 @@ export default function CharacterSelectionPage() {
             variant="primary"
             onClick={handleConfirm}
             disabled={!selectedCharacter}
-            className="px-12 py-4 text-[1.1rem] font-semibold disabled:cursor-not-allowed disabled:bg-[var(--disabled-bg)] disabled:shadow-none disabled:hover:transform-none disabled:hover:bg-[var(--disabled-bg-hover)]"
-            style={
-              !selectedCharacter
-                ? {}
-                : { boxShadow: "0 4px 15px rgba(45, 95, 46, 0.3)" }
-            }
+            className={doneBtn()}
           >
             {t("buttons.done")}
           </Button>
         </div>
-      </div>
-    </div>
+      </section>
+    </main>
   );
 }

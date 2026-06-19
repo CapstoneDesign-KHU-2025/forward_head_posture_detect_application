@@ -43,10 +43,6 @@ function copyDocumentStylesToPictureInPicture(targetDoc: Document) {
   });
 }
 
-function subscribePipWindowPagehide(pip: Window, onClose: () => void) {
-  pip.addEventListener("pagehide", onClose);
-}
-
 type PiPContextType = {
   openPiP: () => Promise<void>;
   closePiP: () => void;
@@ -54,7 +50,7 @@ type PiPContextType = {
 
 const PiPContext = createContext<PiPContextType | null>(null);
 
-export function PiPController({ children }: { children: ReactNode }) {
+function usePipControls(): PiPContextType {
   const pipWindow = usePiPStore((state) => state.pipWindow);
   const setPipWindow = usePiPStore((state) => state.setPipWindow);
 
@@ -69,7 +65,7 @@ export function PiPController({ children }: { children: ReactNode }) {
       });
 
       copyDocumentStylesToPictureInPicture(pip.document);
-      subscribePipWindowPagehide(pip, () => setPipWindow(null));
+      pip.addEventListener("pagehide", () => setPipWindow(null));
       setPipWindow(pip);
     } catch (error) {
       logger.error("[PiPController] requestWindow failed:", error);
@@ -91,8 +87,14 @@ export function PiPController({ children }: { children: ReactNode }) {
     };
   }, [pipWindow]);
 
+  return { openPiP, closePiP };
+}
+
+export function PiPController({ children }: { children: ReactNode }) {
+  const controls = usePipControls();
+
   return (
-    <PiPContext.Provider value={{ openPiP, closePiP }}>
+    <PiPContext.Provider value={controls}>
       {children}
     </PiPContext.Provider>
   );

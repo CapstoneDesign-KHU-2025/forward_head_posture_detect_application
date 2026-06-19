@@ -6,26 +6,8 @@ import { EmptyState } from "@/components/EmptyState";
 import { IconButton } from "@/components/IconButton";
 import { X } from "lucide-react";
 import { Friend } from "@/utils/types";
-import { cn } from "@/utils/cn";
 import { useTranslations } from "next-intl";
-const AVATAR_COLORS = ["#ff9f6b", "#6b9fff", "#ffc46b", "#b06bff", "#6aab7a", "#ff8c8c"];
-
-function getAvatarStyle(id: string | null | undefined) {
-  const safeId = (id ?? "").toString();
-  if (!safeId.length) {
-    return AVATAR_COLORS[0];
-  }
-  let hash = 0;
-  for (let i = 0; i < safeId.length; i++) {
-    hash = safeId.charCodeAt(i) + ((hash << 5) - hash);
-  }
-  return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
-}
-
-function getInitial(name: string | null, id: string | null | undefined) {
-  const base = (name && name.length > 0 ? name : (id ?? "")).toString();
-  return base.charAt(0)?.toUpperCase() || "?";
-}
+import { getAvatarColor, getInitial } from "./friends.utils";
 
 type FriendListProps = {
   friends: Friend[];
@@ -45,7 +27,7 @@ export function FriendList({ friends, onDelete }: FriendListProps) {
             name={f.user.name ?? t("UserRow.unknown")}
             email={f.user.email ?? ""}
             initial={getInitial(f.user.name, f.user.id)}
-            bgColor={getAvatarStyle(f.user.id)}
+            bgColor={getAvatarColor(f.user.id)}
             actions={
               <IconButton
                 variant="ghost"
@@ -58,7 +40,7 @@ export function FriendList({ friends, onDelete }: FriendListProps) {
                 onClick={() => onDelete(f.friendshipId, f.user)}
                 title={t("IconButton.title")}
                 aria-label={t("IconButton.title")}
-                className={cn("h-7 w-7 rounded-lg", "transition-colors")}
+                className="h-7 w-7 rounded-lg transition-colors"
               />
             }
           />

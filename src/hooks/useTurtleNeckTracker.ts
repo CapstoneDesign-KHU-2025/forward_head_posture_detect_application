@@ -34,10 +34,8 @@ type UseTurtleNeckTrackerOptions = {
 export function useTurtleNeckTracker(opts: UseTurtleNeckTrackerOptions = {}) {
   const {
     autoStart = true,
-    wasmBaseUrl = process.env.WASM_BASEURL ||
-      "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm",
-    modelAssetPath = process.env.MODEL_ASSET_PATH ||
-      "https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task",
+    wasmBaseUrl = process.env.NEXT_PUBLIC_WASM_BASEURL,
+    modelAssetPath = process.env.NEXT_PUBLIC_MODEL_ASSET_PATH,
     logIntervalMs = 200,
     sendIntervalMs = 2000,
     distanceThreshold = { tooCloseRatio: 1.05, tooFarRatio: 0.7 },

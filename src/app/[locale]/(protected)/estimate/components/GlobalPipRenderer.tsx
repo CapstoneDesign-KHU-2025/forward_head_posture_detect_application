@@ -11,7 +11,6 @@ export function GlobalPipRenderer() {
   const { measurementStarted, getStatusBannerType } = useMeasurement();
 
   if (!pipWindow) return null;
-
   if (stopEstimating) return null;
 
   const isTurtle = getStatusBannerType() === "warning";

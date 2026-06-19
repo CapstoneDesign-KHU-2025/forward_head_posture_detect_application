@@ -14,18 +14,18 @@ type WorkerMessage =
 type WorkerResponse =
   | { type: "initDone"; payload?: { error?: string } }
   | { type: "requestFrame" }
-  | { type: "result"; payload: { landmarks: Array<Array<{ x: number; y: number; z: number }>> } }
+  | {
+      type: "result";
+      payload: { landmarks: Array<Array<{ x: number; y: number; z: number }>> };
+    }
   | { type: "error"; payload: { message: string } };
 
 async function initPoseLandmarker(): Promise<void> {
-  const vision = await FilesetResolver.forVisionTasks(
-    "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.22-rc.20250304/wasm",
-  );
+  const vision = await FilesetResolver.forVisionTasks(process.env.WASM_BASEURL);
 
   poseLandmarker = await PoseLandmarker.createFromOptions(vision, {
     baseOptions: {
-      modelAssetPath:
-        "https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task",
+      modelAssetPath: process.env.NEXT_PUBLIC_MODEL_ASSET_PATH,
     },
     runningMode: "VIDEO",
     numPoses: 1,
@@ -35,10 +35,15 @@ async function initPoseLandmarker(): Promise<void> {
   });
 }
 
-function detectPose(bitmap: ImageBitmap, timestamp: number): Array<Array<{ x: number; y: number; z: number }>> {
+function detectPose(
+  bitmap: ImageBitmap,
+  timestamp: number,
+): Array<Array<{ x: number; y: number; z: number }>> {
   if (!poseLandmarker) return [];
   const result = poseLandmarker.detectForVideo(bitmap, timestamp);
-  return (result?.landmarks ?? []).map((lm) => lm.map((p) => ({ x: p.x, y: p.y, z: p.z })));
+  return (result?.landmarks ?? []).map((lm) =>
+    lm.map((p) => ({ x: p.x, y: p.y, z: p.z })),
+  );
 }
 
 self.onmessage = async (e: MessageEvent<WorkerMessage>) => {

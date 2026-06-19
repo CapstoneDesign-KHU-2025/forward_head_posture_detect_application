@@ -1,0 +1,112 @@
+---
+name: frontend-refactor
+description: Use when refactoring existing code without changing behavior. Use for improving readability, structure, naming, duplication, separation of concerns, and maintainability.
+---
+
+# Refactor Skill
+
+## Goal
+
+Improve code quality without changing existing behavior.
+
+## When to use
+
+Use this skill when the task involves:
+
+- cleaning messy code
+- separating UI and business logic
+- extracting reusable components
+- extracting hooks or utilities
+- reducing duplication
+- improving naming
+- simplifying complex functions
+- improving folder structure
+- improving readability 
+- improving performance without changing behavior
+
+## Core rules
+
+- Do not change behavior unless explicitly requested.
+- Make the smallest safe refactor first.
+- Preserve public APIs unless there is a clear reason to change them.
+- Prefer readability over clever abstraction.
+- Avoid premature abstraction.
+- Keep UI, business logic, data fetching, and validation separated.
+- Keep server-only logic out of client components.
+- Keep side effects isolated.
+- Do not refactor unrelated files.
+
+## Workflow
+
+1. Understand the current behavior.
+2. Identify code smells:
+   - duplicated logic
+   - long function
+   - unclear naming
+   - mixed responsibilities
+   - deeply nested conditions
+   - repeated JSX
+   - unstable props or effects
+   - business logic inside UI
+3. Decide the safest refactor type:`
+   - rename
+   - extract function
+   - extract component
+   - extract hook
+   - move server logic
+   - simplify condition
+   - split file
+4. Refactor in small steps.
+5. Ensure behavior stays the same.
+6. Run relevant checks if available:
+   - `npm test`
+
+## React / Next.js refactor rules
+
+- Extract components when JSX becomes hard to scan.
+- Extract hooks only when stateful logic is reused or too complex.
+- Extract utility functions for pure logic.
+- Prefer Server Components unless interactivity is required.
+- Use Client Components only for hooks, events, browser APIs, or interactive state.
+- Avoid passing unnecessary props through many layers.
+- Avoid putting database/API logic inside UI components.
+
+## style rules
+- Separate styling from JSX: use `tv` for variants, `clsx` for conditions, and `cn` for composing readable class names.
+- If there are more than one tv varients in a file, put them in to a one const object variable so that there is just one style variable in a file. For example, if there are two tv variants, `cardVariants` and `buttonVariants`, put them in to one variable like below:
+```tsx   
+const styles = tv({
+  card: {
+    base: "base styles",
+    variants: {
+      selected: "selected styles",
+    },
+  },
+  button: {
+    base: "base styles",
+    variants: {
+      primary: "primary styles",
+      secondary: "secondary styles",
+    },
+  },
+});
+```   
+-Use `slots` when styles belong to one connected multi-part component; use a plain `styles` object when you only want to group independent `tv()` styles for organization.
+
+Use slots when:
+- A component contains multiple styled parts (e.g. wrapper, header, body, footer, buttons)
+- Styles are closely related and belong to the same component
+- You want to share variants across multiple elements (e.g. state affects several parts)
+
+Use tv() variable when:
+- Styles belong to different or reusable components
+- The styled element is used independently
+- There is no shared state or relationship between styles
+
+## Output style
+
+- Show the refactored code first.
+- List what changed.
+- Mention behavior that was intentionally preserved.
+- Mention any risk if the refactor could affect behavior.
+- Always add Korean desccription after the English explanation.

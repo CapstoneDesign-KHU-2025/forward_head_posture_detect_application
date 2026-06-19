@@ -8,6 +8,8 @@ type UserButtonProps = {
   user: { name: string; email?: string; image?: string; avatarSrc?: string };
   className?: string;
 };
+const style = "flex items-center justify-center rounded-full bg-transparent border-none p-0 cursor-pointer select-none focus:outline-none transition-opacity duration-150 hover:opacity-80"
+  
 
 export function UserButton({ user, className }: UserButtonProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -19,7 +21,7 @@ export function UserButton({ user, className }: UserButtonProps) {
       <button
         type="button"
         onClick={() => setIsMenuOpen(!isMenuOpen)}
-        className="flex items-center justify-center rounded-full bg-transparent border-none p-0 cursor-pointer select-none focus:outline-none transition-opacity duration-150 hover:opacity-80"
+        className={style}
         aria-label={t("usermenu")}
       >
         <UserAvatar

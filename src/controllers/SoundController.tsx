@@ -9,10 +9,6 @@ type SoundContextType = {
 
 const SoundContext = createContext<SoundContextType | null>(null);
 
-function applyMuteToMasterGain(masterGain: GainNode, isMuted: boolean) {
-  masterGain.gain.value = isMuted ? 0 : 1;
-}
-
 function createMasterGainAudioGraph() {
   const ctx = new AudioContext();
   const masterGain = ctx.createGain();
@@ -26,7 +22,7 @@ function createMasterGainAudioGraph() {
   };
 }
 
-export function SoundController({ children }: { children: React.ReactNode }) {
+function useSoundAudio(): SoundContextType {
   const isMuted = useSoundStore((state) => state.isMuted);
   const audioRef = useRef<{ ctx: AudioContext; masterGain: GainNode } | null>(
     null,
@@ -44,15 +40,14 @@ export function SoundController({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
-    applyMuteToMasterGain(audio.masterGain, isMuted);
+    audio.masterGain.gain.value = isMuted ? 0 : 1;
   }, [isMuted]);
 
-  const value = useMemo<SoundContextType>(
-    () => ({
-      getAudio: () => audioRef.current,
-    }),
-    [],
-  );
+  return useMemo(() => ({ getAudio: () => audioRef.current }), []);
+}
+
+export function SoundController({ children }: { children: React.ReactNode }) {
+  const value = useSoundAudio();
 
   return (
     <SoundContext.Provider value={value}>{children}</SoundContext.Provider>
