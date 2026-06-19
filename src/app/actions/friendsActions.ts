@@ -67,7 +67,7 @@ export async function postFriendRequestAction(_prevState: ActionState<unknown>, 
 
   try {
     const request = await createFriendRequest(session.user.id, parsed.data.toUserId);
-    revalidateTag("friend_requests");
+    revalidateTag("friend_requests", "max");
 
     return { ok: true, data: request } as const;
   } catch (error: any) {
@@ -93,8 +93,8 @@ export async function respondFriendRequestAction(_prevState: ActionState<unknown
   try {
     const { requestId, action } = parsed.data;
     const result = await respondToFriendRequest(session.user.id, requestId, action);
-    revalidateTag("friend_requests");
-    revalidateTag("friends_list");
+    revalidateTag("friend_requests", "max");
+    revalidateTag("friends_list", "max");
 
     return { ok: true, data: result } as const;
   } catch (error: any) {
